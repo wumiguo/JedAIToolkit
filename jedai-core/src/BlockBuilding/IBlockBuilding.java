@@ -14,8 +14,9 @@
 * limitations under the License.
 */
 
-package DataReader;
+package BlockBuilding;
 
+import DataModel.AbstractBlock;
 import DataModel.EntityProfile;
 import java.util.List;
 
@@ -24,9 +25,9 @@ import java.util.List;
  * @author G.A.P. II
  */
 
-public interface IReader {
+public interface IBlockBuilding {
     
-    public void setInputFile(String filePath);
+    public List<AbstractBlock> getBlocks();
     
-    public List<EntityProfile> getEntityProfiles();
+    public void setEntityProfiles(List<EntityProfile> profiles);
 }
