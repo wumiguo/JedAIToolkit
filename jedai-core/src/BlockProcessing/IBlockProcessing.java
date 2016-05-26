@@ -25,8 +25,12 @@ import java.util.List;
  */
 
 public interface IBlockProcessing {
- 
-    public List<AbstractBlock> getNewBlocks();
+
+    public void deduplicateBlocks(AbstractDuplicatePropagation adp, List<AbstractBlock> blocks);
     
-    public void setBlocks(List<AbstractBlock> blocks);
+    public List<AbstractBlock> refineBlocks(List<AbstractBlock> blocks);
+    
+    public String getMethodInfo();
+    
+    public String getMethodParameters();
 }

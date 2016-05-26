@@ -14,13 +14,18 @@
 * limitations under the License.
 */
 
-package DataReader;
+package DataReader.EntityReader;
+
+import DataModel.EntityProfile;
+import java.util.List;
 
 /**
  *
  * @author G.A.P. II
  */
 
-public class N3Reader {
+public interface IEntityReader {
+    
+    public List<EntityProfile> getEntityProfiles();
     
 }

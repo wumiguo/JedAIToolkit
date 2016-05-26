@@ -14,18 +14,18 @@
 * limitations under the License.
 */
 
-package DataReader;
+package DataReader.GroundTruthReader;
+
+import DataModel.IdDuplicates;
+import java.util.Set;
 
 /**
  *
  * @author G.A.P. II
  */
 
-public interface IDataReader {
+public interface IGroundTruthReader {
     
-    public String getMethodInfo();
+    public Set<IdDuplicates> getEntityProfiles();
     
-    public String getMethodParameters();
-    
-    public void storeSerializedObject(Object object, String outputPath);
 }

@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package DataReader;
+package DataReader.EntityReader;
 
 import DataModel.Attribute;
 import DataModel.EntityProfile;
+import DataReader.AbstractReader;
 import com.opencsv.CSVReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -32,10 +33,10 @@ import java.util.logging.Logger;
  *
  * @author G.A.P. II
  */
-public class CsvReader extends AbstractReader {
+public class CsvReader extends AbstractReader implements IEntityReader {
 
-    private final static Logger LOGGER = Logger.getLogger(CsvReader.class.getName());
-
+    private static final Logger LOGGER = Logger.getLogger(CsvReader.class.getName());
+    
     private boolean attributeNamesInFirstRow;
     private char separator;
     private int idIndex;
