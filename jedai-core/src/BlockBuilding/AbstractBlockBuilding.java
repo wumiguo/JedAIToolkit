@@ -57,7 +57,7 @@ import org.apache.lucene.util.Version;
  */
 public abstract class AbstractBlockBuilding implements IBlockBuilding {
 
-    private final static Logger LOGGER = Logger.getLogger(AbstractBlockBuilding.class.getName());
+    static final Logger LOGGER = Logger.getLogger(AbstractBlockBuilding.class.getName());
 
     protected double noOfEntitiesD1;
     protected double noOfEntitiesD2;
@@ -88,6 +88,14 @@ public abstract class AbstractBlockBuilding implements IBlockBuilding {
         }
     }
 
+    protected void closeReader(IndexReader iReader) {
+        try {
+            iReader.close();
+        } catch (IOException ex) {
+            LOGGER.log(Level.SEVERE, null, ex);
+        }
+    }
+    
     protected void closeWriter(IndexWriter iWriter) {
         try {
             iWriter.close();
@@ -212,7 +220,7 @@ public abstract class AbstractBlockBuilding implements IBlockBuilding {
             }
             return hashedBlocks;
         } catch (IOException ex) {
-            ex.printStackTrace();
+            LOGGER.log(Level.SEVERE, null, ex);
             return null;
         }
     }
@@ -244,7 +252,7 @@ public abstract class AbstractBlockBuilding implements IBlockBuilding {
             }
 
         } catch (IOException ex) {
-            ex.printStackTrace();
+            LOGGER.log(Level.SEVERE, null, ex);
         }
     }
 
@@ -274,9 +282,10 @@ public abstract class AbstractBlockBuilding implements IBlockBuilding {
                 }
             }
         } catch (IOException ex) {
-            ex.printStackTrace();
+            LOGGER.log(Level.SEVERE, null, ex);
         }
     }
+    
     //read blocks from Lucene index
     public List<AbstractBlock> readBlocks() {
         IndexReader iReaderD1 = openReader(indexDirectoryD1);
@@ -286,8 +295,10 @@ public abstract class AbstractBlockBuilding implements IBlockBuilding {
             IndexReader iReaderD2 = openReader(indexDirectoryD2);
             Map<String, int[]> hashedBlocks = parseD1Index(iReaderD1, iReaderD2);
             parseD2Index(iReaderD2, hashedBlocks);
+            closeReader(iReaderD2);
         }
-
+        closeReader(iReaderD1);
+        
         return blocks;
     }
 
