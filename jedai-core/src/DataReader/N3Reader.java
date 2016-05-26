@@ -16,19 +16,11 @@
 
 package DataReader;
 
-import DataModel.EntityProfile;
-import java.util.List;
-
 /**
  *
  * @author G.A.P. II
  */
 
-public interface IDataReader {
+public class N3Reader {
     
-    public List<EntityProfile> getEntityProfiles();
-    
-    public String getMethodInfo();
-    
-    public String getMethodParameters();
 }
