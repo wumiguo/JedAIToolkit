@@ -20,6 +20,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -27,11 +29,20 @@ import java.util.Set;
  */
 
 public class QGramsBlocking extends StandardBlocking {
+    
+    private static final Logger LOGGER = Logger.getLogger(QGramsBlocking.class.getName());
 
     protected final int nGramSize;
 
+    public QGramsBlocking() {
+        this(6);
+        LOGGER.log(Level.INFO, "Using default configuration for Q-Grams Blocking.");
+    }
+    
     public QGramsBlocking(int n) {
+        super();
         nGramSize = n;
+        LOGGER.log(Level.INFO, "N-gram size\t:\t{0}", nGramSize);
     }
 
     @Override
@@ -46,12 +57,15 @@ public class QGramsBlocking extends StandardBlocking {
     
     @Override
     public String getMethodInfo() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return "Q-Grams Blocking: it creates one block for every q-gram that is extracted from any token in the attribute values of any entity.\n"
+                + "The q-gram must be shared by at least two entities.";
     }
 
     @Override
     public String getMethodParameters() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return "Due to its unsupervised, schema-agnostic blocking keys, Q-Grams Blocking involves a single parameter:\n"
+                + "n, the number of characters comprising every q-gram.\n"
+                + "Default value: 6.";
     }
     
     protected List<String> getNGrams(int n, String blockingKey) {

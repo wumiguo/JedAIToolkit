@@ -14,18 +14,30 @@
 * limitations under the License.
 */
 
-package DataReader.GroundTruthReader;
+package Utilities.Comparators;
 
-import DataModel.IdDuplicates;
-import java.util.Set;
+import DataModel.Comparison;
+import java.util.Comparator;
 
 /**
  *
  * @author G.A.P. II
  */
 
-public interface IGroundTruthReader {
-    
-    public Set<IdDuplicates> getDuplicatePairs();
+public class ComparisonWeightComparator implements Comparator<Comparison> {
+
+    @Override
+    public int compare(Comparison o1, Comparison o2) {
+        double test = o2.getUtilityMeasure()-o1.getUtilityMeasure(); 
+        if (0 < test) {
+            return -1;
+        }
+
+        if (test < 0) {
+            return 1;
+        }
+
+        return 0;
+    }
     
 }

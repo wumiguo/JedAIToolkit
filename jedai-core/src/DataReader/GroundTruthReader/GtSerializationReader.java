@@ -24,14 +24,14 @@ import java.util.Set;
  *
  * @author G.A.P. II
  */
-public class SerializationReader extends AbstractReader implements IGroundTruthReader {
+public class GtSerializationReader extends AbstractReader implements IGroundTruthReader {
     
-    public SerializationReader(String filePath) {
+    public GtSerializationReader(String filePath) {
         super(filePath);
     }
 
     @Override
-    public Set<IdDuplicates> getEntityProfiles() {
+    public Set<IdDuplicates> getDuplicatePairs() {
         return (Set<IdDuplicates>) loadSerializedObject(inputFilePath);
     }
 

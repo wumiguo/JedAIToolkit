@@ -23,6 +23,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -30,12 +32,22 @@ import java.util.Set;
  */
 public class SuffixArraysBlocking extends StandardBlocking {
 
+    private static final Logger LOGGER = Logger.getLogger(SuffixArraysBlocking.class.getName());
+    
     protected final int maximumBlockSize;
     protected final int minimumSuffixLength;
     
+    public SuffixArraysBlocking() {
+        this(53, 6);
+        LOGGER.log(Level.INFO, "Using default configuration for Suffix Arrays Blocking.");
+    }
+    
     public SuffixArraysBlocking(int maxSize, int minLength) {
+        super();
         maximumBlockSize = maxSize;
         minimumSuffixLength = minLength;
+        LOGGER.log(Level.INFO, "Maximum block size\t:\t{0}", maximumBlockSize);
+        LOGGER.log(Level.INFO, "Minimum suffix length\t:\t{0}", minimumSuffixLength);
     }
 
      @Override
@@ -63,12 +75,16 @@ public class SuffixArraysBlocking extends StandardBlocking {
     
     @Override
     public String getMethodInfo() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return "Suffix Arrays Blocking: it creates one block for every suffix that appears in the tokens of at least two entities.";
     }
 
     @Override
     public String getMethodParameters() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return "Suffix Arrays Blocking involves two parameters:\n"
+                + "1) minLength, the minimum size of suffixes that are used as blocking keys.\n"
+                + "Default value: 6.\n"
+                + "2) maxSize, the maximum frequency of every suffix, i.e., the maximum block size.\n"
+                + "Defaule value: 53.";
     }
     
     public Set<String> getSuffixes(int minimumLength, String blockingKey) {

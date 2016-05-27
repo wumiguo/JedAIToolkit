@@ -57,7 +57,7 @@ import org.apache.lucene.util.Version;
  */
 public abstract class AbstractBlockBuilding implements IBlockBuilding {
 
-    static final Logger LOGGER = Logger.getLogger(AbstractBlockBuilding.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(AbstractBlockBuilding.class.getName());
 
     protected double noOfEntitiesD1;
     protected double noOfEntitiesD2;

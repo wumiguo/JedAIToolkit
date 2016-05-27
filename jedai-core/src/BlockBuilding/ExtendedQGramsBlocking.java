@@ -20,19 +20,29 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
  * @author gap2
  */
-public class ExtendedQGrams extends QGramsBlocking {
+public class ExtendedQGramsBlocking extends QGramsBlocking {
 
-    private final double threshold;
     private final static int MAX_Q_GRAMS = 15;
+    private static final Logger LOGGER = Logger.getLogger(ExtendedQGramsBlocking.class.getName());
+    
+    private final double threshold;
 
-    public ExtendedQGrams(double t, int n) {
+    public ExtendedQGramsBlocking() {
+        this(0.95, 6);
+        LOGGER.log(Level.INFO, "Using default configuration for Extended Q-Grams Blocking.");
+    }
+    
+    public ExtendedQGramsBlocking(double t, int n) {
         super(n);
         threshold = t;
+        LOGGER.log(Level.INFO, "Threshold\t:\t{0}", threshold);
     }
 
     @Override
@@ -81,11 +91,18 @@ public class ExtendedQGrams extends QGramsBlocking {
     
     @Override
     public String getMethodInfo() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return "Extended Q-Grams Blocking: it creates one block for every combination of q-grams that represents at least two entities.\n"
+                + "The q-grams aer extracted from any token in the attribute values of any entity.";
     }
 
     @Override
     public String getMethodParameters() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return "Extended Q-Grams Blocking involves two parameters:\n"
+                + "1) n, which defines the size of q-grams, i.e., the characters that comprise them.\n"
+                + "Default value: 6.\n"
+                + "2) t \\in [0,1], the threshold that defines the number N of q-grams that are combined to form an individual blocking key.\n"
+                + "In more detail, the minimum number l_{min} of q-grams per blocking key is defined as l_{min} = max (1, \\floor{k \\cdot t}),\n"
+                + "where k is the number of q-grams from the original blocking key (token)."
+                + "Default value: 0.95.";
     }
 }

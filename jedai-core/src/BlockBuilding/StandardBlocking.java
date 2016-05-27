@@ -19,6 +19,8 @@ package BlockBuilding;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -26,8 +28,11 @@ import java.util.Set;
  */
 public class StandardBlocking extends AbstractBlockBuilding {
 
+    private static final Logger LOGGER = Logger.getLogger(StandardBlocking.class.getName());
+    
     public StandardBlocking() {
         super();
+        LOGGER.log(Level.INFO, "Standard Blocking initiated");
     }
     
     @Override
@@ -41,11 +46,12 @@ public class StandardBlocking extends AbstractBlockBuilding {
 
     @Override
     public String getMethodInfo() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return "Standard Blocking: it creates one block for every token in the attribute values of at least two entities.";
     }
 
     @Override
     public String getMethodParameters() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return "Standard Blocking is a parameter-free method, as it uses unsupervised, schema-agnostic blocking keys:\n"
+                + "every token is a blocking key.";
     }
 }

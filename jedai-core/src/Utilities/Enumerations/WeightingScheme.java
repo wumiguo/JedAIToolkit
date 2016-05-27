@@ -14,18 +14,12 @@
 * limitations under the License.
 */
 
-package DataReader.GroundTruthReader;
+package Utilities.Enumerations;
 
-import DataModel.IdDuplicates;
-import java.util.Set;
-
-/**
- *
- * @author G.A.P. II
- */
-
-public interface IGroundTruthReader {
-    
-    public Set<IdDuplicates> getDuplicatePairs();
-    
+public enum WeightingScheme {
+        ARCS,
+        CBS,
+        ECBS,
+        JS,
+        EJS
 }

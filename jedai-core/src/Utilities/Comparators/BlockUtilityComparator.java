@@ -14,7 +14,7 @@
 * limitations under the License.
 */
 
-package Utilities;
+package Utilities.Comparators;
 
 import DataModel.AbstractBlock;
 import java.util.Comparator;

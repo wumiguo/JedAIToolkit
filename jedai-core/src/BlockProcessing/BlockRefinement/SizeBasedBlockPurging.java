@@ -16,7 +16,6 @@
 
 package BlockProcessing.BlockRefinement;
 
-import BlockBuilding.AbstractBlockBuilding;
 import DataModel.AbstractBlock;
 import DataModel.BilateralBlock;
 import DataModel.UnilateralBlock;
@@ -33,19 +32,20 @@ import java.util.logging.Logger;
 
 public class SizeBasedBlockPurging extends AbstractBlockPurging {
     
-    private static final Logger LOGGER = Logger.getLogger(AbstractBlockBuilding.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(SizeBasedBlockPurging.class.getName());
     
     private boolean isCleanCleanER;
-    private double PURGING_FACTOR = 0.005;
+    private double purgingFactor;
     private double maxEntities;
     
     public SizeBasedBlockPurging() {
-        this(0.005);//default value of purging factor
+        this(0.005);
+        LOGGER.log(Level.INFO, "Using default configuration for Size-based Block Purging.");
     }
 
-    public SizeBasedBlockPurging(double smoothingFactor) {
-        PURGING_FACTOR = smoothingFactor;
-        LOGGER.log(Level.INFO, "Purging factor\t:\t{0}", PURGING_FACTOR);
+    public SizeBasedBlockPurging(double pf) {
+        purgingFactor = pf;
+        LOGGER.log(Level.INFO, "Purging factor\t:\t{0}", purgingFactor);
     }
     
     private int getMaxBlockSize(List<AbstractBlock> blocks) {
@@ -57,7 +57,7 @@ public class SizeBasedBlockPurging extends AbstractBlockPurging {
             }
         }
         
-        return (int) Math.round(entities.size()*PURGING_FACTOR);
+        return (int) Math.round(entities.size()*purgingFactor);
     }
     
     private int getMaxInnerBlockSize(List<AbstractBlock> blocks) {
@@ -74,17 +74,18 @@ public class SizeBasedBlockPurging extends AbstractBlockPurging {
             }
         }
         
-        return (int) Math.round(Math.min(d1Entities.size(), d2Entities.size())*PURGING_FACTOR);
+        return (int) Math.round(Math.min(d1Entities.size(), d2Entities.size())*purgingFactor);
     }
     
     @Override
     public String getMethodInfo() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return "Size-based Block Purging: it discards the blocks exceeding a certain number of entities.";
     }
 
     @Override
     public String getMethodParameters() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return "Size-based Block Purging involves a single parameter:\n"
+                + "the purging factor pf, which helps to determine the maximum number of entities per block.";
     }
 
     @Override

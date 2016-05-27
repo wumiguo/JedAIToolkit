@@ -28,6 +28,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.apache.lucene.index.DocsEnum;
 import org.apache.lucene.index.Fields;
 import org.apache.lucene.index.IndexReader;
@@ -43,20 +44,33 @@ import org.apache.lucene.util.BytesRef;
  */
 public class SortedNeighborhoodBlocking extends StandardBlocking {
 
+    private static final Logger LOGGER = Logger.getLogger(SortedNeighborhoodBlocking.class.getName());
+    
     protected final int windowSize;
 
+    public SortedNeighborhoodBlocking() {
+        this(4);
+        LOGGER.log(Level.INFO, "Using default configuration for Sorted Neighborhood Blocking.");
+    }
+   
     public SortedNeighborhoodBlocking(int w) {
+        super();
         windowSize = w;
+        LOGGER.log(Level.INFO, "Window size\t:\t{0}", windowSize);
     }
 
     @Override
     public String getMethodInfo() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return "Sorted Neighborhood: it creates blocks based on the similarity of the blocking keys of Standard Blocking:\n"
+                + "it sorts the keys in alphabetical order, it sorts the entities accordingly and then, it slides a window over the sorted list of entities;\n"
+                + "the entities that co-occur inside the window in every iteration form a block and are compared with each other.";
     }
 
     @Override
     public String getMethodParameters() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return "Sorted Neighborhood involves a single parameter, due to its unsupervised, schema-agnostic blocking keys:\n"
+                + "w, the fixed size of the sliding window.\n"
+                + "Default value: 4.";
     }
     
     protected Integer[] getSortedEntities(String[] sortedTerms, IndexReader iReader) {

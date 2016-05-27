@@ -24,6 +24,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
 
@@ -33,10 +34,29 @@ import org.apache.lucene.index.Term;
  */
 public class ExtendedSortedNeighborhoodBlocking extends SortedNeighborhoodBlocking {
 
+    private static final Logger LOGGER = Logger.getLogger(ExtendedSortedNeighborhoodBlocking.class.getName());
+    
+    public ExtendedSortedNeighborhoodBlocking() {
+        this(2);
+        LOGGER.log(Level.INFO, "Using default configuration for Extended Sorted Neighborhood Blocking.");
+    }
+    
     public ExtendedSortedNeighborhoodBlocking(int w) {
         super(w);
     }
 
+    @Override
+    public String getMethodInfo() {
+        return "Extended Sorted Neighborhood: it improves Sorted Neighborhood by sliding the window over the sorted list of blocking keys.";
+    }
+
+    @Override
+    public String getMethodParameters() {
+        return "Extended Sorted Neighborhood involves a single parameter, due to its unsupervised, schema-agnostic blocking keys:\n"
+                + "w, the fixed size of the window that slides over the sorted list of blocking keys.\n"
+                + "Default value: 2.";
+    }
+    
     @Override
     protected void parseIndex(IndexReader iReader) {
         final Set<String> blockingKeysSet = getTerms(iReader);
