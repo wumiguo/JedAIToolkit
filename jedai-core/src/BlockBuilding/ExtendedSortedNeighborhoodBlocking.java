@@ -33,6 +33,10 @@ import org.apache.lucene.index.Term;
  */
 public class ExtendedSortedNeighborhoodBlocking extends SortedNeighborhoodBlocking {
 
+    public ExtendedSortedNeighborhoodBlocking() {
+        super(2);
+    }
+    
     public ExtendedSortedNeighborhoodBlocking(int w) {
         super(w);
     }
@@ -45,7 +49,8 @@ public class ExtendedSortedNeighborhoodBlocking extends SortedNeighborhoodBlocki
     @Override
     public String getMethodParameters() {
         return "Extended Sorted Neighborhood involves a single parameter, due to its unsupervised, schema-agnostic blocking keys:\n"
-                + "w, the fixed size of the window that slides over the sorted list of blocking keys.";
+                + "w, the fixed size of the window that slides over the sorted list of blocking keys.\n"
+                + "Default value: 2.";
     }
     
     @Override

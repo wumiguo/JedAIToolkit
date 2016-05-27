@@ -30,6 +30,10 @@ public class ExtendedQGrams extends QGramsBlocking {
     private final double threshold;
     private final static int MAX_Q_GRAMS = 15;
 
+    public ExtendedQGrams() {
+        this(0.95, 6);
+    }
+    
     public ExtendedQGrams(double t, int n) {
         super(n);
         threshold = t;
@@ -89,8 +93,10 @@ public class ExtendedQGrams extends QGramsBlocking {
     public String getMethodParameters() {
         return "Extended Q-Grams Blocking involves two parameters:\n"
                 + "1) n, which defines the size of q-grams, i.e., the characters that comprise them.\n"
+                + "Default value: 6.\n"
                 + "2) t \\in [0,1], the threshold that defines the number N of q-grams that are combined to form an individual blocking key.\n"
                 + "In more detail, the minimum number l_{min} of q-grams per blocking key is defined as l_{min} = max (1, \\floor{k \\cdot t}),\n"
-                + "where k is the number of q-grams from the original blocking key (token).";
+                + "where k is the number of q-grams from the original blocking key (token)."
+                + "Default value: 0.95.";
     }
 }

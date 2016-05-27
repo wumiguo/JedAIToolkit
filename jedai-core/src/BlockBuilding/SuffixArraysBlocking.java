@@ -33,6 +33,10 @@ public class SuffixArraysBlocking extends StandardBlocking {
     protected final int maximumBlockSize;
     protected final int minimumSuffixLength;
     
+    public SuffixArraysBlocking() {
+        this(53, 6);
+    }
+    
     public SuffixArraysBlocking(int maxSize, int minLength) {
         maximumBlockSize = maxSize;
         minimumSuffixLength = minLength;
@@ -70,7 +74,9 @@ public class SuffixArraysBlocking extends StandardBlocking {
     public String getMethodParameters() {
         return "Suffix Arrays Blocking involves two parameters:\n"
                 + "1) minLength, the minimum size of suffixes that are used as blocking keys.\n"
-                + "2) maxSize, the maximum frequency of every suffix, i.e., the maximum block size.";
+                + "Default value: 6.\n"
+                + "2) maxSize, the maximum frequency of every suffix, i.e., the maximum block size.\n"
+                + "Defaule value: 53.";
     }
     
     public Set<String> getSuffixes(int minimumLength, String blockingKey) {

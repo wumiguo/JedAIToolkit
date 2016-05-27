@@ -45,6 +45,10 @@ public class SortedNeighborhoodBlocking extends StandardBlocking {
 
     protected final int windowSize;
 
+    public SortedNeighborhoodBlocking() {
+        this(4);
+    }
+   
     public SortedNeighborhoodBlocking(int w) {
         windowSize = w;
     }
@@ -59,7 +63,8 @@ public class SortedNeighborhoodBlocking extends StandardBlocking {
     @Override
     public String getMethodParameters() {
         return "Sorted Neighborhood involves a single parameter, due to its unsupervised, schema-agnostic blocking keys:\n"
-                + "w, the fixed size of the sliding window.";
+                + "w, the fixed size of the sliding window.\n"
+                + "Default value: 4.";
     }
     
     protected Integer[] getSortedEntities(String[] sortedTerms, IndexReader iReader) {

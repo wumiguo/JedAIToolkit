@@ -24,6 +24,10 @@ import java.util.Set;
  */
 public class ExtendedSuffixArraysBlocking extends SuffixArraysBlocking {
 
+    public ExtendedSuffixArraysBlocking() {
+        this(39, 6);
+    }
+    
     public ExtendedSuffixArraysBlocking(int maxSize, int minLength) {
         super(maxSize, minLength);
     }
@@ -46,7 +50,9 @@ public class ExtendedSuffixArraysBlocking extends SuffixArraysBlocking {
     public String getMethodParameters() {
         return "Extended Suffix Arrays Blocking involves two parameters:\n"
                 + "1) minLength, the minimum size of substrings that are used as blocking keys.\n"
-                + "2) maxSize, the maximum frequency of every suffix, i.e., the maximum block size.";
+                + "Default value: 6.\n"
+                + "2) maxSize, the maximum frequency of every suffix, i.e., the maximum block size.\n"
+                + "Default value: 39.";
     }
 
     public Set<String> getExtendedSuffixes(int minimumLength, String blockingKey) {

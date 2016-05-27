@@ -30,6 +30,10 @@ public class QGramsBlocking extends StandardBlocking {
 
     protected final int nGramSize;
 
+    public QGramsBlocking() {
+        this(6);
+    }
+    
     public QGramsBlocking(int n) {
         nGramSize = n;
     }
@@ -53,7 +57,8 @@ public class QGramsBlocking extends StandardBlocking {
     @Override
     public String getMethodParameters() {
         return "Due to its unsupervised, schema-agnostic blocking keys, Q-Grams Blocking involves a single parameter:\n"
-                + "n, the number of characters comprising every q-gram.";
+                + "n, the number of characters comprising every q-gram.\n"
+                + "Default value: 6.";
     }
     
     protected List<String> getNGrams(int n, String blockingKey) {
