@@ -16,7 +16,6 @@
 
 package BlockProcessing.BlockRefinement;
 
-import BlockBuilding.AbstractBlockBuilding;
 import BlockProcessing.AbstractBlockProcessing;
 import BlockProcessing.AbstractDuplicatePropagation;
 import BlockProcessing.IBlockProcessing;
@@ -32,7 +31,7 @@ import java.util.logging.Logger;
 
 public class BlockPruning extends AbstractBlockProcessing implements IBlockProcessing {
 
-    private static final Logger LOGGER = Logger.getLogger(AbstractBlockBuilding.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(BlockPruning.class.getName());
     
     public BlockPruning() {
     }
@@ -81,12 +80,15 @@ public class BlockPruning extends AbstractBlockProcessing implements IBlockProce
 
     @Override
     public String getMethodInfo() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return "Block Pruning: it terminates entity matching when the cost of "
+                + "detecting new duplicates exceeds a certain limit, "
+                + "called maximum duplicate overhead.";
     }
 
     @Override
     public String getMethodParameters() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return "Block Pruning is a parameter-free approach. "
+                + "The maximum duplicate overhead is set automatically.";
     }
     
     @Override

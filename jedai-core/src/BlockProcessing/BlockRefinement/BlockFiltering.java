@@ -16,7 +16,6 @@
 
 package BlockProcessing.BlockRefinement;
 
-import BlockBuilding.AbstractBlockBuilding;
 import BlockProcessing.AbstractBlockProcessing;
 import BlockProcessing.IBlockProcessing;
 import DataModel.AbstractBlock;
@@ -37,7 +36,7 @@ import java.util.logging.Logger;
 
 public class BlockFiltering extends AbstractBlockProcessing implements IBlockProcessing {
 
-    private static final Logger LOGGER = Logger.getLogger(AbstractBlockBuilding.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(BlockFiltering.class.getName());
     
     protected final double ratio;
 
@@ -49,7 +48,8 @@ public class BlockFiltering extends AbstractBlockProcessing implements IBlockPro
     protected int[] limitsD2;
     
     public BlockFiltering() {
-        this(0.8); // default value of filtering ratio
+        this(0.8); 
+        LOGGER.log(Level.INFO, "Using default configuration for Block Filtering.");
     }
     
     public BlockFiltering(double r) {
@@ -109,12 +109,13 @@ public class BlockFiltering extends AbstractBlockProcessing implements IBlockPro
     
     @Override
     public String getMethodInfo() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return "Block Filtering: it retains every entity in a subset of its smallest blocks.";
     }
 
     @Override
     public String getMethodParameters() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return "Block Filtering involves a single parameter:\n"
+                + "r \\in [0,1], which specifies the ratio of the retained smaller blocks per entity.";
     }
 
     protected void getLimits(List<AbstractBlock> blocks) {

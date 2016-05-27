@@ -44,11 +44,13 @@ public class BlockScheduling extends AbstractBlockProcessing implements IBlockPr
     
     @Override
     public String getMethodInfo() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return "Block Scheduling: it determines the processing order of blocks "
+                + "by sorting them in ascending order of block utility.";
     }
 
     @Override
     public String getMethodParameters() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return "Block Scheduling is a parameter-free appoach, "
+                + "as the utility of blocks is set automatically.";
     }
 } 

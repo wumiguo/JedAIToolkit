@@ -16,7 +16,6 @@
 
 package BlockProcessing.BlockRefinement;
 
-import BlockBuilding.AbstractBlockBuilding;
 import DataModel.AbstractBlock;
 import Utilities.BlockCardinalityComparator;
 import java.util.Collections;
@@ -32,28 +31,31 @@ import java.util.logging.Logger;
  */
 public class ComparisonsBasedBlockPurging extends AbstractBlockPurging {
 
-    private static final Logger LOGGER = Logger.getLogger(AbstractBlockBuilding.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(ComparisonsBasedBlockPurging.class.getName());
     
-    private double SMOOTHING_FACTOR;
+    private double smoothingFactor;
     private double maxComparisonsPerBlock;
     
     public ComparisonsBasedBlockPurging() {
-        this(1.025);//default value of smooting factor
+        this(1.025);
+        LOGGER.log(Level.INFO, "Using default configuration for Comparison-based Block Purging.");
     }
 
-    public ComparisonsBasedBlockPurging(double smoothingFactor) {
-        SMOOTHING_FACTOR = smoothingFactor;
-        LOGGER.log(Level.INFO, "Smoothing factor\t:\t{0}", SMOOTHING_FACTOR);
+    public ComparisonsBasedBlockPurging(double sf) {
+        smoothingFactor = sf;
+        LOGGER.log(Level.INFO, "Smoothing factor\t:\t{0}", smoothingFactor);
     }
 
     @Override
     public String getMethodInfo() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return "Comparison-based Block Purging: it discards the blocks exceeding a certain number of comparisons.";
     }
 
     @Override
     public String getMethodParameters() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return "Comparison-based Block Purging involves a single parameter:\n"
+                + "the smoothing factor sf, which is the termination criterion for automatically estimating the "
+                + "maximum number of comparisons per block.";
     }
 
     @Override
@@ -106,7 +108,7 @@ public class ComparisonsBasedBlockPurging extends AbstractBlockPurging {
             currentBC = blockAssignments[i];
             currentCC = totalComparisonsPerLevel[i];
 
-            if (currentBC * previousCC < SMOOTHING_FACTOR * currentCC * previousBC) {
+            if (currentBC * previousCC < smoothingFactor * currentCC * previousBC) {
                 break;
             }
         }
