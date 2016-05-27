@@ -18,8 +18,8 @@ package BlockBuilding;
 
 import DataModel.Attribute;
 import DataModel.EntityProfile;
-import TextModels.AbstractModel;
-import TextModels.RepresentationModel;
+import Utilities.TextModels.AbstractModel;
+import Utilities.TextModels.RepresentationModel;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;

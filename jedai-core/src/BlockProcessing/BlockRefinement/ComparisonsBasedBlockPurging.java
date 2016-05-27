@@ -17,7 +17,7 @@
 package BlockProcessing.BlockRefinement;
 
 import DataModel.AbstractBlock;
-import Utilities.BlockCardinalityComparator;
+import Utilities.Comparators.BlockCardinalityComparator;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;

@@ -14,8 +14,7 @@
 * limitations under the License.
 */
 
-
-package DataStructures;
+package Utilities.DataStructures;
 
 import DataModel.AbstractBlock;
 import DataModel.BilateralBlock;

@@ -19,7 +19,7 @@ package BlockProcessing.BlockRefinement;
 import BlockProcessing.AbstractBlockProcessing;
 import BlockProcessing.IBlockProcessing;
 import DataModel.AbstractBlock;
-import Utilities.BlockUtilityComparator;
+import Utilities.Comparators.BlockUtilityComparator;
 import java.util.Collections;
 import java.util.List;
 

@@ -14,7 +14,7 @@
 * limitations under the License.
 */
 
-package TextModels;
+package Utilities.TextModels;
 
 import gr.demokritos.iit.jinsect.documentModel.representations.DocumentNGramGraph;
 import gr.demokritos.iit.jinsect.documentModel.representations.DocumentNGramHGraph;

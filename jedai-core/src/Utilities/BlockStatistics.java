@@ -17,7 +17,7 @@
 package Utilities;
 
 import BlockProcessing.AbstractDuplicatePropagation;
-import DataStructures.GroundTruthIndex;
+import Utilities.DataStructures.GroundTruthIndex;
 import DataModel.AbstractBlock;
 import DataModel.BilateralBlock;
 import DataModel.Comparison;

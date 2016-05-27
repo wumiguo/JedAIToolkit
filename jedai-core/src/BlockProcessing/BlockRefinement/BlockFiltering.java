@@ -21,7 +21,7 @@ import BlockProcessing.IBlockProcessing;
 import DataModel.AbstractBlock;
 import DataModel.BilateralBlock;
 import DataModel.UnilateralBlock;
-import Utilities.BlockCardinalityComparator;
+import Utilities.Comparators.BlockCardinalityComparator;
 import Utilities.Converter;
 import java.util.ArrayList;
 import java.util.Collections;

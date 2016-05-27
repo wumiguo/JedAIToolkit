@@ -14,7 +14,7 @@
 * limitations under the License.
 */
 
-package Utilities;
+package Utilities.Enumerations;
 
 import BlockBuilding.AttributeClusteringBlocking;
 import BlockBuilding.ExtendedQGramsBlocking;

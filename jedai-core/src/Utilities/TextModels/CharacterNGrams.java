@@ -14,7 +14,7 @@
 * limitations under the License.
 */
 
-package TextModels;
+package Utilities.TextModels;
 
 import java.util.HashMap;
 import java.util.Map.Entry;
