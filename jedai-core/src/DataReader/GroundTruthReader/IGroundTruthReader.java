@@ -26,6 +26,6 @@ import java.util.Set;
 
 public interface IGroundTruthReader {
     
-    public Set<IdDuplicates> getEntityProfiles();
+    public Set<IdDuplicates> getDuplicatePairs();
     
 }

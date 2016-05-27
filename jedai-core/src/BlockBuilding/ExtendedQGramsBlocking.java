@@ -27,19 +27,19 @@ import java.util.logging.Logger;
  *
  * @author gap2
  */
-public class ExtendedQGrams extends QGramsBlocking {
+public class ExtendedQGramsBlocking extends QGramsBlocking {
 
     private final static int MAX_Q_GRAMS = 15;
-    private static final Logger LOGGER = Logger.getLogger(ExtendedQGrams.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(ExtendedQGramsBlocking.class.getName());
     
     private final double threshold;
 
-    public ExtendedQGrams() {
+    public ExtendedQGramsBlocking() {
         this(0.95, 6);
         LOGGER.log(Level.INFO, "Using default configuration for Extended Q-Grams Blocking.");
     }
     
-    public ExtendedQGrams(double t, int n) {
+    public ExtendedQGramsBlocking(double t, int n) {
         super(n);
         threshold = t;
         LOGGER.log(Level.INFO, "Threshold\t:\t{0}", threshold);
