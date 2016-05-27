@@ -23,6 +23,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -30,16 +32,22 @@ import java.util.Set;
  */
 public class SuffixArraysBlocking extends StandardBlocking {
 
+    private static final Logger LOGGER = Logger.getLogger(SuffixArraysBlocking.class.getName());
+    
     protected final int maximumBlockSize;
     protected final int minimumSuffixLength;
     
     public SuffixArraysBlocking() {
         this(53, 6);
+        LOGGER.log(Level.INFO, "Using default configuration for Suffix Arrays Blocking.");
     }
     
     public SuffixArraysBlocking(int maxSize, int minLength) {
+        super();
         maximumBlockSize = maxSize;
         minimumSuffixLength = minLength;
+        LOGGER.log(Level.INFO, "Maximum block size\t:\t{0}", maximumBlockSize);
+        LOGGER.log(Level.INFO, "Minimum suffix length\t:\t{0}", minimumSuffixLength);
     }
 
      @Override

@@ -24,6 +24,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
 
@@ -33,8 +34,11 @@ import org.apache.lucene.index.Term;
  */
 public class ExtendedSortedNeighborhoodBlocking extends SortedNeighborhoodBlocking {
 
+    private static final Logger LOGGER = Logger.getLogger(ExtendedSortedNeighborhoodBlocking.class.getName());
+    
     public ExtendedSortedNeighborhoodBlocking() {
-        super(2);
+        this(2);
+        LOGGER.log(Level.INFO, "Using default configuration for Extended Sorted Neighborhood Blocking.");
     }
     
     public ExtendedSortedNeighborhoodBlocking(int w) {

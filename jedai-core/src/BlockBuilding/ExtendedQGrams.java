@@ -20,6 +20,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -27,16 +29,20 @@ import java.util.Set;
  */
 public class ExtendedQGrams extends QGramsBlocking {
 
-    private final double threshold;
     private final static int MAX_Q_GRAMS = 15;
+    private static final Logger LOGGER = Logger.getLogger(ExtendedQGrams.class.getName());
+    
+    private final double threshold;
 
     public ExtendedQGrams() {
         this(0.95, 6);
+        LOGGER.log(Level.INFO, "Using default configuration for Extended Q-Grams Blocking.");
     }
     
     public ExtendedQGrams(double t, int n) {
         super(n);
         threshold = t;
+        LOGGER.log(Level.INFO, "Threshold\t:\t{0}", threshold);
     }
 
     @Override

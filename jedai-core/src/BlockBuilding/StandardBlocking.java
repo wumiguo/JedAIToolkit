@@ -19,6 +19,8 @@ package BlockBuilding;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -26,8 +28,11 @@ import java.util.Set;
  */
 public class StandardBlocking extends AbstractBlockBuilding {
 
+    private static final Logger LOGGER = Logger.getLogger(StandardBlocking.class.getName());
+    
     public StandardBlocking() {
         super();
+        LOGGER.log(Level.INFO, "Standard Blocking initiated");
     }
     
     @Override

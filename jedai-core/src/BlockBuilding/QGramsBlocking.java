@@ -20,6 +20,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -27,15 +29,20 @@ import java.util.Set;
  */
 
 public class QGramsBlocking extends StandardBlocking {
+    
+    private static final Logger LOGGER = Logger.getLogger(QGramsBlocking.class.getName());
 
     protected final int nGramSize;
 
     public QGramsBlocking() {
         this(6);
+        LOGGER.log(Level.INFO, "Using default configuration for Q-Grams Blocking.");
     }
     
     public QGramsBlocking(int n) {
+        super();
         nGramSize = n;
+        LOGGER.log(Level.INFO, "N-gram size\t:\t{0}", nGramSize);
     }
 
     @Override

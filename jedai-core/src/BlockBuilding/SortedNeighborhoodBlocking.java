@@ -28,6 +28,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.apache.lucene.index.DocsEnum;
 import org.apache.lucene.index.Fields;
 import org.apache.lucene.index.IndexReader;
@@ -43,14 +44,19 @@ import org.apache.lucene.util.BytesRef;
  */
 public class SortedNeighborhoodBlocking extends StandardBlocking {
 
+    private static final Logger LOGGER = Logger.getLogger(SortedNeighborhoodBlocking.class.getName());
+    
     protected final int windowSize;
 
     public SortedNeighborhoodBlocking() {
         this(4);
+        LOGGER.log(Level.INFO, "Using default configuration for Sorted Neighborhood Blocking.");
     }
    
     public SortedNeighborhoodBlocking(int w) {
+        super();
         windowSize = w;
+        LOGGER.log(Level.INFO, "Window size\t:\t{0}", windowSize);
     }
 
     @Override

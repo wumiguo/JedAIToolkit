@@ -17,6 +17,8 @@ package BlockBuilding;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -24,8 +26,11 @@ import java.util.Set;
  */
 public class ExtendedSuffixArraysBlocking extends SuffixArraysBlocking {
 
+    private static final Logger LOGGER = Logger.getLogger(ExtendedSuffixArraysBlocking.class.getName());
+    
     public ExtendedSuffixArraysBlocking() {
         this(39, 6);
+        LOGGER.log(Level.INFO, "Using default configuration for Extended Suffix Arrays Blocking.");
     }
     
     public ExtendedSuffixArraysBlocking(int maxSize, int minLength) {
