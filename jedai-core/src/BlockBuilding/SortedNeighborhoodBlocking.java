@@ -51,12 +51,15 @@ public class SortedNeighborhoodBlocking extends StandardBlocking {
 
     @Override
     public String getMethodInfo() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return "Sorted Neighborhood: it creates blocks based on the similarity of the blocking keys of Standard Blocking:\n"
+                + "it sorts the keys in alphabetical order, it sorts the entities accordingly and then, it slides a window over the sorted list of entities;\n"
+                + "the entities that co-occur inside the window in every iteration form a block and are compared with each other.";
     }
 
     @Override
     public String getMethodParameters() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return "Sorted Neighborhood involves a single parameter, due to its unsupervised, schema-agnostic blocking keys:\n"
+                + "w, the fixed size of the sliding window.";
     }
     
     protected Integer[] getSortedEntities(String[] sortedTerms, IndexReader iReader) {

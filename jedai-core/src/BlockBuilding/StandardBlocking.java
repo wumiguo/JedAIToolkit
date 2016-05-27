@@ -41,11 +41,12 @@ public class StandardBlocking extends AbstractBlockBuilding {
 
     @Override
     public String getMethodInfo() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return "Standard Blocking: it creates one block for every token in the attribute values of at least two entities.";
     }
 
     @Override
     public String getMethodParameters() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return "Standard Blocking is a parameter-free method, as it uses unsupervised, schema-agnostic blocking keys:\n"
+                + "every token is a blocking key.";
     }
 }

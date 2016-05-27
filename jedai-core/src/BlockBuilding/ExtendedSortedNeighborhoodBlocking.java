@@ -38,6 +38,17 @@ public class ExtendedSortedNeighborhoodBlocking extends SortedNeighborhoodBlocki
     }
 
     @Override
+    public String getMethodInfo() {
+        return "Extended Sorted Neighborhood: it improves Sorted Neighborhood by sliding the window over the sorted list of blocking keys.";
+    }
+
+    @Override
+    public String getMethodParameters() {
+        return "Extended Sorted Neighborhood involves a single parameter, due to its unsupervised, schema-agnostic blocking keys:\n"
+                + "w, the fixed size of the window that slides over the sorted list of blocking keys.";
+    }
+    
+    @Override
     protected void parseIndex(IndexReader iReader) {
         final Set<String> blockingKeysSet = getTerms(iReader);
         String[] sortedTerms = blockingKeysSet.toArray(new String[blockingKeysSet.size()]);

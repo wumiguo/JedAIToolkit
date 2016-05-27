@@ -81,11 +81,16 @@ public class ExtendedQGrams extends QGramsBlocking {
     
     @Override
     public String getMethodInfo() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return "Extended Q-Grams Blocking: it creates one block for every combination of q-grams that represents at least two entities.\n"
+                + "The q-grams aer extracted from any token in the attribute values of any entity.";
     }
 
     @Override
     public String getMethodParameters() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return "Extended Q-Grams Blocking involves two parameters:\n"
+                + "1) n, which defines the size of q-grams, i.e., the characters that comprise them.\n"
+                + "2) t \\in [0,1], the threshold that defines the number N of q-grams that are combined to form an individual blocking key.\n"
+                + "In more detail, the minimum number l_{min} of q-grams per blocking key is defined as l_{min} = max (1, \\floor{k \\cdot t}),\n"
+                + "where k is the number of q-grams from the original blocking key (token).";
     }
 }

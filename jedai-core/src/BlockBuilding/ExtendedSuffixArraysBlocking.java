@@ -12,8 +12,7 @@
 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 * See the License for the specific language governing permissions and
 * limitations under the License.
-*/
-
+ */
 package BlockBuilding;
 
 import java.util.HashSet;
@@ -37,17 +36,19 @@ public class ExtendedSuffixArraysBlocking extends SuffixArraysBlocking {
         }
         return suffixes;
     }
-    
+
     @Override
     public String getMethodInfo() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return "Extended Suffix Arrays Blocking: it creates one block for every substring (not just suffix) that appears in the tokens of at least two entities.";
     }
 
     @Override
     public String getMethodParameters() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return "Extended Suffix Arrays Blocking involves two parameters:\n"
+                + "1) minLength, the minimum size of substrings that are used as blocking keys.\n"
+                + "2) maxSize, the maximum frequency of every suffix, i.e., the maximum block size.";
     }
-    
+
     public Set<String> getExtendedSuffixes(int minimumLength, String blockingKey) {
         final Set<String> suffixes = new HashSet<>();
         suffixes.add(blockingKey);

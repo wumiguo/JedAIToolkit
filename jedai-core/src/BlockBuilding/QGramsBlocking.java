@@ -46,12 +46,14 @@ public class QGramsBlocking extends StandardBlocking {
     
     @Override
     public String getMethodInfo() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return "Q-Grams Blocking: it creates one block for every q-gram that is extracted from any token in the attribute values of any entity.\n"
+                + "The q-gram must be shared by at least two entities.";
     }
 
     @Override
     public String getMethodParameters() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return "Due to its unsupervised, schema-agnostic blocking keys, Q-Grams Blocking involves a single parameter:\n"
+                + "n, the number of characters comprising every q-gram.";
     }
     
     protected List<String> getNGrams(int n, String blockingKey) {
