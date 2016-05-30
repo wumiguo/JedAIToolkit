@@ -27,8 +27,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import static org.apache.jena.vocabulary.DB.graph;
-import org.jgrapht.UndirectedGraph;
 import org.jgrapht.alg.ConnectivityInspector;
 
 /**
@@ -40,11 +38,13 @@ public class GtCSVReader extends AbstractGtReader {
 
     private static final Logger LOGGER = Logger.getLogger(GtCSVReader.class.getName());
 
+    private boolean ignoreFirstRow;
     private char separator;
 
     public GtCSVReader(String filePath) {
         super(filePath);
         separator = ',';
+        ignoreFirstRow = false;
     }
 
     @Override
@@ -104,6 +104,9 @@ public class GtCSVReader extends AbstractGtReader {
             // creating reader
             CSVReader reader = new CSVReader(new FileReader(inputFilePath), separator);
             String[] nextLine;
+            if (ignoreFirstRow) {
+                reader.readNext();
+            }
             while ((nextLine = reader.readNext()) != null) {
                 if (nextLine.length < 2) {
                     LOGGER.log(Level.WARNING, "Line with inadequate information{0}", nextLine);
@@ -112,7 +115,7 @@ public class GtCSVReader extends AbstractGtReader {
 
                 // add a new edge for every pair of duplicate entities
                 int entityId1 = urlToEntityId1.get(nextLine[0]);
-                int entityId2 = urlToEntityId1.get(nextLine[1]);
+                int entityId2 = urlToEntityId1.get(nextLine[1])+datasetLimit;
                 duplicatesGraph.addEdge(entityId1, entityId2);
             }
         } catch (FileNotFoundException ex) {
@@ -123,7 +126,7 @@ public class GtCSVReader extends AbstractGtReader {
         LOGGER.log(Level.INFO, "Total edges in duplicates graph\t:\t{0}", duplicatesGraph.edgeSet().size());
 
         // get connected components
-        ConnectivityInspector ci = new ConnectivityInspector((UndirectedGraph) graph);
+        ConnectivityInspector ci = new ConnectivityInspector(duplicatesGraph);
         List<Set<Integer>> connectedComponents = ci.connectedSets();
         LOGGER.log(Level.INFO, "Total connected components in duplicate graph\t:\t{0}", connectedComponents.size());
 
@@ -160,9 +163,10 @@ public class GtCSVReader extends AbstractGtReader {
             List<EntityProfile> profilesD2) {
         // count total entities
         noOfEntities = profilesD1.size();
-        datasetLimit = profilesD1.size(); //specifies where the first dataset ends and the second one starts
+        datasetLimit = 0;
         if (profilesD2 != null) {
             noOfEntities += profilesD2.size();
+            datasetLimit = profilesD1.size(); //specifies where the first dataset ends and the second one starts
         }
 
         // build inverted index from URL to entity id
@@ -183,6 +187,10 @@ public class GtCSVReader extends AbstractGtReader {
         LOGGER.log(Level.INFO, "Total nodes in duplicate graph\t:\t{0}", duplicatesGraph.vertexSet().size());
     }
 
+    public void setIgnoreFirstRow(boolean ignoreFirstRow) {
+        this.ignoreFirstRow = ignoreFirstRow;
+    }
+    
     public void setSeparator(char separator) {
         this.separator = separator;
     }
