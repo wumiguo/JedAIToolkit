@@ -22,7 +22,7 @@ import BlockProcessing.UnilateralDuplicatePropagation;
 import DataModel.AbstractBlock;
 import DataModel.EntityProfile;
 import DataReader.EntityReader.IEntityReader;
-import DataReader.EntityReader.SerializationReader;
+import DataReader.EntityReader.EntitySerializationReader;
 import DataReader.GroundTruthReader.GtSerializationReader;
 import DataReader.GroundTruthReader.IGroundTruthReader;
 import Utilities.Enumerations.BlockBuildingMethod;
@@ -36,16 +36,16 @@ import java.util.List;
 
 public class TestBlockBuildingMethods {
     public static void main(String[] args) {
-        String entitiesFilePath = "E:\\Data\\profiles\\10Kprofiles";
-        String groundTruthFilePath = "E:\\Data\\groundtruth\\10KIdDuplicates";
+        String entitiesFilePath = "C:\\Users\\G.A.P. II\\Downloads\\cddbProfiles";
+        String groundTruthFilePath = "C:\\Users\\G.A.P. II\\Downloads\\cddbDuplicates";
         
-        IGroundTruthReader gtReader = new GtSerializationReader(groundTruthFilePath);
-        final AbstractDuplicatePropagation duplicatePropagation = new UnilateralDuplicatePropagation(gtReader.getDuplicatePairs());
-        System.out.println("Existing Duplicates\t:\t" + duplicatePropagation.getDuplicates().size());
-
-        IEntityReader eReader = new SerializationReader(entitiesFilePath);
+        IEntityReader eReader = new EntitySerializationReader(entitiesFilePath);
         List<EntityProfile> profiles = eReader.getEntityProfiles();
         System.out.println("Input Entity Profiles\t:\t" + profiles.size());
+        
+        IGroundTruthReader gtReader = new GtSerializationReader(groundTruthFilePath);
+        final AbstractDuplicatePropagation duplicatePropagation = new UnilateralDuplicatePropagation(gtReader.getDuplicatePairs(eReader.getEntityProfiles()));
+        System.out.println("Existing Duplicates\t:\t" + duplicatePropagation.getDuplicates().size());
         
         for (BlockBuildingMethod blbuMethod : BlockBuildingMethod.values()) {
             System.out.println("\n\nCurrent blocking metohd\t:\t" + blbuMethod);
