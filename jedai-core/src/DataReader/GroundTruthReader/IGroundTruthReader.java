@@ -16,7 +16,9 @@
 
 package DataReader.GroundTruthReader;
 
+import DataModel.EntityProfile;
 import DataModel.IdDuplicates;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -26,6 +28,8 @@ import java.util.Set;
 
 public interface IGroundTruthReader {
     
-    public Set<IdDuplicates> getDuplicatePairs();
+    public Set<IdDuplicates> getDuplicatePairs(List<EntityProfile> profiles); 
     
+    public Set<IdDuplicates> getDuplicatePairs(List<EntityProfile> profilesD1,
+            List<EntityProfile> profilesD2); 
 }

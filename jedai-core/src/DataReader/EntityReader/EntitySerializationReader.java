@@ -14,32 +14,29 @@
  * limitations under the License.
  */
 
-package DataReader.GroundTruthReader;
+package DataReader.EntityReader;
 
 import DataModel.EntityProfile;
-import DataModel.IdDuplicates;
 import java.util.List;
-import java.util.Set;
 
 /**
  *
  * @author G.A.P. II
  */
-public class GtSerializationReader extends AbstractGtReader {
+public class EntitySerializationReader extends AbstractEntityReader {
     
-    public GtSerializationReader(String filePath) {
+    public EntitySerializationReader(String filePath) {
         super(filePath);
     }
 
     @Override
-    public Set<IdDuplicates> getDuplicatePairs(List<EntityProfile> profilesD1,
-            List<EntityProfile> profilesD2) {
-        if (!idDuplicates.isEmpty()) {
-            return idDuplicates;
+    public List<EntityProfile> getEntityProfiles() {
+        if (!entityProfiles.isEmpty()) {
+            return entityProfiles;
         }
         
-        idDuplicates.addAll((Set<IdDuplicates>) loadSerializedObject(inputFilePath));
-        return idDuplicates;
+        entityProfiles.addAll((List<EntityProfile>) loadSerializedObject(inputFilePath));
+        return entityProfiles;
     }
 
     @Override
@@ -51,4 +48,5 @@ public class GtSerializationReader extends AbstractGtReader {
     public String getMethodParameters() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
+    
 }

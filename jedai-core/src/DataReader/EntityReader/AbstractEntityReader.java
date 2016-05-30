@@ -18,31 +18,20 @@ package DataReader.EntityReader;
 
 import DataModel.EntityProfile;
 import DataReader.AbstractReader;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  *
  * @author G.A.P. II
  */
-public class SerializationReader extends AbstractReader implements IEntityReader {
+
+public abstract class AbstractEntityReader extends AbstractReader implements IEntityReader {
     
-    public SerializationReader(String filePath) {
+    protected final List<EntityProfile> entityProfiles;
+    
+    public AbstractEntityReader (String filePath) {
         super(filePath);
+        entityProfiles = new ArrayList<>();
     }
-
-    @Override
-    public List<EntityProfile> getEntityProfiles() {
-        return (List<EntityProfile>) loadSerializedObject(inputFilePath);
-    }
-
-    @Override
-    public String getMethodInfo() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public String getMethodParameters() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-    
 }

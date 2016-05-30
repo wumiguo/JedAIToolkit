@@ -16,7 +16,6 @@
 
 package DataReader;
 
-import DataModel.EntityProfile;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.FileInputStream;
@@ -28,8 +27,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -43,11 +40,9 @@ public abstract class AbstractReader implements IDataReader {
     private static final Logger LOGGER = Logger.getLogger(AbstractReader.class.getName());
     
     protected String inputFilePath;
-    protected final List<EntityProfile> entityProfiles;
     
     public AbstractReader (String filePath) {
         inputFilePath = filePath;
-        entityProfiles = new ArrayList<>();
     }
     
     public static Object loadSerializedObject(String fileName) {

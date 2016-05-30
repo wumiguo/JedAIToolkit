@@ -30,6 +30,8 @@ public interface IBlockBuilding {
     String DOC_ID = "docid";
     String VALUE_LABEL = "value";
     
+    public List<AbstractBlock> getBlocks(List<EntityProfile> profiles);
+    
     public List<AbstractBlock> getBlocks(List<EntityProfile> profilesD1, List<EntityProfile> profilesD2);
     
     public String getMethodInfo();

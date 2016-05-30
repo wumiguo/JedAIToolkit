@@ -107,6 +107,11 @@ public abstract class AbstractBlockBuilding implements IBlockBuilding {
     protected abstract Set<String> getBlockingKeys(String attributeValue);
 
     @Override
+    public List<AbstractBlock> getBlocks(List<EntityProfile> profiles) {
+        return this.getBlocks(profiles, null);
+    }
+    
+    @Override
     public List<AbstractBlock> getBlocks(List<EntityProfile> profilesD1,
             List<EntityProfile> profilesD2) {
         if (profilesD1 == null) {

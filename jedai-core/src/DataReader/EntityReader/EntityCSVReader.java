@@ -15,9 +15,7 @@
  */
 package DataReader.EntityReader;
 
-import DataModel.Attribute;
 import DataModel.EntityProfile;
-import DataReader.AbstractReader;
 import com.opencsv.CSVReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -33,9 +31,9 @@ import java.util.logging.Logger;
  *
  * @author G.A.P. II
  */
-public class CsvReader extends AbstractReader implements IEntityReader {
+public class EntityCSVReader extends AbstractEntityReader {
 
-    private static final Logger LOGGER = Logger.getLogger(CsvReader.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(EntityCSVReader.class.getName());
     
     private boolean attributeNamesInFirstRow;
     private char separator;
@@ -43,7 +41,7 @@ public class CsvReader extends AbstractReader implements IEntityReader {
     private String[] attributeNames; // FIX set this!!!
     private final Set<Integer> attributesToExclude;
 
-    public CsvReader(String filePath) {
+    public EntityCSVReader(String filePath) {
         super(filePath);
         attributeNamesInFirstRow = false;
         attributeNames = null;
@@ -54,6 +52,10 @@ public class CsvReader extends AbstractReader implements IEntityReader {
 
     @Override
     public List<EntityProfile> getEntityProfiles() {
+        if (!entityProfiles.isEmpty()) {
+            return entityProfiles;
+        }
+        
         try {
             //creating reader
             CSVReader reader = new CSVReader(new FileReader(inputFilePath), separator);
@@ -159,21 +161,5 @@ public class CsvReader extends AbstractReader implements IEntityReader {
 
     public void setSeparator(char separator) {
         this.separator = separator;
-    }
-
-    public static void main(String[] args) {
-        String filePath = "C:\\Users\\G.A.P. II\\Downloads\\cd.csv";
-        CsvReader csvReader = new CsvReader(filePath);
-        csvReader.setAttributeNamesInFirstRow(true);
-        csvReader.setSeparator(';');
-        csvReader.setAttributesToExclude(new int[]{0, 1});
-        csvReader.setIdIndex(1);
-        List<EntityProfile> profiles = csvReader.getEntityProfiles();
-        for (EntityProfile profile : profiles) {
-            System.out.println("\n\n" + profile.getEntityUrl());
-            for (Attribute attribute : profile.getAttributes()) {
-                System.out.println(attribute.toString());
-            }
-        }
     }
 }
