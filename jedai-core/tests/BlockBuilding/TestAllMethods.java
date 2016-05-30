@@ -14,9 +14,8 @@
 * limitations under the License.
 */
 
-package DebugCode;
+package BlockBuilding;
 
-import BlockBuilding.IBlockBuilding;
 import BlockProcessing.AbstractDuplicatePropagation;
 import BlockProcessing.UnilateralDuplicatePropagation;
 import DataModel.AbstractBlock;
@@ -34,7 +33,7 @@ import java.util.List;
  * @author G.A.P. II
  */
 
-public class TestBlockBuildingMethods {
+public class TestAllMethods {
     public static void main(String[] args) {
         String entitiesFilePath = "C:\\Users\\G.A.P. II\\Downloads\\cddbProfiles";
         String groundTruthFilePath = "C:\\Users\\G.A.P. II\\Downloads\\cddbDuplicates";
