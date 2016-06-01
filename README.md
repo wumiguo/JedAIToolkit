@@ -7,10 +7,10 @@ JEDAI comprises a set of *generic*, *state-of-the-art* techniques that apply to 
 It trasnforms the input data into a list of entity profiles. An entity is a uniquely identified sets of name-value pairs. 
 
 The following formats are supported:
- * CSV data
- * RDF data (any format)
- * SQL data (mySQL, PostgreSQL)
- * to be added: JSON, MongoDB
+ * CSV 
+ * RDF (any format)
+ * SQL (mySQL, PostgreSQL)
+ * to be added: JSON, MongoDB, Oracle and SQL Server
   
 ### Block Building 
 It clusters entities into blocks in a lazy manner that relies on unsupervised blocking keys: every token in an attribute value forms a key. Blocks are then extracted, possibly using a transformation, based on its equality or on its similarity with other keys.
@@ -22,6 +22,8 @@ The following methods are supported:
  * (Extended) Q-Grams Blocking
  * (Extended) Suffix Arrays Blocking
  * to be added: URI Semantics blocking
+  
+For more details on the functionality of these methods, see [here](http://www.vldb.org/pvldb/vol9/p312-papadakis.pdf).  
 
 ### Block Processing
 Its goal is to clean a set of blocks from unnecessary comparisons, which can be either *redundant* (i.e., repeated comparisons that have already been executed in a previously examined block) or *superfluous* (i.e., they involve non-matching entities).
@@ -44,9 +46,36 @@ The following methods are supported:
  * Reciprocal Cardinality Node Pruning (ReCNP)
  * Reciprocal Weighed Node Pruning (ReWNP)
 
+For more details on the functionality of these methods, see [here](http://www.vldb.org/pvldb/vol9/p684-papadakis.pdf).  
+
 ### Entity Matching
 
+It compares pairs of entity profiles, associating every pair with a similarity in [0,1].
+
+The following schema-agnostic methods are supported:
+
+* Jaccard simiilarity (it simply considers the set of all tokens in all attribute values of every entity)
+* to be added: [Group Linkage](http://pike.psu.edu/publications/icde07.pdf), [N-Gram Graphs](http://cgi.di.uoa.gr/~takis/tslp.pdf)
+
 ### Entity Clustering
+
+It uses the similarities produced by Entity Matching to creating the *similarity graph*, i.e., an undirected, weighted graph where the nodes correspond to entities and the edges connect pairs of compared entities. The similarity graph is then partitioned into a set of equivalence clusters, with every cluster corresponding to a distinct real-world object.
+
+The following methods will be supported:
+
+* Center Clustering
+* Merge-Center Clustering
+* Cut Clustering
+* Articulation Point Clustering
+* Star Clustering
+* (Balanced) Sequential Rippling
+* (Ordered) Concurrent Rippling
+* Correlation Clustering
+* Markov Clustering
+* Affinity-Propagation Clustering
+
+For more details on the functionality of these methods, see [here](http://www.vldb.org/pvldb/2/vldb09-1025.pdf). 
+
 
 ### Consortium
 
