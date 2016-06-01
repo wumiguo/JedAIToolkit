@@ -33,7 +33,7 @@ The following methods are supported:
  *  Block Scheduling
  *  Block Purging
    * Size-based
-   * Comparison-based
+    * Comparison-based
    
 * Comparison-refinement methods
  * Comparison Propagation
@@ -43,6 +43,12 @@ The following methods are supported:
  * Weighed Node Pruning (WNP)
  * Reciprocal Cardinality Node Pruning (ReCNP)
  * Reciprocal Weighed Node Pruning (ReWNP)
+
+### Entity Matching
+
+### Entity Clustering
+
+### Consortium
 
 JEDAI is a collaboration project involving the following partners:
 * [Department of Informations and Telecommunications, University of Athens](http://www.di.uoa.gr),
