@@ -72,11 +72,11 @@ public class EntityDBReader extends AbstractEntityReader {
         //inputFilePath is assigned the Database URL
         try {
         	Connection conn = null;
-        	if (inputFilePath.contains("mysql"))
+        	if (inputFilePath.startsWith("mysql"))
         	{
         		conn = getMySQLconnection(inputFilePath);
         	}
-        	else if (inputFilePath.contains("postgresql"))
+        	else if (inputFilePath.startsWith("postgresql"))
         	{
         		conn = getPostgreSQLconnection(inputFilePath);
         	}
