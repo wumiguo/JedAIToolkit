@@ -4,7 +4,7 @@ An open source, high scalability toolkit suitable for any data integration task,
 JEDAI comprises a set of *domain-independent*, *state-of-the-art* techniques that apply to any domain. At their core lies an approximate, *schema-agnostic* functionality based on *blocking* for high scalability. In more detail, it supports the following functionalities grouped into 5 modules:
 
 ### Data Reading 
-It trasnforms the input data into a list of entity profiles. An entity is a uniquely identified sets of name-value pairs. 
+It transforms the input data into a list of entity profiles. An entity is a uniquely identified sets of name-value pairs. 
 
 The following formats are supported:
  * CSV 
@@ -59,17 +59,16 @@ The following schema-agnostic methods are supported:
  * character n-gram graphs (n=2,3 or 4) + Graph Value similarity
  * token n-grams (n=1,2 or 3) + cosine similarity with TF-IDF weights
  * token n-gram graphs (n=1, 2 or 3) + Graph Value similarity
-* (it simply considers the set of all tokens in all attribute values of every entity)
 * to be added: [Group Linkage](http://pike.psu.edu/publications/icde07.pdf), 
 
 ### Entity Clustering
 
 It uses the similarities produced by Entity Matching to create the *similarity graph*, i.e., an undirected, weighted graph where the nodes correspond to entities and the edges connect pairs of compared entities. The similarity graph is then partitioned into a set of equivalence clusters, with every cluster corresponding to a distinct real-world object.
 
-The following domain-indepedent methods are currently supported:
+The following domain-independent methods are currently supported:
 * Connected Components Clustering
 
-The following domain-indepedent will be added later on:
+The following domain-independent will be added later on:
 
 * Center Clustering
 * Merge-Center Clustering
@@ -88,7 +87,7 @@ For more details on the functionality of these methods, see [here](http://www.vl
 ### Consortium
 
 JEDAI is a collaboration project involving the following partners:
-* [Department of Informations and Telecommunications, University of Athens](http://www.di.uoa.gr),
+* [Department of Informatics and Telecommunications, University of Athens](http://www.di.uoa.gr),
 * [Software and Knowledge Engineering Lab, National Center for Scientific Research "Demokritos"](https://www.iit.demokritos.gr/skel) ,
 * [Science-For-You not-for-profit company](http://www.scify.gr/site/en) and, 
 * [LIPADE, Paris Descartes University](http://lipade.mi.parisdescartes.fr)
