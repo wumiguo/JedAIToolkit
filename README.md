@@ -1,14 +1,14 @@
 # Java gEneric DAta Integration (JEDAI) Toolkit
 An open source, high scalability toolkit suitable for any data integration task, e.g., Record Linkage, Entity Resolution and Link Discovery.
 
-JEDAI comprises a set of *generic*, *state-of-the-art* techniques that apply to any domain. At their core lies an approximate, *schema-agnostic* functionality based on *blocking* for high scalability. In more detail, it supports the following functionalities grouped into 5 modules:
+JEDAI comprises a set of *domain-independent*, *state-of-the-art* techniques that apply to any domain. At their core lies an approximate, *schema-agnostic* functionality based on *blocking* for high scalability. In more detail, it supports the following functionalities grouped into 5 modules:
 
 ### Data Reading 
-It trasnforms the input data into a list of entity profiles. An entity is a uniquely identified sets of name-value pairs. 
+It transforms the input data into a list of entity profiles. An entity is a uniquely identified sets of name-value pairs. 
 
 The following formats are supported:
  * CSV 
- * RDF (any format)
+ * RDF (any format, including XML)
  * SQL (mySQL, PostgreSQL)
  * to be added: JSON, MongoDB, Oracle and SQL Server
   
@@ -54,14 +54,21 @@ It compares pairs of entity profiles, associating every pair with a similarity i
 
 The following schema-agnostic methods are supported:
 
-* Jaccard simiilarity (it simply considers the set of all tokens in all attribute values of every entity)
-* to be added: [Group Linkage](http://pike.psu.edu/publications/icde07.pdf), [N-Gram Graphs](http://cgi.di.uoa.gr/~takis/tslp.pdf)
+* Profile Matcher, which aggregates all attributes values in an individual entity into a textual representation, based on one of the following models and similarity measures:
+ * character n-grams (n=2,3 or 4) + Jaccard similarity
+ * character n-gram graphs (n=2,3 or 4) + Graph Value similarity
+ * token n-grams (n=1,2 or 3) + cosine similarity with TF-IDF weights
+ * token n-gram graphs (n=1, 2 or 3) + Graph Value similarity
+* to be added: [Group Linkage](http://pike.psu.edu/publications/icde07.pdf), 
 
 ### Entity Clustering
 
-It uses the similarities produced by Entity Matching to creating the *similarity graph*, i.e., an undirected, weighted graph where the nodes correspond to entities and the edges connect pairs of compared entities. The similarity graph is then partitioned into a set of equivalence clusters, with every cluster corresponding to a distinct real-world object.
+It uses the similarities produced by Entity Matching to create the *similarity graph*, i.e., an undirected, weighted graph where the nodes correspond to entities and the edges connect pairs of compared entities. The similarity graph is then partitioned into a set of equivalence clusters, with every cluster corresponding to a distinct real-world object.
 
-The following methods will be supported:
+The following domain-independent methods are currently supported:
+* Connected Components Clustering
+
+The following domain-independent will be added later on:
 
 * Center Clustering
 * Merge-Center Clustering
@@ -80,7 +87,7 @@ For more details on the functionality of these methods, see [here](http://www.vl
 ### Consortium
 
 JEDAI is a collaboration project involving the following partners:
-* [Department of Informations and Telecommunications, University of Athens](http://www.di.uoa.gr),
+* [Department of Informatics and Telecommunications, University of Athens](http://www.di.uoa.gr),
 * [Software and Knowledge Engineering Lab, National Center for Scientific Research "Demokritos"](https://www.iit.demokritos.gr/skel) ,
 * [Science-For-You not-for-profit company](http://www.scify.gr/site/en) and, 
 * [LIPADE, Paris Descartes University](http://lipade.mi.parisdescartes.fr)
