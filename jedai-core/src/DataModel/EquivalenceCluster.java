@@ -17,6 +17,7 @@
 package DataModel;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -26,13 +27,31 @@ import java.util.List;
 
 public class EquivalenceCluster {
     
-    private final List<Integer> entityIds;
+    private final List<Integer> entityIdsD1;
+    private final List<Integer> entityIdsD2;
     
     public EquivalenceCluster() {
-        entityIds = new ArrayList<>();
+        entityIdsD1 = new ArrayList<>();
+        entityIdsD2 = new ArrayList<>();
     }
     
-    public List<Integer> getEntityIds() {
-        return entityIds;
+    public void addEntityIdD1(int id) {
+        entityIdsD1.add(id);
+    }
+    
+    public void addEntityIdD2(int id) {
+        entityIdsD2.add(id);
+    }
+    
+    public List<Integer> getEntityIdsD1() {
+        return entityIdsD1;
+    }
+    
+    public List<Integer> getEntityIdsD2() {
+        return entityIdsD2;
+    }
+    
+    public void loadBulkEntityIdsD1(Collection<Integer> ids) {
+        entityIdsD1.addAll(ids);
     }
 }

@@ -30,7 +30,7 @@ public class WeightedEdgePruning extends AbstractMetablocking {
 
     protected double noOfEdges;
 
-    protected WeightedEdgePruning(WeightingScheme scheme) {
+    public WeightedEdgePruning(WeightingScheme scheme) {
         super(scheme);
         nodeCentric = false;
     }

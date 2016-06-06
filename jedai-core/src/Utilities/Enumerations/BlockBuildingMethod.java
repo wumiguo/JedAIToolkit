@@ -25,6 +25,10 @@ import BlockBuilding.QGramsBlocking;
 import BlockBuilding.SortedNeighborhoodBlocking;
 import BlockBuilding.StandardBlocking;
 import BlockBuilding.SuffixArraysBlocking;
+import BlockProcessing.BlockRefinement.BlockFiltering;
+import BlockProcessing.ComparisonRefinement.ComparisonPropagation;
+import BlockProcessing.ComparisonRefinement.WeightedEdgePruning;
+import BlockProcessing.IBlockProcessing;
 
 /**
  *
@@ -60,6 +64,50 @@ public enum BlockBuildingMethod {
             case STANDARD_BLOCKING:
             default:
                 return new StandardBlocking();
+        }
+    }
+    
+    public static IBlockProcessing getDefaultBlockCleaning(BlockBuildingMethod blbuMethod) {
+        switch (blbuMethod) {
+            case ATTRIBUTE_CLUSTERING:
+                return new BlockFiltering(0.50);
+            case EXTENDED_Q_GRAMS_BLOCKING:
+                return new BlockFiltering(0.50);
+            case EXTENDED_SORTED_NEIGHBORHOOD:
+                return new BlockFiltering(0.45);
+            case EXTENDED_SUFFIX_ARRAYS:
+                return null;
+            case Q_GRAMS_BLOCKING:
+                return new BlockFiltering(0.50);
+            case SORTED_NEIGHBORHOOD:
+                return null;
+            case SUFFIX_ARRAYS:
+                return null;
+            case STANDARD_BLOCKING:
+            default:
+                return new BlockFiltering(0.55);
+        }
+    }
+    
+    public static IBlockProcessing getDefaultComparisonCleaning(BlockBuildingMethod blbuMethod) {
+        switch (blbuMethod) {
+            case ATTRIBUTE_CLUSTERING:
+                return new WeightedEdgePruning(WeightingScheme.CBS);
+            case EXTENDED_Q_GRAMS_BLOCKING:
+                return new WeightedEdgePruning(WeightingScheme.EJS);
+            case EXTENDED_SORTED_NEIGHBORHOOD:
+                return new WeightedEdgePruning(WeightingScheme.JS);
+            case EXTENDED_SUFFIX_ARRAYS:
+                return new ComparisonPropagation();
+            case Q_GRAMS_BLOCKING:
+                return new WeightedEdgePruning(WeightingScheme.ECBS);
+            case SORTED_NEIGHBORHOOD:
+                return new ComparisonPropagation();
+            case SUFFIX_ARRAYS:
+                return new ComparisonPropagation();
+            case STANDARD_BLOCKING:
+            default:
+                return new WeightedEdgePruning(WeightingScheme.CBS);
         }
     }
 }

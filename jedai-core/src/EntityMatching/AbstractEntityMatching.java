@@ -25,15 +25,14 @@ import java.util.List;
  *
  * @author G.A.P. II
  */
+public abstract class AbstractEntityMatching implements IEntityMatching {
 
-public interface IEntityMatching {
+    public AbstractEntityMatching() {
+        
+    }
     
-    public SimilarityPairs executeComparisons(List<AbstractBlock> blocks, List<EntityProfile> profiles);
-    
-    public SimilarityPairs executeComparisons(List<AbstractBlock> blocks, List<EntityProfile> profilesD1, List<EntityProfile> profilesD2);
-    
-    public String getMethodInfo();
-    
-    public String getMethodParameters();
-    
+    @Override
+    public SimilarityPairs executeComparisons(List<AbstractBlock> blocks, List<EntityProfile> profiles) {
+        return this.executeComparisons(blocks, profiles, null);
+    }
 }

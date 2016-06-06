@@ -16,8 +16,8 @@
 
 package EntityClustering;
 
-import DataModel.AbstractBlock;
-import DataModel.Comparison;
+import DataModel.EquivalenceCluster;
+import DataModel.SimilarityPairs;
 import java.util.List;
 
 /**
@@ -27,7 +27,10 @@ import java.util.List;
 
 public interface IEntityClustering {
  
-    public List<Comparison> getComparisons();
+    public List<EquivalenceCluster> getDuplicates(SimilarityPairs simPairs);
     
-    public void setBlocks(List<AbstractBlock> blocks);
+    public String getMethodInfo();
+    
+    public String getMethodParameters();
+    
 }

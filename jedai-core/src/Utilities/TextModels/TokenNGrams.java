@@ -87,7 +87,7 @@ public class TokenNGrams extends AbstractModel {
     }
 
     @Override
-    public double getSimilarity(AbstractModel oModel) {
+    public double getSimilarity(AbstractModel oModel) {//cosine similarity with TF-IDF
         final TokenNGrams otherModel = (TokenNGrams) oModel;
         final HashMap<String, Integer> oItemVector = otherModel.getItemsFrequency();
 

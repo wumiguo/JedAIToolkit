@@ -106,9 +106,4 @@ public class ComparisonIterator implements Iterator<Comparison> {
         
         return null;
     }
-
-    @Override
-    public void remove() {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
 }
