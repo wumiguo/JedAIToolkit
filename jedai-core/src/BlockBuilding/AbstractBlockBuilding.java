@@ -37,19 +37,19 @@ import org.apache.lucene.document.Field;
 import org.apache.lucene.document.StoredField;
 import org.apache.lucene.document.StringField;
 import org.apache.lucene.index.DirectoryReader;
-import org.apache.lucene.index.DocsEnum;
 import org.apache.lucene.index.Fields;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.index.MultiFields;
+import org.apache.lucene.index.PostingsEnum;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.Terms;
 import org.apache.lucene.index.TermsEnum;
+import org.apache.lucene.search.DocIdSetIterator;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.util.BytesRef;
-import org.apache.lucene.util.Version;
 
 /**
  *
@@ -187,8 +187,8 @@ public abstract class AbstractBlockBuilding implements IBlockBuilding {
     
     protected IndexWriter openWriter(Directory directory) {
         try {
-            Analyzer analyzer = new SimpleAnalyzer(Version.LUCENE_40);
-            IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_40, analyzer);
+            Analyzer analyzer = new SimpleAnalyzer();
+            IndexWriterConfig config = new IndexWriterConfig(analyzer);
             return new IndexWriter(directory, config);
         } catch (IOException ex) {
             LOGGER.log(Level.SEVERE, null, ex);
@@ -203,7 +203,7 @@ public abstract class AbstractBlockBuilding implements IBlockBuilding {
             Fields fields = MultiFields.getFields(d1Index);
             for (String field : fields) {
                 Terms terms = fields.terms(field);
-                TermsEnum termsEnum = terms.iterator(null);
+                TermsEnum termsEnum = terms.iterator();
                 BytesRef text;
                 while ((text = termsEnum.next()) != null) {
                     // check whether it is a common term
@@ -213,9 +213,9 @@ public abstract class AbstractBlockBuilding implements IBlockBuilding {
                     }
 
                     final List<Integer> entityIds = new ArrayList<>();
-                    DocsEnum de = MultiFields.getTermDocsEnum(d1Index, MultiFields.getLiveDocs(d1Index), field, text);
+                    PostingsEnum pe = MultiFields.getTermDocsEnum(d1Index, field, text);
                     int doc;
-                    while ((doc = de.nextDoc()) != DocsEnum.NO_MORE_DOCS) {
+                    while ((doc = pe.nextDoc()) != DocIdSetIterator.NO_MORE_DOCS) {
                         entityIds.add(documentIds[doc]);
                     }
 
@@ -236,7 +236,7 @@ public abstract class AbstractBlockBuilding implements IBlockBuilding {
             Fields fields = MultiFields.getFields(d2Index);
             for (String field : fields) {
                 Terms terms = fields.terms(field);
-                TermsEnum termsEnum = terms.iterator(null);
+                TermsEnum termsEnum = terms.iterator();
                 BytesRef text;
                 while ((text = termsEnum.next()) != null) {
                     if (!hashedBlocks.containsKey(text.utf8ToString())) {
@@ -244,9 +244,9 @@ public abstract class AbstractBlockBuilding implements IBlockBuilding {
                     }
 
                     final List<Integer> entityIds = new ArrayList<>();
-                    DocsEnum de = MultiFields.getTermDocsEnum(d2Index, MultiFields.getLiveDocs(d2Index), field, text);
+                    PostingsEnum pe = MultiFields.getTermDocsEnum(d2Index, field, text);
                     int doc;
-                    while ((doc = de.nextDoc()) != DocsEnum.NO_MORE_DOCS) {
+                    while ((doc = pe.nextDoc()) != DocIdSetIterator.NO_MORE_DOCS) {
                         entityIds.add(documentIds[doc]);
                     }
 
@@ -267,7 +267,7 @@ public abstract class AbstractBlockBuilding implements IBlockBuilding {
             Fields fields = MultiFields.getFields(d1Index);
             for (String field : fields) {
                 Terms terms = fields.terms(field);
-                TermsEnum termsEnum = terms.iterator(null);
+                TermsEnum termsEnum = terms.iterator();
                 BytesRef text;
                 while ((text = termsEnum.next()) != null) {
                     if (termsEnum.docFreq() < 2) {
@@ -275,9 +275,9 @@ public abstract class AbstractBlockBuilding implements IBlockBuilding {
                     }
 
                     final List<Integer> entityIds = new ArrayList<>();
-                    DocsEnum de = MultiFields.getTermDocsEnum(d1Index, MultiFields.getLiveDocs(d1Index), field, text);
+                    PostingsEnum pe = MultiFields.getTermDocsEnum(d1Index, field, text);
                     int doc;
-                    while ((doc = de.nextDoc()) != DocsEnum.NO_MORE_DOCS) {
+                    while ((doc = pe.nextDoc()) != DocIdSetIterator.NO_MORE_DOCS) {
                         entityIds.add(documentIds[doc]);
                     }
 

@@ -29,13 +29,14 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.apache.lucene.index.DocsEnum;
 import org.apache.lucene.index.Fields;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.MultiFields;
+import org.apache.lucene.index.PostingsEnum;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.Terms;
 import org.apache.lucene.index.TermsEnum;
+import org.apache.lucene.search.DocIdSetIterator;
 import org.apache.lucene.util.BytesRef;
 
 /**
@@ -114,9 +115,9 @@ public class SortedNeighborhoodBlocking extends StandardBlocking {
             int docFrequency = iReader.docFreq(term);
             if (0 < docFrequency) {
                 BytesRef text = term.bytes();
-                DocsEnum de = MultiFields.getTermDocsEnum(iReader, MultiFields.getLiveDocs(iReader), VALUE_LABEL, text);
+                PostingsEnum pe = MultiFields.getTermDocsEnum(iReader, VALUE_LABEL, text);
                 int doc;
-                while ((doc = de.nextDoc()) != DocsEnum.NO_MORE_DOCS) {
+                while ((doc = pe.nextDoc()) != DocIdSetIterator.NO_MORE_DOCS) {
                     entityIds.add(docIds[doc]);
                 }
             }
@@ -134,7 +135,7 @@ public class SortedNeighborhoodBlocking extends StandardBlocking {
             Fields fields = MultiFields.getFields(iReader);
             for (String field : fields) {
                 Terms terms = fields.terms(field);
-                TermsEnum termsEnum = terms.iterator(null);
+                TermsEnum termsEnum = terms.iterator();
                 BytesRef text;
                 while ((text = termsEnum.next()) != null) {
                     sortedTerms.add(text.utf8ToString());
