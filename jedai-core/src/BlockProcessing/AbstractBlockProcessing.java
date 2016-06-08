@@ -16,6 +16,7 @@
 
 package BlockProcessing;
 
+import Utilities.DataStructures.AbstractDuplicatePropagation;
 import BlockBuilding.AbstractBlockBuilding;
 import DataModel.AbstractBlock;
 import DataModel.Comparison;

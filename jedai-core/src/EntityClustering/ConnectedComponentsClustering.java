@@ -121,11 +121,11 @@ public class ConnectedComponentsClustering implements IEntityClustering {
         int maxEntity1 = getMaxEntityId(simPairs.getEntityIds1());
         int maxEntity2 = getMaxEntityId(simPairs.getEntityIds2());
         if (simPairs.isCleanCleanER()) {
-            datasetLimit = maxEntity1;
-            noOfEntities = maxEntity1 + maxEntity2;
+            datasetLimit = maxEntity1 + 1;
+            noOfEntities = maxEntity1 + maxEntity2 + 2;
         } else {
             datasetLimit = 0;
-            noOfEntities = Math.max(maxEntity1, maxEntity2);
+            noOfEntities = Math.max(maxEntity1, maxEntity2) + 1;
         }
 
         for (int i = 0; i < noOfEntities; i++) {

@@ -29,7 +29,7 @@ public class PairIterator implements Iterator<Comparison> {
     private final int totalComparisons;
     private final SimilarityPairs similarityPairs;
     
-    public PairIterator(SimilarityPairs sPairs) {
+    PairIterator(SimilarityPairs sPairs) {
         similarityPairs = sPairs;
         totalComparisons = similarityPairs.getEntityIds1().length;
     }

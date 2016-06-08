@@ -17,7 +17,7 @@
 package BlockProcessing.BlockRefinement;
 
 import BlockProcessing.AbstractBlockProcessing;
-import BlockProcessing.AbstractDuplicatePropagation;
+import Utilities.DataStructures.AbstractDuplicatePropagation;
 import BlockProcessing.IBlockProcessing;
 import DataModel.AbstractBlock;
 import java.util.List;

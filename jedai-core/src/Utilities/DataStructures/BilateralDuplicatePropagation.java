@@ -14,7 +14,7 @@
 * limitations under the License.
 */
 
-package BlockProcessing;
+package Utilities.DataStructures;
 
 import DataModel.Comparison;
 import DataModel.IdDuplicates;

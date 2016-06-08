@@ -35,7 +35,7 @@ public class ComparisonIterator implements Iterator<Comparison> {
     
     private final AbstractBlock block;   
     
-    public ComparisonIterator (AbstractBlock block) {
+    ComparisonIterator (AbstractBlock block) {
         this.block = block;
         totalComparisons = block.getNoOfComparisons();
         

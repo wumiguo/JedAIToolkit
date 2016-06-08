@@ -16,6 +16,7 @@
 
 package BlockProcessing;
 
+import Utilities.DataStructures.AbstractDuplicatePropagation;
 import DataModel.AbstractBlock;
 import java.util.List;
 

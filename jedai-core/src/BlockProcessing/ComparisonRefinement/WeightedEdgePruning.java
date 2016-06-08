@@ -16,7 +16,7 @@
 
 package BlockProcessing.ComparisonRefinement;
 
-import BlockProcessing.AbstractDuplicatePropagation;
+import Utilities.DataStructures.AbstractDuplicatePropagation;
 import DataModel.AbstractBlock;
 import Utilities.Enumerations.WeightingScheme;
 import java.util.ArrayList;
