@@ -69,13 +69,13 @@ public class TestGroupLinkage {
                 blocks = comparisonCleaningMethod.refineBlocks(blocks);
             }
             
-            for ( AbstractBlock bl : blocks) {
-            	Iterator<Comparison> iterator = bl.getComparisonIterator();
-                while (iterator.hasNext()) {
-                	Comparison currentComparison = iterator.next();
-                	System.out.println(currentComparison.getEntityId1()+" "+currentComparison.getEntityId2());
-                }
-            }
+//            for ( AbstractBlock bl : blocks) {
+//            	Iterator<Comparison> iterator = bl.getComparisonIterator();
+//                while (iterator.hasNext()) {
+//                	Comparison currentComparison = iterator.next();
+//                	System.out.println(currentComparison.getEntityId1()+" "+currentComparison.getEntityId2());
+//                }
+//            }
             
             for (RepresentationModel model : RepresentationModel.values()) {
 
