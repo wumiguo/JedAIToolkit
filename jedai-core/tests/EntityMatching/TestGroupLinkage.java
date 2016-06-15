@@ -21,7 +21,6 @@ import Utilities.DataStructures.AbstractDuplicatePropagation;
 import BlockProcessing.IBlockProcessing;
 import Utilities.DataStructures.UnilateralDuplicatePropagation;
 import DataModel.AbstractBlock;
-import DataModel.Comparison;
 import DataModel.EntityProfile;
 import DataModel.SimilarityPairs;
 import DataReader.EntityReader.IEntityReader;
@@ -29,9 +28,8 @@ import DataReader.EntityReader.EntitySerializationReader;
 import DataReader.GroundTruthReader.GtSerializationReader;
 import DataReader.GroundTruthReader.IGroundTruthReader;
 import Utilities.Enumerations.BlockBuildingMethod;
-import Utilities.TextModels.RepresentationModel;
+import Utilities.Enumerations.RepresentationModel;
 
-import java.util.Iterator;
 import java.util.List;
 
 /**

@@ -16,8 +16,8 @@
 
 package BlockBuilding;
 
-import BlockProcessing.AbstractDuplicatePropagation;
-import BlockProcessing.UnilateralDuplicatePropagation;
+import Utilities.DataStructures.AbstractDuplicatePropagation;
+import Utilities.DataStructures.UnilateralDuplicatePropagation;
 import DataModel.AbstractBlock;
 import DataModel.EntityProfile;
 import DataReader.EntityReader.IEntityReader;
@@ -25,7 +25,7 @@ import DataReader.EntityReader.EntitySerializationReader;
 import DataReader.GroundTruthReader.GtSerializationReader;
 import DataReader.GroundTruthReader.IGroundTruthReader;
 import Utilities.Enumerations.BlockBuildingMethod;
-import Utilities.BlockStatistics;
+import Utilities.BlocksPerformance;
 import java.util.List;
 
 /**
@@ -52,8 +52,9 @@ public class TestAllMethods {
             
             System.out.println("Block Building...");
             List<AbstractBlock> blocks = blockBuildingMethod.getBlocks(profiles, null);
-            BlockStatistics blStats = new BlockStatistics(blocks, duplicatePropagation);
-            blStats.applyProcessing();
+            
+            BlocksPerformance blStats = new BlocksPerformance(blocks, duplicatePropagation);
+            blStats.getStatistics();
         }
     }
 }

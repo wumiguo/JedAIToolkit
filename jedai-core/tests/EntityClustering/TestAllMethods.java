@@ -12,21 +12,24 @@
 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 * See the License for the specific language governing permissions and
 * limitations under the License.
-*/
+ */
+package EntityClustering;
 
-package EntityMatching;
-
+import EntityMatching.*;
 import BlockBuilding.*;
 import Utilities.DataStructures.AbstractDuplicatePropagation;
 import BlockProcessing.IBlockProcessing;
 import Utilities.DataStructures.UnilateralDuplicatePropagation;
 import DataModel.AbstractBlock;
 import DataModel.EntityProfile;
+import DataModel.EquivalenceCluster;
 import DataModel.SimilarityPairs;
 import DataReader.EntityReader.IEntityReader;
 import DataReader.EntityReader.EntitySerializationReader;
 import DataReader.GroundTruthReader.GtSerializationReader;
 import DataReader.GroundTruthReader.IGroundTruthReader;
+import Utilities.BlocksPerformance;
+import Utilities.ClustersPerformance;
 import Utilities.Enumerations.BlockBuildingMethod;
 import Utilities.Enumerations.RepresentationModel;
 import java.util.List;
@@ -35,42 +38,49 @@ import java.util.List;
  *
  * @author G.A.P. II
  */
-
 public class TestAllMethods {
+
     public static void main(String[] args) {
         String entitiesFilePath = "C:\\Users\\G.A.P. II\\Downloads\\cddbProfiles";
         String groundTruthFilePath = "C:\\Users\\G.A.P. II\\Downloads\\cddbDuplicates";
-        
+
         IEntityReader eReader = new EntitySerializationReader(entitiesFilePath);
         List<EntityProfile> profiles = eReader.getEntityProfiles();
         System.out.println("Input Entity Profiles\t:\t" + profiles.size());
-        
+
         IGroundTruthReader gtReader = new GtSerializationReader(groundTruthFilePath);
         final AbstractDuplicatePropagation duplicatePropagation = new UnilateralDuplicatePropagation(gtReader.getDuplicatePairs(eReader.getEntityProfiles()));
         System.out.println("Existing Duplicates\t:\t" + duplicatePropagation.getDuplicates().size());
-        
+
         for (BlockBuildingMethod blbuMethod : BlockBuildingMethod.values()) {
             System.out.println("\n\nCurrent blocking metohd\t:\t" + blbuMethod);
             IBlockBuilding blockBuildingMethod = BlockBuildingMethod.getDefaultConfiguration(blbuMethod);
             List<AbstractBlock> blocks = blockBuildingMethod.getBlocks(profiles, null);
             System.out.println("Original blocks\t:\t" + blocks.size());
-            
+
             IBlockProcessing blockCleaningMethod = BlockBuildingMethod.getDefaultBlockCleaning(blbuMethod);
             if (blockCleaningMethod != null) {
                 blocks = blockCleaningMethod.refineBlocks(blocks);
             }
-            
+
             IBlockProcessing comparisonCleaningMethod = BlockBuildingMethod.getDefaultComparisonCleaning(blbuMethod);
             if (comparisonCleaningMethod != null) {
                 blocks = comparisonCleaningMethod.refineBlocks(blocks);
             }
-            
-            for (RepresentationModel model : RepresentationModel.values()) {
-                IEntityMatching pm = new ProfileMatcher(model);
-                SimilarityPairs simPairs = pm.executeComparisons(blocks, profiles);
-                for (int i = 0; i < 10; i++) {
-                    System.out.println(simPairs.getEntityIds1()[i] + "\t\t" + simPairs.getEntityIds2()[i] + "\t\t" + simPairs.getSimilarities()[i]);
-                }
+
+            BlocksPerformance blp = new BlocksPerformance(blocks, duplicatePropagation);
+            blp.getStatistics();
+
+            for (RepresentationModel repModel : RepresentationModel.values()) {
+                System.out.println("\n\nCurrent model\t:\t" + repModel.toString());
+                IEntityMatching em = new ProfileMatcher(repModel);
+                SimilarityPairs simPairs = em.executeComparisons(blocks, profiles);
+
+                IEntityClustering ec = new ConnectedComponentsClustering();
+                List<EquivalenceCluster> entityClusters = ec.getDuplicates(simPairs);
+
+                ClustersPerformance clp = new ClustersPerformance(entityClusters, duplicatePropagation);
+                clp.getStatistics();
             }
         }
     }
