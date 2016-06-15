@@ -16,6 +16,7 @@
 
 package Utilities.TextModels;
 
+import Utilities.Enumerations.RepresentationModel;
 import gr.demokritos.iit.jinsect.documentModel.representations.DocumentWordGraph;
 
 /**

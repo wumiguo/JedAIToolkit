@@ -16,6 +16,7 @@
 
 package Utilities.TextModels;
 
+import Utilities.Enumerations.RepresentationModel;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map.Entry;

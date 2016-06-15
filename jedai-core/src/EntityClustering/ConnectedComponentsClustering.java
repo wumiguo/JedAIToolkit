@@ -113,8 +113,18 @@ public class ConnectedComponentsClustering implements IEntityClustering {
             averageSimilarity += comparison.getUtilityMeasure();
         }
         averageSimilarity /= simPairs.getNoOfComparisons();
-        LOGGER.log(Level.INFO, "Similarity threshold : {0}", averageSimilarity);
-        return averageSimilarity;
+        
+        double standardDeviation = 0;
+        iterator = simPairs.getPairIterator();
+        while (iterator.hasNext()) {
+            Comparison comparison = iterator.next();
+            standardDeviation += Math.pow(comparison.getUtilityMeasure()-averageSimilarity, 2.0);
+        }
+        standardDeviation = Math.sqrt(standardDeviation/simPairs.getNoOfComparisons());
+        
+        double threshold = averageSimilarity + 3*standardDeviation;
+        LOGGER.log(Level.INFO, "Similarity threshold : {0}", threshold);
+        return threshold;
     }
 
     private void initializeGraph(SimilarityPairs simPairs) {

@@ -22,7 +22,7 @@ import DataModel.Comparison;
 import DataModel.EntityProfile;
 import DataModel.SimilarityPairs;
 import Utilities.TextModels.AbstractModel;
-import Utilities.TextModels.RepresentationModel;
+import Utilities.Enumerations.RepresentationModel;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;

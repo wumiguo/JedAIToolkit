@@ -14,7 +14,13 @@
 * limitations under the License.
 */
 
-package Utilities.TextModels;
+package Utilities.Enumerations;
+
+import Utilities.TextModels.AbstractModel;
+import Utilities.TextModels.CharacterNGramGraphs;
+import Utilities.TextModels.CharacterNGrams;
+import Utilities.TextModels.TokenNGramGraphs;
+import Utilities.TextModels.TokenNGrams;
 
 /**
  *
