@@ -21,6 +21,8 @@ import Utilities.DataStructures.AbstractDuplicatePropagation;
 import BlockProcessing.IBlockProcessing;
 import Utilities.DataStructures.UnilateralDuplicatePropagation;
 import DataModel.AbstractBlock;
+import DataModel.Comparison;
+import DataModel.ComparisonIterator;
 import DataModel.EntityProfile;
 import DataModel.SimilarityPairs;
 import DataReader.EntityReader.IEntityReader;
@@ -39,22 +41,29 @@ import java.util.List;
 
 public class TestGroupLinkage {
     public static void main(String[] args) {
-        String entitiesFilePath = "/home/ethanos/Downloads/JEDAIfiles/cddbTestProfiles";
+    	String entitiesFilePath1 = "/home/ethanos/Downloads/JEDAIfiles/im-identity/oaei2014_identity_aPROFILES";
+    	//String entitiesFilePath2 = "/home/ethanos/Downloads/JEDAIfiles/im-identity/oaei2014_identity_aPROFILES";//
         String groundTruthFilePath = "/home/ethanos/Downloads/JEDAIfiles/cddbTestDuplicates";
         
-        IEntityReader eReader = new EntitySerializationReader(entitiesFilePath);
-        List<EntityProfile> profiles = eReader.getEntityProfiles();
-        System.out.println("Input Entity Profiles\t:\t" + profiles.size());
+        IEntityReader eReader1 = new EntitySerializationReader(entitiesFilePath1);
+        List<EntityProfile> profiles1 = eReader1.getEntityProfiles();
+        System.out.println("Input Entity Profiles\t:\t" + profiles1.size());
         
+//        IEntityReader eReader2 = new EntitySerializationReader(entitiesFilePath2);
+//        List<EntityProfile> profiles2 = eReader2.getEntityProfiles();
+//        System.out.println("Input Entity Profiles\t:\t" + profiles2.size());
+//        
         IGroundTruthReader gtReader = new GtSerializationReader(groundTruthFilePath);
-        final AbstractDuplicatePropagation duplicatePropagation = new UnilateralDuplicatePropagation(gtReader.getDuplicatePairs(eReader.getEntityProfiles()));
+        final AbstractDuplicatePropagation duplicatePropagation = new UnilateralDuplicatePropagation(gtReader.getDuplicatePairs(eReader1.getEntityProfiles()));
         System.out.println("Existing Duplicates\t:\t" + duplicatePropagation.getDuplicates().size());
         
         for (BlockBuildingMethod blbuMethod : BlockBuildingMethod.values()) {
+        	if (blbuMethod.equals(BlockBuildingMethod.ATTRIBUTE_CLUSTERING))
+        	{
 
             System.out.println("\n\nCurrent blocking metohd\t:\t" + blbuMethod);
             IBlockBuilding blockBuildingMethod = BlockBuildingMethod.getDefaultConfiguration(blbuMethod);
-            List<AbstractBlock> blocks = blockBuildingMethod.getBlocks(profiles, null);
+            List<AbstractBlock> blocks = blockBuildingMethod.getBlocks(profiles1);//
             System.out.println("Original blocks\t:\t" + blocks.size());
             
             IBlockProcessing blockCleaningMethod = BlockBuildingMethod.getDefaultBlockCleaning(blbuMethod);
@@ -68,24 +77,35 @@ public class TestGroupLinkage {
             }
             
 //            for ( AbstractBlock bl : blocks) {
-//            	Iterator<Comparison> iterator = bl.getComparisonIterator();
+//            	System.out.println("new");
+//            	ComparisonIterator iterator = bl.getComparisonIterator();
 //                while (iterator.hasNext()) {
 //                	Comparison currentComparison = iterator.next();
 //                	System.out.println(currentComparison.getEntityId1()+" "+currentComparison.getEntityId2());
 //                }
 //            }
-            
+
+
+   
+
+            long start = System.nanoTime(); 
             for (RepresentationModel model : RepresentationModel.values()) {
+            	if (model.equals(RepresentationModel.CHARACTER_BIGRAMS))
+            	{
 
                 GroupLinkage gp = new GroupLinkage(model);
                 gp.setSimilarityThreshold(0.1);
-                SimilarityPairs simPairs = gp.executeComparisons(blocks, profiles);
-                System.out.println();
+                SimilarityPairs simPairs = gp.executeComparisons(blocks, profiles1);//
+                //System.out.println();
                 for (int i = 0; i < simPairs.getNoOfComparisons(); i++) {
-                    System.out.println(simPairs.getEntityIds1()[i] + "\t\t" + simPairs.getEntityIds2()[i] + "\t\t" + simPairs.getSimilarities()[i]);
+                    //System.out.println(simPairs.getEntityIds1()[i] + "\t\t" + simPairs.getEntityIds2()[i] + "\t\t" + simPairs.getSimilarities()[i]);
                 }
+            	}
             	
             }
+            long elapsedTime = System.nanoTime() - start;
+			System.out.println("time="+elapsedTime/1000000000.0);
+        	}
         	
         }
     }
