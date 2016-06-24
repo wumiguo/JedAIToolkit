@@ -104,26 +104,23 @@ public class GtOAEIbenchmarksReader extends AbstractGtReader {
 
         initializeDataStructures(profilesD1, profilesD2);
         try {
-            // creating reader
+
         	DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
         	DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
         	Document doc = dBuilder.parse(inputFilePath);
         	doc.getDocumentElement().normalize();
-            System.out.println("Root element :" 
-               + doc.getDocumentElement().getNodeName());
             NodeList nList = doc.getElementsByTagName("Cell");
-            System.out.println("----------------------------");
             for (int temp = 0; temp < nList.getLength(); temp++) {
-               Node nNode = nList.item(temp);
-               if (nNode.getNodeType() == Node.ELEMENT_NODE) {
-                  Element eElement = (Element) nNode;
-                  Element eElement1 = (Element) eElement.getElementsByTagName("entity1").item(0);
-                  //System.out.println("asd"+eElement.getElementsByTagName("entity1").getAttribute("rdf:resource"));
-                  int entityId1 = urlToEntityId1.get(eElement1.getAttribute("rdf:resource"));
-                  Element eElement2 = (Element) eElement.getElementsByTagName("entity2").item(0);
-                  int entityId2 = urlToEntityId2.get(eElement2.getAttribute("rdf:resource"));
-                  duplicatesGraph.addEdge(entityId1, entityId2);             
-               }
+            	Node nNode = nList.item(temp);
+                if (nNode.getNodeType() == Node.ELEMENT_NODE) {
+                	Element eElement = (Element) nNode;
+                    Element eElement1 = (Element) eElement.getElementsByTagName("entity1").item(0);
+                    int entityId1 = urlToEntityId1.get(eElement1.getAttribute("rdf:resource"));
+                    Element eElement2 = (Element) eElement.getElementsByTagName("entity2").item(0);
+                    int entityId2 = urlToEntityId2.get(eElement2.getAttribute("rdf:resource"));
+                    duplicatesGraph.addEdge(entityId1, entityId2);
+                                
+                }               
             }
             
             

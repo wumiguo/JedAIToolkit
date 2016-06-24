@@ -107,7 +107,6 @@ public class GtIIMBbenchmarksReader extends AbstractGtReader {
 
         initializeDataStructures(profilesD1, profilesD2);
         try {
-            // creating reader
         	DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
         	DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
         	Document doc1 = dBuilder.parse(baseGTfile);
@@ -121,17 +120,16 @@ public class GtIIMBbenchmarksReader extends AbstractGtReader {
             	int entityId1;
             	int entityId2;
                 if (nNode1.getNodeType() == Node.ELEMENT_NODE) {
-	                  Element eElement = (Element) nNode1;
-	                  Element eElement1 = (Element) eElement.getElementsByTagName("entity2").item(0);
-	                  entityId1 = urlToEntityId1.get(eElement1.getAttribute("rdf:resource"));
-	                  if (nNode1.getNodeType() == Node.ELEMENT_NODE) {
-	                	  eElement = (Element) nNode2;
-	                	  Element eElement2 = (Element) eElement.getElementsByTagName("entity2").item(0);
-		                  entityId2 = urlToEntityId2.get(eElement2.getAttribute("rdf:resource"));
-		                  duplicatesGraph.addEdge(entityId1, entityId2); 
+                	Element eElement = (Element) nNode1;
+                	Element eElement1 = (Element) eElement.getElementsByTagName("entity2").item(0);
+	                entityId1 = urlToEntityId1.get(eElement1.getAttribute("rdf:resource"));
+	                if (nNode1.getNodeType() == Node.ELEMENT_NODE) {
+	                	eElement = (Element) nNode2;
+	                	Element eElement2 = (Element) eElement.getElementsByTagName("entity2").item(0);
+		                entityId2 = urlToEntityId2.get(eElement2.getAttribute("rdf:resource"));
+		                duplicatesGraph.addEdge(entityId1, entityId2); 
 	                  }
 	                  
-	                             
                 }
             }
             
