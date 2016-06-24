@@ -107,6 +107,9 @@ public class GtIIMBbenchmarksReader extends AbstractGtReader {
 
         initializeDataStructures(profilesD1, profilesD2);
         try {
+//        	we parse both gt files and keep as duplicates the entity2-instances
+//        	being at the same corresponding order, since they are linked to the 
+//        	same entity1-instance in both files
         	DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
         	DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
         	Document doc1 = dBuilder.parse(baseGTfile);

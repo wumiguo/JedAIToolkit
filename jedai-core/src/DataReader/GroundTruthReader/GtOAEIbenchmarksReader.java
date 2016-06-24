@@ -104,7 +104,8 @@ public class GtOAEIbenchmarksReader extends AbstractGtReader {
 
         initializeDataStructures(profilesD1, profilesD2);
         try {
-
+//        	we keep as duplicates the entity1 and entity2 instances
+//        	of every "Cell" in the goldenStandard xml file 
         	DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
         	DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
         	Document doc = dBuilder.parse(inputFilePath);
