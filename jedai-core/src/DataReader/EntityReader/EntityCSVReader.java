@@ -139,7 +139,10 @@ public class EntityCSVReader extends AbstractEntityReader {
             if (attributesToExclude.contains(i)) {
                 continue;
             }
-            newProfile.addAttribute(attributeNames[i], currentLine[i]);
+            if (!currentLine[i].isEmpty()) {
+                newProfile.addAttribute(attributeNames[i], currentLine[i]);
+
+            }
         }
         entityProfiles.add(newProfile);
     }

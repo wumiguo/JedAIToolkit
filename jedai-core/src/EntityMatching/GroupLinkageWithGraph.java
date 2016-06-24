@@ -113,7 +113,6 @@ public class GroupLinkageWithGraph extends AbstractEntityMatching {
                     counter++;
                 }
             }
-            model = Arrays.copyOf(model, counter);
             ModelsList.add(model);
 
         }
