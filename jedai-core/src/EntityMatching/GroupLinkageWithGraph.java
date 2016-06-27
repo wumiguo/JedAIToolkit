@@ -26,7 +26,6 @@ import Utilities.Enumerations.RepresentationModel;
 import Utilities.TextModels.AbstractModel;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.PriorityQueue;
@@ -137,6 +136,7 @@ public class GroupLinkageWithGraph extends AbstractEntityMatching {
         } else {
             model2 = entityModelsD1.get(comparison.getEntityId2());
         }
+    	
 
         int s1 = model1.length;
         int s2 = model2.length;

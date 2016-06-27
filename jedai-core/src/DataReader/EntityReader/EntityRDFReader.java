@@ -111,12 +111,15 @@ public class EntityRDFReader extends AbstractEntityReader {
             //if already exists a profile for the subject, simply add po as <Att>-<Value>
             EntityProfile existingProfile = urlToEntity.get(sub);
             if (existingProfile == null) {
+            	
                 EntityProfile newProfile = new EntityProfile(sub);
-                newProfile.addAttribute(pred, obj);
+                if (!obj.isEmpty()) newProfile.addAttribute(pred, obj);
                 entityProfiles.add(newProfile);
                 urlToEntity.put(sub, newProfile);
+                
             } else {
-                existingProfile.addAttribute(pred, obj);
+            	if (!obj.isEmpty()) existingProfile.addAttribute(pred, obj);
+            	
             }
         }
     }
