@@ -82,7 +82,6 @@ public class CenterClustering implements IEntityClustering {
                 Center.add(v1);
                 NonCenter.add(v2);
                 similarityGraph.addEdge(v1, v2);
-                System.out.println(v1+" "+ v2+" "+sim);
             }
             else if ((Center.contains(v1)&&Center.contains(v2))||(NonCenter.contains(v1)&&NonCenter.contains(v2)))
             {
@@ -92,26 +91,15 @@ public class CenterClustering implements IEntityClustering {
             {
                 NonCenter.add(v2);
                 similarityGraph.addEdge(v1, v2);
-                System.out.println(v1+" "+ v2+" "+sim);
             }
             else if (Center.contains(v2)&&(!NonCenter.contains(v1)))
             {
                 NonCenter.add(v1);
                 similarityGraph.addEdge(v1, v2);
-                System.out.println(v1+" "+ v2+" "+sim);
             }
 
         }
-        for (int v : Center) {
-        	System.out.print(v+"\t");
         
-        }
-    	System.out.println();
-
-        for (int v : NonCenter) {
-        	System.out.print(v+"\t");
-        
-        }
 
         // get connected components
         ConnectivityInspector ci = new ConnectivityInspector(similarityGraph);
@@ -167,7 +155,6 @@ public class CenterClustering implements IEntityClustering {
 
         }
         averageSimilarity /= simPairs.getNoOfComparisons();
-        System.out.println("averageSimilarity="+averageSimilarity);
 
         double standardDeviation = 0;
         iterator = simPairs.getPairIterator();
@@ -176,10 +163,8 @@ public class CenterClustering implements IEntityClustering {
             standardDeviation += Math.pow(comparison.getUtilityMeasure()-averageSimilarity, 2.0);
         }
         standardDeviation = Math.sqrt(standardDeviation/simPairs.getNoOfComparisons());
-        System.out.println("standardDeviation="+standardDeviation);
 
         double threshold = averageSimilarity + 3*standardDeviation;
-        System.out.println("threshold="+threshold);
 
         LOGGER.log(Level.INFO, "Similarity threshold : {0}", threshold);
         return threshold;
