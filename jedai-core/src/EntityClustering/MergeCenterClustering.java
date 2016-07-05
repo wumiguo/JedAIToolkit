@@ -38,15 +38,15 @@ import org.jgrapht.graph.SimpleGraph;
  *
  * @author G.A.P. II
  */
-public class CenterClustering implements IEntityClustering {
+public class MergeCenterClustering implements IEntityClustering {
 
-    private static final Logger LOGGER = Logger.getLogger(CenterClustering.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(MergeCenterClustering.class.getName());
 
     private int noOfEntities;
     private int datasetLimit;
     private final SimpleGraph similarityGraph;
 
-    public CenterClustering() {
+    public MergeCenterClustering() {
         similarityGraph = new SimpleGraph(DefaultEdge.class);
         LOGGER.log(Level.INFO, "Initializing Connected Components clustering...");
     }
@@ -55,23 +55,19 @@ public class CenterClustering implements IEntityClustering {
     public List<EquivalenceCluster> getDuplicates(SimilarityPairs simPairs) {
         initializeGraph(simPairs);
         SimilarityEdgeComparator SEcomparator = new SimilarityEdgeComparator();
-        PriorityQueue<SimilarityEdge> SEqueue = new PriorityQueue<SimilarityEdge>(simPairs.getNoOfComparisons(), SEcomparator);
-        int[] edgesWeight = new int[noOfEntities];
-        int[] edgesAttached = new int[noOfEntities];
+        PriorityQueue<SimilarityEdge> SEqueue = 
+            new PriorityQueue<SimilarityEdge>(simPairs.getNoOfComparisons(), SEcomparator);
+        // add an edge for every pair of entities with a weight higher than the thrshold
         double threshold = getSimilarityThreshold(simPairs);
         Iterator<Comparison> iterator = simPairs.getPairIterator();
-        while (iterator.hasNext()) {	// add an edge for every pair of entities with a weight higher than the threshold
+        while (iterator.hasNext()) {
             Comparison comparison = iterator.next();
             if (threshold < comparison.getUtilityMeasure()) {
                 SimilarityEdge se = new SimilarityEdge (comparison.getEntityId1(), (comparison.getEntityId2()+ datasetLimit), comparison.getUtilityMeasure());
                 SEqueue.add(se);
-                edgesWeight[comparison.getEntityId1()]+=comparison.getUtilityMeasure();
-                edgesWeight[comparison.getEntityId2()+ datasetLimit]+=comparison.getUtilityMeasure();
-                edgesAttached[comparison.getEntityId1()]++;
-                edgesAttached[comparison.getEntityId2()+ datasetLimit]++;
             }
         }
-
+        
         Set<Integer> Center =  new HashSet<Integer>();
         Set<Integer> NonCenter = new HashSet<Integer>();
         while (SEqueue.size() > 0)
@@ -83,35 +79,26 @@ public class CenterClustering implements IEntityClustering {
 
             if (!(Center.contains(v1)||Center.contains(v2)||NonCenter.contains(v1)||NonCenter.contains(v2)))
             {
-            	double w1 = (double) edgesWeight[v1] / (double) edgesAttached[v1];
-            	double w2 = (double) edgesWeight[v2] / (double) edgesAttached[v2];
-            	if (w1>w2)
-            	{
-                    Center.add(v1);
-                    NonCenter.add(v2);
-            	}
-            	else
-            	{
-                    Center.add(v2);
-                    NonCenter.add(v1);
-            	}
-
+                Center.add(v1);
+                NonCenter.add(v2);
                 similarityGraph.addEdge(v1, v2);
             }
             else if ((Center.contains(v1)&&Center.contains(v2))||(NonCenter.contains(v1)&&NonCenter.contains(v2)))
             {
                 continue;
             }
-            else if (Center.contains(v1)&&(!NonCenter.contains(v2)))
+            else if (Center.contains(v1))
             {
                 NonCenter.add(v2);
                 similarityGraph.addEdge(v1, v2);
             }
-            else if (Center.contains(v2)&&(!NonCenter.contains(v1)))
+            else if (Center.contains(v2))
             {
                 NonCenter.add(v1);
                 similarityGraph.addEdge(v1, v2);
             }
+            
+
         }
         
 

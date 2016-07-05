@@ -30,6 +30,8 @@ import java.util.PriorityQueue;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.apache.commons.lang3.ArrayUtils;
 import org.jgrapht.alg.ConnectivityInspector;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleGraph;
@@ -38,15 +40,18 @@ import org.jgrapht.graph.SimpleGraph;
  *
  * @author G.A.P. II
  */
-public class CenterClustering implements IEntityClustering {
+public class MarkovClustering implements IEntityClustering {
 
-    private static final Logger LOGGER = Logger.getLogger(CenterClustering.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(MarkovClustering.class.getName());
 
     private int noOfEntities;
     private int datasetLimit;
     private final SimpleGraph similarityGraph;
+    private double matrixSimThreshold = 0.001;//define similarity threshold for matrix comparison
+    private int similarityChecksLimit = 500;//define check repetitions limit for the expansion-inflation process
+    private double clusterThreshold = 0.01;//define similarity threshold for including in final graph
 
-    public CenterClustering() {
+    public MarkovClustering() {
         similarityGraph = new SimpleGraph(DefaultEdge.class);
         LOGGER.log(Level.INFO, "Initializing Connected Components clustering...");
     }
@@ -55,64 +60,50 @@ public class CenterClustering implements IEntityClustering {
     public List<EquivalenceCluster> getDuplicates(SimilarityPairs simPairs) {
         initializeGraph(simPairs);
         SimilarityEdgeComparator SEcomparator = new SimilarityEdgeComparator();
-        PriorityQueue<SimilarityEdge> SEqueue = new PriorityQueue<SimilarityEdge>(simPairs.getNoOfComparisons(), SEcomparator);
-        int[] edgesWeight = new int[noOfEntities];
-        int[] edgesAttached = new int[noOfEntities];
+        PriorityQueue<SimilarityEdge> SEqueue = 
+            new PriorityQueue<SimilarityEdge>(simPairs.getNoOfComparisons(), SEcomparator);
+        // add an edge for every pair of entities with a weight higher than the threshold
         double threshold = getSimilarityThreshold(simPairs);
         Iterator<Comparison> iterator = simPairs.getPairIterator();
-        while (iterator.hasNext()) {	// add an edge for every pair of entities with a weight higher than the threshold
+        double[][] simMatrix = new double[noOfEntities][noOfEntities];
+        while (iterator.hasNext()) {
             Comparison comparison = iterator.next();
             if (threshold < comparison.getUtilityMeasure()) {
-                SimilarityEdge se = new SimilarityEdge (comparison.getEntityId1(), (comparison.getEntityId2()+ datasetLimit), comparison.getUtilityMeasure());
-                SEqueue.add(se);
-                edgesWeight[comparison.getEntityId1()]+=comparison.getUtilityMeasure();
-                edgesWeight[comparison.getEntityId2()+ datasetLimit]+=comparison.getUtilityMeasure();
-                edgesAttached[comparison.getEntityId1()]++;
-                edgesAttached[comparison.getEntityId2()+ datasetLimit]++;
+                simMatrix[comparison.getEntityId1()][comparison.getEntityId2()+ datasetLimit]=comparison.getUtilityMeasure();
             }
         }
-
-        Set<Integer> Center =  new HashSet<Integer>();
-        Set<Integer> NonCenter = new HashSet<Integer>();
-        while (SEqueue.size() > 0)
+        addSelfLoop(simMatrix);
+        double[][] expMatrix;
+        double[][] inflatMatrix = simMatrix.clone();
+        double[][] inflatMatrixStart;
+        int count = 0;
+        do
         {
-            SimilarityEdge se = SEqueue.remove();
-            int v1 = se.getModel1Pos();
-            int v2 = se.getModel2Pos();
-            double sim = se.getSimilarity();
+        	inflatMatrixStart = inflatMatrix.clone();
+	        expMatrix = Normalize(expand2(inflatMatrixStart));      
+        	inflatMatrix = Normalize(Hadamard(expMatrix, 2));    	
+        	count++;
 
-            if (!(Center.contains(v1)||Center.contains(v2)||NonCenter.contains(v1)||NonCenter.contains(v2)))
-            {
-            	double w1 = (double) edgesWeight[v1] / (double) edgesAttached[v1];
-            	double w2 = (double) edgesWeight[v2] / (double) edgesAttached[v2];
-            	if (w1>w2)
-            	{
-                    Center.add(v1);
-                    NonCenter.add(v2);
-            	}
-            	else
-            	{
-                    Center.add(v2);
-                    NonCenter.add(v1);
-            	}
-
-                similarityGraph.addEdge(v1, v2);
-            }
-            else if ((Center.contains(v1)&&Center.contains(v2))||(NonCenter.contains(v1)&&NonCenter.contains(v2)))
-            {
-                continue;
-            }
-            else if (Center.contains(v1)&&(!NonCenter.contains(v2)))
-            {
-                NonCenter.add(v2);
-                similarityGraph.addEdge(v1, v2);
-            }
-            else if (Center.contains(v2)&&(!NonCenter.contains(v1)))
-            {
-                NonCenter.add(v1);
-                similarityGraph.addEdge(v1, v2);
-            }
         }
+        while ((!areSimilar(inflatMatrixStart, inflatMatrix))&&(count<similarityChecksLimit));
+        
+        for (int i=0; i<inflatMatrix.length; i++)
+        {
+        	for (int j=0; j<=i; j++)
+        	{
+        		int v1 = i;
+                int v2 = j;
+                double sim = Math.max(inflatMatrix[i][j], inflatMatrix[j][i]);
+                if ((sim>clusterThreshold)&&(i!=j))
+                {
+                    similarityGraph.addEdge(v1, v2);
+                }
+        	}
+        }
+            
+
+
+        
         
 
         // get connected components
@@ -136,6 +127,7 @@ public class CenterClustering implements IEntityClustering {
                     newCluster.addEntityIdD2(entityId-datasetLimit);
                 }
             }
+
         }
         return equivalenceClusters;
     }
@@ -178,7 +170,7 @@ public class CenterClustering implements IEntityClustering {
         }
         standardDeviation = Math.sqrt(standardDeviation/simPairs.getNoOfComparisons());
 
-        double threshold = 0.5;
+        double threshold = averageSimilarity;//+3 * standardDeviation 
 
         LOGGER.log(Level.INFO, "Similarity threshold : {0}", threshold);
         return threshold;
@@ -201,4 +193,91 @@ public class CenterClustering implements IEntityClustering {
         }
         LOGGER.log(Level.INFO, "Added {0} nodes in the graph", noOfEntities);
     }
+    
+    private double[][] expand2(double[][] inputMatrix) {
+    	
+			double[][] input = multiply(inputMatrix, inputMatrix);
+			return input;
+    }
+
+    
+    private double[][] multiply(double[][] a, double[][] b) {
+        int m1 = a.length;
+        int n1 = a[0].length;
+        int m2 = b.length;
+        int n2 = b[0].length;
+        if (n1 != m2) throw new RuntimeException("Illegal matrix dimensions.");
+        double[][] c = new double[m1][n2];
+        for (int i = 0; i < m1; i++)
+            for (int j = 0; j < n2; j++)
+                for (int k = 0; k < n1; k++)
+                    c[i][j] += a[i][k] * b[k][j];
+        return c;
+    }
+    
+    private double[][] Hadamard(double[][] a, int pow) {
+        int m1 = a.length;
+        int n1 = a[0].length;
+        double[][] c = new double[m1][n1];
+        for (int i = 0; i < m1; i++)
+            for (int j = 0; j < n1; j++)
+                    c[i][j] = Math.pow(a[i][j], pow);
+        return c;
+    }
+    
+    private boolean areSimilar(double[][] a, double[][] b) {
+        int m1 = a.length;
+        int n1 = a[0].length;
+        int m2 = b.length;
+        int n2 = b[0].length;
+    	if (m1 != m2) return false;
+    	if (n1 != n2) return false;
+        for (int i = 0; i < m1; i++)
+            for (int j = 0; j < n1; j++)
+                    if (Math.abs(a[i][j] - b[i][j])>matrixSimThreshold) return false;
+        return true;
+        
+    }
+    
+    private double[][] Normalize(double[][] a) {
+        int m1 = a.length;
+        int n1 = a[0].length;
+        double[][] c = new double[m1][n1];
+        for (int j = 0; j < n1; j++)
+        {
+        	double sumCol=0.0;
+            for (int i = 0; i < m1; i++) 
+            {
+            	sumCol+=a[i][j];
+            }
+
+            for (int i = 0; i < m1; i++) 
+            {
+            	c[i][j]=a[i][j]/sumCol;
+            }
+            	
+        }
+        return c;
+    }
+    
+    private void addSelfLoop(double[][] a) {
+        int m1 = a.length;
+        for (int i = 0; i < m1; i++)
+        {
+        	a[i][i]=1.0;
+        }
+    }
+    
+    public void setMatrixSimThreshold(double matrixSimThreshold) {
+        this.matrixSimThreshold = matrixSimThreshold;
+    }
+    
+    public void setclusterThreshold(double clusterThreshold) {
+        this.clusterThreshold = clusterThreshold;
+    }
+    
+    public void setsimilarityChecksLimit(int similarityChecksLimit) {
+        this.similarityChecksLimit = similarityChecksLimit;
+    }
+    
 }
