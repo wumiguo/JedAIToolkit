@@ -174,7 +174,7 @@ public class MarkovClustering implements IEntityClustering {
         }
         standardDeviation = Math.sqrt(standardDeviation/simPairs.getNoOfComparisons());
 
-        double threshold = 0.8;//+3 * standardDeviation 
+        double threshold = 0.1;//+3 * standardDeviation 
 
         LOGGER.log(Level.INFO, "Similarity threshold : {0}", threshold);
         return threshold;
@@ -209,12 +209,19 @@ public class MarkovClustering implements IEntityClustering {
     
     private double[][] multiply(double[][] a, double[][] b) {
         int n1 = a.length;
-        int iterLimit=datasetLimit;
+        int upLimit=n1;
+        int lowLimit=0;
+        if (datasetLimit!=0)
+        {
+        	upLimit=datasetLimit;
+        	lowLimit=datasetLimit;
+        }
+        
         if (n1 != a[0].length) throw new RuntimeException("Illegal matrix dimensions.");
         double[][] c = new double[n1][n1];
-        for (int i = 0; i < iterLimit; i++)
+        for (int i = 0; i < upLimit; i++)
         {
-            for (int j = iterLimit; j < n1; j++)
+            for (int j = lowLimit; j < n1; j++)
             {
             	for (int k = 0; k < n1; k++)
 	                {
@@ -224,11 +231,17 @@ public class MarkovClustering implements IEntityClustering {
             	
             }
         }
-        for (int i = 0; i < iterLimit; i++)
+        
+        if (datasetLimit==0)
+        {
+        	return c;
+        }
+        
+        for (int i = 0; i < upLimit; i++)
         {
         	c[i][i] += a[i][i] * b[i][i];
         }
-        for (int j = iterLimit; j < n1; j++)
+        for (int j = lowLimit; j < n1; j++)
         {
         	c[j][j] += a[j][j] * b[j][j];
         }
