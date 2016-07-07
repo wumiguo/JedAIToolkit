@@ -23,6 +23,7 @@ import Utilities.Comparators.SimilarityEdgeComparator;
 import Utilities.TextModels.AbstractModel;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -47,9 +48,9 @@ public class MarkovClustering implements IEntityClustering {
     private int noOfEntities;
     private int datasetLimit;
     private final SimpleGraph similarityGraph;
-    private double matrixSimThreshold = 0.001;//define similarity threshold for matrix comparison
-    private int similarityChecksLimit = 500;//define check repetitions limit for the expansion-inflation process
-    private double clusterThreshold = 0.01;//define similarity threshold for including in final graph
+    private double matrixSimThreshold = 0.00001;//define similarity threshold for matrix comparison
+    private int similarityChecksLimit = 2;//define check repetitions limit for the expansion-inflation process
+    private double clusterThreshold = 0.001;//define similarity threshold for including in final graph
 
     public MarkovClustering() {
         similarityGraph = new SimpleGraph(DefaultEdge.class);
@@ -73,27 +74,30 @@ public class MarkovClustering implements IEntityClustering {
             }
         }
         addSelfLoop(simMatrix);
-        double[][] expMatrix;
-        double[][] inflatMatrix = simMatrix.clone();
-        double[][] inflatMatrixStart;
+        Normalize(simMatrix);
+        double[][] atStart = new double[noOfEntities][noOfEntities];
         int count = 0;
         do
         {
-        	inflatMatrixStart = inflatMatrix.clone();
-	        expMatrix = Normalize(expand2(inflatMatrixStart));      
-        	inflatMatrix = Normalize(Hadamard(expMatrix, 2));    	
+        	for (int i = 0; i < noOfEntities; i++)
+                for (int j = 0; j < noOfEntities; j++)
+                        atStart[i][j] = simMatrix[i][j];
+        	expand2(simMatrix);      
+	        Normalize(simMatrix);      
+	        Hadamard(simMatrix, 2);      
+	        Normalize(simMatrix);      
         	count++;
 
         }
-        while ((!areSimilar(inflatMatrixStart, inflatMatrix))&&(count<similarityChecksLimit));
+        while ((!areSimilar(atStart, simMatrix))&&(count<similarityChecksLimit));
         
-        for (int i=0; i<inflatMatrix.length; i++)
+        for (int i=0; i<simMatrix.length; i++)
         {
         	for (int j=0; j<=i; j++)
         	{
         		int v1 = i;
                 int v2 = j;
-                double sim = Math.max(inflatMatrix[i][j], inflatMatrix[j][i]);
+                double sim = Math.max(simMatrix[i][j], simMatrix[j][i]);
                 if ((sim>clusterThreshold)&&(i!=j))
                 {
                     similarityGraph.addEdge(v1, v2);
@@ -170,7 +174,7 @@ public class MarkovClustering implements IEntityClustering {
         }
         standardDeviation = Math.sqrt(standardDeviation/simPairs.getNoOfComparisons());
 
-        double threshold = averageSimilarity;//+3 * standardDeviation 
+        double threshold = 0.8;//+3 * standardDeviation 
 
         LOGGER.log(Level.INFO, "Similarity threshold : {0}", threshold);
         return threshold;
@@ -194,35 +198,56 @@ public class MarkovClustering implements IEntityClustering {
         LOGGER.log(Level.INFO, "Added {0} nodes in the graph", noOfEntities);
     }
     
-    private double[][] expand2(double[][] inputMatrix) {
+    private void expand2(double[][] inputMatrix) {
     	
-			double[][] input = multiply(inputMatrix, inputMatrix);
-			return input;
+    	double[][] input = multiply(inputMatrix, inputMatrix);
+    	for (int i = 0; i < inputMatrix.length; i++)
+            for (int j = 0; j < inputMatrix[0].length; j++)
+                    inputMatrix[i][j] = input[i][j];
     }
 
     
     private double[][] multiply(double[][] a, double[][] b) {
-        int m1 = a.length;
-        int n1 = a[0].length;
-        int m2 = b.length;
-        int n2 = b[0].length;
-        if (n1 != m2) throw new RuntimeException("Illegal matrix dimensions.");
-        double[][] c = new double[m1][n2];
-        for (int i = 0; i < m1; i++)
-            for (int j = 0; j < n2; j++)
-                for (int k = 0; k < n1; k++)
-                    c[i][j] += a[i][k] * b[k][j];
+        int n1 = a.length;
+        int iterLimit=datasetLimit;
+        if (n1 != a[0].length) throw new RuntimeException("Illegal matrix dimensions.");
+        double[][] c = new double[n1][n1];
+        for (int i = 0; i < iterLimit; i++)
+        {
+            for (int j = iterLimit; j < n1; j++)
+            {
+            	for (int k = 0; k < n1; k++)
+	                {
+	                    c[i][j] += a[i][k] * b[k][j];
+	                }
+            	
+            	
+            }
+        }
+        for (int i = 0; i < iterLimit; i++)
+        {
+        	c[i][i] += a[i][i] * b[i][i];
+        }
+        for (int j = iterLimit; j < n1; j++)
+        {
+        	c[j][j] += a[j][j] * b[j][j];
+        }
+    	
+        
+                
         return c;
     }
     
-    private double[][] Hadamard(double[][] a, int pow) {
+    private void Hadamard(double[][] a, int pow) {
         int m1 = a.length;
         int n1 = a[0].length;
-        double[][] c = new double[m1][n1];
         for (int i = 0; i < m1; i++)
+        {
             for (int j = 0; j < n1; j++)
-                    c[i][j] = Math.pow(a[i][j], pow);
-        return c;
+            {
+                    a[i][j] = Math.pow(a[i][j], pow);
+            }
+        }
     }
     
     private boolean areSimilar(double[][] a, double[][] b) {
@@ -239,7 +264,7 @@ public class MarkovClustering implements IEntityClustering {
         
     }
     
-    private double[][] Normalize(double[][] a) {
+    private void Normalize(double[][] a) {
         int m1 = a.length;
         int n1 = a[0].length;
         double[][] c = new double[m1][n1];
@@ -253,11 +278,10 @@ public class MarkovClustering implements IEntityClustering {
 
             for (int i = 0; i < m1; i++) 
             {
-            	c[i][j]=a[i][j]/sumCol;
+            	a[i][j]=a[i][j]/sumCol;
             }
             	
         }
-        return c;
     }
     
     private void addSelfLoop(double[][] a) {
