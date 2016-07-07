@@ -91,9 +91,17 @@ public class MarkovClustering implements IEntityClustering {
         }
         while ((!areSimilar(atStart, simMatrix))&&(count<similarityChecksLimit));
         
-        for (int i=0; i<simMatrix.length; i++)
+        int n1 = simMatrix.length;
+        int upLimit=n1;
+        int lowLimit=0;
+        if (datasetLimit!=0)
         {
-        	for (int j=0; j<=i; j++)
+        	upLimit=datasetLimit;
+        	lowLimit=datasetLimit;
+        }
+        for (int i=0; i<upLimit; i++)
+        {
+        	for (int j=lowLimit; j<n1; j++)
         	{
         		int v1 = i;
                 int v2 = j;
@@ -174,7 +182,7 @@ public class MarkovClustering implements IEntityClustering {
         }
         standardDeviation = Math.sqrt(standardDeviation/simPairs.getNoOfComparisons());
 
-        double threshold = 0.1;//+3 * standardDeviation 
+        double threshold = 0.5;//+3 * standardDeviation 
 
         LOGGER.log(Level.INFO, "Similarity threshold : {0}", threshold);
         return threshold;
@@ -244,10 +252,7 @@ public class MarkovClustering implements IEntityClustering {
         for (int j = lowLimit; j < n1; j++)
         {
         	c[j][j] += a[j][j] * b[j][j];
-        }
-    	
-        
-                
+        }    
         return c;
     }
     
