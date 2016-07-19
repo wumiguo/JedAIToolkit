@@ -32,7 +32,7 @@ public class VertexWeightComparator implements Comparator<VertexWeight> {
     public int compare(VertexWeight vw1,VertexWeight vw2) {
     	double w1 = vw1.getWeight()/vw1.getNoOfAdj();
     	double w2 = vw2.getWeight()/vw2.getNoOfAdj();
-        double test = w1-w2; 
+    	double test = w1-w2 +  0.00001 * (double) vw1.Connections().size() - 0.00001 * (double) vw2.Connections().size();
         if (test > 0) {
             return -1;
         }
@@ -40,7 +40,6 @@ public class VertexWeightComparator implements Comparator<VertexWeight> {
         if (test < 0) {
             return 1;
         }
-
         return 0;
     }
     

@@ -7,6 +7,7 @@ import DataModel.VertexWeight;
 import Utilities.Comparators.VertexWeightComparator;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -33,12 +34,12 @@ public class RicochetSRClustering implements IEntityClustering {
 
     public RicochetSRClustering() {
         similarityGraph = new SimpleGraph(DefaultEdge.class);
-        LOGGER.log(Level.INFO, "Initializing Connected Components clustering...");
+        LOGGER.log(Level.INFO, "Initializing Ricochet Sequential Rippling clustering...");
     }
 
     @Override
     public List<EquivalenceCluster> getDuplicates(SimilarityPairs simPairs) {
-        initializeGraph(simPairs);
+    	initializeDataProperties(simPairs);
         VertexWeightComparator VWcomparator = new VertexWeightComparator();
         PriorityQueue<VertexWeight> VWqueue = new PriorityQueue<VertexWeight>(noOfEntities, VWcomparator);
         double[] edgesWeight = new double[noOfEntities];
@@ -59,14 +60,14 @@ public class RicochetSRClustering implements IEntityClustering {
                 		edgesWeight[comparison.getEntityId2()+ datasetLimit];
                 edgesAttached[comparison.getEntityId1()]++;
                 edgesAttached[comparison.getEntityId2()+ datasetLimit]++;             
-                connections.get(comparison.getEntityId1()).put(comparison.getEntityId2(), comparison.getUtilityMeasure());
-                connections.get(comparison.getEntityId2()).put(comparison.getEntityId1(), comparison.getUtilityMeasure());
+                connections.get(comparison.getEntityId1()).put(comparison.getEntityId2()+ datasetLimit, comparison.getUtilityMeasure());
+                connections.get(comparison.getEntityId2()+ datasetLimit).put(comparison.getEntityId1(), comparison.getUtilityMeasure());
 
             }
         }
         for (int i=0; i<noOfEntities; i++)
         {
-        	if (edgesWeight[i]>0)
+        	if (edgesAttached[i]>0)
         	{
         		VertexWeight vw = new VertexWeight (i, edgesWeight[i], edgesAttached[i], connections.get(i));
                 VWqueue.add(vw);
@@ -83,8 +84,11 @@ public class RicochetSRClustering implements IEntityClustering {
         VertexWeight vw = VWqueue.remove();
         int v1 = vw.getPos();
         Center.add(v1);
+
+
         clusterCenter[v1]=v1;
-        Clusters.put(v1, Center);//initialize v1 Cluster with its own value
+        Clusters.put(v1, new HashSet<Integer>(Arrays.asList(v1)));//initialize v1 Cluster with its own value
+        
         simWithCenter[v1]=1.0;
         HashMap<Integer, Double> connect = vw.Connections();
         for (int v2 : connect.keySet())
@@ -94,12 +98,15 @@ public class RicochetSRClustering implements IEntityClustering {
             simWithCenter[v2]=connect.get(v2);//similarity between v1 and v2
             Clusters.get(v1).add(v2);
         }
+        
+
         while (VWqueue.size() > 0)
         {
             vw = VWqueue.remove();
             v1 = vw.getPos();
             connect = vw.Connections();
             Set<Integer> toReassign =  new HashSet<Integer>();
+            Set<Integer> centersToReassign =  new HashSet<Integer>();
             for (int v2 : connect.keySet())
             {
             	if (Center.contains(v2))
@@ -108,7 +115,7 @@ public class RicochetSRClustering implements IEntityClustering {
                 }
                 double sim = connect.get(v2);
                 double previousSim = simWithCenter[v2];
-                if (sim<=previousSim)
+                if ((sim<=previousSim))
                 {
                 	continue;
                 }
@@ -117,92 +124,95 @@ public class RicochetSRClustering implements IEntityClustering {
             }
             if (!toReassign.isEmpty())
             {
-            	if (NonCenter.contains(v1)) //if v2 was in another cluster already then deal with that cluster
+            	if (NonCenter.contains(v1)) //if v1 was in another cluster already then deal with that cluster
                 {
+            		NonCenter.remove(v1);
                     int prevClusterCenter = clusterCenter[v1];
                     Clusters.get(prevClusterCenter).remove(v1);
                     if (Clusters.get(prevClusterCenter).size()<2) //if v2's previous cluster becomes a singleton 
                     {											//delete this cluster and put 
-                    	
-                    	Center.remove(prevClusterCenter);
-                    	Clusters.remove(prevClusterCenter);
-                    	double max=0.0;
-                    	int newCenter = prevClusterCenter;
-                    	for (int center : Center)
-                    	{
-                    		if (connections.get(center).containsKey(prevClusterCenter))
-                    		{
-                    			double newSim = connections.get(center).get(prevClusterCenter);
-                    			if (newSim>max) 
-                    				{
-                    					max=newSim;
-                    					newCenter = center;
-                    				}
-                    		}
-                    	}
-                    	
+                    	centersToReassign.add(prevClusterCenter);                   	
                     }
                 }
             	toReassign.add(v1);
 
             	Clusters.put(v1, toReassign);
-            	NonCenter.remove(v1);
             	Center.add(v1);
 
             }
             
-            for (int v2 : toReassign)
+            
+            Set<Integer> trCopy = new HashSet<Integer>(toReassign);
+            for (int v2 : trCopy)
             {
+
             	if (v2==v1) continue;
                 if (NonCenter.contains(v2)) //if v2 was in another cluster already then deal with that cluster
                 {
-                    int prevClusterCenter = clusterCenter[v2];
+                	int prevClusterCenter = clusterCenter[v2];
                     Clusters.get(prevClusterCenter).remove(v2);
-                    
+
                     if (Clusters.get(prevClusterCenter).size()<2) //if v2's previous cluster becomes a singleton 
-                    {											//delete this cluster and put 
-                    	Center.remove(prevClusterCenter);
-                    	Clusters.remove(prevClusterCenter);
-                    	double max=0.0;
-                    	int newCenter = prevClusterCenter;
-                    	for (int center : Center)
-                    	{
-                    		if (connections.get(center).containsKey(prevClusterCenter))
-                    		{
-                    			double newSim = connections.get(center).get(prevClusterCenter);
-                    			if (newSim>max) 
-                    				{
-                    					max=newSim;
-                    					newCenter = center;
-                    				}
-                    		}
-                    	}
-                    	
+                    {	
+                    	centersToReassign.add(prevClusterCenter);
                     }
                 }
-                
                 NonCenter.add(v2);
                 clusterCenter[v2]=v1;
                 simWithCenter[v2]=connect.get(v2);
             }
+            for (int ctr : centersToReassign)
+            {
+                	Center.remove(ctr);
+                	Clusters.remove(ctr);
+                	
+                	double max=0.0;
+                	int newCenter = v1;//in case there is no close similarity
+                	for (int center : Center)
+                	{
+                		if (connections.get(center).containsKey(ctr))
+                		{
+                			double newSim = connections.get(center).get(ctr);
+                			if (newSim>max) 
+                				{
+                					max=newSim;
+                					newCenter = center;
+                				}
+                		}
+                	}
+                	Clusters.get(newCenter).add(ctr);
+                    Center.remove(ctr);
+                    Clusters.remove(ctr);
+                    NonCenter.add(ctr);
+                    clusterCenter[ctr]=newCenter;
+                    simWithCenter[ctr]=max;           	
+                }
             
         }
         
-
+        for (int i = 0; i < noOfEntities; i++) {
+	        	if ((!NonCenter.contains(i))&&(!Center.contains(i)))
+	            {
+                	Center.add(i);
+	                clusterCenter[i]=i;
+	                Clusters.put(i, new HashSet<Integer>(Arrays.asList(i)));//initialize v1 Cluster with its own value
+	                simWithCenter[i]=1.0;
+	            }        
+        	}
         // get connected components
-        ConnectivityInspector ci = new ConnectivityInspector(similarityGraph);
-        List<Set<Integer>> connectedComponents = ci.connectedSets();
 
         // prepare output
         List<EquivalenceCluster> equivalenceClusters = new ArrayList<>();
         for (Set<Integer> componentIds : Clusters.values()) {
-            EquivalenceCluster newCluster = new EquivalenceCluster();
+                    
+        	EquivalenceCluster newCluster = new EquivalenceCluster();
             equivalenceClusters.add(newCluster);
             if (!simPairs.isCleanCleanER()) {
                 newCluster.loadBulkEntityIdsD1(componentIds);
                 continue;
             }
-
+        	
+            	
             for (Integer entityId : componentIds) {
                 if (entityId < datasetLimit) {
                     newCluster.addEntityIdD1(entityId);
@@ -213,6 +223,7 @@ public class RicochetSRClustering implements IEntityClustering {
         }
         return equivalenceClusters;
     }
+
 
     public int getMaxEntityId(int[] entityIds) {
         int maxId = Integer.MIN_VALUE;
@@ -251,15 +262,14 @@ public class RicochetSRClustering implements IEntityClustering {
             standardDeviation += Math.pow(comparison.getUtilityMeasure()-averageSimilarity, 2.0);
         }
         standardDeviation = Math.sqrt(standardDeviation/simPairs.getNoOfComparisons());
-
-        double threshold = 0.8;
+        double threshold = 0.7;
 
         LOGGER.log(Level.INFO, "Similarity threshold : {0}", threshold);
         return threshold;
     }
     
     
-    private void initializeGraph(SimilarityPairs simPairs) {
+    private void initializeDataProperties(SimilarityPairs simPairs) {
         int maxEntity1 = getMaxEntityId(simPairs.getEntityIds1());
         int maxEntity2 = getMaxEntityId(simPairs.getEntityIds2());
         if (simPairs.isCleanCleanER()) {
@@ -270,9 +280,7 @@ public class RicochetSRClustering implements IEntityClustering {
             noOfEntities = Math.max(maxEntity1, maxEntity2) + 1;
         }
 
-        for (int i = 0; i < noOfEntities; i++) {
-            similarityGraph.addVertex(i);
-        }
-        LOGGER.log(Level.INFO, "Added {0} nodes in the graph", noOfEntities);
+
+        LOGGER.log(Level.INFO, "Added {0} entities in the dataset", noOfEntities);
     }
 }
