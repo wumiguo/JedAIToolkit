@@ -41,29 +41,50 @@ import java.util.List;
 public class TestAllMethods {
 
     public static void main(String[] args) {
-        String entitiesFilePath = "C:\\Users\\G.A.P. II\\Downloads\\cddbProfiles";
-        String groundTruthFilePath = "C:\\Users\\G.A.P. II\\Downloads\\cddbDuplicates";
+        BlockBuildingMethod blockingWorkflow = BlockBuildingMethod.STANDARD_BLOCKING;
 
-        IEntityReader eReader = new EntitySerializationReader(entitiesFilePath);
-        List<EntityProfile> profiles = eReader.getEntityProfiles();
-        System.out.println("Input Entity Profiles\t:\t" + profiles.size());
+        String[] datasetProfiles = {"E:\\Data\\profiles\\restaurantProfiles",
+            "E:\\Data\\profiles\\censusProfiles",
+            "E:\\Data\\profiles\\coraProfiles",
+            "E:\\Data\\profiles\\cddbProfiles",
+            "E:\\Data\\DERdata\\abt-buy\\dataset",
+            "E:\\Data\\DERdata\\amazon-gp\\dataset",
+            "E:\\Data\\DERdata\\dblp-acm\\dataset",
+            "E:\\Data\\DERdata\\dblp-scholar\\dataset",
+            "E:\\Data\\DERdata\\movies\\dataset"
+        };
+        String[] datasetGroundtruth = {"E:\\Data\\groundtruth\\restaurantIdDuplicates",
+            "E:\\Data\\groundtruth\\censusIdDuplicates",
+            "E:\\Data\\groundtruth\\coraIdDuplicates",
+            "E:\\Data\\groundtruth\\cddbIdDuplicates",
+            "E:\\Data\\DERdata\\abt-buy\\groundtruth",
+            "E:\\Data\\DERdata\\amazon-gp\\groundtruth",
+            "E:\\Data\\DERdata\\dblp-acm\\groundtruth",
+            "E:\\Data\\DERdata\\dblp-scholar\\groundtruth",
+            "E:\\Data\\DERdata\\movies\\groundtruth"
+        };
 
-        IGroundTruthReader gtReader = new GtSerializationReader(groundTruthFilePath);
-        final AbstractDuplicatePropagation duplicatePropagation = new UnilateralDuplicatePropagation(gtReader.getDuplicatePairs(eReader.getEntityProfiles()));
-        System.out.println("Existing Duplicates\t:\t" + duplicatePropagation.getDuplicates().size());
+        for (int datasetId = 0; datasetId < datasetProfiles.length; datasetId++) {
+            System.out.println("\n\n\n\n\nCurrent dataset id\t:\t" + datasetId);;
 
-        for (BlockBuildingMethod blbuMethod : BlockBuildingMethod.values()) {
-            System.out.println("\n\nCurrent blocking metohd\t:\t" + blbuMethod);
-            IBlockBuilding blockBuildingMethod = BlockBuildingMethod.getDefaultConfiguration(blbuMethod);
+            IEntityReader eReader = new EntitySerializationReader(datasetProfiles[datasetId]);
+            List<EntityProfile> profiles = eReader.getEntityProfiles();
+            System.out.println("Input Entity Profiles\t:\t" + profiles.size());
+
+            IGroundTruthReader gtReader = new GtSerializationReader(datasetGroundtruth[datasetId]);
+            final AbstractDuplicatePropagation duplicatePropagation = new UnilateralDuplicatePropagation(gtReader.getDuplicatePairs(eReader.getEntityProfiles()));
+            System.out.println("Existing Duplicates\t:\t" + duplicatePropagation.getDuplicates().size());
+
+            IBlockBuilding blockBuildingMethod = BlockBuildingMethod.getDefaultConfiguration(blockingWorkflow);
             List<AbstractBlock> blocks = blockBuildingMethod.getBlocks(profiles, null);
             System.out.println("Original blocks\t:\t" + blocks.size());
 
-            IBlockProcessing blockCleaningMethod = BlockBuildingMethod.getDefaultBlockCleaning(blbuMethod);
+            IBlockProcessing blockCleaningMethod = BlockBuildingMethod.getDefaultBlockCleaning(blockingWorkflow);
             if (blockCleaningMethod != null) {
                 blocks = blockCleaningMethod.refineBlocks(blocks);
             }
 
-            IBlockProcessing comparisonCleaningMethod = BlockBuildingMethod.getDefaultComparisonCleaning(blbuMethod);
+            IBlockProcessing comparisonCleaningMethod = BlockBuildingMethod.getDefaultComparisonCleaning(blockingWorkflow);
             if (comparisonCleaningMethod != null) {
                 blocks = comparisonCleaningMethod.refineBlocks(blocks);
             }
