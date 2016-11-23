@@ -95,7 +95,6 @@ public class GroupLinkageWithGraph extends AbstractEntityMatching {
     //Every element of the getModels list is an AbstractModel[] array, corresponding to 
     //a profile. Every element of these arrays is a text-model corresponding to an attribute.
     private List<AbstractModel[]> getModels(List<EntityProfile> profiles) {
-
         List<AbstractModel[]> ModelsList = new ArrayList<AbstractModel[]>();
         for (EntityProfile profile : profiles) {
             int counter = 0;
@@ -152,7 +151,6 @@ public class GroupLinkageWithGraph extends AbstractEntityMatching {
     }
 
     public WeightedGraph<String, DefaultWeightedEdge> getSimilarityGraph(PriorityQueue<SimilarityEdge> seQueue) {
-
         WeightedGraph<String, DefaultWeightedEdge> graph
                 = new SimpleDirectedWeightedGraph<String, DefaultWeightedEdge>(DefaultWeightedEdge.class);
 
@@ -172,7 +170,6 @@ public class GroupLinkageWithGraph extends AbstractEntityMatching {
         }
 
         return graph;
-
     }
 
     public double getSimilarity(WeightedGraph<String, DefaultWeightedEdge> simGraph, int verticesNum) {

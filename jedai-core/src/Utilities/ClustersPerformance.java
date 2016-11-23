@@ -30,12 +30,12 @@ import java.util.logging.Logger;
 public class ClustersPerformance {
 
     private static final Logger LOGGER = Logger.getLogger(ClustersPerformance.class.getName());
-    
+
     private double fMeasure;
     private double precision;
     private double recall;
     private double totalMatches;
-    
+
     private final AbstractDuplicatePropagation abstractDP;
     private final List<EquivalenceCluster> entityClusters;
 
@@ -49,8 +49,8 @@ public class ClustersPerformance {
         if (entityClusters.isEmpty()) {
             LOGGER.log(Level.WARNING, "Empty set of equivalence clusters given as input!");
             return;
-        } 
-        
+        }
+
         totalMatches = 0;
         if (abstractDP instanceof BilateralDuplicatePropagation) { // Clean-Clean ER
             for (EquivalenceCluster cluster : entityClusters) {
@@ -66,9 +66,9 @@ public class ClustersPerformance {
             for (EquivalenceCluster cluster : entityClusters) {
                 List<Integer> duplicates = cluster.getEntityIdsD1();
                 Integer[] duplicatesArray = duplicates.toArray(new Integer[duplicates.size()]);
-                
+
                 for (int i = 0; i < duplicatesArray.length; i++) {
-                    for (int j = i+1; j < duplicatesArray.length; j++) {
+                    for (int j = i + 1; j < duplicatesArray.length; j++) {
                         totalMatches++;
                         Comparison comparison = new Comparison(false, duplicatesArray[i], duplicatesArray[j]);
                         abstractDP.isSuperfluous(comparison);
@@ -79,10 +79,10 @@ public class ClustersPerformance {
 
         printStatistics();
     }
-    
+
     private void printStatistics() {
-        precision = abstractDP.getNoOfDuplicates()/totalMatches;
-        recall = ((double)abstractDP.getNoOfDuplicates())/abstractDP.getExistingDuplicates();
+        precision = abstractDP.getNoOfDuplicates() / totalMatches;
+        recall = ((double) abstractDP.getNoOfDuplicates()) / abstractDP.getExistingDuplicates();
         fMeasure = 2 * precision * recall / (precision + recall);
 
         System.out.println("\n\n\n**************************************************");
