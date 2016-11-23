@@ -21,8 +21,6 @@ import Utilities.DataStructures.AbstractDuplicatePropagation;
 import BlockProcessing.IBlockProcessing;
 import Utilities.DataStructures.UnilateralDuplicatePropagation;
 import DataModel.AbstractBlock;
-import DataModel.Comparison;
-import DataModel.ComparisonIterator;
 import DataModel.EntityProfile;
 import DataModel.SimilarityPairs;
 import DataReader.EntityReader.IEntityReader;
@@ -93,7 +91,7 @@ public class TestGroupLinkage {
             	if (model.equals(RepresentationModel.CHARACTER_BIGRAMS))
             	{
 
-                GroupLinkage gp = new GroupLinkage(model);
+                GroupLinkageWithGraph gp = new GroupLinkageWithGraph(model);
                 gp.setSimilarityThreshold(0.1);
                 SimilarityPairs simPairs = gp.executeComparisons(blocks, profiles1);//
                 //System.out.println();
