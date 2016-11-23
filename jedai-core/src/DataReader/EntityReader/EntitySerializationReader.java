@@ -18,12 +18,16 @@ package DataReader.EntityReader;
 
 import DataModel.EntityProfile;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
  * @author G.A.P. II
  */
 public class EntitySerializationReader extends AbstractEntityReader {
+    
+    private static final Logger LOGGER = Logger.getLogger(EntitySerializationReader.class.getName());
     
     public EntitySerializationReader(String filePath) {
         super(filePath);
@@ -35,18 +39,23 @@ public class EntitySerializationReader extends AbstractEntityReader {
             return entityProfiles;
         }
         
+        if (inputFilePath == null) {
+            LOGGER.log(Level.SEVERE, "Input file path has not been set!");
+            return null;
+        }
+        
         entityProfiles.addAll((List<EntityProfile>) loadSerializedObject(inputFilePath));
         return entityProfiles;
     }
 
     @Override
     public String getMethodInfo() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return "Serialization Reader: loads a file with Java serialized EntityProfile objects into memory.";
     }
 
     @Override
     public String getMethodParameters() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return "No other parameter is required, apart from the absolute file path";
     }
     
 }

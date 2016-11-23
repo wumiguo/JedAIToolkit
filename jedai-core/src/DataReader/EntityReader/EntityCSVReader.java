@@ -17,7 +17,6 @@ package DataReader.EntityReader;
 
 import DataModel.EntityProfile;
 import com.opencsv.CSVReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Arrays;
@@ -56,6 +55,11 @@ public class EntityCSVReader extends AbstractEntityReader {
             return entityProfiles;
         }
         
+        if (inputFilePath == null) {
+            LOGGER.log(Level.SEVERE, "Input file path has not been set!");
+            return null;
+        }
+        
         try {
             //creating reader
             CSVReader reader = new CSVReader(new FileReader(inputFilePath), separator);
@@ -64,7 +68,7 @@ public class EntityCSVReader extends AbstractEntityReader {
             String[] firstLine = reader.readNext();
             int noOfAttributes = firstLine.length;
             if (noOfAttributes - 1 < idIndex) {
-                LOGGER.log(Level.SEVERE, "Id index is does not correspond to a valid column index! Counting starts from 0.");
+                LOGGER.log(Level.SEVERE, "Id index does not correspond to a valid column index! Counting starts from 0.");
                 return null;
             }
 
@@ -96,9 +100,6 @@ public class EntityCSVReader extends AbstractEntityReader {
             }
 
             return entityProfiles;
-        } catch (FileNotFoundException ex) {
-            LOGGER.log(Level.SEVERE, null, ex);
-            return null;
         } catch (IOException ex) {
             LOGGER.log(Level.SEVERE, null, ex);
             return null;
@@ -113,7 +114,7 @@ public class EntityCSVReader extends AbstractEntityReader {
     @Override
     public String getMethodParameters() {
         return "The CSV Reader involves 4 parameters:\n"
-                + "1) attributeNamesInFirstRow : boolean, Default value: false.\n"
+                + "1) attributeNamesInFirstRow : boolean, default value: false.\n"
                 + "If true, it reades the attribute name from the first line of the CSV file.\n"
                 + "If false, the first line is converted into an entity profile.\n"
                 + "2) separator : character, default value: ','.\n"

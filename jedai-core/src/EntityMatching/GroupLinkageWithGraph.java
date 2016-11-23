@@ -65,14 +65,12 @@ public class GroupLinkageWithGraph extends AbstractEntityMatching {
             System.exit(-1);
         }
 
-        boolean isCleanCleanER = false;
+        isCleanCleanER = false;
         entityModelsD1 = getModels(profilesD1);
         if (profilesD2 != null) {
-
             isCleanCleanER = true;
             entityModelsD2 = getModels(profilesD2);
         }
-        this.isCleanCleanER =isCleanCleanER; 
 
         SimilarityPairs simPairs = new SimilarityPairs(isCleanCleanER, blocks);
         for (AbstractBlock block : blocks) {
@@ -80,15 +78,12 @@ public class GroupLinkageWithGraph extends AbstractEntityMatching {
             while (iterator.hasNext()) {
                 Comparison currentComparison = iterator.next();
                 PriorityQueue<SimilarityEdge> similarityQueue = getSimilarityEdges(currentComparison);
-                WeightedGraph<String,DefaultWeightedEdge> similarityGraph = getSimilarityGraph(similarityQueue);
+                WeightedGraph<String, DefaultWeightedEdge> similarityGraph = getSimilarityGraph(similarityQueue);
                 int verticesNum = entityModelsD1.get(currentComparison.getEntityId1()).length;
-                if (isCleanCleanER) 
-                {
-                	verticesNum+=entityModelsD2.get(currentComparison.getEntityId2()).length;
-                }
-                else
-                {
-                	verticesNum+=entityModelsD1.get(currentComparison.getEntityId2()).length;
+                if (isCleanCleanER) {
+                    verticesNum += entityModelsD2.get(currentComparison.getEntityId2()).length;
+                } else {
+                    verticesNum += entityModelsD1.get(currentComparison.getEntityId2()).length;
                 }
                 currentComparison.setUtilityMeasure(getSimilarity(similarityGraph, verticesNum));
                 simPairs.addComparison(currentComparison);
@@ -136,51 +131,48 @@ public class GroupLinkageWithGraph extends AbstractEntityMatching {
         } else {
             model2 = entityModelsD1.get(comparison.getEntityId2());
         }
-    	
 
         int s1 = model1.length;
         int s2 = model2.length;
         SimilarityEdgeComparator SEcomparator = new SimilarityEdgeComparator();
-        PriorityQueue<SimilarityEdge> SEqueue = 
-            new PriorityQueue<SimilarityEdge>(s1*s2, SEcomparator);
-        
+        PriorityQueue<SimilarityEdge> SEqueue
+                = new PriorityQueue<SimilarityEdge>(s1 * s2, SEcomparator);
+
         for (int i = 0; i < s1; i++) {
             for (int j = 0; j < s2; j++) {
-            	double sim = model1[i].getSimilarity(model2[j]);
-            	if (sim>similarityThreshold)
-            	{
-                    SimilarityEdge se = new SimilarityEdge (i, j, sim);
+                double sim = model1[i].getSimilarity(model2[j]);
+                if (sim > similarityThreshold) {
+                    SimilarityEdge se = new SimilarityEdge(i, j, sim);
                     SEqueue.add(se);
-            	}
+                }
             }
         }
         return SEqueue;
-		
+
     }
-    
+
     public WeightedGraph<String, DefaultWeightedEdge> getSimilarityGraph(PriorityQueue<SimilarityEdge> seQueue) {
-    	
-    	WeightedGraph<String, DefaultWeightedEdge> graph
-        = new SimpleDirectedWeightedGraph<String, DefaultWeightedEdge>(DefaultWeightedEdge.class);
-    	
-    	 while (seQueue.size() > 0)
-         {
-             SimilarityEdge se = seQueue.remove();
-             int i = se.getModel1Pos();
-             int j = se.getModel2Pos();
-             if (!(graph.containsVertex("a" + i)||graph.containsVertex("b" + j)))//only if both vertices don't exist
-             {
-            	 double sim = se.getSimilarity();
-            	 graph.addVertex("a" + i);
-            	 graph.addVertex("b" + j);
-            	 DefaultWeightedEdge e = graph.addEdge("a" + i, "b" + j);
-                 graph.setEdgeWeight(e, sim);
-                 
-             }             
-         }
-    	
+
+        WeightedGraph<String, DefaultWeightedEdge> graph
+                = new SimpleDirectedWeightedGraph<String, DefaultWeightedEdge>(DefaultWeightedEdge.class);
+
+        while (seQueue.size() > 0) {
+            SimilarityEdge se = seQueue.remove();
+            int i = se.getModel1Pos();
+            int j = se.getModel2Pos();
+            if (!(graph.containsVertex("a" + i) || graph.containsVertex("b" + j)))//only if both vertices don't exist
+            {
+                double sim = se.getSimilarity();
+                graph.addVertex("a" + i);
+                graph.addVertex("b" + j);
+                DefaultWeightedEdge e = graph.addEdge("a" + i, "b" + j);
+                graph.setEdgeWeight(e, sim);
+
+            }
+        }
+
         return graph;
-    	
+
     }
 
     public double getSimilarity(WeightedGraph<String, DefaultWeightedEdge> simGraph, int verticesNum) {
@@ -188,18 +180,15 @@ public class GroupLinkageWithGraph extends AbstractEntityMatching {
         double nominator = 0;
         double denominator = (double) verticesNum; //m1+m2
         for (DefaultWeightedEdge e : simGraph.edgeSet()) {
-                nominator += simGraph.getEdgeWeight(e);
-                denominator-=1.0;
+            nominator += simGraph.getEdgeWeight(e);
+            denominator -= 1.0;
         }
         similarity = nominator / denominator;
 
         return similarity;
     }
 
-   
-
     public void setSimilarityThreshold(double p) {
         this.similarityThreshold = p;
     }
-
 }

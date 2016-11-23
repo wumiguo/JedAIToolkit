@@ -13,7 +13,6 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
  */
-
 package DataReader.EntityReader;
 
 import org.apache.jena.rdf.model.Model;
@@ -40,14 +39,13 @@ import java.util.logging.Logger;
  *
  * @author G.A.P. II
  */
-
 public class EntityRDFReader extends AbstractEntityReader {
 
     private static final Logger LOGGER = Logger.getLogger(EntityRDFReader.class.getName());
-    
+
     private final Set<String> attributesToExclude;
     private final Map<String, EntityProfile> urlToEntity;
-    
+
     public EntityRDFReader(String filePath) {
         super(filePath);
         attributesToExclude = new HashSet<>();
@@ -59,7 +57,7 @@ public class EntityRDFReader extends AbstractEntityReader {
         if (!entityProfiles.isEmpty()) {
             return entityProfiles;
         }
-        
+
         if (inputFilePath == null) {
             LOGGER.log(Level.SEVERE, "Input file path has not been set!");
             return null;
@@ -79,47 +77,46 @@ public class EntityRDFReader extends AbstractEntityReader {
 
     @Override
     public String getMethodInfo() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return "RDF Reader: converts an rdf file of any format into a set of entity profiles.";
     }
 
     @Override
     public String getMethodParameters() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return "The RDF Reader involves 1 parameter:\n"
+                + "attributesToExclude: String[], default value: empty.\n"
+                + "The names of the predicates that will be ignored during the creation of entity profiles.\n";
     }
 
     private void readModel(Model m) throws IOException {
-        StmtIterator iter = m.listStatements();
-        Statement stmt;
         //read each ntriples
         //get spo, create a separate profile for each separate subject,
         //with Attribute=predicate and Value=object
+        StmtIterator iter = m.listStatements();
         while (iter.hasNext()) {
-            stmt = iter.nextStatement();
-            
+            Statement stmt = iter.nextStatement();
+
             Property predicate = stmt.getPredicate();
             String pred = predicate.toString();
             if (attributesToExclude.contains(pred)) {
                 continue;
             }
-            
+
             Resource subject = stmt.getSubject();
             String sub = subject.toString();
-            
+
             RDFNode object = stmt.getObject();
             String obj = object.toString();
 
             //if already exists a profile for the subject, simply add po as <Att>-<Value>
-            EntityProfile existingProfile = urlToEntity.get(sub);
-            if (existingProfile == null) {
-            	
-                EntityProfile newProfile = new EntityProfile(sub);
-                if (!obj.isEmpty()) newProfile.addAttribute(pred, obj);
-                entityProfiles.add(newProfile);
-                urlToEntity.put(sub, newProfile);
-                
-            } else {
-            	if (!obj.isEmpty()) existingProfile.addAttribute(pred, obj);
-            	
+            EntityProfile entityProfile = urlToEntity.get(sub);
+            if (entityProfile == null) {
+                entityProfile = new EntityProfile(sub);
+                entityProfiles.add(entityProfile);
+                urlToEntity.put(sub, entityProfile);
+            } 
+            
+            if (!obj.isEmpty()) {
+                entityProfile.addAttribute(pred, obj);
             }
         }
     }
