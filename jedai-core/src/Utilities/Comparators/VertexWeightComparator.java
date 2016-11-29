@@ -12,27 +12,30 @@
 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 * See the License for the specific language governing permissions and
 * limitations under the License.
-*/
-
+ */
 package Utilities.Comparators;
 
-import DataModel.SimilarityEdge;
 import DataModel.VertexWeight;
+import java.util.ArrayList;
+import java.util.Collections;
 
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
 
 /**
  *
  * @author G.A.P. II
  */
-
 public class VertexWeightComparator implements Comparator<VertexWeight> {
 
+    // sorts vertices from largerst average weight per edge to the smallest one
+    
     @Override
-    public int compare(VertexWeight vw1,VertexWeight vw2) {
-    	double w1 = vw1.getWeight()/vw1.getNoOfAdj();
-    	double w2 = vw2.getWeight()/vw2.getNoOfAdj();
-    	double test = w1-w2 +  0.00001 * (double) vw1.Connections().size() - 0.00001 * (double) vw2.Connections().size();
+    public int compare(VertexWeight vw1, VertexWeight vw2) {
+        double w1 = vw1.getWeight() / vw1.getNoOfAdj();
+        double w2 = vw2.getWeight() / vw2.getNoOfAdj();
+        double test = w1 - w2 + 0.00001 * (double) vw1.Connections().size() - 0.00001 * (double) vw2.Connections().size();
         if (test > 0) {
             return -1;
         }
@@ -42,5 +45,4 @@ public class VertexWeightComparator implements Comparator<VertexWeight> {
         }
         return 0;
     }
-    
 }

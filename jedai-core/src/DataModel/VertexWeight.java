@@ -12,19 +12,15 @@
 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 * See the License for the specific language governing permissions and
 * limitations under the License.
-*/
-
+ */
 package DataModel;
 
 import java.util.HashMap;
-import java.util.PriorityQueue;
-import java.util.Set;
 
 /**
  *
  * @author G.A.P. II
  */
-
 public class VertexWeight {
 
     private final int pos;
@@ -32,17 +28,17 @@ public class VertexWeight {
     private final int noOfAdj;
     private final HashMap<Integer, Double> Connections;
 
-    public VertexWeight (int pos, double weight, int noOfAdj, HashMap<Integer, Double> Connections) {
-    	this.pos = pos;
-    	this.weight = weight;
-    	this.noOfAdj = noOfAdj;
-    	this.Connections = Connections;
+    public VertexWeight(int pos, double weight, int noOfAdj, HashMap<Integer, Double> Connections) {
+        this.pos = pos;
+        this.weight = weight;
+        this.noOfAdj = noOfAdj;
+        this.Connections = Connections;
     }
 
     public int getPos() {
         return this.pos;
     }
-    
+
     public double getWeight() {
         return this.weight;
     }
@@ -50,14 +46,13 @@ public class VertexWeight {
     public int getNoOfAdj() {
         return this.noOfAdj;
     }
-    
+
     public HashMap<Integer, Double> Connections() {
         return this.Connections;
     }
-    
-    
+
     @Override
     public String toString() {
-        return "pos\t:\t" + pos + ", weight\t:\t" + weight +"noOfAdj\t:\t" + noOfAdj;
+        return "pos\t:\t" + pos + ", weight\t:\t" + weight + "noOfAdj\t:\t" + noOfAdj;
     }
 }

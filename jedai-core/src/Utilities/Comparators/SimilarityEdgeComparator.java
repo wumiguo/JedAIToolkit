@@ -26,6 +26,8 @@ import java.util.Comparator;
 
 public class SimilarityEdgeComparator implements Comparator<SimilarityEdge> {
 
+    // orders edges from the highest weight/similarity to the lowest one
+    
     @Override
     public int compare(SimilarityEdge se1,SimilarityEdge se2) {
         double test = se1.getSimilarity()-se2.getSimilarity(); 
@@ -39,5 +41,4 @@ public class SimilarityEdgeComparator implements Comparator<SimilarityEdge> {
 
         return 0;
     }
-    
 }
