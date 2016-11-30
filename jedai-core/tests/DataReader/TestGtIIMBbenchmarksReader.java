@@ -21,10 +21,11 @@ public class TestGtIIMBbenchmarksReader {
     	String entityFilePath1 = "/home/ethanos/Downloads/JEDAIconfirmedBenchmarks/iimb2009/001/abox.owlprof";
     	String entityFilePath2 = "/home/ethanos/Downloads/JEDAIconfirmedBenchmarks/iimb2009/002/abox.owlprof";
     	String gtFilePath = "/home/ethanos/Downloads/JEDAIconfirmedBenchmarks/iimb2009/002/rdfalign.rdf";
+        String baseFilePath = "/home/ethanos/Downloads/JEDAIconfirmedBenchmarks/iimb2009/001/rdfalign.rdf";
         EntitySerializationReader esr1 = new EntitySerializationReader(entityFilePath1);
         EntitySerializationReader esr2 = new EntitySerializationReader(entityFilePath2);
-        GtIIMBbenchmarksReader gtOAEIbenchmarksReader = new GtIIMBbenchmarksReader(gtFilePath);     
-        gtOAEIbenchmarksReader.setBaseGTfile("/home/ethanos/Downloads/JEDAIconfirmedBenchmarks/iimb2009/001/rdfalign.rdf");
+        GtIIMBbenchmarksReader gtOAEIbenchmarksReader = new GtIIMBbenchmarksReader(gtFilePath, baseFilePath);
+
         List<EntityProfile> profiles1 = esr1.getEntityProfiles();
         List<EntityProfile> profiles2 = esr2.getEntityProfiles();
 //        for (EntityProfile profile : profiles1) {

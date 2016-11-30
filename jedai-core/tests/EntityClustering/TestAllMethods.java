@@ -91,8 +91,9 @@ public class TestAllMethods {
             }
 
             BlocksPerformance blp = new BlocksPerformance(blocks, duplicatePropagation);
-            blp.getStatistics();
-
+            blp.setStatistics();
+            blp.printStatistics();
+            
             for (RepresentationModel repModel : RepresentationModel.values()) {
                 System.out.println("\n\nCurrent model\t:\t" + repModel.toString());
                 IEntityMatching em = new ProfileMatcher(repModel, SimilarityMetric.getModelDefaultSimMetric(repModel));
@@ -102,7 +103,8 @@ public class TestAllMethods {
                 List<EquivalenceCluster> entityClusters = ec.getDuplicates(simPairs);
 
                 ClustersPerformance clp = new ClustersPerformance(entityClusters, duplicatePropagation);
-                clp.getStatistics();
+                clp.setStatistics();
+                clp.printStatistics();
             }
         }
     }

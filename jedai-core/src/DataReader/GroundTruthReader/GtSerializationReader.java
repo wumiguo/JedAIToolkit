@@ -44,11 +44,11 @@ public class GtSerializationReader extends AbstractGtReader {
 
     @Override
     public String getMethodInfo() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return "Serialization Ground-truth Reader: loads a file with Java serialized IdDuplicates objects into memory.";
     }
 
     @Override
     public String getMethodParameters() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return "No other parameter is required, apart from the absolute file path";
     }
 }

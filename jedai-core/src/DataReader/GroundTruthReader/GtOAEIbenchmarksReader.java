@@ -13,36 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package DataReader.GroundTruthReader;
 
-import DataModel.EntityProfile;
-import DataModel.IdDuplicates;
-import com.opencsv.CSVReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
-import org.jgrapht.alg.ConnectivityInspector;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 /**
  *
  * @author G.A.P. II
  */
-
-public class GtOAEIbenchmarksReader extends AbstractGtReader {
+public class GtOAEIbenchmarksReader extends GtRDFReader {
 
     private static final Logger LOGGER = Logger.getLogger(GtOAEIbenchmarksReader.class.getName());
 
@@ -52,145 +43,40 @@ public class GtOAEIbenchmarksReader extends AbstractGtReader {
 
     @Override
     public String getMethodInfo() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return "RDF OAEI Benchmark Ground-truth Reader: converts an xml ground-truth file of an OAEI Benchmark dataset into a set of pairs of duplicate entity profiles.";
     }
 
     @Override
     public String getMethodParameters() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return "The RDF OAEI Benchmark Ground-truth Reader involves no parameters, apart from the absolute file path.";
     }
-
-    protected void getBilateralConnectedComponents(List<Set<Integer>> connectedComponents) {
-        for (Set<Integer> cluster : connectedComponents) {
-            if (cluster.size() != 2) {
-                //LOGGER.log(Level.WARNING, "Connected component that does not involve just a couple of entities!\t{0}", cluster.toString());
-                continue;
-            }
-
-            // add a new pair of IdDuplicates for every pair of entities in the cluster
-            Iterator<Integer> idIterator = cluster.iterator();
-            int id1 = idIterator.next();
-            int id2 = idIterator.next();
-            if (id1 < id2) {
-                id2 = id2 - datasetLimit; // normalize id to [0, profilesD2.size()]
-                if (id2 < 0) {
-                    LOGGER.log(Level.WARNING, "Entity id not corresponding to dataset 2!\t{0}", id2);
-                    continue;
-                }
-                idDuplicates.add(new IdDuplicates(id1, id2));
-            } else {
-                id1 = id1 - datasetLimit; // normalize id to [0, profilesD2.size()]
-                if (id1 < 0) {
-                    LOGGER.log(Level.WARNING, "Entity id not corresponding to dataset 2!\t{0}", id1);
-                    continue;
-                }
-                idDuplicates.add(new IdDuplicates(id2, id1));
-            }
-        }
-    }
-
+    
+    // we keep as duplicates the entity1 and entity2 instances
+    // of every "Cell" in the goldenStandard xml file
     @Override
-    public Set<IdDuplicates> getDuplicatePairs(List<EntityProfile> profilesD1,
-            List<EntityProfile> profilesD2) {
-        if (!idDuplicates.isEmpty()) {
-            return idDuplicates;
-        }
-
-        if (profilesD1 == null) {
-            LOGGER.log(Level.SEVERE, "First list of entity profiles is null! "
-                    + "The first argument should always contain entities.");
-            return null;
-        }
-
-        initializeDataStructures(profilesD1, profilesD2);
+    protected void performReading() {
         try {
-//        	we keep as duplicates the entity1 and entity2 instances
-//        	of every "Cell" in the goldenStandard xml file 
-        	DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-        	DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-        	Document doc = dBuilder.parse(inputFilePath);
-        	doc.getDocumentElement().normalize();
-            NodeList nList = doc.getElementsByTagName("Cell");
+            DocumentBuilder dBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+            Document doc = dBuilder.parse(inputFilePath);
+            doc.getDocumentElement().normalize();
+            
+            final NodeList nList = doc.getElementsByTagName("Cell");
             for (int temp = 0; temp < nList.getLength(); temp++) {
-            	Node nNode = nList.item(temp);
+                Node nNode = nList.item(temp);
                 if (nNode.getNodeType() == Node.ELEMENT_NODE) {
-                	Element eElement = (Element) nNode;
+                    Element eElement = (Element) nNode;
+                    
                     Element eElement1 = (Element) eElement.getElementsByTagName("entity1").item(0);
                     int entityId1 = urlToEntityId1.get(eElement1.getAttribute("rdf:resource"));
+                    
                     Element eElement2 = (Element) eElement.getElementsByTagName("entity2").item(0);
                     int entityId2 = urlToEntityId2.get(eElement2.getAttribute("rdf:resource"));
+                    
                     duplicatesGraph.addEdge(entityId1, entityId2);
-                                
-                }               
-            }
-            
-            
-            
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        LOGGER.log(Level.INFO, "Total edges in duplicates graph\t:\t{0}", duplicatesGraph.edgeSet().size());
-
-        // get connected components
-        ConnectivityInspector ci = new ConnectivityInspector(duplicatesGraph);
-        List<Set<Integer>> connectedComponents = ci.connectedSets();
-        LOGGER.log(Level.INFO, "Total connected components in duplicate graph\t:\t{0}", connectedComponents.size());
-
-        // transform connected components into pairs of duplicates
-        if (profilesD2 != null) { // Clean-Clean ER
-            getBilateralConnectedComponents(connectedComponents);
-        } else { // Dirty ER
-            getUnilateralConnectedComponents(connectedComponents);
-        }
-        LOGGER.log(Level.INFO, "Total pair of duplicats\t:\t{0}", idDuplicates.size());
-
-        return idDuplicates;
-    }
-
-    protected void getUnilateralConnectedComponents(List<Set<Integer>> connectedComponents) {
-        for (Set<Integer> cluster : connectedComponents) {
-            if (cluster.size() < 2) {
-                LOGGER.log(Level.WARNING, "Connected component with a single element!{0}", cluster.toString());
-                continue;
-            }
-
-            // add a new pair of IdDuplicates for every pair of entities in the cluster
-            int clusterSize = cluster.size();
-            Integer[] clusterEntities = cluster.toArray(new Integer[clusterSize]);
-            for (int i = 0; i < clusterSize; i++) {
-                for (int j = i + 1; j < clusterSize; j++) {
-                    idDuplicates.add(new IdDuplicates(clusterEntities[i], clusterEntities[j]));
                 }
             }
+        } catch (ParserConfigurationException | SAXException | IOException ex) {
+            LOGGER.log(Level.SEVERE, null, ex);
         }
     }
-
-    protected void initializeDataStructures(List<EntityProfile> profilesD1,
-            List<EntityProfile> profilesD2) {
-        // count total entities
-        noOfEntities = profilesD1.size();
-        datasetLimit = 0;
-        if (profilesD2 != null) {
-            noOfEntities += profilesD2.size();
-            datasetLimit = profilesD1.size(); //specifies where the first dataset ends and the second one starts
-        }
-
-        // build inverted index from URL to entity id
-        int counter = 0;
-        for (EntityProfile profile : profilesD1) {
-            urlToEntityId1.put(profile.getEntityUrl(), counter++);
-        }
-        if (profilesD2 != null) {
-            for (EntityProfile profile : profilesD2) {
-                urlToEntityId2.put(profile.getEntityUrl(), counter++);
-            }
-        }
-
-        // add a node for every input entity 
-        for (int i = 0; i < noOfEntities; i++) {
-            duplicatesGraph.addVertex(i);
-        }
-        LOGGER.log(Level.INFO, "Total nodes in duplicate graph\t:\t{0}", duplicatesGraph.vertexSet().size());
-    }
-
 }

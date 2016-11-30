@@ -113,18 +113,18 @@ public class EntityCSVReader extends AbstractEntityReader {
 
     @Override
     public String getMethodParameters() {
-        return "The CSV Reader involves 4 parameters:\n"
-                + "1) attributeNamesInFirstRow : boolean, default value: false.\n"
-                + "If true, it reades the attribute name from the first line of the CSV file.\n"
-                + "If false, the first line is converted into an entity profile.\n"
-                + "2) separator : character, default value: ','.\n"
-                + "It determines the character used to tokenize every line into attribute values.\n"
-                + "3) Id index: integer parameter, default value: -1. Counting starts from 0.\n"
-                + "If id>0, the values of corresponding column are used for assigning the id of every entity.\n"
-                + "If the given id is larger than the number of columns, an exception is thrown and getEntityProfiles() returns null.\n"
-                + "If id<0, an auto-incremented integer is assigned as id to every entity.\n"
-                + "4) attributesToExclude: int[], default value: empty. Counting starts from 0.\n"
-                + "The column ids assigned to this parameter will be ignored during the creation of entity profiles.\n";
+        return "The CSV Reader involves 4 parameters, in addition to the absolute file path:\n"
+             + "1) attributeNamesInFirstRow : boolean, default value: false.\n"
+             + "If true, it reads the attribute name from the first line of the CSV file.\n"
+             + "If false, the first line is converted into an entity profile.\n"
+             + "2) separator : character, default value: ','.\n"
+             + "It determines the character used to tokenize every line into attribute values.\n"
+             + "3) Id index: integer parameter, default value: -1. Counting starts from 0.\n"
+             + "If id>0, the values of corresponding column are used for assigning the id of every entity.\n"
+             + "If the given id is larger than the number of columns, an exception is thrown and getEntityProfiles() returns null.\n"
+             + "If id<0, an auto-incremented integer is assigned as id to every entity.\n"
+             + "4) attributesToExclude: int[], default value: empty. Counting starts from 0.\n"
+             + "The column ids assigned to this parameter will be ignored during the creation of entity profiles.\n";
     }
 
     private void readEntity(int index, String[] currentLine) throws IOException {

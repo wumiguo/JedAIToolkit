@@ -49,6 +49,7 @@ public class EntityRDFReader extends AbstractEntityReader {
     public EntityRDFReader(String filePath) {
         super(filePath);
         attributesToExclude = new HashSet<>();
+        attributesToExclude.add("owl:sameAs");
         urlToEntity = new HashMap<>();
     }
 
@@ -82,9 +83,9 @@ public class EntityRDFReader extends AbstractEntityReader {
 
     @Override
     public String getMethodParameters() {
-        return "The RDF Reader involves 1 parameter:\n"
-                + "attributesToExclude: String[], default value: empty.\n"
-                + "The names of the predicates that will be ignored during the creation of entity profiles.\n";
+        return "The RDF Reader involves 1 parameter, in addition to the absolute file path:\n"
+             + "attributesToExclude: String[], default value: owl:sameAs.\n"
+             + "The names of the predicates that will be ignored during the creation of entity profiles.\n";
     }
 
     private void readModel(Model m) throws IOException {

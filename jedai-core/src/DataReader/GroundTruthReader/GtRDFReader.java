@@ -13,52 +13,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package DataReader.GroundTruthReader;
 
 import DataModel.EntityProfile;
 import DataModel.IdDuplicates;
-import com.opencsv.CSVReader;
+
 import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.Property;
-import org.apache.jena.rdf.model.RDFNode;
-import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.rdf.model.StmtIterator;
 import org.apache.jena.riot.RDFDataMgr;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import org.jgrapht.alg.ConnectivityInspector;
 
 /**
  *
  * @author G.A.P. II
  */
-
 public class GtRDFReader extends AbstractGtReader {
 
     private static final Logger LOGGER = Logger.getLogger(GtRDFReader.class.getName());
 
-
     public GtRDFReader(String filePath) {
         super(filePath);
-    }
-
-    @Override
-    public String getMethodInfo() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public String getMethodParameters() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     protected void getBilateralConnectedComponents(List<Set<Integer>> connectedComponents) {
@@ -69,7 +52,7 @@ public class GtRDFReader extends AbstractGtReader {
             }
 
             // add a new pair of IdDuplicates for every pair of entities in the cluster
-            Iterator<Integer> idIterator = cluster.iterator();
+            final Iterator<Integer> idIterator = cluster.iterator();
             int id1 = idIterator.next();
             int id2 = idIterator.next();
             if (id1 < id2) {
@@ -105,34 +88,7 @@ public class GtRDFReader extends AbstractGtReader {
 
         initializeDataStructures(profilesD1, profilesD2);
         try {
-            // creating reader
-            Model model = RDFDataMgr.loadModel(inputFilePath);
-            StmtIterator iter = model.listStatements();
-            Statement stmt;
-
-            while (iter.hasNext()) {
-            	stmt = iter.nextStatement();
-                
-                Property predicate = stmt.getPredicate();
-                String pred = predicate.toString();
-                if (!(pred.contains("sameAs"))) {
-                    continue;
-                }
-                
-                
-                Resource subject = stmt.getSubject();
-                String sub = subject.toString();
-                
-                RDFNode object = stmt.getObject();
-                String obj = object.toString();
-
-
-                // add a new edge for every pair of duplicate entities
-                int entityId1 = urlToEntityId1.get(sub);
-                int entityId2 = urlToEntityId1.get(obj)+datasetLimit;
-
-                duplicatesGraph.addEdge(entityId1, entityId2);
-            }
+            performReading();
         } catch (NoSuchElementException ex) {
             LOGGER.log(Level.SEVERE, null, ex);
             return null;
@@ -141,7 +97,7 @@ public class GtRDFReader extends AbstractGtReader {
 
         // get connected components
         ConnectivityInspector ci = new ConnectivityInspector(duplicatesGraph);
-        List<Set<Integer>> connectedComponents = ci.connectedSets();
+        final List<Set<Integer>> connectedComponents = ci.connectedSets();
         LOGGER.log(Level.INFO, "Total connected components in duplicate graph\t:\t{0}", connectedComponents.size());
 
         // transform connected components into pairs of duplicates
@@ -155,6 +111,16 @@ public class GtRDFReader extends AbstractGtReader {
         return idDuplicates;
     }
 
+    @Override
+    public String getMethodInfo() {
+        return "RDF Ground-truth Reader: converts an rdf file of any format into a set of pairs of duplicate entity profiles.";
+    }
+
+    @Override
+    public String getMethodParameters() {
+        return "The RDF Ground-truth Reader involves no parameters, apart from the absolute file path.";
+    }
+
     protected void getUnilateralConnectedComponents(List<Set<Integer>> connectedComponents) {
         for (Set<Integer> cluster : connectedComponents) {
             if (cluster.size() < 2) {
@@ -164,7 +130,7 @@ public class GtRDFReader extends AbstractGtReader {
 
             // add a new pair of IdDuplicates for every pair of entities in the cluster
             int clusterSize = cluster.size();
-            Integer[] clusterEntities = cluster.toArray(new Integer[clusterSize]);
+            final Integer[] clusterEntities = cluster.toArray(new Integer[clusterSize]);
             for (int i = 0; i < clusterSize; i++) {
                 for (int j = i + 1; j < clusterSize; j++) {
                     idDuplicates.add(new IdDuplicates(clusterEntities[i], clusterEntities[j]));
@@ -201,4 +167,25 @@ public class GtRDFReader extends AbstractGtReader {
         LOGGER.log(Level.INFO, "Total nodes in duplicate graph\t:\t{0}", duplicatesGraph.vertexSet().size());
     }
 
+    protected void performReading() {
+        final Model model = RDFDataMgr.loadModel(inputFilePath);
+        final StmtIterator iter = model.listStatements();
+        while (iter.hasNext()) {
+            Statement stmt = iter.nextStatement();
+
+            String pred = stmt.getPredicate().toString();
+            if (!(pred.contains("sameAs"))) {
+                continue;
+            }
+
+            String sub = stmt.getSubject().toString();
+            String obj = stmt.getObject().toString();
+
+            // add a new edge for every pair of duplicate entities
+            int entityId1 = urlToEntityId1.get(sub);
+            int entityId2 = urlToEntityId1.get(obj) + datasetLimit;
+
+            duplicatesGraph.addEdge(entityId1, entityId2);
+        }
+    }
 }

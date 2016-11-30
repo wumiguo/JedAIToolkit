@@ -49,12 +49,17 @@ public class GtCSVReader extends AbstractGtReader {
 
     @Override
     public String getMethodInfo() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return "CSV Ground-truth Reader : converts a csv file into a set of pairs of duplicate entity profiles.";
     }
 
     @Override
     public String getMethodParameters() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return "The CSV Ground-truth Reader involves 4 parameters, in addition to the absolute file path:\n"
+             + "1) ignoreFirstRow : boolean, default value: false.\n"
+             + "If true, it starts reading the pairs of duplicates from the second line of the CSV file, as the first one contains labels.\n"
+             + "If false, the first line is converted into a pair of duplicate entity profiles.\n"
+             + "2) separator : character, default value: ','.\n"
+             + "It determines the character used to tokenize every line into two entity identifiers.\n";
     }
 
     protected void getBilateralConnectedComponents(List<Set<Integer>> connectedComponents) {
