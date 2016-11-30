@@ -59,11 +59,13 @@ The following schema-agnostic methods are supported:
  * character n-gram graphs (n=2,3 or 4)
  * token n-grams (n=1,2 or 3)
  * token n-gram graphs (n=1, 2 or 3)
+   
    The bag models can be combined with the following similarity measures, using term-frequency weights: 
    * Cosine similarity 
    * Jaccard similarity 
    * Generalized Jaccard similarity 
    * Enhanced Jaccard similarity
+   
    The graph models can be combined with the following graph similarity measures:
    * Containment similarity 
    * Normalized Value similarity 
