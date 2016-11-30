@@ -10,7 +10,8 @@ The following formats are supported:
  * CSV 
  * RDF (any format, including XML)
  * SQL (mySQL, PostgreSQL)
- * to be added: JSON, MongoDB, Oracle and SQL Server
+ 
+In the future, we will add support for more formats: JSON, MongoDB, Oracle and SQL Server
   
 ### Block Building 
 It clusters entities into blocks in a lazy manner that relies on unsupervised blocking keys: every token in an attribute value forms a key. Blocks are then extracted, possibly using a transformation, based on its equality or on its similarity with other keys.
@@ -55,9 +56,9 @@ It compares pairs of entity profiles, associating every pair with a similarity i
 The following schema-agnostic methods are supported:
 * [Group Linkage](http://pike.psu.edu/publications/icde07.pdf), 
 * Profile Matcher, which aggregates all attributes values in an individual entity into a textual representation, based on one of the following bag and graph models:
- * character n-grams (n=2,3 or 4)
- * character n-gram graphs (n=2,3 or 4)
- * token n-grams (n=1,2 or 3)
+ * character n-grams (n=2, 3 or 4)
+ * character n-gram graphs (n=2, 3 or 4)
+ * token n-grams (n=1, 2 or 3)
  * token n-gram graphs (n=1, 2 or 3)
    
   The bag models can be combined with the following similarity measures, using term-frequency weights: 
