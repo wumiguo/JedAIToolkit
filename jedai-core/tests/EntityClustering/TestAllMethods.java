@@ -32,6 +32,7 @@ import Utilities.BlocksPerformance;
 import Utilities.ClustersPerformance;
 import Utilities.Enumerations.BlockBuildingMethod;
 import Utilities.Enumerations.RepresentationModel;
+import Utilities.Enumerations.SimilarityMetric;
 import java.util.List;
 
 /**
@@ -94,7 +95,7 @@ public class TestAllMethods {
 
             for (RepresentationModel repModel : RepresentationModel.values()) {
                 System.out.println("\n\nCurrent model\t:\t" + repModel.toString());
-                IEntityMatching em = new ProfileMatcher(repModel);
+                IEntityMatching em = new ProfileMatcher(repModel, SimilarityMetric.getModelDefaultSimMetric(repModel));
                 SimilarityPairs simPairs = em.executeComparisons(blocks, profiles);
 
                 IEntityClustering ec = new ConnectedComponentsClustering();

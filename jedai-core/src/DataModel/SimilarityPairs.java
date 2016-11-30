@@ -23,7 +23,6 @@ import java.util.logging.Logger;
  *
  * @author G.A.P. II
  */
-
 public class SimilarityPairs {
 
     private final static int MAX_COMPARISONS = Integer.MAX_VALUE - 2;
@@ -62,11 +61,11 @@ public class SimilarityPairs {
         }
         return comparisons;
     }
-    
+
     public int[] getEntityIds1() {
         return entityIds1;
     }
-    
+
     public int[] getEntityIds2() {
         return entityIds2;
     }
@@ -74,15 +73,15 @@ public class SimilarityPairs {
     public int getNoOfComparisons() {
         return currentIndex;
     }
-    
+
     public PairIterator getPairIterator() {
         return new PairIterator(this);
     }
-    
+
     public double[] getSimilarities() {
         return similarities;
     }
-    
+
     public boolean isCleanCleanER() {
         return isCleanCleanER;
     }
