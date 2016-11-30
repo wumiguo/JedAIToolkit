@@ -73,28 +73,6 @@ public abstract class AbstractEntityClustering implements IEntityClustering {
         return maxId;
     }
 
-    protected double getSimilarityThreshold(SimilarityPairs simPairs) {
-        double averageSimilarity = 0;
-        Iterator<Comparison> iterator = simPairs.getPairIterator();
-        while (iterator.hasNext()) {
-            Comparison comparison = iterator.next();
-            averageSimilarity += comparison.getUtilityMeasure();
-        }
-        averageSimilarity /= simPairs.getNoOfComparisons();
-
-        double standardDeviation = 0;
-        iterator = simPairs.getPairIterator();
-        while (iterator.hasNext()) {
-            Comparison comparison = iterator.next();
-            standardDeviation += Math.pow(comparison.getUtilityMeasure() - averageSimilarity, 2.0);
-        }
-        standardDeviation = Math.sqrt(standardDeviation / simPairs.getNoOfComparisons());
-
-        double threshold = averageSimilarity + stDevMultiplier * standardDeviation;
-        LOGGER.log(Level.INFO, "Similarity threshold : {0}", threshold);
-        return threshold;
-    }
-
     protected void initializeData(SimilarityPairs simPairs) {
         isCleanCleanER = simPairs.isCleanCleanER();
 
@@ -108,7 +86,7 @@ public abstract class AbstractEntityClustering implements IEntityClustering {
             noOfEntities = Math.max(maxEntity1, maxEntity2) + 1;
         }
         
-        threshold = getSimilarityThreshold(simPairs);
+        setSimilarityThreshold(simPairs);
     }
     
     protected void initializeGraph() {
@@ -128,5 +106,26 @@ public abstract class AbstractEntityClustering implements IEntityClustering {
     
     public void setMultiplier(int sdMulti) {
         stDevMultiplier = sdMulti;
+    }
+    
+    protected void setSimilarityThreshold(SimilarityPairs simPairs) {
+        double averageSimilarity = 0;
+        Iterator<Comparison> iterator = simPairs.getPairIterator();
+        while (iterator.hasNext()) {
+            Comparison comparison = iterator.next();
+            averageSimilarity += comparison.getUtilityMeasure();
+        }
+        averageSimilarity /= simPairs.getNoOfComparisons();
+
+        double standardDeviation = 0;
+        iterator = simPairs.getPairIterator();
+        while (iterator.hasNext()) {
+            Comparison comparison = iterator.next();
+            standardDeviation += Math.pow(comparison.getUtilityMeasure() - averageSimilarity, 2.0);
+        }
+        standardDeviation = Math.sqrt(standardDeviation / simPairs.getNoOfComparisons());
+
+        threshold = averageSimilarity + stDevMultiplier * standardDeviation;
+        LOGGER.log(Level.INFO, "Similarity threshold : {0}", threshold);
     }
 }

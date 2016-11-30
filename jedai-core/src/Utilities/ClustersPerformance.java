@@ -118,8 +118,16 @@ public class ClustersPerformance {
             }
         }
 
-        precision = abstractDP.getNoOfDuplicates() / totalMatches;
+        if (0 < totalMatches) {
+            precision = abstractDP.getNoOfDuplicates() / totalMatches;
+        } else {
+            precision = 0;
+        }
         recall = ((double) abstractDP.getNoOfDuplicates()) / abstractDP.getExistingDuplicates();
-        fMeasure = 2 * precision * recall / (precision + recall);
+        if (0 < precision && 0 < recall) {
+            fMeasure = 2 * precision * recall / (precision + recall);
+        } else {
+            fMeasure = 0;
+        }
     }
 }

@@ -15,6 +15,9 @@
  */
 package Utilities.Enumerations;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  *
  * @author G.A.P. II
@@ -28,6 +31,37 @@ public enum SimilarityMetric {
     GRAPH_VALUE_SIMILARITY,
     GRAPH_OVERALL_SIMILARITY,
     JACCARD_SIMILARITY;
+
+    public static List<SimilarityMetric> getModelCompatibleSimMetrics(RepresentationModel model) {
+        final List<SimilarityMetric> simMetrics = new ArrayList<>();
+        switch (model) {
+            case CHARACTER_BIGRAMS:
+            case CHARACTER_FOURGRAMS:
+            case CHARACTER_TRIGRAMS:
+            case TOKEN_BIGRAMS:
+            case TOKEN_TRIGRAMS:
+            case TOKEN_UNIGRAMS:
+                simMetrics.add(COSINE_SIMILARITY);
+                simMetrics.add(ENHANCED_JACCARD_SIMILARITY);
+                simMetrics.add(GENERALIZED_JACCARD_SIMILARITY);
+                simMetrics.add(JACCARD_SIMILARITY);
+                break;
+            case CHARACTER_BIGRAM_GRAPHS:
+            case CHARACTER_FOURGRAM_GRAPHS:
+            case CHARACTER_TRIGRAM_GRAPHS:
+            case TOKEN_BIGRAM_GRAPHS:
+            case TOKEN_TRIGRAM_GRAPHS:
+            case TOKEN_UNIGRAM_GRAPHS:
+                simMetrics.add(GRAPH_CONTAINMENT_SIMILARITY);
+                simMetrics.add(GRAPH_NORMALIZED_VALUE_SIMILARITY);
+                simMetrics.add(GRAPH_OVERALL_SIMILARITY);
+                simMetrics.add(GRAPH_VALUE_SIMILARITY);
+                break;
+            default:
+                return null;
+        }
+        return simMetrics;
+    }
 
     public static SimilarityMetric getModelDefaultSimMetric(RepresentationModel model) {
         switch (model) {
