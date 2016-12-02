@@ -48,7 +48,7 @@ public class TestAllMethods {
             "E:\\Data\\csvProfiles\\restaurantProfiles",
 //            "E:\\Data\\csvProfiles\\censusProfiles",
 //            "E:\\Data\\csvProfiles\\coraProfiles",
-            "E:\\Data\\csvProfiles\\cddbProfiles",
+//            "E:\\Data\\csvProfiles\\cddbProfiles",
 //            "E:\\Data\\csvProfiles\\abt-buy\\dataset",
 //            "E:\\Data\\csvProfiles\\amazon-gp\\dataset",
 //            "E:\\Data\\csvProfiles\\dblp-acm\\dataset",
@@ -59,7 +59,7 @@ public class TestAllMethods {
             "E:\\Data\\csvProfiles\\restaurantIdDuplicates",
 //            "E:\\Data\\csvProfiles\\censusIdDuplicates",
 //            "E:\\Data\\csvProfiles\\coraIdDuplicates",
-            "E:\\Data\\csvProfiles\\cddbIdDuplicates",
+//            "E:\\Data\\csvProfiles\\cddbIdDuplicates",
 //            "E:\\Data\\csvProfiles\\abt-buy\\groundtruth",
 //            "E:\\Data\\csvProfiles\\amazon-gp\\groundtruth",
 //            "E:\\Data\\csvProfiles\\dblp-acm\\groundtruth",
@@ -99,7 +99,7 @@ public class TestAllMethods {
             RepresentationModel repModel = RepresentationModel.CHARACTER_BIGRAMS;
 //            for (RepresentationModel repModel : RepresentationModel.values()) {
                 System.out.println("\n\nCurrent model\t:\t" + repModel.toString() + "\t\t" +  SimilarityMetric.getModelDefaultSimMetric(repModel));
-                IEntityMatching em = new ProfileMatcher(repModel, SimilarityMetric.COSINE_SIMILARITY);
+                IEntityMatching em = new ProfileMatcher(repModel, SimilarityMetric.JACCARD_SIMILARITY);
                 SimilarityPairs simPairs = em.executeComparisons(blocks, profiles);
 
                 IEntityClustering ec = new RicochetSRClustering();
