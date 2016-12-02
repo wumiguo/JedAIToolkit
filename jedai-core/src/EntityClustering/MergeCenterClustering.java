@@ -61,7 +61,7 @@ public class MergeCenterClustering extends AbstractEntityClustering {
 
         final Set<Integer> Center = new HashSet<Integer>();
         final Set<Integer> NonCenter = new HashSet<Integer>();
-        while (SEqueue.size() > 0) {
+        while (!SEqueue.isEmpty()) {
             SimilarityEdge se = SEqueue.remove();
             int v1 = se.getModel1Pos();
             int v2 = se.getModel2Pos();

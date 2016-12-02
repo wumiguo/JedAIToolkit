@@ -66,6 +66,10 @@ public class RicochetSRClustering extends AbstractEntityClustering {
             }
         }
 
+        if (VWqueue.isEmpty()) {
+            return new ArrayList<EquivalenceCluster>();
+        }
+        
         final Set<Integer> Center = new HashSet<Integer>();
         final Set<Integer> NonCenter = new HashSet<Integer>();
         final Map<Integer, Set<Integer>> Clusters = new HashMap<Integer, Set<Integer>>();
