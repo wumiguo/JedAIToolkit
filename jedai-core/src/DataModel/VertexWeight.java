@@ -15,7 +15,7 @@
  */
 package DataModel;
 
-import java.util.HashMap;
+import java.util.Map;
 
 /**
  *
@@ -26,9 +26,9 @@ public class VertexWeight {
     private final int pos;
     private final double weight;
     private final int noOfAdj;
-    private final HashMap<Integer, Double> Connections;
+    private final Map<Integer, Double> Connections;
 
-    public VertexWeight(int pos, double weight, int noOfAdj, HashMap<Integer, Double> Connections) {
+    public VertexWeight(int pos, double weight, int noOfAdj, Map<Integer, Double> Connections) {
         this.pos = pos;
         this.weight = weight;
         this.noOfAdj = noOfAdj;
@@ -47,7 +47,7 @@ public class VertexWeight {
         return this.noOfAdj;
     }
 
-    public HashMap<Integer, Double> Connections() {
+    public Map<Integer, Double> Connections() {
         return this.Connections;
     }
 

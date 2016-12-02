@@ -91,7 +91,7 @@ public class MarkovClustering extends AbstractEntityClustering {
     public List<EquivalenceCluster> getDuplicates(SimilarityPairs simPairs) {
         initializeData(simPairs);
         initializeGraph();
-
+        
         // add an edge for every pair of entities with a weight higher than the threshold
         final Iterator<Comparison> iterator = simPairs.getPairIterator();
         double[][] simMatrix = new double[noOfEntities][noOfEntities];
@@ -147,7 +147,7 @@ public class MarkovClustering extends AbstractEntityClustering {
     @Override
     public String getMethodParameters() {
         return "The Markov Cluster algorithm involves 4 parameters:\n" 
-             + explainMultiplierParameter()
+             + explainThresholdParameter()
              + "2) cluster threshold : double, default value : 0.001.\n"
              + "It determines the similarity threshold for including an edge in the similarity graph.\n"
              + "3) matrix similarity threshold : double, default value : 0.00001.\n"
@@ -216,16 +216,15 @@ public class MarkovClustering extends AbstractEntityClustering {
         }
     }
 
+    public void setClusterThreshold(double clusterThreshold) {
+        this.clusterThreshold = clusterThreshold;
+    }
+    
     public void setMatrixSimThreshold(double matrixSimThreshold) {
         this.matrixSimThreshold = matrixSimThreshold;
     }
 
-    public void setclusterThreshold(double clusterThreshold) {
-        this.clusterThreshold = clusterThreshold;
-    }
-
-    public void setsimilarityChecksLimit(int similarityChecksLimit) {
+    public void setSimilarityChecksLimit(int similarityChecksLimit) {
         this.similarityChecksLimit = similarityChecksLimit;
     }
-
 }

@@ -48,7 +48,7 @@ public class CenterClustering extends AbstractEntityClustering {
     public List<EquivalenceCluster> getDuplicates(SimilarityPairs simPairs) {
         initializeData(simPairs);
         initializeGraph();
-
+        
         final double[] edgesWeight = new double[noOfEntities];
         final double[] edgesAttached = new double[noOfEntities];
         final Queue<SimilarityEdge> SEqueue = new PriorityQueue<>(simPairs.getNoOfComparisons(), new SimilarityEdgeComparator());
@@ -113,6 +113,6 @@ public class CenterClustering extends AbstractEntityClustering {
     @Override
     public String getMethodParameters() {
         return "The Center Clustering algorithm involves 1 parameter:\n" 
-             + explainMultiplierParameter();
+             + explainThresholdParameter();
     }
 }

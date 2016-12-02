@@ -28,7 +28,7 @@ public class RicochetSRClustering extends AbstractEntityClustering {
 
     public RicochetSRClustering() {
         super();
-        
+
         LOGGER.log(Level.INFO, "Initializing Ricochet Sequential Rippling Clustering...");
     }
 
@@ -39,7 +39,7 @@ public class RicochetSRClustering extends AbstractEntityClustering {
         final Queue<VertexWeight> VWqueue = new PriorityQueue<>(noOfEntities, new VertexWeightComparator());
         final double[] edgesWeight = new double[noOfEntities];
         final int[] edgesAttached = new int[noOfEntities];
-        final List<HashMap<Integer, Double>> connections = new ArrayList<>();
+        final List<Map<Integer, Double>> connections = new ArrayList<>();
         for (int i = 0; i < noOfEntities; i++) {
             connections.add(i, new HashMap<Integer, Double>());
         }
@@ -47,20 +47,21 @@ public class RicochetSRClustering extends AbstractEntityClustering {
         final Iterator<Comparison> iterator = simPairs.getPairIterator();
         while (iterator.hasNext()) {	// add an edge for every pair of entities with a weight higher than the threshold
             Comparison comparison = iterator.next();
+            int entityId2 = comparison.getEntityId2() + datasetLimit;
             if (threshold < comparison.getUtilityMeasure()) {
                 edgesWeight[comparison.getEntityId1()] += comparison.getUtilityMeasure();
-                edgesWeight[comparison.getEntityId2() + datasetLimit] += comparison.getUtilityMeasure();
+                edgesWeight[entityId2] += comparison.getUtilityMeasure();
 
                 edgesAttached[comparison.getEntityId1()]++;
-                edgesAttached[comparison.getEntityId2() + datasetLimit]++;
+                edgesAttached[entityId2]++;
 
-                connections.get(comparison.getEntityId1()).put(comparison.getEntityId2() + datasetLimit, comparison.getUtilityMeasure());
-                connections.get(comparison.getEntityId2() + datasetLimit).put(comparison.getEntityId1(), comparison.getUtilityMeasure());
+                connections.get(comparison.getEntityId1()).put(entityId2, comparison.getUtilityMeasure());
+                connections.get(entityId2).put(comparison.getEntityId1(), comparison.getUtilityMeasure());
             }
         }
 
         for (int i = 0; i < noOfEntities; i++) {
-            if (edgesAttached[i] > 0) {
+            if (0 < edgesAttached[i]) {
                 VWqueue.add(new VertexWeight(i, edgesWeight[i], edgesAttached[i], connections.get(i)));
             }
         }
@@ -86,7 +87,7 @@ public class RicochetSRClustering extends AbstractEntityClustering {
             Clusters.get(v1).add(v2);
         }
 
-        while (VWqueue.size() > 0) {
+        while (!VWqueue.isEmpty()) {
             vw = VWqueue.remove();
             v1 = vw.getPos();
             connect = vw.Connections();
@@ -125,7 +126,7 @@ public class RicochetSRClustering extends AbstractEntityClustering {
                 if (v2 == v1) {
                     continue;
                 }
-                
+
                 if (NonCenter.contains(v2)) {//if v2 was in another cluster already then deal with that cluster
                     int prevClusterCenter = clusterCenter[v2];
                     Clusters.get(prevClusterCenter).remove(v2);
@@ -134,12 +135,12 @@ public class RicochetSRClustering extends AbstractEntityClustering {
                         centersToReassign.add(prevClusterCenter);
                     }
                 }
-                
+
                 NonCenter.add(v2);
                 clusterCenter[v2] = v1;
                 simWithCenter[v2] = connect.get(v2);
             }
-            
+
             for (int ctr : centersToReassign) {
                 Center.remove(ctr);
                 Clusters.remove(ctr);
@@ -156,7 +157,7 @@ public class RicochetSRClustering extends AbstractEntityClustering {
                         }
                     }
                 }
-                
+
                 Clusters.get(newCenter).add(ctr);
                 NonCenter.add(ctr);
                 clusterCenter[ctr] = newCenter;
@@ -172,7 +173,7 @@ public class RicochetSRClustering extends AbstractEntityClustering {
                 simWithCenter[i] = 1.0;
             }
         }
-        
+
         // get connected components
         List<EquivalenceCluster> equivalenceClusters = new ArrayList<>();
         for (Set<Integer> componentIds : Clusters.values()) {
@@ -201,7 +202,7 @@ public class RicochetSRClustering extends AbstractEntityClustering {
 
     @Override
     public String getMethodParameters() {
-        return "The Ricochet SR Clustering algorithm involves 1 parameter:\n" 
-             + explainMultiplierParameter();
+        return "The Ricochet SR Clustering algorithm involves 1 parameter:\n"
+                + explainThresholdParameter();
     }
 }

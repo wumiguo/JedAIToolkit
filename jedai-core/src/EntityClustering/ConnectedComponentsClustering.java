@@ -41,7 +41,7 @@ public class ConnectedComponentsClustering extends AbstractEntityClustering {
     public List<EquivalenceCluster> getDuplicates(SimilarityPairs simPairs) {
         initializeData(simPairs);
         initializeGraph();
-
+        
         // add an edge for every pair of entities with a weight higher than the thrshold
         final Iterator<Comparison> iterator = simPairs.getPairIterator();
         while (iterator.hasNext()) {
@@ -62,6 +62,6 @@ public class ConnectedComponentsClustering extends AbstractEntityClustering {
     @Override
     public String getMethodParameters() {
         return "The Connected Components Clustering algorithm involves 1 parameter:\n" 
-             + explainMultiplierParameter();
+             + explainThresholdParameter();
     }
 }

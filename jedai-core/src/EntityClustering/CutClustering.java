@@ -35,7 +35,7 @@ public class CutClustering extends AbstractEntityClustering {
     public List<EquivalenceCluster> getDuplicates(SimilarityPairs simPairs) {
         initializeData(simPairs);
         initializeGraph();
-        
+
         final Iterator<Comparison> iterator = simPairs.getPairIterator();
         while (iterator.hasNext()) {	// add an edge for every pair of entities with a weight higher than the threshold
             Comparison comparison = iterator.next();
@@ -60,7 +60,7 @@ public class CutClustering extends AbstractEntityClustering {
     @Override
     public String getMethodParameters() {
         return "The Cut Clustering algorithm involves 2 parameters:\n" 
-             + explainMultiplierParameter()
+             + explainThresholdParameter()
              + "2) A-cap : double, default value : 0.3\n"
              + "It determines the weight of the capacity edges, which connect every vertex with the artificial sink.\n";
     }

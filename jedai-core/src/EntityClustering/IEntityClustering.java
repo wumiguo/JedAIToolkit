@@ -33,5 +33,5 @@ public interface IEntityClustering {
     
     public String getMethodParameters();
     
-    public void setMultiplier(int sdMulti);
+    public void setSimilarityThreshold(double th);
 }
