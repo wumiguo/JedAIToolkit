@@ -146,6 +146,7 @@ public class RicochetSRClustering extends AbstractEntityClustering {
             }
 
             for (int ctr : centersToReassign) {
+                if (Clusters.get(ctr).size() > 1) continue;
                 Center.remove(ctr);
                 Clusters.remove(ctr);
 
