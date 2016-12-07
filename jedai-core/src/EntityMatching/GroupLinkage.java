@@ -115,14 +115,21 @@ public class GroupLinkage extends AbstractEntityMatching {
         int entityCounter = 0;
         final AbstractModel[][] ModelsList = new AbstractModel[profiles.size()][];
         for (EntityProfile profile : profiles) {
+            int validAttributes = 0;
+            for (Attribute attribute : profile.getAttributes()) {
+                if (!attribute.getValue().isEmpty()) {
+                    validAttributes++;
+                }
+            }
+            
             int counter = 0;
-            ModelsList[entityCounter] = new AbstractModel[profile.getProfileSize()];
+            ModelsList[entityCounter] = new AbstractModel[validAttributes];
             for (Attribute attribute : profile.getAttributes()) {
                 if (!attribute.getValue().isEmpty()) {
                     ModelsList[entityCounter][counter] = RepresentationModel.getModel(representationModel, simMetric, attribute.getName());
                     ModelsList[entityCounter][counter].updateModel(attribute.getValue());
                     counter++;
-                }
+                } 
             }
             entityCounter++;
         }
@@ -148,7 +155,7 @@ public class GroupLinkage extends AbstractEntityMatching {
         } else {
             model2 = entityModelsD1[comparison.getEntityId2()];
         }
-
+        
         int s1 = model1.length;
         int s2 = model2.length;
         final Queue<SimilarityEdge> SEqueue = new PriorityQueue<>(s1 * s2, new SimilarityEdgeComparator());
