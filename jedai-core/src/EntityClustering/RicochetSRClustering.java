@@ -81,7 +81,8 @@ public class RicochetSRClustering extends AbstractEntityClustering {
         int v1 = vw.getPos();
         Center.add(v1);
         clusterCenter[v1] = v1;
-        Clusters.put(v1, new HashSet<Integer>(v1));//initialize v1 Cluster with its own value
+        Clusters.put(v1, new HashSet<Integer>());
+        Clusters.get(v1).add(v1);//initialize v1 Cluster with its own value
         simWithCenter[v1] = 1.0;
         Map<Integer, Double> connect = vw.Connections();
         for (int v2 : connect.keySet()) {
