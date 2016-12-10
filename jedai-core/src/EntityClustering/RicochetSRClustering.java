@@ -69,7 +69,7 @@ public class RicochetSRClustering extends AbstractEntityClustering {
         if (VWqueue.isEmpty()) {
             return new ArrayList<EquivalenceCluster>();
         }
-        
+
         final Set<Integer> Center = new HashSet<Integer>();
         final Set<Integer> NonCenter = new HashSet<Integer>();
         final Map<Integer, Set<Integer>> Clusters = new HashMap<Integer, Set<Integer>>();
@@ -147,7 +147,9 @@ public class RicochetSRClustering extends AbstractEntityClustering {
             }
 
             for (int ctr : centersToReassign) {
-                if (Clusters.get(ctr).size() > 1) continue;
+                if (Clusters.get(ctr).size() > 1) {
+                    continue;
+                }
                 Center.remove(ctr);
                 Clusters.remove(ctr);
 
@@ -181,7 +183,7 @@ public class RicochetSRClustering extends AbstractEntityClustering {
         }
 
         // get connected components
-        List<EquivalenceCluster> equivalenceClusters = new ArrayList<>();
+        final List<EquivalenceCluster> equivalenceClusters = new ArrayList<>();
         for (Set<Integer> componentIds : Clusters.values()) {
             EquivalenceCluster newCluster = new EquivalenceCluster();
             equivalenceClusters.add(newCluster);
