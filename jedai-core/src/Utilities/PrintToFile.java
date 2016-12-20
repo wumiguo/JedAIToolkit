@@ -41,6 +41,7 @@ public class PrintToFile {
         	sb.deleteCharAt(sb.length()-1);
             sb.append('\n');
     		if (eqc.getEntityIdsD2().isEmpty()) continue;
+        	sb.deleteCharAt(sb.length()-1);
         	for (int ent : eqc.getEntityIdsD2())
         	{
         		sb.append(ent);
