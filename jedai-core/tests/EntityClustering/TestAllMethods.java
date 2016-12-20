@@ -30,9 +30,12 @@ import DataReader.GroundTruthReader.GtSerializationReader;
 import DataReader.GroundTruthReader.IGroundTruthReader;
 import Utilities.BlocksPerformance;
 import Utilities.ClustersPerformance;
+import Utilities.PrintToFile;
 import Utilities.Enumerations.BlockBuildingMethod;
 import Utilities.Enumerations.RepresentationModel;
 import Utilities.Enumerations.SimilarityMetric;
+
+import java.io.FileNotFoundException;
 import java.util.List;
 
 /**
@@ -45,7 +48,7 @@ public class TestAllMethods {
         BlockBuildingMethod blockingWorkflow = BlockBuildingMethod.STANDARD_BLOCKING;
 
         String[] datasetProfiles = {
-            "E:\\Data\\csvProfiles\\restaurantProfiles",
+            "/home/ethanos/workspace/JedAIToolkitNew/datasets/restaurantProfiles",
 //            "E:\\Data\\csvProfiles\\censusProfiles",
 //            "E:\\Data\\csvProfiles\\coraProfiles",
 //            "E:\\Data\\csvProfiles\\cddbProfiles",
@@ -56,7 +59,7 @@ public class TestAllMethods {
 //            "E:\\Data\\csvProfiles\\movies\\dataset"
         };
         String[] datasetGroundtruth = {
-            "E:\\Data\\csvProfiles\\restaurantIdDuplicates",
+            "/home/ethanos/workspace/JedAIToolkitNew/datasets/restaurantIdDuplicates",
 //            "E:\\Data\\csvProfiles\\censusIdDuplicates",
 //            "E:\\Data\\csvProfiles\\coraIdDuplicates",
 //            "E:\\Data\\csvProfiles\\cddbIdDuplicates",
@@ -105,6 +108,13 @@ public class TestAllMethods {
                 IEntityClustering ec = new RicochetSRClustering();
                 ec.setSimilarityThreshold(0.1);
                 List<EquivalenceCluster> entityClusters = ec.getDuplicates(simPairs);
+                
+                try {
+					PrintToFile.toCSV(entityClusters, "/home/ethanos/workspace/JedAIToolkitNew/rest.csv");
+				} catch (FileNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 
                 ClustersPerformance clp = new ClustersPerformance(entityClusters, duplicatePropagation);
                 clp.setStatistics();
