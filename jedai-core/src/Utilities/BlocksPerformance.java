@@ -48,6 +48,7 @@ public class BlocksPerformance {
     private double blockAssignments;
     private double d1BlockAssignments;
     private double d2BlockAssignments;
+    private double fMeasure;
     private double pc;
     private double pq;
 
@@ -169,6 +170,7 @@ public class BlocksPerformance {
         detectedDuplicates = abstractDP.getNoOfDuplicates();
         pc = ((double) abstractDP.getNoOfDuplicates()) / abstractDP.getExistingDuplicates();
         pq = abstractDP.getNoOfDuplicates() / aggregateCardinality;
+        fMeasure =  2 * pc * pq / (pc + pq);
     }
 
     private void getDuplicatesWithEntityIndex() {
@@ -183,6 +185,7 @@ public class BlocksPerformance {
         detectedDuplicates = (int) noOfDuplicates;
         pc = noOfDuplicates / abstractDP.getExistingDuplicates();
         pq = noOfDuplicates / aggregateCardinality;
+        fMeasure =  2 * pc * pq / (pc + pq);
     }
 
     private void getEntities() {
@@ -242,9 +245,10 @@ public class BlocksPerformance {
             System.out.println("Average block\t:\t" + blockAssignments / blocks.size());
             System.out.println("BC\t:\t" + blockAssignments / noOfD1Entities);
         }
-        System.out.println("Detected duplicates\t:\t" + abstractDP.getNoOfDuplicates());
+        System.out.println("Detected duplicates\t:\t" + detectedDuplicates);
         System.out.println("PC\t:\t" + pc);
         System.out.println("PQ\t:\t" + pq);
+        System.out.println("F-Measure\t:\t" + fMeasure);
     }
 
     private void setComparisonsCardinality() {

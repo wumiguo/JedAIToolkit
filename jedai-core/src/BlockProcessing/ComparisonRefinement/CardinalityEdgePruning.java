@@ -38,7 +38,7 @@ public class CardinalityEdgePruning extends WeightedEdgePruning {
     protected double minimumWeight;
     protected Queue<Comparison> topKEdges;
     
-    protected CardinalityEdgePruning(WeightingScheme scheme) {
+    public CardinalityEdgePruning(WeightingScheme scheme) {
         super(scheme);
         nodeCentric = false;
     }
