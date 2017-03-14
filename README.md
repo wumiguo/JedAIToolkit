@@ -26,9 +26,9 @@ The following methods are supported:
   
 For more details on the functionality of these methods, see [here](http://www.vldb.org/pvldb/vol9/p312-papadakis.pdf).  
 
-### Block Processing
+### Block Cleaning
 Its goal is to clean a set of blocks from unnecessary comparisons, which can be either *redundant* (i.e., repeated comparisons that have already been executed in a previously examined block) or *superfluous* (i.e., they involve non-matching entities).
-The implemented methods are grouped into *block-refinement* ones, which operate on the coarse level of entire blocks, and *comparison-refinement* ones, which operate on the fine level of individual comparisons. The latter category mostly involves Meta-blocking methods.
+Its methods operate on the coarse level of entire blocks.
 
 The following methods are supported:
 * Block-refinement methods
@@ -37,7 +37,12 @@ The following methods are supported:
  *  Block Purging
    * Size-based
     * Comparison-based
-   
+
+For more details on the functionality of these methods, see [here](http://www.vldb.org/pvldb/vol9/p684-papadakis.pdf).  
+
+### Comparison Cleaning
+Similar to Block Cleaning, this step aims to clean a set of blocks from both redundant and superfluous comparisons. Unlike Block Cleaning, its methods operate on the finer granularity of individual comparisons. It mostly involves Meta-blocking methods.
+ 
 * Comparison-refinement methods
  * Comparison Propagation
  * Cardinality Edge Pruning (CEP)
@@ -47,10 +52,9 @@ The following methods are supported:
  * Reciprocal Cardinality Node Pruning (ReCNP)
  * Reciprocal Weighed Node Pruning (ReWNP)
 
-For more details on the functionality of these methods, see [here](http://www.vldb.org/pvldb/vol9/p684-papadakis.pdf).  
+For more details on the functionality of these methods, see [here](http://www.mi.parisdescartes.fr/~themisp/publications/bdr16.pdf).  
 
 ### Entity Matching
-
 It compares pairs of entity profiles, associating every pair with a similarity in [0,1].
 
 The following schema-agnostic methods are supported:
@@ -74,7 +78,6 @@ The following schema-agnostic methods are supported:
    * Overall Graph similarity
 
 ### Entity Clustering
-
 It uses the similarities produced by Entity Matching to create the *similarity graph*, i.e., an undirected, weighted graph where the nodes correspond to entities and the edges connect pairs of compared entities. The similarity graph is then partitioned into a set of equivalence clusters, with every cluster corresponding to a distinct real-world object.
 
 The following domain-independent methods are currently supported:
@@ -86,7 +89,6 @@ The following domain-independent methods are currently supported:
 * Ricochet SR Clustering
 
 For more details on the functionality of these methods, see [here](http://www.vldb.org/pvldb/2/vldb09-1025.pdf). 
-
 
 ### Consortium
 
