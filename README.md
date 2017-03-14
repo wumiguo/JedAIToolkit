@@ -37,7 +37,7 @@ The following methods are currently supported:
  1) Block Filtering
  2) Block Scheduling
  3) Size-based Block Purging
- 4) Size-based Block Purging
+ 4) Comparison-based Block Purging
 
 All methods are optional, but complementary with each other and can be used in combination. For more details on the functionality of these methods, see [here](http://www.vldb.org/pvldb/vol9/p684-papadakis.pdf).  
 
