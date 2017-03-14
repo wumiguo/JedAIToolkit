@@ -9,9 +9,9 @@ In more detail, JedAI supports the following functionalities grouped into 5 modu
 It transforms the input data into a list of entity profiles. An entity is a uniquely identified set of name-value pairs (e.g., an RDF resource with its URI as identifier and its set of predicates and objects as name-value pairs). 
 
 The following formats are currently supported:
- * CSV 
- * RDF (any format, including XML, OWL)
- * SQL (mySQL, PostgreSQL)
+ 1) CSV 
+ 2) RDF (any format, including XML, OWL)
+ 3) SQL (mySQL, PostgreSQL)
  
 The next version will add support for more formats: SPARQL endpoints, JSON, MongoDB, Oracle and SQL Server.
   
@@ -80,7 +80,7 @@ The graph models can be combined with the following graph similarity measures:
    1) Containment similarity 
    2) Normalized Value similarity 
    3) Value similarity 
-   * Overall Graph similarity
+   4) Overall Graph similarity
 
 ### Entity Clustering
 It takes as input the similarity graph produced by Entity Matching and partitions it into a set of equivalence clusters, with every cluster corresponding to a distinct real-world object.
@@ -100,6 +100,6 @@ For more details on the functionality of these methods, see [here](http://www.vl
 JEDAI is a collaboration project involving the following partners:
 * [Department of Informatics and Telecommunications, University of Athens](http://www.di.uoa.gr),
 * [Software and Knowledge Engineering Lab, National Center for Scientific Research "Demokritos"](https://www.iit.demokritos.gr/skel) ,
-* [Science-For-You not-for-profit company](http://www.scify.gr/site/en) and, 
+* [Science-For-You not-for-profit company](http://www.scify.gr/site/en) 
 * [LIPADE, Paris Descartes University](http://lipade.mi.parisdescartes.fr)
 * [Department of Computer Science, University of Leuven](https://wms.cs.kuleuven.be/cs/english)
