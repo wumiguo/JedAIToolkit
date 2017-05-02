@@ -3,6 +3,10 @@ JedAI constitutes an open source, high scalability toolkit that offers out-of-th
 
 At the core of JedAI lies a set of *domain-independent*, *state-of-the-art* techniques that apply to both RDF and relational data. These techniques rely on an approximate, *schema-agnostic* functionality based on *blocking* for high scalability. 
 
+If you use JedAI, please cite the following paper:
+
+George Papadakis, Leonidas Tsekouras, Emmanouil Thanos, George Giannakopoulos, Themis Palpanas and Manolis Koubarakis: "JedAI: The Force behind Entity Resolution", in ESWC 2017.
+
 In more detail, JedAI supports the following functionalities grouped into 5 modules:
 
 ### Data Reading 
