@@ -2,7 +2,7 @@ This is a list of the datasets that can be read using DataReader.EntityReader.En
 
 | Dataset Name | Entities | Name-Value Pairs | Duplicates | Average NVP per Entity |	Brute-force Comparisons |
 File Format | Type | 
-|---|---|---|---|---|
+|---|---|---|---|---|---|---|---|
 | Abt-By	| 2,152	| 4,876	| 1,076	| 2.3	| 2.31E+06| | |
 | DBLP-ACM	| 4,910	19,626	| 2,224	| 4.0	| 1.21E+07|  | |
 | DBLP-Scholar	| 63,869| 	208,065	| 2,308	| 3.3	| 2.04E+09|  | |
