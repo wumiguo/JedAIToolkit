@@ -42,12 +42,12 @@ For more details on the functionality of these methods, see [here](http://www.vl
 Its goal is to clean a set of blocks from unnecessary comparisons, which can be either *redundant* (i.e., repeated comparisons that have already been executed in a previously examined block) or *superfluous* (i.e., comparisons that involve non-matching entities). Its methods operate on the coarse level of entire blocks.
 
 The following methods are currently supported:
- 1) Block Filtering
- 2) Block Scheduling
- 3) Size-based Block Purging
- 4) Comparison-based Block Purging
-
-All methods are optional, but complementary with each other and can be used in combination. For more details on the functionality of these methods, see [here](http://www.vldb.org/pvldb/vol9/p684-papadakis.pdf).  
+ 1) Size-based Block Purging
+ 2) Comparison-based Block Purging
+ 3) Block Scheduling
+ 4) Block Filtering
+ 
+All methods are optional, but complementary with each other and can be used in combination. Note that all methods are compatible with Clean-Clean ER, but only the first three methods apply to Dirty ER. For more details on the functionality of these methods, see [here](http://www.vldb.org/pvldb/vol9/p684-papadakis.pdf).  
 
 ### Comparison Cleaning
 Similar to Block Cleaning, this step aims to clean a set of blocks from both redundant and superfluous comparisons. Unlike Block Cleaning, its methods operate on the finer granularity of individual comparisons. 
