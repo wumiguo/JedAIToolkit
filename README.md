@@ -7,7 +7,7 @@ At the core of JedAI lies a set of *domain-independent*, *state-of-the-art* tech
 
 If you use JedAI, please cite the following paper:
 
-George Papadakis, Leonidas Tsekouras, Emmanouil Thanos, George Giannakopoulos, Themis Palpanas and Manolis Koubarakis: "JedAI: The Force behind Entity Resolution", in ESWC 2017.
+*George Papadakis, Leonidas Tsekouras, Emmanouil Thanos, George Giannakopoulos, Themis Palpanas and Manolis Koubarakis: "JedAI: The Force behind Entity Resolution", in ESWC 2017*.
 
 ## JedAI Workflow
 
