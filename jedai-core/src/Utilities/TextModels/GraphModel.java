@@ -34,17 +34,15 @@ public abstract class GraphModel extends AbstractModel {
     protected DocumentNGramGraph graphModel;
     protected final static NGramCachedGraphComparator COMPARATOR = new NGramCachedGraphComparator();
 
-    public GraphModel(int n, RepresentationModel model, SimilarityMetric simMetric, String iName) {
-        super(n, model, simMetric, iName);
+    public GraphModel(int dId, int n, RepresentationModel model, SimilarityMetric simMetric, String iName) {
+        super(dId, n, model, simMetric, iName);
     }
 
-    public DocumentNGramGraph getGraphModel() {
+    @Override
+    public void finalizeModel() {};
+    
+    protected DocumentNGramGraph getGraphModel() {
         return graphModel;
-    }
-
-    public void setModel(String text) {
-        noOfDocuments++;
-        graphModel.setDataString(text);
     }
 
     @Override
@@ -72,10 +70,5 @@ public abstract class GraphModel extends AbstractModel {
                 System.exit(-1);
                 return -1;
         }
-    }
-
-    public void updateModel(GraphModel model) {
-        noOfDocuments++;
-        graphModel.merge(model.getGraphModel(), 1.0 - (noOfDocuments - 1.0) / noOfDocuments);
     }
 }

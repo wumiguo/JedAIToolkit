@@ -21,6 +21,7 @@ import Utilities.TextModels.CharacterNGramGraphs;
 import Utilities.TextModels.CharacterNGrams;
 import Utilities.TextModels.TokenNGramGraphs;
 import Utilities.TextModels.TokenNGrams;
+import Utilities.TextModels.TokenNGramsWithGlobalWeights;
 
 /**
  *
@@ -35,38 +36,47 @@ public enum RepresentationModel {
     CHARACTER_FOURGRAMS,
     CHARACTER_FOURGRAM_GRAPHS,
     TOKEN_UNIGRAMS, 
+    TOKEN_UNIGRAMS_TF_IDF, 
     TOKEN_UNIGRAM_GRAPHS, 
     TOKEN_BIGRAMS,
+    TOKEN_BIGRAMS_TF_IDF, 
     TOKEN_BIGRAM_GRAPHS, 
     TOKEN_TRIGRAMS,
+    TOKEN_TRIGRAMS_TF_IDF, 
     TOKEN_TRIGRAM_GRAPHS;
     
-    public static AbstractModel getModel (RepresentationModel model, SimilarityMetric simMetric, String instanceName) {
+    public static AbstractModel getModel (int dId, RepresentationModel model, SimilarityMetric simMetric, String instanceName) {
         switch (model) {
             case CHARACTER_BIGRAMS:
-                return new CharacterNGrams(2, model, simMetric, instanceName);
+                return new CharacterNGrams(dId, 2, model, simMetric, instanceName);
             case CHARACTER_BIGRAM_GRAPHS:
-                return new CharacterNGramGraphs(2, model, simMetric, instanceName);
+                return new CharacterNGramGraphs(dId, 2, model, simMetric, instanceName);
             case CHARACTER_FOURGRAMS:
-                return new CharacterNGrams(4, model, simMetric, instanceName);
+                return new CharacterNGrams(dId, 4, model, simMetric, instanceName);
             case CHARACTER_FOURGRAM_GRAPHS:
-                return new CharacterNGramGraphs(4, model, simMetric, instanceName);
+                return new CharacterNGramGraphs(dId, 4, model, simMetric, instanceName);
             case CHARACTER_TRIGRAMS:
-                return new CharacterNGrams(3, model, simMetric, instanceName);
+                return new CharacterNGrams(dId, 3, model, simMetric, instanceName);
             case CHARACTER_TRIGRAM_GRAPHS:
-                return new CharacterNGramGraphs(3, model, simMetric, instanceName);
+                return new CharacterNGramGraphs(dId, 3, model, simMetric, instanceName);
             case TOKEN_BIGRAMS:
-                return new TokenNGrams(2, model, simMetric, instanceName);
+                return new TokenNGrams(dId, 2, model, simMetric, instanceName);
+            case TOKEN_BIGRAMS_TF_IDF:
+                return new TokenNGramsWithGlobalWeights(dId, 2, model, simMetric, instanceName);
             case TOKEN_BIGRAM_GRAPHS:
-                return new TokenNGramGraphs(2, model, simMetric, instanceName);
+                return new TokenNGramGraphs(dId, 2, model, simMetric, instanceName);
             case TOKEN_TRIGRAMS:
-                return new TokenNGrams(3, model, simMetric, instanceName);
+                return new TokenNGrams(dId, 3, model, simMetric, instanceName);
+            case TOKEN_TRIGRAMS_TF_IDF:
+                return new TokenNGramsWithGlobalWeights(dId, 3, model, simMetric, instanceName);
             case TOKEN_TRIGRAM_GRAPHS:
-                return new TokenNGramGraphs(3, model, simMetric, instanceName);
+                return new TokenNGramGraphs(dId, 3, model, simMetric, instanceName);
             case TOKEN_UNIGRAMS:
-                return new TokenNGrams(1, model, simMetric, instanceName);
+                return new TokenNGrams(dId, 1, model, simMetric, instanceName);
+            case TOKEN_UNIGRAMS_TF_IDF:
+                return new TokenNGramsWithGlobalWeights(dId, 1, model, simMetric, instanceName);
             case TOKEN_UNIGRAM_GRAPHS:
-                return new TokenNGramGraphs(1, model, simMetric, instanceName);
+                return new TokenNGramGraphs(dId, 1, model, simMetric, instanceName);
             default:
                 return null;    
         }

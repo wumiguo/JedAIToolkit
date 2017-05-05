@@ -48,26 +48,24 @@ public class TestAllMethods {
         BlockBuildingMethod blockingWorkflow = BlockBuildingMethod.STANDARD_BLOCKING;
 
         String[] datasetProfiles = {
-            "/home/ethanos/workspace/JedAIToolkitNew/datasets/restaurantProfiles",
-//            "E:\\Data\\csvProfiles\\censusProfiles",
-//            "E:\\Data\\csvProfiles\\coraProfiles",
-//            "E:\\Data\\csvProfiles\\cddbProfiles",
-//            "E:\\Data\\csvProfiles\\abt-buy\\dataset",
-//            "E:\\Data\\csvProfiles\\amazon-gp\\dataset",
-//            "E:\\Data\\csvProfiles\\dblp-acm\\dataset",
-//            "E:\\Data\\csvProfiles\\dblp-scholar\\dataset",
-//            "E:\\Data\\csvProfiles\\movies\\dataset"
+            "/home/ethanos/workspace/JedAIToolkitNew/datasets/restaurantProfiles", //            "E:\\Data\\csvProfiles\\censusProfiles",
+        //            "E:\\Data\\csvProfiles\\coraProfiles",
+        //            "E:\\Data\\csvProfiles\\cddbProfiles",
+        //            "E:\\Data\\csvProfiles\\abt-buy\\dataset",
+        //            "E:\\Data\\csvProfiles\\amazon-gp\\dataset",
+        //            "E:\\Data\\csvProfiles\\dblp-acm\\dataset",
+        //            "E:\\Data\\csvProfiles\\dblp-scholar\\dataset",
+        //            "E:\\Data\\csvProfiles\\movies\\dataset"
         };
         String[] datasetGroundtruth = {
-            "/home/ethanos/workspace/JedAIToolkitNew/datasets/restaurantIdDuplicates",
-//            "E:\\Data\\csvProfiles\\censusIdDuplicates",
-//            "E:\\Data\\csvProfiles\\coraIdDuplicates",
-//            "E:\\Data\\csvProfiles\\cddbIdDuplicates",
-//            "E:\\Data\\csvProfiles\\abt-buy\\groundtruth",
-//            "E:\\Data\\csvProfiles\\amazon-gp\\groundtruth",
-//            "E:\\Data\\csvProfiles\\dblp-acm\\groundtruth",
-//            "E:\\Data\\csvProfiles\\dblp-scholar\\groundtruth",
-//            "E:\\Data\\csvProfiles\\movies\\groundtruth"
+            "/home/ethanos/workspace/JedAIToolkitNew/datasets/restaurantIdDuplicates", //            "E:\\Data\\csvProfiles\\censusIdDuplicates",
+        //            "E:\\Data\\csvProfiles\\coraIdDuplicates",
+        //            "E:\\Data\\csvProfiles\\cddbIdDuplicates",
+        //            "E:\\Data\\csvProfiles\\abt-buy\\groundtruth",
+        //            "E:\\Data\\csvProfiles\\amazon-gp\\groundtruth",
+        //            "E:\\Data\\csvProfiles\\dblp-acm\\groundtruth",
+        //            "E:\\Data\\csvProfiles\\dblp-scholar\\groundtruth",
+        //            "E:\\Data\\csvProfiles\\movies\\groundtruth"
         };
 
         for (int datasetId = 0; datasetId < datasetProfiles.length; datasetId++) {
@@ -81,6 +79,8 @@ public class TestAllMethods {
             final AbstractDuplicatePropagation duplicatePropagation = new UnilateralDuplicatePropagation(gtReader.getDuplicatePairs(eReader.getEntityProfiles()));
             System.out.println("Existing Duplicates\t:\t" + duplicatePropagation.getDuplicates().size());
 
+            double time1 = System.currentTimeMillis();
+            
             IBlockBuilding blockBuildingMethod = BlockBuildingMethod.getDefaultConfiguration(blockingWorkflow);
             List<AbstractBlock> blocks = blockBuildingMethod.getBlocks(profiles, null);
             System.out.println("Original blocks\t:\t" + blocks.size());
@@ -95,31 +95,33 @@ public class TestAllMethods {
                 blocks = comparisonCleaningMethod.refineBlocks(blocks);
             }
 
+            double time2 = System.currentTimeMillis();
+            
             BlocksPerformance blp = new BlocksPerformance(blocks, duplicatePropagation);
             blp.setStatistics();
-            blp.printStatistics();
-            
+            blp.printStatistics(time2-time1);
+
             RepresentationModel repModel = RepresentationModel.CHARACTER_BIGRAMS;
 //            for (RepresentationModel repModel : RepresentationModel.values()) {
-                System.out.println("\n\nCurrent model\t:\t" + repModel.toString() + "\t\t" +  SimilarityMetric.getModelDefaultSimMetric(repModel));
-                IEntityMatching em = new ProfileMatcher(repModel, SimilarityMetric.JACCARD_SIMILARITY);
-                SimilarityPairs simPairs = em.executeComparisons(blocks, profiles);
+            System.out.println("\n\nCurrent model\t:\t" + repModel.toString() + "\t\t" + SimilarityMetric.getModelDefaultSimMetric(repModel));
+            IEntityMatching em = new ProfileMatcher(repModel, SimilarityMetric.JACCARD_SIMILARITY);
+            SimilarityPairs simPairs = em.executeComparisons(blocks, profiles);
 
-                IEntityClustering ec = new RicochetSRClustering();
-                ec.setSimilarityThreshold(0.1);
-                List<EquivalenceCluster> entityClusters = ec.getDuplicates(simPairs);
-                
-                try {
-					PrintToFile.toCSV(entityClusters, "/home/ethanos/workspace/JedAIToolkitNew/rest.csv");
-				} catch (FileNotFoundException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+            IEntityClustering ec = new RicochetSRClustering();
+            ec.setSimilarityThreshold(0.1);
+            List<EquivalenceCluster> entityClusters = ec.getDuplicates(simPairs);
 
-                ClustersPerformance clp = new ClustersPerformance(entityClusters, duplicatePropagation);
-                clp.setStatistics();
-                clp.printStatistics();
+            try {
+                PrintToFile.toCSV(entityClusters, "/home/ethanos/workspace/JedAIToolkitNew/rest.csv");
+            } catch (FileNotFoundException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
             }
+
+            ClustersPerformance clp = new ClustersPerformance(entityClusters, duplicatePropagation);
+            clp.setStatistics();
+            clp.printStatistics();
+        }
 //        }
     }
 }

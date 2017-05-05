@@ -215,7 +215,7 @@ public class BlocksPerformance {
         }
     }
 
-    public void printStatistics() {
+    public void printStatistics(double overheadTime) {
         System.out.println("\n\n\n**************************************************");
         System.out.println("*************** Blocks Performance ***************");
         System.out.println("**************************************************");
@@ -249,6 +249,7 @@ public class BlocksPerformance {
         System.out.println("PC\t:\t" + pc);
         System.out.println("PQ\t:\t" + pq);
         System.out.println("F-Measure\t:\t" + fMeasure);
+        System.out.println("Overhead time\t:\t" + overheadTime);
     }
 
     private void setComparisonsCardinality() {

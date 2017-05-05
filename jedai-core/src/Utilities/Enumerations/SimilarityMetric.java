@@ -23,6 +23,7 @@ import java.util.List;
  * @author G.A.P. II
  */
 public enum SimilarityMetric {
+    ARCS_SIMILARITY,
     COSINE_SIMILARITY,
     ENHANCED_JACCARD_SIMILARITY,
     GENERALIZED_JACCARD_SIMILARITY,
@@ -30,7 +31,9 @@ public enum SimilarityMetric {
     GRAPH_NORMALIZED_VALUE_SIMILARITY,
     GRAPH_VALUE_SIMILARITY,
     GRAPH_OVERALL_SIMILARITY,
-    JACCARD_SIMILARITY;
+    JACCARD_SIMILARITY,
+    SIGMA_SIMILARITY,
+    WEIGHTED_JACCARD_SIMILARITY;
 
     public static List<SimilarityMetric> getModelCompatibleSimMetrics(RepresentationModel model) {
         final List<SimilarityMetric> simMetrics = new ArrayList<>();
@@ -41,10 +44,18 @@ public enum SimilarityMetric {
             case TOKEN_BIGRAMS:
             case TOKEN_TRIGRAMS:
             case TOKEN_UNIGRAMS:
+                simMetrics.add(ARCS_SIMILARITY);
                 simMetrics.add(COSINE_SIMILARITY);
                 simMetrics.add(ENHANCED_JACCARD_SIMILARITY);
                 simMetrics.add(GENERALIZED_JACCARD_SIMILARITY);
                 simMetrics.add(JACCARD_SIMILARITY);
+                break;
+            case TOKEN_BIGRAMS_TF_IDF:
+            case TOKEN_TRIGRAMS_TF_IDF:
+            case TOKEN_UNIGRAMS_TF_IDF:
+                simMetrics.add(COSINE_SIMILARITY);
+                simMetrics.add(GENERALIZED_JACCARD_SIMILARITY);
+                simMetrics.add(SIGMA_SIMILARITY);
                 break;
             case CHARACTER_BIGRAM_GRAPHS:
             case CHARACTER_FOURGRAM_GRAPHS:
@@ -79,13 +90,19 @@ public enum SimilarityMetric {
                 return GRAPH_VALUE_SIMILARITY;
             case TOKEN_BIGRAMS:
                 return COSINE_SIMILARITY;
+            case TOKEN_BIGRAMS_TF_IDF:
+                return COSINE_SIMILARITY;
             case TOKEN_BIGRAM_GRAPHS:
                 return GRAPH_VALUE_SIMILARITY;
             case TOKEN_TRIGRAMS:
                 return COSINE_SIMILARITY;
+            case TOKEN_TRIGRAMS_TF_IDF:
+                return COSINE_SIMILARITY;
             case TOKEN_TRIGRAM_GRAPHS:
                 return GRAPH_VALUE_SIMILARITY;
             case TOKEN_UNIGRAMS:
+                return COSINE_SIMILARITY;
+            case TOKEN_UNIGRAMS_TF_IDF:
                 return COSINE_SIMILARITY;
             case TOKEN_UNIGRAM_GRAPHS:
                 return GRAPH_VALUE_SIMILARITY;

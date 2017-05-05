@@ -22,6 +22,7 @@ import DataModel.EntityProfile;
 import DataModel.SimilarityEdge;
 import DataModel.SimilarityPairs;
 import Utilities.Comparators.SimilarityEdgeComparator;
+import Utilities.Constants;
 import Utilities.Enumerations.RepresentationModel;
 import Utilities.Enumerations.SimilarityMetric;
 import Utilities.TextModels.AbstractModel;
@@ -41,7 +42,7 @@ import org.jgrapht.graph.SimpleDirectedWeightedGraph;
  *
  * @author G.A.P. II
  */
-public class GroupLinkage extends AbstractEntityMatching {
+public class GroupLinkage extends AbstractEntityMatching implements Constants {
 
     private static final Logger LOGGER = Logger.getLogger(GroupLinkage.class.getName());
 
@@ -66,10 +67,10 @@ public class GroupLinkage extends AbstractEntityMatching {
         }
 
         isCleanCleanER = false;
-        entityModelsD1 = getModels(profilesD1);
+        entityModelsD1 = getModels(DATASET_1, profilesD1);
         if (profilesD2 != null) {
             isCleanCleanER = true;
-            entityModelsD2 = getModels(profilesD2);
+            entityModelsD2 = getModels(DATASET_2, profilesD2);
         }
 
         final SimilarityPairs simPairs = new SimilarityPairs(isCleanCleanER, blocks);
@@ -111,7 +112,7 @@ public class GroupLinkage extends AbstractEntityMatching {
 
     //Every element of the getModels list is an AbstractModel[] array, corresponding to 
     //a profile. Every element of these arrays is a text-model corresponding to an attribute.
-    private AbstractModel[][] getModels(List<EntityProfile> profiles) {
+    private AbstractModel[][] getModels(int datasetId, List<EntityProfile> profiles) {
         int entityCounter = 0;
         final AbstractModel[][] ModelsList = new AbstractModel[profiles.size()][];
         for (EntityProfile profile : profiles) {
@@ -126,8 +127,9 @@ public class GroupLinkage extends AbstractEntityMatching {
             ModelsList[entityCounter] = new AbstractModel[validAttributes];
             for (Attribute attribute : profile.getAttributes()) {
                 if (!attribute.getValue().isEmpty()) {
-                    ModelsList[entityCounter][counter] = RepresentationModel.getModel(representationModel, simMetric, attribute.getName());
+                    ModelsList[entityCounter][counter] = RepresentationModel.getModel(datasetId, representationModel, simMetric, attribute.getName());
                     ModelsList[entityCounter][counter].updateModel(attribute.getValue());
+                    ModelsList[entityCounter][counter].finalizeModel();
                     counter++;
                 } 
             }

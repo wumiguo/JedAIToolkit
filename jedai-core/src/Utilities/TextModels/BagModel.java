@@ -30,63 +30,105 @@ import java.util.logging.Logger;
  * @author G.A.P. II
  */
 public abstract class BagModel extends AbstractModel {
-    
+
     private static final Logger LOGGER = Logger.getLogger(BagModel.class.getName());
 
     protected double noOfTotalTerms;
-    protected final Map<String, Integer> itemsFrequency;
+    protected final Map<String, IncrementalCounter> itemsFrequency;
 
-    public BagModel(int n, RepresentationModel md, SimilarityMetric sMetric, String iName) {
-        super(n, md, sMetric, iName);
+    public BagModel(int dId, int n, RepresentationModel md, SimilarityMetric sMetric, String iName) {
+        super(dId, n, md, sMetric, iName);
 
-        itemsFrequency = new HashMap<String, Integer>();
+        itemsFrequency = new HashMap<>();
     }
+
+    @Override
+    public void finalizeModel() {};
     
-    public double getCosineSimilarity(BagModel oModel) {
-        Map<String, Integer> itemVector1 = itemsFrequency;
-        Map<String, Integer> itemVector2 = oModel.getItemsFrequency();
+    protected double getEnhancedJaccardSimilarity(BagModel oModel) {
+        Map<String, IncrementalCounter> itemVector1 = itemsFrequency;
+        Map<String, IncrementalCounter> itemVector2 = oModel.getItemsFrequency();
         if (itemVector2.size() < itemVector1.size()) {
             itemVector1 = oModel.getItemsFrequency();
             itemVector2 = itemsFrequency;
         }
 
         double numerator = 0.0;
-        for (Entry<String, Integer> entry : itemVector1.entrySet()) {
-            Integer frequency2 = itemVector2.get(entry.getKey());
+        for (Entry<String, IncrementalCounter> entry : itemVector1.entrySet()) {
+            IncrementalCounter frequency2 = itemVector2.get(entry.getKey());
             if (frequency2 != null) {
-                numerator += entry.getValue() * frequency2 / noOfTotalTerms / oModel.getNoOfTotalTerms();
-            }
-        }
-        
-        double denominator = getVectorMagnitude(this)*getVectorMagnitude(oModel); 
-        return numerator / denominator;
-    }
-
-    private double getEnhancedJaccardSimilarity(BagModel oModel) {
-        Map<String, Integer> itemVector1 = itemsFrequency;
-        Map<String, Integer> itemVector2 = oModel.getItemsFrequency();
-        if (itemVector2.size() < itemVector1.size()) {
-            itemVector1 = oModel.getItemsFrequency();
-            itemVector2 = itemsFrequency;
-        }
-
-        double numerator = 0.0;
-        for (Entry<String, Integer> entry : itemVector1.entrySet()) {
-            Integer frequency2 = itemVector2.get(entry.getKey());
-            if (frequency2 != null) {
-                numerator += Math.min(entry.getValue(), frequency2);
+                numerator += Math.min(entry.getValue().getCounter(), frequency2.getCounter());
             }
         }
 
         double denominator = noOfTotalTerms + oModel.getNoOfTotalTerms() - numerator;
         return numerator / denominator;
     }
-    
-    private double getGeneralizedJaccardSimilarity(BagModel oModel) {
+
+    protected Map<String, IncrementalCounter> getItemsFrequency() {
+        return itemsFrequency;
+    }
+
+    protected double getJaccardSimilarity(BagModel oModel) {
+        final Set<String> commonKeys = new HashSet<>(itemsFrequency.keySet());
+        commonKeys.retainAll(oModel.getItemsFrequency().keySet());
+
+        double numerator = commonKeys.size();
+        double denominator = itemsFrequency.size() + oModel.getItemsFrequency().size() - numerator;
+        return numerator / denominator;
+    }
+
+    protected double getNoOfTotalTerms() {
+        return noOfTotalTerms;
+    }
+
+    @Override
+    public double getSimilarity(AbstractModel oModel) {
+        switch (simMetric) {
+            case ARCS_SIMILARITY:
+                return getARCSSimilarity((BagModel) oModel);
+            case COSINE_SIMILARITY:
+                return getTfCosineSimilarity((BagModel) oModel);
+            case ENHANCED_JACCARD_SIMILARITY:
+                return getEnhancedJaccardSimilarity((BagModel) oModel);
+            case GENERALIZED_JACCARD_SIMILARITY:
+                return getTfGeneralizedJaccardSimilarity((BagModel) oModel);
+            case JACCARD_SIMILARITY:
+                return getJaccardSimilarity((BagModel) oModel);
+            default:
+                LOGGER.log(Level.SEVERE, "The given similarity metric is incompatible with the bag representation model!");
+                System.exit(-1);
+                return -1;
+        }
+    }
+
+    protected double getTfCosineSimilarity(BagModel oModel) {
+        double totalTerms2 = oModel.getNoOfTotalTerms();
+        
+        Map<String, IncrementalCounter> itemVector1 = itemsFrequency;
+        Map<String, IncrementalCounter> itemVector2 = oModel.getItemsFrequency();
+        if (itemVector2.size() < itemVector1.size()) {
+            itemVector1 = oModel.getItemsFrequency();
+            itemVector2 = itemsFrequency;
+        }
+
+        double numerator = 0.0;
+        for (Entry<String, IncrementalCounter> entry : itemVector1.entrySet()) {
+            IncrementalCounter frequency2 = itemVector2.get(entry.getKey());
+            if (frequency2 != null) {
+                numerator += entry.getValue().getCounter() * frequency2.getCounter() / noOfTotalTerms / totalTerms2;
+            }
+        }
+
+        double denominator = getVectorMagnitude() * oModel.getVectorMagnitude();
+        return numerator / denominator;
+    }
+
+    protected double getTfGeneralizedJaccardSimilarity(BagModel oModel) {
         double totalTerms1 = noOfTotalTerms;
         double totalTerms2 = oModel.getNoOfTotalTerms();
-        Map<String, Integer> itemVector1 = itemsFrequency;
-        Map<String, Integer> itemVector2 = oModel.getItemsFrequency();
+        Map<String, IncrementalCounter> itemVector1 = itemsFrequency;
+        Map<String, IncrementalCounter> itemVector2 = oModel.getItemsFrequency();
         if (itemVector2.size() < itemVector1.size()) {
             itemVector1 = oModel.getItemsFrequency();
             itemVector2 = itemsFrequency;
@@ -96,66 +138,50 @@ public abstract class BagModel extends AbstractModel {
         }
 
         double numerator = 0.0;
-        for (Entry<String, Integer> entry : itemVector1.entrySet()) {
-            Integer frequency2 = itemVector2.get(entry.getKey());
+        for (Entry<String, IncrementalCounter> entry : itemVector1.entrySet()) {
+            IncrementalCounter frequency2 = itemVector2.get(entry.getKey());
             if (frequency2 != null) {
-                numerator += Math.min(entry.getValue() / totalTerms1, frequency2 / totalTerms2);
+                numerator += Math.min(entry.getValue().getCounter() / totalTerms1, frequency2.getCounter() / totalTerms2);
             }
         }
 
-        final Set<String> allKeys = new HashSet<String>(itemVector1.keySet());
+        final Set<String> allKeys = new HashSet<>(itemVector1.keySet());
         allKeys.addAll(itemVector2.keySet());
         double denominator = 0.0;
         for (String key : allKeys) {
-            Integer frequency1 = itemVector1.get(key);
-            Integer frequency2 = itemVector2.get(key);
-            double freq1 = frequency1 == null ? 0 : frequency1 / totalTerms1;
-            double freq2 = frequency2 == null ? 0 : frequency2 / totalTerms2;
+            IncrementalCounter frequency1 = itemVector1.get(key);
+            IncrementalCounter frequency2 = itemVector2.get(key);
+            double freq1 = frequency1 == null ? 0 : frequency1.getCounter() / totalTerms1;
+            double freq2 = frequency2 == null ? 0 : frequency2.getCounter() / totalTerms2;
             denominator += Math.max(freq1, freq2);
         }
 
         return numerator / denominator;
-    }
-
-    public Map<String, Integer> getItemsFrequency() {
-        return itemsFrequency;
-    }
+    }   
     
-    private double getJaccardSimilarity(BagModel oModel) {
-        final Set<String> commonKeys = new HashSet<String>(itemsFrequency.keySet());
-        commonKeys.retainAll(oModel.getItemsFrequency().keySet());
-
-        double numerator = commonKeys.size();
-        double denominator = itemsFrequency.size() + oModel.getItemsFrequency().size() - numerator;
-        return numerator / denominator;
-    }
-
-    public double getNoOfTotalTerms() {
-        return noOfTotalTerms;
-    }
-    
-    @Override
-    public double getSimilarity(AbstractModel oModel) {
-        switch (simMetric) {
-            case COSINE_SIMILARITY:
-                return getCosineSimilarity((BagModel) oModel);
-            case ENHANCED_JACCARD_SIMILARITY:
-                return getEnhancedJaccardSimilarity((BagModel) oModel);
-            case GENERALIZED_JACCARD_SIMILARITY:
-                return getGeneralizedJaccardSimilarity((BagModel) oModel);
-            case JACCARD_SIMILARITY:
-                return getJaccardSimilarity((BagModel) oModel);
-            default:
-                LOGGER.log(Level.SEVERE, "The given similarity metric is incompatible with the bag representation model!");
-                System.exit(-1);
-                return -1;
+    protected double getARCSSimilarity(BagModel oModel) {
+        Map<String, IncrementalCounter> itemVector1 = itemsFrequency;
+        Map<String, IncrementalCounter> itemVector2 = oModel.getItemsFrequency();        
+        
+        if (itemVector2.size() < itemVector1.size()) {
+            itemVector1 = oModel.getItemsFrequency();
+            itemVector2 = itemsFrequency;            
         }
-    }
-    
-    private double getVectorMagnitude(BagModel model) {
+                
+        double similarity = 0;        
+        for (Entry<String, IncrementalCounter> entry : itemVector1.entrySet()) {
+            IncrementalCounter frequency2 = itemVector2.get(entry.getKey());
+            if (frequency2 != null) {                                       
+                similarity += 1.0 / (Math.log1p(entry.getValue().getCounter()*frequency2.getCounter()) / Math.log(2));                
+            } 
+        }            
+        
+        return similarity;
+    }   
+    protected double getVectorMagnitude() {
         double magnitude = 0.0;
-        for (Entry<String, Integer> entry : model.getItemsFrequency().entrySet()) {
-            magnitude += Math.pow(entry.getValue()/model.getNoOfTotalTerms(), 2.0);
+        for (Entry<String, IncrementalCounter> entry : itemsFrequency.entrySet()) {
+            magnitude += Math.pow(entry.getValue().getCounter() / noOfTotalTerms, 2.0);
         }
 
         return Math.sqrt(magnitude);

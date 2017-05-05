@@ -20,6 +20,7 @@ import DataModel.Attribute;
 import DataModel.Comparison;
 import DataModel.EntityProfile;
 import DataModel.SimilarityPairs;
+import Utilities.Constants;
 import Utilities.TextModels.AbstractModel;
 import Utilities.Enumerations.RepresentationModel;
 import Utilities.Enumerations.SimilarityMetric;
@@ -32,7 +33,7 @@ import java.util.logging.Logger;
  *
  * @author G.A.P. II
  */
-public class ProfileMatcher extends AbstractEntityMatching {
+public class ProfileMatcher extends AbstractEntityMatching implements Constants {
 
     private static final Logger LOGGER = Logger.getLogger(ProfileMatcher.class.getName());
 
@@ -55,10 +56,10 @@ public class ProfileMatcher extends AbstractEntityMatching {
         }
 
         isCleanCleanER = false;
-        entityModelsD1 = getModels(profilesD1);
+        entityModelsD1 = getModels(DATASET_1, profilesD1);
         if (profilesD2 != null) {
             isCleanCleanER = true;
-            entityModelsD2 = getModels(profilesD2);
+            entityModelsD2 = getModels(DATASET_2, profilesD2);
         }
 
         final SimilarityPairs simPairs = new SimilarityPairs(isCleanCleanER, blocks);
@@ -73,14 +74,15 @@ public class ProfileMatcher extends AbstractEntityMatching {
         return simPairs;
     }
 
-    private AbstractModel[] getModels(List<EntityProfile> profiles) {
+    private AbstractModel[] getModels(int datasetId, List<EntityProfile> profiles) {
         int counter = 0;
         final AbstractModel[] models = new AbstractModel[profiles.size()];
         for (EntityProfile profile : profiles) {
-            models[counter] = RepresentationModel.getModel(representationModel, simMetric, profile.getEntityUrl());
+            models[counter] = RepresentationModel.getModel(datasetId, representationModel, simMetric, profile.getEntityUrl());
             for (Attribute attribute : profile.getAttributes()) {
                 models[counter].updateModel(attribute.getValue());
             }
+            models[counter].finalizeModel();
             counter++;
         }
         return models;

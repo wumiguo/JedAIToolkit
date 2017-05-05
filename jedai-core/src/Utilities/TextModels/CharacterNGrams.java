@@ -18,6 +18,7 @@ package Utilities.TextModels;
 
 import Utilities.Enumerations.RepresentationModel;
 import Utilities.Enumerations.SimilarityMetric;
+import static Utilities.TextModels.AbstractModel.NO_OF_DOCUMENTS;
 
 /**
  *
@@ -26,24 +27,25 @@ import Utilities.Enumerations.SimilarityMetric;
 
 public class CharacterNGrams extends BagModel {
     
-    public CharacterNGrams(int n, RepresentationModel model, SimilarityMetric simMetric, String iName) {
-        super(n, model, simMetric, iName);
+    public CharacterNGrams(int dId, int n, RepresentationModel model, SimilarityMetric simMetric, String iName) {
+        super(dId, n, model, simMetric, iName);
+        
+        NO_OF_DOCUMENTS[datasetId]++;
     }
     
     @Override
     public void updateModel(String text) {
-        noOfDocuments++;
         int currentPosition = 0;
         final int length = text.length() - (nSize-1);
         while (currentPosition < length) {
             noOfTotalTerms++;
             final String term = text.substring(currentPosition, currentPosition + nSize);
-            Integer frequency = itemsFrequency.get(term);
+            IncrementalCounter frequency = itemsFrequency.get(term);
             if (frequency == null) {
-                frequency = new Integer(0);
+                frequency = new IncrementalCounter();
+                itemsFrequency.put(term, frequency);
             } 
-            frequency++;
-            itemsFrequency.put(term, frequency);
+            frequency.incrementCounter();
             currentPosition++;
         }
     }

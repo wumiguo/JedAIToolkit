@@ -18,6 +18,7 @@ package Utilities.TextModels;
 
 import Utilities.Enumerations.RepresentationModel;
 import Utilities.Enumerations.SimilarityMetric;
+import static Utilities.TextModels.AbstractModel.NO_OF_DOCUMENTS;
 import gr.demokritos.iit.jinsect.documentModel.representations.DocumentNGramGraph;
 import gr.demokritos.iit.jinsect.documentModel.representations.DocumentNGramHGraph;
 
@@ -30,9 +31,10 @@ public class CharacterNGramGraphs extends GraphModel {
     
     private final static int SEGMENTS_UNIT = 100;
     
-    public CharacterNGramGraphs (int n, RepresentationModel model, SimilarityMetric simMetric, String iName) {
-        super(n, model, simMetric, iName);
+    public CharacterNGramGraphs (int dId, int n, RepresentationModel model, SimilarityMetric simMetric, String iName) {
+        super(dId, n, model, simMetric, iName);
         
+        NO_OF_DOCUMENTS[datasetId]++;
         graphModel = new DocumentNGramHGraph(nSize, nSize, nSize, nSize*SEGMENTS_UNIT);
     }
     
@@ -41,7 +43,6 @@ public class CharacterNGramGraphs extends GraphModel {
         final DocumentNGramGraph tempGraph = new DocumentNGramGraph(nSize, nSize, nSize);
         tempGraph.setDataString(text);
         
-        noOfDocuments++;
-        graphModel.merge(tempGraph, 1 - (noOfDocuments-1)/noOfDocuments);
+        graphModel.merge(tempGraph, 1 - (NO_OF_DOCUMENTS[datasetId]-1)/NO_OF_DOCUMENTS[datasetId]);
     }
 }

@@ -29,21 +29,26 @@ public abstract class AbstractModel implements Serializable {
     
     private static final long serialVersionUID = 328759404L;
 
+    protected final int datasetId;
     protected final int nSize;
-    protected double noOfDocuments;
+    protected static double[] NO_OF_DOCUMENTS = {0, 0};
     
     protected final RepresentationModel modelType;
     protected final SimilarityMetric simMetric;
     protected final String instanceName;
     
-    public AbstractModel(int n, RepresentationModel md, SimilarityMetric sMetric, String iName) {
+    public AbstractModel(int dId, int n, RepresentationModel md, SimilarityMetric sMetric, String iName) {
+        datasetId = dId;
         instanceName = iName;
         modelType = md;
         nSize = n;
-        noOfDocuments = 0;
         simMetric = sMetric;
     }
-
+    
+    public int getDatasetId() {
+        return datasetId;
+    }
+    
     public String getInstanceName() {
         return instanceName;
     }
@@ -52,8 +57,8 @@ public abstract class AbstractModel implements Serializable {
         return modelType;
     }
     
-    public double getNoOfDocuments() {
-        return noOfDocuments;
+    public static double getNoOfDocuments(int datasetId) {
+        return NO_OF_DOCUMENTS[datasetId];
     }
     
     public int getNSize() {
@@ -64,6 +69,7 @@ public abstract class AbstractModel implements Serializable {
         return simMetric;
     }
     
+    public abstract void finalizeModel();
     public abstract double getSimilarity(AbstractModel oModel);
     public abstract void updateModel(String text);
 }

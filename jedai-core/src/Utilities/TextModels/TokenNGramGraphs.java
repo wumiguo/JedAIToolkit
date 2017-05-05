@@ -18,6 +18,7 @@ package Utilities.TextModels;
 
 import Utilities.Enumerations.RepresentationModel;
 import Utilities.Enumerations.SimilarityMetric;
+import static Utilities.TextModels.AbstractModel.NO_OF_DOCUMENTS;
 import gr.demokritos.iit.jinsect.documentModel.representations.DocumentWordGraph;
 
 /**
@@ -27,9 +28,10 @@ import gr.demokritos.iit.jinsect.documentModel.representations.DocumentWordGraph
 
 public class TokenNGramGraphs extends GraphModel {
     
-    public TokenNGramGraphs (int n, RepresentationModel model, SimilarityMetric simMetric, String iName) {
-        super(n, model, simMetric, iName);
+    public TokenNGramGraphs (int dId, int n, RepresentationModel model, SimilarityMetric simMetric, String iName) {
+        super(dId, n, model, simMetric, iName);
 
+        NO_OF_DOCUMENTS[datasetId]++;
         graphModel = new DocumentWordGraph(nSize, nSize, nSize);
     }
 
@@ -38,7 +40,6 @@ public class TokenNGramGraphs extends GraphModel {
         final DocumentWordGraph tempGraph = new DocumentWordGraph(nSize, nSize, nSize);
         tempGraph.setDataString(text);
         
-        noOfDocuments++;
-        getGraphModel().merge(tempGraph, 1 - (noOfDocuments-1)/noOfDocuments);
+        getGraphModel().merge(tempGraph, 1 - (NO_OF_DOCUMENTS[datasetId]-1)/NO_OF_DOCUMENTS[datasetId]);
     }
 }

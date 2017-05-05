@@ -17,6 +17,7 @@ package Utilities.TextModels;
 
 import Utilities.Enumerations.RepresentationModel;
 import Utilities.Enumerations.SimilarityMetric;
+import static Utilities.TextModels.AbstractModel.NO_OF_DOCUMENTS;
 
 /**
  *
@@ -25,31 +26,31 @@ import Utilities.Enumerations.SimilarityMetric;
 
 public class TokenNGrams extends BagModel {
     
-    public TokenNGrams(int n, RepresentationModel model, SimilarityMetric simMetric, String iName) {
-        super(n, model, simMetric, iName);
+    public TokenNGrams(int dId, int n, RepresentationModel model, SimilarityMetric simMetric, String iName) {
+        super(dId, n, model, simMetric, iName);
+        
+        NO_OF_DOCUMENTS[datasetId]++;
     }
     
     @Override
     public void updateModel(String text) {
-        noOfDocuments++;
-             
         String[] tokens = gr.demokritos.iit.jinsect.utils.splitToWords(text);
         
         int noOfTokens = tokens.length;
         noOfTotalTerms += noOfTokens;
-        for (int j = 0; j <= noOfTokens-nSize; j++) {
+        for (int j = 0; j <= noOfTokens-nSize; j++) { //this missed the last token without "<="
             final StringBuilder sb = new StringBuilder();
             for (int k = 0; k < nSize; k++) {
                 sb.append(tokens[j+k]).append(" ");
             }
             String feature = sb.toString().trim();
             
-            Integer frequency = itemsFrequency.get(feature);
+            IncrementalCounter frequency = itemsFrequency.get(feature);
             if (frequency == null) {
-                frequency = new Integer(0);
+                frequency = new IncrementalCounter();
+                itemsFrequency.put(feature, frequency);
             }
-            frequency++;
-            itemsFrequency.put(feature, frequency);
+            frequency.incrementCounter();
         }
     }
 }

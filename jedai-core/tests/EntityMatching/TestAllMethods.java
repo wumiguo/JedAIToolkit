@@ -51,6 +51,7 @@ public class TestAllMethods {
         System.out.println("Existing Duplicates\t:\t" + duplicatePropagation.getDuplicates().size());
         
         for (BlockBuildingMethod blbuMethod : BlockBuildingMethod.values()) {
+            
             System.out.println("\n\nCurrent blocking metohd\t:\t" + blbuMethod);
             IBlockBuilding blockBuildingMethod = BlockBuildingMethod.getDefaultConfiguration(blbuMethod);
             List<AbstractBlock> blocks = blockBuildingMethod.getBlocks(profiles, null);

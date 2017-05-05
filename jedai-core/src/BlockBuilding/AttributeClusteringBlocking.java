@@ -18,6 +18,7 @@ package BlockBuilding;
 
 import DataModel.Attribute;
 import DataModel.EntityProfile;
+import Utilities.Constants;
 import Utilities.TextModels.AbstractModel;
 import Utilities.Enumerations.RepresentationModel;
 import Utilities.Enumerations.SimilarityMetric;
@@ -43,7 +44,7 @@ import org.jgrapht.graph.SimpleGraph;
  *
  * @author gap2
  */
-public class AttributeClusteringBlocking extends StandardBlocking {
+public class AttributeClusteringBlocking extends StandardBlocking implements Constants {
 
     private final static double MINIMUM_ATTRIBUTE_SIMILARITY_THRESHOLD = 1E-11;
     private final static String CLUSTER_PREFIX = "#$!cl";
@@ -69,9 +70,9 @@ public class AttributeClusteringBlocking extends StandardBlocking {
 
     @Override
     protected void buildBlocks() {
-        AbstractModel[] attributeModels1 = buildAttributeModels(entityProfilesD1);
+        AbstractModel[] attributeModels1 = buildAttributeModels(DATASET_1, entityProfilesD1);
         if (entityProfilesD2 != null) {
-            AbstractModel[] attributeModels2 = buildAttributeModels(entityProfilesD2);
+            AbstractModel[] attributeModels2 = buildAttributeModels(DATASET_2, entityProfilesD2);
             SimpleGraph graph = compareAttributes(attributeModels1, attributeModels2);
             clusterAttributes(attributeModels1, attributeModels2, graph);
         } else {
@@ -92,7 +93,7 @@ public class AttributeClusteringBlocking extends StandardBlocking {
         }
     }
     
-    private AbstractModel[] buildAttributeModels(List<EntityProfile> profiles) {    
+    private AbstractModel[] buildAttributeModels(int datasetId, List<EntityProfile> profiles) {    
         final HashMap<String, List<String>> attributeProfiles = new HashMap<>();
         for (EntityProfile entity : profiles) {
             for (Attribute attribute : entity.getAttributes()) {
@@ -108,7 +109,7 @@ public class AttributeClusteringBlocking extends StandardBlocking {
         int index = 0;
         AbstractModel[] attributeModels = new AbstractModel[attributeProfiles.size()];
         for (Entry<String, List<String>> entry : attributeProfiles.entrySet()) {
-            attributeModels[index] = RepresentationModel.getModel(model, simMetric, entry.getKey());
+            attributeModels[index] = RepresentationModel.getModel(datasetId, model, simMetric, entry.getKey());
             for (String value : entry.getValue()) {
                 attributeModels[index].updateModel(value);
             }
