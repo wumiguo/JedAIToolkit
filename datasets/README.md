@@ -1,9 +1,9 @@
 This folder contains several datasets that have been tested with JedAI. We have grouped them in two categories: 
 1) those suitable for Clean-Clean ER, and 
-2) those for Dirty ER. 
+2) those sutable for Dirty ER. 
 
 Every dataset includes two types of files: 
-1) those containing the entity profiles themselves, which are called **entity file**, and 
+1) those containing the entity profiles themselves, which are called **entity files**, and 
 2) those containing the golden standard (i.e., the ground-truth with the real matches), which are called **ground-truth files**.
 
 Note that every file that is available as a *Java Serialized Object* (**JSO**) can be read using the class DataReader.EntityReader.EntitySerializationReader for entity files or the class DataReader.GroundTruthReader.GtSerializationReader for ground-truth files.
