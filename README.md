@@ -1,13 +1,17 @@
 # Java gEneric DAta Integration (JedAI) Toolkit
 JedAI constitutes an open source, high scalability toolkit that offers out-of-the-box solutions for any data integration task, e.g., Record Linkage, Entity Resolution and Link Discovery. 
 
-At the core of JedAI lies a set of *domain-independent*, *state-of-the-art* techniques that apply to both RDF and relational data. These techniques rely on an approximate, *schema-agnostic* functionality based on *blocking* for high scalability. 
+At the core of JedAI lies a set of *domain-independent*, *state-of-the-art* techniques that apply to both RDF and relational data. These techniques rely on an approximate, *schema-agnostic* functionality based on *(meta-)blocking* for high scalability. 
+
+### Citation
 
 If you use JedAI, please cite the following paper:
 
 George Papadakis, Leonidas Tsekouras, Emmanouil Thanos, George Giannakopoulos, Themis Palpanas and Manolis Koubarakis: "JedAI: The Force behind Entity Resolution", in ESWC 2017.
 
-In more detail, JedAI supports the following functionalities grouped into 5 modules:
+## JedAI Workflow
+
+JedAI implements a schema-agnostic, domain-independent workflow for both Clean-Clean and Dirty ER that consists of the following steps (modules):
 
 ### Data Reading 
 It transforms the input data into a list of entity profiles. An entity is a uniquely identified set of name-value pairs (e.g., an RDF resource with its URI as identifier and its set of predicates and objects as name-value pairs). 
@@ -74,11 +78,12 @@ Both methods can be combined with the following representation models.
 
 For more details on the functionality of these bag and graph models, see [here](https://link.springer.com/article/10.1007%2Fs11280-015-0365-x).
 
-The bag models can be combined with the following similarity measures, using term-frequency weights: 
-   1) Cosine similarity 
-   2) Jaccard similarity 
-   3) Generalized Jaccard similarity 
-   4) Enhanced Jaccard similarity
+The bag models can be combined with the following similarity measures, using both TF and TF-IDF weights: 
+   1) ARCS similarity
+   2) Cosine similarity 
+   3) Jaccard similarity 
+   4) Generalized Jaccard similarity 
+   5) Enhanced Jaccard similarity
    
 The graph models can be combined with the following graph similarity measures:
    1) Containment similarity 
@@ -89,7 +94,7 @@ The graph models can be combined with the following graph similarity measures:
 ### Entity Clustering
 It takes as input the similarity graph produced by Entity Matching and partitions it into a set of equivalence clusters, with every cluster corresponding to a distinct real-world object.
 
-The following domain-independent methods are currently supported:
+The following domain-independent methods are currently supported for Dirty ER:
 1) Center Clustering
 2) Connected Components Clustering
 3) Cut Clustering
@@ -99,6 +104,11 @@ The following domain-independent methods are currently supported:
 
 For more details on the functionality of these methods, see [here](http://www.vldb.org/pvldb/2/vldb09-1025.pdf). 
 
+For Clean-Clean ER, only one method is supported:
+1) Unique Mapping Clustering
+
+For more details on its functionality, see [here](https://arxiv.org/pdf/1207.4525.pdf).
+
 ### Consortium
 
 JEDAI is a collaboration project involving the following partners:
@@ -106,4 +116,3 @@ JEDAI is a collaboration project involving the following partners:
 * [Software and Knowledge Engineering Lab, National Center for Scientific Research "Demokritos"](https://www.iit.demokritos.gr/skel) ,
 * [Science-For-You not-for-profit company](http://www.scify.gr/site/en) 
 * [LIPADE, Paris Descartes University](http://lipade.mi.parisdescartes.fr)
-* [Department of Computer Science, University of Leuven](https://wms.cs.kuleuven.be/cs/english)
