@@ -11,7 +11,7 @@ JedAI can be used in three different ways:
 
 If you use JedAI, please cite the following paper:
 
-*George Papadakis, Leonidas Tsekouras, Emmanouil Thanos, George Giannakopoulos, Themis Palpanas and Manolis Koubarakis: "JedAI: The Force behind Entity Resolution", in ESWC 2017*.
+*George Papadakis, Leonidas Tsekouras, Emmanouil Thanos, George Giannakopoulos, Themis Palpanas and Manolis Koubarakis: "JedAI: The Force behind Entity Resolution", in ESWC 2017* ([pdf](documentation/jedaiDemoEswc17.pdf))
 
 ## JedAI Workflow
 
