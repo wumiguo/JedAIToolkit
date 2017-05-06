@@ -13,10 +13,10 @@ Note that every file that is available as a *Java Serialized Object* (**JSO**) c
 | Dataset Name | Entities | Name-Value Pairs | Duplicates | Average NVP per Entity |	Brute-force Comparisons |
 File Format | Data Origin | 
 |---|---|---|---|---|---|---|---|
-| Abt-By	| 2,152	| 4,876	| 1,076	| 2.3	| 2.31E+06| JSO ([entity file](dirtyERfiles/abtBuyProfiles), [groundtruth file](dirtyERfiles/abtBuyIdDuplicates) |Real data |
-| DBLP-ACM	| 4,910	| 19,626	| 2,224	| 4.0	| 1.21E+07| JSO | Real data |
-| DBLP-Scholar	| 63,869| 	208,065	| 2,308	| 3.3	| 2.04E+09| JSO | Real data |
-| Amazon-GP	| 4,393	| 14,412| 	1,104	| 3.3| 	9.65E+06| JSO | Real data |
+| Abt-By	| 2,152	| 4,876	| 1,076	| 2.3	| 2.31E+06| JSO ([entity file](dirtyERfiles/abtBuyProfiles), [groundtruth file](dirtyERfiles/abtBuyIdDuplicates)) |Real data |
+| DBLP-ACM	| 4,910	| 19,626	| 2,224	| 4.0	| 1.21E+07| JSO ([entity file](dirtyERfiles/dblpAcmProfiles), [groundtruth file](dirtyERfiles/dblpAcmIdDuplicates)) | Real data |
+| DBLP-Scholar	| 63,869| 	208,065	| 2,308	| 3.3	| 2.04E+09| JSO ([entity file](dirtyERfiles/dblpScholarProfiles), [groundtruth file](dirtyERfiles/dblpScholarIdDuplicates)) | Real data |
+| Amazon-GP	| 4,393	| 14,412| 	1,104	| 3.3| 	9.65E+06| JSO ([entity file](dirtyERfiles/amazonGpProfiles), [groundtruth file](dirtyERfiles/amazonGpIdDuplicates)) | Real data |
 | Movies	| 50,797 |	971,445	| 22,863| 	19.1| 	1.29E+09| JSO | Real data |
 | DBPedia	| 3,354,773	| 5.19E+07| 	892,586	| 15.5	| 5.63E+12| JSO | Real data |
 
