@@ -15,7 +15,11 @@ If you use JedAI, please cite the following paper:
 
 ## JedAI Workflow
 
-JedAI implements a schema-agnostic, domain-independent workflow for both Clean-Clean and Dirty ER that consists of the following steps (modules):
+JedAI implements a schema-agnostic, domain-independent end-to-end workflow for both Clean-Clean and Dirty ER that consists of 7 steps, as shown in the following image:
+
+![Image](documentation/JedaiWorkflow.png)
+
+Below, we explain in more detail the purpose and the functionality of every step.
 
 ### Data Reading 
 It transforms the input data into a list of entity profiles. An entity is a uniquely identified set of name-value pairs (e.g., an RDF resource with its URI as identifier and its set of predicates and objects as name-value pairs). 
