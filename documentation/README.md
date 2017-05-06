@@ -1,1 +1,1 @@
-This folder contains the scientific papers that are useful for understanding and using JedAI.
+This folder contains material that is useful for understanding and using JedAI.
