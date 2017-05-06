@@ -1,7 +1,11 @@
 # Java gEneric DAta Integration (JedAI) Toolkit
-JedAI constitutes an open source, high scalability toolkit that offers out-of-the-box solutions for any data integration task, e.g., Record Linkage, Entity Resolution and Link Discovery. 
+JedAI constitutes an open source, high scalability toolkit that offers out-of-the-box solutions for any data integration task, e.g., Record Linkage, Entity Resolution and Link Discovery. At its core lies a set of *domain-independent*, *state-of-the-art* techniques that apply to both RDF and relational data. These techniques rely on an approximate, *schema-agnostic* functionality based on *(meta-)blocking* for high scalability. 
 
-At the core of JedAI lies a set of *domain-independent*, *state-of-the-art* techniques that apply to both RDF and relational data. These techniques rely on an approximate, *schema-agnostic* functionality based on *(meta-)blocking* for high scalability. 
+JedAI can be used in three different ways:
+
+  1) As an **open source library** that implements numerous state-of-the-art methods for all steps of the end-to-end ER work presented in the figure below.
+  2) As a **desktop application** with an intuitive Graphical User Interface that can be used by both expert and lay users.
+  3) As a **workbench** that compares the relative performance of different (configurations of) ER workflows.
 
 ### Citation
 
