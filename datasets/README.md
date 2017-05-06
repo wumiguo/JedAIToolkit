@@ -13,6 +13,10 @@ Note that every file that is available as a *Java Serialized Object* (**JSO**) c
 | Dataset Name | Entities | Name-Value Pairs | Duplicates | Average NVP per Entity |	Brute-force Comparisons |
 File Format | Data Origin | 
 |---|---|---|---|---|---|---|---|
+|Restaurant	|864	|4,319|	112|	5.0|	3.73E+05|JSO ([entity file](dirtyERfiles/restaurantProfiles), [groundtruth file](dirtyERfiles/restaurantDuplicates)) |Real data |
+|Census	|841	|3,913	|344|	4.7|	3.53E+05|JSO ([entity file](dirtyERfiles/censusProfiles), [groundtruth file](dirtyERfiles/censusIdDuplicates)) |Real data |
+|Cora|	1,295	|7,166|	17,184|	5.5|8.38E+05|JSO ([entity file](dirtyERfiles/coraProfiles), [groundtruth file](dirtyERfiles/coraIdDuplicates)) |Real data |
+|CdDb	|9763	|173,309	|299|	17.8	|4.77E+07|JSO ([entity file](dirtyERfiles/cddbProfiles), [groundtruth file](dirtyERfiles/cddbIdDuplicates)) |Real data |
 | Abt-By	| 2,152	| 4,876	| 1,076	| 2.3	| 2.31E+06| JSO ([entity file](dirtyERfiles/abtBuyProfiles), [groundtruth file](dirtyERfiles/abtBuyIdDuplicates)) |Real data |
 | DBLP-ACM	| 4,910	| 19,626	| 2,224	| 4.0	| 1.21E+07| JSO ([entity file](dirtyERfiles/dblpAcmProfiles), [groundtruth file](dirtyERfiles/dblpAcmIdDuplicates)) | Real data |
 | DBLP-Scholar	| 63,869| 	208,065	| 2,308	| 3.3	| 2.04E+09| JSO ([entity file](dirtyERfiles/dblpScholarProfiles), [groundtruth file](dirtyERfiles/dblpScholarIdDuplicates)) | Real data |
