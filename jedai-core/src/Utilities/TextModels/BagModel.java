@@ -85,8 +85,6 @@ public abstract class BagModel extends AbstractModel {
     @Override
     public double getSimilarity(AbstractModel oModel) {
         switch (simMetric) {
-            case ARCS_SIMILARITY:
-                return getARCSSimilarity((BagModel) oModel);
             case COSINE_SIMILARITY:
                 return getTfCosineSimilarity((BagModel) oModel);
             case ENHANCED_JACCARD_SIMILARITY:
@@ -159,25 +157,6 @@ public abstract class BagModel extends AbstractModel {
         return numerator / denominator;
     }   
     
-    protected double getARCSSimilarity(BagModel oModel) {
-        Map<String, IncrementalCounter> itemVector1 = itemsFrequency;
-        Map<String, IncrementalCounter> itemVector2 = oModel.getItemsFrequency();        
-        
-        if (itemVector2.size() < itemVector1.size()) {
-            itemVector1 = oModel.getItemsFrequency();
-            itemVector2 = itemsFrequency;            
-        }
-                
-        double similarity = 0;        
-        for (Entry<String, IncrementalCounter> entry : itemVector1.entrySet()) {
-            IncrementalCounter frequency2 = itemVector2.get(entry.getKey());
-            if (frequency2 != null) {                                       
-                similarity += 1.0 / (Math.log1p(entry.getValue().getCounter()*frequency2.getCounter()) / Math.log(2));                
-            } 
-        }            
-        
-        return similarity;
-    }   
     protected double getVectorMagnitude() {
         double magnitude = 0.0;
         for (Entry<String, IncrementalCounter> entry : itemsFrequency.entrySet()) {

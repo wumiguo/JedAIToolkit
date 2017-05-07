@@ -18,7 +18,6 @@ package Utilities.TextModels;
 
 import Utilities.Enumerations.RepresentationModel;
 import Utilities.Enumerations.SimilarityMetric;
-import static Utilities.TextModels.AbstractModel.NO_OF_DOCUMENTS;
 import gr.demokritos.iit.jinsect.documentModel.representations.DocumentWordGraph;
 
 /**

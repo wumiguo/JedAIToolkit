@@ -20,7 +20,7 @@ package Utilities.TextModels;
  * @author G.A.P. II
  */
 
-public class IncrementalCounter {
+class IncrementalCounter {
     
     private int counter;
     
