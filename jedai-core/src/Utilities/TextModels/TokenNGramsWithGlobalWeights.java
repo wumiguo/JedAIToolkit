@@ -15,6 +15,7 @@
  */
 package Utilities.TextModels;
 
+import Utilities.Constants;
 import Utilities.Enumerations.RepresentationModel;
 import Utilities.Enumerations.SimilarityMetric;
 import java.util.HashMap;
@@ -29,7 +30,7 @@ import java.util.logging.Logger;
  *
  * @author G.A.P. II
  */
-public class TokenNGramsWithGlobalWeights extends TokenNGrams {
+public class TokenNGramsWithGlobalWeights extends TokenNGrams implements Constants {
 
     private static final Logger LOGGER = Logger.getLogger(TokenNGramsWithGlobalWeights.class.getName());
 
@@ -60,14 +61,14 @@ public class TokenNGramsWithGlobalWeights extends TokenNGrams {
         commonKeys.retainAll(oModel.getItemsFrequency().keySet());
 
         double similarity = 0;
-        if (datasetId == 0 && datasetId == oModel.getDatasetId()) { // Dirty ER
+        if (datasetId == DATASET_1 && datasetId == oModel.getDatasetId()) { // Dirty ER
             for (String key : commonKeys) {
-                double frequency = DOC_FREQ[0].get(key).getCounter();
+                double frequency = DOC_FREQ[DATASET_1].get(key).getCounter();
                 similarity += 1.0 / (Math.log1p(frequency * (frequency - 1) / 2.0) / Math.log(2));
             }
         } else if (datasetId != oModel.getDatasetId()) { // Clean-Clean ER
             for (String key : commonKeys) {
-                similarity += 1.0 / (Math.log1p(DOC_FREQ[0].get(key).getCounter() * DOC_FREQ[1].get(key).getCounter()) / Math.log(2));
+                similarity += 1.0 / (Math.log1p(DOC_FREQ[DATASET_1].get(key).getCounter() * DOC_FREQ[DATASET_2].get(key).getCounter()) / Math.log(2));
             }
         } else {
             LOGGER.log(Level.SEVERE, "Both models come from dataset 1!");
