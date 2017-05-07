@@ -6,7 +6,7 @@ Every dataset includes two types of files:
 1) those containing the entity profiles themselves, which are called **entity files**, and 
 2) those containing the golden standard (i.e., the ground-truth with the real matches), which are called **groundtruth files**.
 
-Note that every file that is available as a *Java Serialized Object* (**JSO**) can be read using the class DataReader.EntityReader.EntitySerializationReader for entity files or the class DataReader.GroundTruthReader.GtSerializationReader for ground-truth files.
+Note that every file that is available as a *Java Serialized Object* (**JSO**) can be read using the class DataReader.EntityReader.EntitySerializationReader for entity files or the class DataReader.GroundTruthReader.GtSerializationReader for ground-truth files. See [this class](https://github.com/scify/JedAIToolkit/blob/master/jedai-core/tests/GeneralExamples/DirtyErDatasetStatistics.java) for an example.
 
 # Dirty ER datasets
 
