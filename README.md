@@ -17,6 +17,14 @@ If you use JedAI, please cite the following paper:
 
 *George Papadakis, Leonidas Tsekouras, Emmanouil Thanos, George Giannakopoulos, Themis Palpanas and Manolis Koubarakis: "JedAI: The Force behind Entity Resolution", in ESWC 2017* ([pdf](documentation/jedaiDemoEswc17.pdf)).
 
+### Consortium
+
+JEDAI is a collaboration project involving the following partners:
+* [Department of Informatics and Telecommunications, University of Athens](http://www.di.uoa.gr),
+* [Software and Knowledge Engineering Lab, National Center for Scientific Research "Demokritos"](https://www.iit.demokritos.gr/skel) ,
+* [Science-For-You not-for-profit company](http://www.scify.gr/site/en) 
+* [LIPADE, Paris Descartes University](http://lipade.mi.parisdescartes.fr)
+
 ## JedAI Workflow
 
 JedAI implements a schema-agnostic, domain-independent end-to-end workflow for both Clean-Clean and Dirty ER that consists of 7 steps, as shown in the following image:
@@ -120,11 +128,3 @@ For Clean-Clean ER, only one method is supported:
 1) Unique Mapping Clustering
 
 For more details on its functionality, see [here](https://arxiv.org/pdf/1207.4525.pdf).
-
-### Consortium
-
-JEDAI is a collaboration project involving the following partners:
-* [Department of Informatics and Telecommunications, University of Athens](http://www.di.uoa.gr),
-* [Software and Knowledge Engineering Lab, National Center for Scientific Research "Demokritos"](https://www.iit.demokritos.gr/skel) ,
-* [Science-For-You not-for-profit company](http://www.scify.gr/site/en) 
-* [LIPADE, Paris Descartes University](http://lipade.mi.parisdescartes.fr)
