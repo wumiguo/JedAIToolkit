@@ -6,6 +6,8 @@ JedAI can be used in three different ways:
   1) As an **open source library** that implements numerous state-of-the-art methods for all steps of the end-to-end ER work presented in the figure below.
   2) As a **desktop application** with an intuitive Graphical User Interface that can be used by both expert and lay users.
   3) As a **workbench** that compares the relative performance of different (configurations of) ER workflows.
+  
+This repository contains the code (in Java 8) of JedAI's open source library. The code of JedAI's desktop application and workbench is available in this [repository](https://github.com/scify/jedai-ui).
 
 You can find a short presentation of JedAI Toolkit [here](documentation/JedAIpresentation.pptx).
 
