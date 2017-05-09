@@ -7,6 +7,8 @@ JedAI can be used in three different ways:
   2) As a **desktop application** with an intuitive Graphical User Interface that can be used by both expert and lay users.
   3) As a **workbench** that compares the relative performance of different (configurations of) ER workflows.
 
+You can find a short presentation of JedAI Toolkit [here](JedAI presentation.pptx).
+
 ### Citation
 
 If you use JedAI, please cite the following paper:
