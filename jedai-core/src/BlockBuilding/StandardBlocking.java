@@ -45,10 +45,20 @@ public class StandardBlocking extends AbstractBlockBuilding {
     }
 
     @Override
+    public String getMethodConfiguration() {
+        return "parameter-free method";
+    }
+    
+    @Override
     public String getMethodInfo() {
         return "Standard Blocking: it creates one block for every token in the attribute values of at least two entities.";
     }
 
+    @Override
+    public String getMethodName() {
+        return "Standard Blocking";
+    }
+    
     @Override
     public String getMethodParameters() {
         return "Standard Blocking is a parameter-free method, as it uses unsupervised, schema-agnostic blocking keys:\n"

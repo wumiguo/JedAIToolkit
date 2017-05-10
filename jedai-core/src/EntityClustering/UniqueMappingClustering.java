@@ -90,6 +90,11 @@ public class UniqueMappingClustering extends AbstractEntityClustering {
     }
 
     @Override
+    public String getMethodName() {
+        return "Unique Mapping Clustering";
+    }
+    
+    @Override
     public String getMethodParameters() {
         return "The Unique Mapping Clustering algorithm involves 1 parameter:\n" 
              + explainThresholdParameter();

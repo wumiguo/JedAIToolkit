@@ -90,11 +90,22 @@ public class ExtendedQGramsBlocking extends QGramsBlocking {
     }
     
     @Override
+    public String getMethodConfiguration() {
+        return "N-gram size=" + nGramSize +
+               "\nThreshold=" + threshold;
+    }
+    
+    @Override
     public String getMethodInfo() {
         return "Extended Q-Grams Blocking: it creates one block for every combination of q-grams that represents at least two entities.\n"
                 + "The q-grams aer extracted from any token in the attribute values of any entity.";
     }
 
+    @Override
+    public String getMethodName() {
+        return "Extended Q-Grams Blocking";
+    }
+    
     @Override
     public String getMethodParameters() {
         return "Extended Q-Grams Blocking involves two parameters:\n"

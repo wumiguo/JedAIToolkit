@@ -29,7 +29,11 @@ public interface IEntityClustering {
  
     public List<EquivalenceCluster> getDuplicates(SimilarityPairs simPairs);
     
+    public String getMethodConfiguration();
+    
     public String getMethodInfo();
+    
+    public String getMethodName();
     
     public String getMethodParameters();
     

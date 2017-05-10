@@ -27,6 +27,9 @@ import java.util.List;
 
 public interface IBlockBuilding {
     
+    int DATASET_1 = 0;
+    int DATASET_2 = 1;
+    
     String DOC_ID = "docid";
     String VALUE_LABEL = "value";
     
@@ -34,7 +37,11 @@ public interface IBlockBuilding {
     
     public List<AbstractBlock> getBlocks(List<EntityProfile> profilesD1, List<EntityProfile> profilesD2);
     
+    public String getMethodConfiguration();
+    
     public String getMethodInfo();
+    
+    public String getMethodName();
     
     public String getMethodParameters();
 }

@@ -140,8 +140,21 @@ public class MarkovClustering extends AbstractEntityClustering {
     }
 
     @Override
+    public String getMethodConfiguration() {
+        return super.getMethodConfiguration() + 
+               "\nCluster threshold=" + clusterThreshold +
+               "\nMatrix Similarity Threshold=" + matrixSimThreshold +
+               "\nSimilarity Checks Limit=" + similarityChecksLimit;
+    }
+    
+    @Override
     public String getMethodInfo() {
         return "Markov Clustering: implements the Markov Cluster Algorithm.";
+    }
+    
+    @Override
+    public String getMethodName() {
+        return "Markov Clustering";
     }
 
     @Override

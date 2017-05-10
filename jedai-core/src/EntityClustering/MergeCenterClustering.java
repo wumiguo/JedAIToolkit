@@ -59,8 +59,8 @@ public class MergeCenterClustering extends AbstractEntityClustering {
             }
         }
 
-        final Set<Integer> Center = new HashSet<Integer>();
-        final Set<Integer> NonCenter = new HashSet<Integer>();
+        final Set<Integer> Center = new HashSet<>();
+        final Set<Integer> NonCenter = new HashSet<>();
         while (!SEqueue.isEmpty()) {
             SimilarityEdge se = SEqueue.remove();
             int v1 = se.getModel1Pos();
@@ -94,6 +94,11 @@ public class MergeCenterClustering extends AbstractEntityClustering {
         return "Merge Center Clustering: implements the MERGE-CENTER algorithm";
     }
 
+    @Override
+    public String getMethodName() {
+        return "Merge Center Clustering";
+    }
+    
     @Override
     public String getMethodParameters() {
         return "The Merge Center Clustering algorithm involves 1 parameter:\n" 

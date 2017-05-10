@@ -79,10 +79,20 @@ public class BlockPruning extends AbstractBlockProcessing implements IBlockProce
     }
 
     @Override
+    public String getMethodConfiguration() {
+        return "parameter-free method";
+    }
+    
+    @Override
     public String getMethodInfo() {
         return "Block Pruning: it terminates entity matching when the cost of "
                 + "detecting new duplicates exceeds a certain limit, "
                 + "called maximum duplicate overhead.";
+    }
+    
+    @Override
+    public String getMethodName() {
+        return "Block Pruning";
     }
 
     @Override

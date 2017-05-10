@@ -47,10 +47,21 @@ public class ExtendedSuffixArraysBlocking extends SuffixArraysBlocking {
     }
 
     @Override
+    public String getMethodConfiguration() {
+        return "Maximum block size=" + maximumBlockSize +         
+               "\nMinimum suffix length=" + minimumSuffixLength;
+    }
+    
+    @Override
     public String getMethodInfo() {
         return "Extended Suffix Arrays Blocking: it creates one block for every substring (not just suffix) that appears in the tokens of at least two entities.";
     }
 
+    @Override
+    public String getMethodName() {
+        return "Extended Suffix Arrays Blocking";
+    }
+    
     @Override
     public String getMethodParameters() {
         return "Extended Suffix Arrays Blocking involves two parameters:\n"

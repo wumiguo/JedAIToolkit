@@ -41,7 +41,7 @@ public class RicochetSRClustering extends AbstractEntityClustering {
         final int[] edgesAttached = new int[noOfEntities];
         final List<Map<Integer, Double>> connections = new ArrayList<>();
         for (int i = 0; i < noOfEntities; i++) {
-            connections.add(i, new HashMap<Integer, Double>());
+            connections.add(i, new HashMap<>());
         }
 
         final Iterator<Comparison> iterator = simPairs.getPairIterator();
@@ -67,12 +67,12 @@ public class RicochetSRClustering extends AbstractEntityClustering {
         }
 
         if (VWqueue.isEmpty()) {
-            return new ArrayList<EquivalenceCluster>();
+            return new ArrayList<>();
         }
 
-        final Set<Integer> Center = new HashSet<Integer>();
-        final Set<Integer> NonCenter = new HashSet<Integer>();
-        final Map<Integer, Set<Integer>> Clusters = new HashMap<Integer, Set<Integer>>();
+        final Set<Integer> Center = new HashSet<>();
+        final Set<Integer> NonCenter = new HashSet<>();
+        final Map<Integer, Set<Integer>> Clusters = new HashMap<>();
         final int[] clusterCenter = new int[noOfEntities];
         final double[] simWithCenter = new double[noOfEntities]; // similarity with center
 
@@ -81,7 +81,7 @@ public class RicochetSRClustering extends AbstractEntityClustering {
         int v1 = vw.getPos();
         Center.add(v1);
         clusterCenter[v1] = v1;
-        Clusters.put(v1, new HashSet<Integer>());
+        Clusters.put(v1, new HashSet<>());
         Clusters.get(v1).add(v1);//initialize v1 Cluster with its own value
         simWithCenter[v1] = 1.0;
         Map<Integer, Double> connect = vw.Connections();
@@ -96,8 +96,8 @@ public class RicochetSRClustering extends AbstractEntityClustering {
             vw = VWqueue.remove();
             v1 = vw.getPos();
             connect = vw.Connections();
-            final Set<Integer> toReassign = new HashSet<Integer>();
-            final Set<Integer> centersToReassign = new HashSet<Integer>();
+            final Set<Integer> toReassign = new HashSet<>();
+            final Set<Integer> centersToReassign = new HashSet<>();
             for (int v2 : connect.keySet()) {
                 if (Center.contains(v2)) {
                     continue;
@@ -208,6 +208,11 @@ public class RicochetSRClustering extends AbstractEntityClustering {
         return "Ricochet SR Clustering: implements the Richochet Sequential Rippling algorithm";
     }
 
+    @Override
+    public String getMethodName() {
+        return "Ricochet SR Clustering";
+    }
+    
     @Override
     public String getMethodParameters() {
         return "The Ricochet SR Clustering algorithm involves 1 parameter:\n"

@@ -16,12 +16,12 @@
 
 package Utilities.Enumerations;
 
-import Utilities.TextModels.AbstractModel;
-import Utilities.TextModels.CharacterNGramGraphs;
-import Utilities.TextModels.CharacterNGrams;
-import Utilities.TextModels.TokenNGramGraphs;
-import Utilities.TextModels.TokenNGrams;
-import Utilities.TextModels.TokenNGramsWithGlobalWeights;
+import TextModels.AbstractModel;
+import TextModels.CharacterNGramGraphs;
+import TextModels.CharacterNGrams;
+import TextModels.TokenNGramGraphs;
+import TextModels.TokenNGrams;
+import TextModels.TokenNGramsWithGlobalWeights;
 
 /**
  *

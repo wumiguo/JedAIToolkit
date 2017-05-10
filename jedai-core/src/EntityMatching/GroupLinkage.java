@@ -22,10 +22,9 @@ import DataModel.EntityProfile;
 import DataModel.SimilarityEdge;
 import DataModel.SimilarityPairs;
 import Utilities.Comparators.SimilarityEdgeComparator;
-import Utilities.Constants;
 import Utilities.Enumerations.RepresentationModel;
 import Utilities.Enumerations.SimilarityMetric;
-import Utilities.TextModels.AbstractModel;
+import TextModels.ITextModel;
 
 import java.util.Iterator;
 import java.util.List;
@@ -42,13 +41,13 @@ import org.jgrapht.graph.SimpleDirectedWeightedGraph;
  *
  * @author G.A.P. II
  */
-public class GroupLinkage extends AbstractEntityMatching implements Constants {
+public class GroupLinkage extends AbstractEntityMatching {
 
     private static final Logger LOGGER = Logger.getLogger(GroupLinkage.class.getName());
 
     protected double similarityThreshold;
-    protected AbstractModel[][] entityModelsD1;
-    protected AbstractModel[][] entityModelsD2;
+    protected ITextModel[][] entityModelsD1;
+    protected ITextModel[][] entityModelsD2;
 
     public GroupLinkage(RepresentationModel model, SimilarityMetric simMetric) {
         super(model, simMetric);
@@ -93,10 +92,21 @@ public class GroupLinkage extends AbstractEntityMatching implements Constants {
 
         return simPairs;
     }
+    
+    @Override
+    public String getMethodConfiguration() {
+        return "Representation model=" + representationModel +
+               "\nSimilarity metric=" + simMetric;
+    }
 
     @Override
     public String getMethodInfo() {
         return "Group Linkage : it implements the group linkage algorithm for schema-agnostic comparison of the attribute values of two entity profiles.";
+    }
+    
+    @Override
+    public String getMethodName() {
+        return "Group Linkage";
     }
 
     @Override
@@ -110,11 +120,11 @@ public class GroupLinkage extends AbstractEntityMatching implements Constants {
              + "It determines the similarity value over which two compared attribute values are connected with an edge on the bipartite graph.";
     }
 
-    //Every element of the getModels list is an AbstractModel[] array, corresponding to 
+    //Every element of the getModels list is an ITextModel[] array, corresponding to 
     //a profile. Every element of these arrays is a text-model corresponding to an attribute.
-    private AbstractModel[][] getModels(int datasetId, List<EntityProfile> profiles) {
+    private ITextModel[][] getModels(int datasetId, List<EntityProfile> profiles) {
         int entityCounter = 0;
-        final AbstractModel[][] ModelsList = new AbstractModel[profiles.size()][];
+        final ITextModel[][] ModelsList = new ITextModel[profiles.size()][];
         for (EntityProfile profile : profiles) {
             int validAttributes = 0;
             for (Attribute attribute : profile.getAttributes()) {
@@ -124,7 +134,7 @@ public class GroupLinkage extends AbstractEntityMatching implements Constants {
             }
             
             int counter = 0;
-            ModelsList[entityCounter] = new AbstractModel[validAttributes];
+            ModelsList[entityCounter] = new ITextModel[validAttributes];
             for (Attribute attribute : profile.getAttributes()) {
                 if (!attribute.getValue().isEmpty()) {
                     ModelsList[entityCounter][counter] = RepresentationModel.getModel(datasetId, representationModel, simMetric, attribute.getName());
@@ -150,8 +160,8 @@ public class GroupLinkage extends AbstractEntityMatching implements Constants {
     }
 
     private Queue<SimilarityEdge> getSimilarityEdges(Comparison comparison) {
-        AbstractModel[] model1 = entityModelsD1[comparison.getEntityId1()];
-        AbstractModel[] model2;
+        ITextModel[] model1 = entityModelsD1[comparison.getEntityId1()];
+        ITextModel[] model2;
         if (isCleanCleanER) {
             model2 = entityModelsD2[comparison.getEntityId2()];
         } else {

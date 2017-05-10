@@ -12,8 +12,7 @@
 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 * See the License for the specific language governing permissions and
 * limitations under the License.
-*/
-
+ */
 package EntityMatching;
 
 import DataModel.AbstractBlock;
@@ -25,15 +24,21 @@ import java.util.List;
  *
  * @author G.A.P. II
  */
-
 public interface IEntityMatching {
-    
+
+    int DATASET_1 = 0;
+    int DATASET_2 = 1;
+
     public SimilarityPairs executeComparisons(List<AbstractBlock> blocks, List<EntityProfile> profiles);
-    
+
     public SimilarityPairs executeComparisons(List<AbstractBlock> blocks, List<EntityProfile> profilesD1, List<EntityProfile> profilesD2);
+
+    public String getMethodConfiguration();
     
     public String getMethodInfo();
+
+    public String getMethodName();
     
     public String getMethodParameters();
-    
+
 }

@@ -47,8 +47,18 @@ public class ComparisonsBasedBlockPurging extends AbstractBlockPurging {
     }
 
     @Override
+    public String getMethodConfiguration() {
+        return "Smothing factor=" + smoothingFactor;
+    }
+    
+    @Override
     public String getMethodInfo() {
         return "Comparison-based Block Purging: it discards the blocks exceeding a certain number of comparisons.";
+    }
+    
+    @Override
+    public String getMethodName() {
+        return "Comparison-based Block Purging";
     }
 
     @Override

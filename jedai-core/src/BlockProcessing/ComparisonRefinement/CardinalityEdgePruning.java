@@ -68,6 +68,11 @@ public class CardinalityEdgePruning extends WeightedEdgePruning {
         return "Cardinality Edge Pruning: a Meta-blocking method that retains the comparisons "
                 + "that correspond to the top-K weighted edges in the blocking graph.";
     }
+    
+    @Override
+    public String getMethodName() {
+        return "Cardinality Edge Pruning";
+    }
 
     @Override
     public String getMethodParameters() {

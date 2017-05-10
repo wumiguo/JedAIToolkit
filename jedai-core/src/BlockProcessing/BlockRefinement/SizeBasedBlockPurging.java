@@ -49,20 +49,19 @@ public class SizeBasedBlockPurging extends AbstractBlockPurging {
     }
     
     private int getMaxBlockSize(List<AbstractBlock> blocks) {
-        final Set<Integer> entities = new HashSet<Integer>();
-        for (AbstractBlock aBlock : blocks) {
-            final UnilateralBlock uBlock = (UnilateralBlock) aBlock;
+        final Set<Integer> entities = new HashSet<>();
+        blocks.stream().map((aBlock) -> (UnilateralBlock) aBlock).forEachOrdered((uBlock) -> {
             for (int id1 : uBlock.getEntities()) {
                 entities.add(id1);
             }
-        }
+        });
         
         return (int) Math.round(entities.size()*purgingFactor);
     }
     
     private int getMaxInnerBlockSize(List<AbstractBlock> blocks) {
-        final Set<Integer> d1Entities = new HashSet<Integer>();
-        final Set<Integer> d2Entities = new HashSet<Integer>();
+        final Set<Integer> d1Entities = new HashSet<>();
+        final Set<Integer> d2Entities = new HashSet<>();
         for (AbstractBlock block : blocks) {
             final BilateralBlock bilBlock = (BilateralBlock) block;
             for (int id1 : bilBlock.getIndex1Entities()) {
@@ -78,8 +77,18 @@ public class SizeBasedBlockPurging extends AbstractBlockPurging {
     }
     
     @Override
+    public String getMethodConfiguration() {
+        return "Purging factor=" + purgingFactor;
+    }
+    
+    @Override
     public String getMethodInfo() {
         return "Size-based Block Purging: it discards the blocks exceeding a certain number of entities.";
+    }
+    
+    @Override
+    public String getMethodName() {
+        return "Size-based Block Purging";
     }
 
     @Override

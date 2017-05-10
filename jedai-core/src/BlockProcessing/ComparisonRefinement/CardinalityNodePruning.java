@@ -47,6 +47,11 @@ public class CardinalityNodePruning extends CardinalityEdgePruning {
         return "Cardinality Node Pruning: a Meta-blocking method that retains for every entity, "
                 + "the comparisons that correspond to its top-k weighted edges in the blocking graph.";
     }
+    
+    @Override
+    public String getMethodName() {
+        return "Cardinality Node Pruning";
+    }
 
     @Override
     public String getMethodParameters() {

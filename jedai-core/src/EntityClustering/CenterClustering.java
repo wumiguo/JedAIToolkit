@@ -67,8 +67,8 @@ public class CenterClustering extends AbstractEntityClustering {
             }
         }
 
-        final Set<Integer> Center = new HashSet<Integer>();
-        final Set<Integer> NonCenter = new HashSet<Integer>();
+        final Set<Integer> Center = new HashSet<>();
+        final Set<Integer> NonCenter = new HashSet<>();
         while (!SEqueue.isEmpty()) {
             SimilarityEdge se = SEqueue.remove();
             int v1 = se.getModel1Pos();
@@ -108,6 +108,11 @@ public class CenterClustering extends AbstractEntityClustering {
     @Override
     public String getMethodInfo() {
         return "Center Clustering: implements the CENTER algorithm such that a vertex is set as a cluster center if it has highest average edge weight from its adjacent node";
+    }
+    
+    @Override
+    public String getMethodName() {
+        return "Center Clustering";
     }
 
     @Override

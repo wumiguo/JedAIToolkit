@@ -108,8 +108,18 @@ public class BlockFiltering extends AbstractBlockProcessing implements IBlockPro
     }
     
     @Override
+    public String getMethodConfiguration() {
+        return "Ratio=" + ratio;
+    }
+    
+    @Override
     public String getMethodInfo() {
         return "Block Filtering: it retains every entity in a subset of its smallest blocks.";
+    }
+    
+    @Override
+    public String getMethodName() {
+        return "Block Filtering";
     }
 
     @Override
@@ -129,12 +139,11 @@ public class BlockFiltering extends AbstractBlockProcessing implements IBlockPro
     protected void getUnilateralLimits(List<AbstractBlock> blocks) {
         limitsD1 = new int[entitiesD1];
         limitsD2 = null;
-        for (AbstractBlock block : blocks) {
-            UnilateralBlock uniBlock = (UnilateralBlock) block;
+        blocks.stream().map((block) -> (UnilateralBlock) block).forEachOrdered((uniBlock) -> {
             for (int id : uniBlock.getEntities()) {
                 limitsD1[id]++;
             }
-        }
+        });
 
         for (int i = 0; i < limitsD1.length; i++) {
             limitsD1[i] = (int) Math.round(ratio * limitsD1[i]);
@@ -160,17 +169,17 @@ public class BlockFiltering extends AbstractBlockProcessing implements IBlockPro
     }
     
     protected List<AbstractBlock> restructureBilateraBlocks(List<AbstractBlock> blocks) {
-        final List<AbstractBlock> newBlocks = new ArrayList<AbstractBlock>();
+        final List<AbstractBlock> newBlocks = new ArrayList<>();
         for (AbstractBlock block : blocks) {
             BilateralBlock oldBlock = (BilateralBlock) block;
-            final List<Integer> retainedEntitiesD1 = new ArrayList<Integer>();
+            final List<Integer> retainedEntitiesD1 = new ArrayList<>();
             for (int entityId : oldBlock.getIndex1Entities()) {
                 if (counterD1[entityId] < limitsD1[entityId]) {
                     retainedEntitiesD1.add(entityId);
                 }
             }
 
-            final List<Integer> retainedEntitiesD2 = new ArrayList<Integer>();
+            final List<Integer> retainedEntitiesD2 = new ArrayList<>();
             for (int entityId : oldBlock.getIndex2Entities()) {
                 if (counterD2[entityId] < limitsD2[entityId]) {
                     retainedEntitiesD2.add(entityId);
@@ -202,10 +211,10 @@ public class BlockFiltering extends AbstractBlockProcessing implements IBlockPro
     }
 
     protected List<AbstractBlock> restructureUnilateraBlocks(List<AbstractBlock> blocks) {
-        final List<AbstractBlock> newBlocks = new ArrayList<AbstractBlock>();
+        final List<AbstractBlock> newBlocks = new ArrayList<>();
         for (AbstractBlock block : blocks) {
             UnilateralBlock oldBlock = (UnilateralBlock) block;
-            final List<Integer> retainedEntities = new ArrayList<Integer>();
+            final List<Integer> retainedEntities = new ArrayList<>();
             for (int entityId : oldBlock.getEntities()) {
                 if (counterD1[entityId] < limitsD1[entityId]) {
                     retainedEntities.add(entityId);

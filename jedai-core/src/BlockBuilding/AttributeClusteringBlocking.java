@@ -18,8 +18,7 @@ package BlockBuilding;
 
 import DataModel.Attribute;
 import DataModel.EntityProfile;
-import Utilities.Constants;
-import Utilities.TextModels.AbstractModel;
+import TextModels.ITextModel;
 import Utilities.Enumerations.RepresentationModel;
 import Utilities.Enumerations.SimilarityMetric;
 import java.io.IOException;
@@ -44,7 +43,7 @@ import org.jgrapht.graph.SimpleGraph;
  *
  * @author gap2
  */
-public class AttributeClusteringBlocking extends StandardBlocking implements Constants {
+public class AttributeClusteringBlocking extends StandardBlocking {
 
     private final static double MINIMUM_ATTRIBUTE_SIMILARITY_THRESHOLD = 1E-11;
     private final static String CLUSTER_PREFIX = "#$!cl";
@@ -70,9 +69,9 @@ public class AttributeClusteringBlocking extends StandardBlocking implements Con
 
     @Override
     protected void buildBlocks() {
-        AbstractModel[] attributeModels1 = buildAttributeModels(DATASET_1, entityProfilesD1);
+        ITextModel[] attributeModels1 = buildAttributeModels(DATASET_1, entityProfilesD1);
         if (entityProfilesD2 != null) {
-            AbstractModel[] attributeModels2 = buildAttributeModels(DATASET_2, entityProfilesD2);
+            ITextModel[] attributeModels2 = buildAttributeModels(DATASET_2, entityProfilesD2);
             SimpleGraph graph = compareAttributes(attributeModels1, attributeModels2);
             clusterAttributes(attributeModels1, attributeModels2, graph);
         } else {
@@ -93,21 +92,21 @@ public class AttributeClusteringBlocking extends StandardBlocking implements Con
         }
     }
     
-    private AbstractModel[] buildAttributeModels(int datasetId, List<EntityProfile> profiles) {    
+    private ITextModel[] buildAttributeModels(int datasetId, List<EntityProfile> profiles) {    
         final HashMap<String, List<String>> attributeProfiles = new HashMap<>();
-        for (EntityProfile entity : profiles) {
-            for (Attribute attribute : entity.getAttributes()) {
+        profiles.forEach((entity) -> {
+            entity.getAttributes().forEach((attribute) -> {
                 List<String> values = attributeProfiles.get(attribute.getName());
                 if (values == null) {
                     values = new ArrayList<>();
                     attributeProfiles.put(attribute.getName(), values);
                 }
                 values.add(attribute.getValue());
-            }
-        }
+            });
+        });
 
         int index = 0;
-        AbstractModel[] attributeModels = new AbstractModel[attributeProfiles.size()];
+        ITextModel[] attributeModels = new ITextModel[attributeProfiles.size()];
         for (Entry<String, List<String>> entry : attributeProfiles.entrySet()) {
             attributeModels[index] = RepresentationModel.getModel(datasetId, model, simMetric, entry.getKey());
             for (String value : entry.getValue()) {
@@ -118,7 +117,7 @@ public class AttributeClusteringBlocking extends StandardBlocking implements Con
         return attributeModels;
     }
 
-    private void clusterAttributes(AbstractModel[] attributeModels, SimpleGraph graph) {
+    private void clusterAttributes(ITextModel[] attributeModels, SimpleGraph graph) {
         int noOfAttributes = attributeModels.length;
 
         ConnectivityInspector ci = new ConnectivityInspector(graph);
@@ -142,7 +141,7 @@ public class AttributeClusteringBlocking extends StandardBlocking implements Con
         attributeClusters[1] = null;
     }
 
-    private void clusterAttributes(AbstractModel[] attributeModels1, AbstractModel[] attributeModels2, SimpleGraph graph) {
+    private void clusterAttributes(ITextModel[] attributeModels1, ITextModel[] attributeModels2, SimpleGraph graph) {
         int d1Attributes = attributeModels1.length;
         int d2Attributes = attributeModels2.length;
 
@@ -171,7 +170,7 @@ public class AttributeClusteringBlocking extends StandardBlocking implements Con
         }
     }
 
-    private SimpleGraph compareAttributes(AbstractModel[] attributeModels) {
+    private SimpleGraph compareAttributes(ITextModel[] attributeModels) {
         int noOfAttributes = attributeModels.length;
         int[] mostSimilarName = new int[noOfAttributes];
         double[] maxSimillarity = new double[noOfAttributes];
@@ -205,7 +204,7 @@ public class AttributeClusteringBlocking extends StandardBlocking implements Con
         return namesGraph;
     }
 
-    private SimpleGraph compareAttributes(AbstractModel[] attributeModels1, AbstractModel[] attributeModels2) {
+    private SimpleGraph compareAttributes(ITextModel[] attributeModels1, ITextModel[] attributeModels2) {
         int d1Attributes = attributeModels1.length;
         int d2Attributes = attributeModels2.length;
         int totalAttributes = d1Attributes + d2Attributes;
@@ -271,11 +270,22 @@ public class AttributeClusteringBlocking extends StandardBlocking implements Con
     }
     
     @Override
+    public String getMethodConfiguration() {
+        return "Representation model=" + model +
+               "\nSimilarity metric=" + simMetric;
+    }
+    
+    @Override
     public String getMethodInfo() {
         return "Attribute Clustering Blocking: it groups the attribute names into similarity clusters "
                 + "and applies Standard Blocking to the values of every cluster, independently of the others.";
     }
 
+    @Override
+    public String getMethodName() {
+        return "Attribute Clustering";
+    }
+    
     @Override
     public String getMethodParameters() {
         return "Attribute Clustering Blocking involves a single parameter:\n"

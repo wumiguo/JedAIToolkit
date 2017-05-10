@@ -50,7 +50,7 @@ public class SuffixArraysBlocking extends StandardBlocking {
         LOGGER.log(Level.INFO, "Minimum suffix length\t:\t{0}", minimumSuffixLength);
     }
 
-     @Override
+    @Override
     public List<AbstractBlock> getBlocks(List<EntityProfile> profilesD1,
             List<EntityProfile> profilesD2) {
         List<AbstractBlock> purgedBlocks = super.getBlocks(profilesD1, profilesD2);
@@ -74,10 +74,21 @@ public class SuffixArraysBlocking extends StandardBlocking {
     }
     
     @Override
+    public String getMethodConfiguration() {
+        return "Maximum block size=" + maximumBlockSize +         
+               "\nMinimum suffix length=" + minimumSuffixLength;
+    }
+    
+    @Override
     public String getMethodInfo() {
         return "Suffix Arrays Blocking: it creates one block for every suffix that appears in the tokens of at least two entities.";
     }
 
+    @Override
+    public String getMethodName() {
+        return "Suffix Arrays Blocking";
+    }
+    
     @Override
     public String getMethodParameters() {
         return "Suffix Arrays Blocking involves two parameters:\n"

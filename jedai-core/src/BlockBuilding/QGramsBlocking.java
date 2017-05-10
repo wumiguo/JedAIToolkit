@@ -56,9 +56,19 @@ public class QGramsBlocking extends StandardBlocking {
     }
     
     @Override
+    public String getMethodConfiguration() {
+        return "N-gram size=" + nGramSize;
+    }
+    
+    @Override
     public String getMethodInfo() {
         return "Q-Grams Blocking: it creates one block for every q-gram that is extracted from any token in the attribute values of any entity.\n"
                 + "The q-gram must be shared by at least two entities.";
+    }
+    
+    @Override
+    public String getMethodName() {
+        return "Q-Grams Blocking";
     }
 
     @Override

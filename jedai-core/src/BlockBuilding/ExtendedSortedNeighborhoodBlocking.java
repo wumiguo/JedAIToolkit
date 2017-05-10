@@ -46,10 +46,20 @@ public class ExtendedSortedNeighborhoodBlocking extends SortedNeighborhoodBlocki
     }
 
     @Override
+    public String getMethodConfiguration() {
+        return "Window size=" + windowSize;
+    }
+    
+    @Override
     public String getMethodInfo() {
         return "Extended Sorted Neighborhood: it improves Sorted Neighborhood by sliding the window over the sorted list of blocking keys.";
     }
 
+    @Override
+    public String getMethodName() {
+        return "Extended Sorted Neighborhood";
+    }
+    
     @Override
     public String getMethodParameters() {
         return "Extended Sorted Neighborhood involves a single parameter, due to its unsupervised, schema-agnostic blocking keys:\n"

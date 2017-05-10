@@ -60,6 +60,11 @@ public class ConnectedComponentsClustering extends AbstractEntityClustering {
     }
 
     @Override
+    public String getMethodName() {
+        return "Connected Components Clustering";
+    }
+    
+    @Override
     public String getMethodParameters() {
         return "The Connected Components Clustering algorithm involves 1 parameter:\n" 
              + explainThresholdParameter();

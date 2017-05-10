@@ -43,9 +43,19 @@ public class BlockScheduling extends AbstractBlockProcessing implements IBlockPr
     }
     
     @Override
+    public String getMethodConfiguration() {
+        return "parameter-free method";
+    }
+    
+    @Override
     public String getMethodInfo() {
         return "Block Scheduling: it determines the processing order of blocks "
                 + "by sorting them in ascending order of block utility.";
+    }
+    
+    @Override
+    public String getMethodName() {
+        return "Block Scheduling";
     }
 
     @Override

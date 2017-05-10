@@ -215,9 +215,10 @@ public class BlocksPerformance {
         }
     }
 
-    public void printStatistics(double overheadTime) {
+    public void printStatistics(double overheadTime, String methodConfiguration, String methodName) {
         System.out.println("\n\n\n**************************************************");
-        System.out.println("*************** Blocks Performance ***************");
+        System.out.println("Performance of : " + methodName);
+        System.out.println("Configuration : " + methodConfiguration);
         System.out.println("**************************************************");
         System.out.println("No of blocks\t:\t" + blocks.size());
         System.out.println("Aggregate cardinality\t:\t" + aggregateCardinality);

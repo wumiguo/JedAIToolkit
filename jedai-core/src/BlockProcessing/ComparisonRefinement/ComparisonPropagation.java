@@ -48,8 +48,18 @@ public class ComparisonPropagation extends AbstractComparisonRefinementMethod {
     }
 
     @Override
+    public String getMethodConfiguration() {
+        return "parameter-free method";
+    }
+    
+    @Override
     public String getMethodInfo() {
         return "Comparison Propagation: it eliminates all redundant comparisons from a set of overlapping blocks.";
+    }
+    
+    @Override
+    public String getMethodName() {
+        return "Comparison Propagation";
     }
 
     @Override

@@ -70,6 +70,11 @@ public abstract class AbstractEntityClustering implements IEntityClustering {
         return maxId;
     }
 
+    @Override
+    public String getMethodConfiguration() {
+        return "Similarity threshold=" + threshold;
+    }
+    
     protected void initializeData(SimilarityPairs simPairs) {
         isCleanCleanER = simPairs.isCleanCleanER();
 

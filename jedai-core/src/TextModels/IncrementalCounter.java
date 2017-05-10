@@ -13,13 +13,26 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-package Utilities;
+package TextModels;
 
 /**
  *
  * @author G.A.P. II
  */
-public interface Constants {
-    int DATASET_1 = 0;
-    int DATASET_2 = 1;
+
+class IncrementalCounter {
+    
+    private int counter;
+    
+    IncrementalCounter() {
+        counter = 0;
+    }
+    
+    void incrementCounter() {
+        counter++;
+    }
+    
+    int getCounter() {
+        return counter;
+    }
 }

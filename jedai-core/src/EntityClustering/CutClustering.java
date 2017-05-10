@@ -53,10 +53,21 @@ public class CutClustering extends AbstractEntityClustering {
     }
 
     @Override
+    public String getMethodConfiguration() {
+        return super.getMethodConfiguration() + 
+               "\nAcap=" + Acap;
+    }
+    
+    @Override
     public String getMethodInfo() {
         return "Cut Clustering : it partitions the similarity graph into equivalence clusters based on its minimum cut.";
     }
 
+    @Override
+    public String getMethodName() {
+        return "Cut Clustering";
+    }
+    
     @Override
     public String getMethodParameters() {
         return "The Cut Clustering algorithm involves 2 parameters:\n" 
@@ -67,7 +78,7 @@ public class CutClustering extends AbstractEntityClustering {
     
     @Override
     protected void initializeGraph() {
-        weightedGraph = new SimpleWeightedGraph<String, DefaultWeightedEdge>(DefaultWeightedEdge.class);
+        weightedGraph = new SimpleWeightedGraph<>(DefaultWeightedEdge.class);
         
         String sinkLabel = ""+noOfEntities;
         weightedGraph.addVertex(sinkLabel); //add the artificial sink

@@ -20,8 +20,7 @@ import DataModel.Attribute;
 import DataModel.Comparison;
 import DataModel.EntityProfile;
 import DataModel.SimilarityPairs;
-import Utilities.Constants;
-import Utilities.TextModels.AbstractModel;
+import TextModels.ITextModel;
 import Utilities.Enumerations.RepresentationModel;
 import Utilities.Enumerations.SimilarityMetric;
 import java.util.Iterator;
@@ -33,12 +32,12 @@ import java.util.logging.Logger;
  *
  * @author G.A.P. II
  */
-public class ProfileMatcher extends AbstractEntityMatching implements Constants {
+public class ProfileMatcher extends AbstractEntityMatching {
 
     private static final Logger LOGGER = Logger.getLogger(ProfileMatcher.class.getName());
 
-    protected AbstractModel[] entityModelsD1;
-    protected AbstractModel[] entityModelsD2;
+    protected ITextModel[] entityModelsD1;
+    protected ITextModel[] entityModelsD2;
 
     public ProfileMatcher(RepresentationModel model, SimilarityMetric simMetric) {
         super(model, simMetric);
@@ -74,9 +73,9 @@ public class ProfileMatcher extends AbstractEntityMatching implements Constants 
         return simPairs;
     }
 
-    private AbstractModel[] getModels(int datasetId, List<EntityProfile> profiles) {
+    private ITextModel[] getModels(int datasetId, List<EntityProfile> profiles) {
         int counter = 0;
-        final AbstractModel[] models = new AbstractModel[profiles.size()];
+        final ITextModel[] models = new ITextModel[profiles.size()];
         for (EntityProfile profile : profiles) {
             models[counter] = RepresentationModel.getModel(datasetId, representationModel, simMetric, profile.getEntityUrl());
             for (Attribute attribute : profile.getAttributes()) {
@@ -89,9 +88,20 @@ public class ProfileMatcher extends AbstractEntityMatching implements Constants 
     }
 
     @Override
+    public String getMethodConfiguration() {
+        return "Representation model=" + representationModel +
+               "\nSimilarity metric=" + simMetric;
+    }
+    
+    @Override
     public String getMethodInfo() {
-        return "ProfileMatcher : it aggregates all attribute values of each entity profile "
+        return "Profile Matcher : it aggregates all attribute values of each entity profile "
                 + "into a representation model and compares them according to the given similarity metric.";
+    }
+    
+    @Override
+    public String getMethodName() {
+        return "Profile Matcher";
     }
 
     @Override

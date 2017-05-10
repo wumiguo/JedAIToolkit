@@ -73,9 +73,10 @@ public class ClustersPerformance {
         return totalMatches;
     }
 
-    public void printStatistics() {
+    public void printStatistics(double overheadTime, String methodName, String methodConfiguration) {
         System.out.println("\n\n\n**************************************************");
-        System.out.println("************** Clusters Performance **************");
+        System.out.println("Performance of : " + methodName);
+        System.out.println("Configuration : " + methodConfiguration);
         System.out.println("**************************************************");
         System.out.println("No of clusters\t:\t" + entityClusters.size());
         System.out.println("Detected duplicates\t:\t" + abstractDP.getNoOfDuplicates());
@@ -84,6 +85,7 @@ public class ClustersPerformance {
         System.out.println("Precision\t:\t" + precision);
         System.out.println("Recall\t:\t" + recall);
         System.out.println("F-Measure\t:\t" + fMeasure);
+        System.out.println("Overhead time\t:\t" + overheadTime);
     }
 
     public void setStatistics() {
