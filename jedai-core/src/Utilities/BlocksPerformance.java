@@ -216,6 +216,10 @@ public class BlocksPerformance {
     }
 
     public void printStatistics(double overheadTime, String methodConfiguration, String methodName) {
+        if (blocks.isEmpty()) {
+            return;
+        }
+        
         System.out.println("\n\n\n**************************************************");
         System.out.println("Performance of : " + methodName);
         System.out.println("Configuration : " + methodConfiguration);
