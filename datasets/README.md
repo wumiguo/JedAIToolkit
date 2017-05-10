@@ -21,8 +21,8 @@ File Format | Data Origin |
 | DBLP-ACM	| 4,910	| 19,626	| 2,224	| 4.0	| 1.21E+07| JSO ([entity file](dirtyERfiles/dblpAcmProfiles), [groundtruth file](dirtyERfiles/dblpAcmIdDuplicates)) | Real data |
 | DBLP-Scholar	| 63,869| 	208,065	| 2,308	| 3.3	| 2.04E+09| JSO ([entity file](dirtyERfiles/dblpScholarProfiles), [groundtruth file](dirtyERfiles/dblpScholarIdDuplicates)) | Real data |
 | Amazon-GP	| 4,393	| 14,412| 	1,104	| 3.3| 	9.65E+06| JSO ([entity file](dirtyERfiles/amazonGpProfiles), [groundtruth file](dirtyERfiles/amazonGpIdDuplicates)) | Real data |
-| Movies	| 50,797 |	971,445	| 22,863| 	19.1| 	1.29E+09| JSO | Real data |
-| DBPedia	| 3,354,773	| 5.19E+07| 	892,586	| 15.5	| 5.63E+12| JSO | Real data |
+| Movies	| 50,797 |	971,445	| 22,863| 	19.1| 	1.29E+09| JSO ([zipped entity file](dirtyERfiles/moviesProfiles.zip), [groundtruth file](dirtyERfiles/moviesIdDuplicates)) | Real data |
+<!---| DBPedia	| 3,354,773	| 5.19E+07| 	892,586	| 15.5	| 5.63E+12| JSO | Real data |-->
 
 
 # Clean-Clean ER datasets
@@ -35,4 +35,4 @@ Brute-force Comparisons | File Format | Data Origin |
 |DBLP-Scholar|	2,516	|61,353|	10,064	|198,001|	2,308|	4.0|	1.54E+08|JSO |Real data |
 |Amazon-GP|	1,354	|3,039	|5,302	|9,110	|1,104	|3.9|	4.11E+06|JSO |Real data |
 |Movies	|27,615	|23,182|	155,436	|816,009	|22,863|	5.6|	6.40E+08|JSO |Real data |
-|DBPedia|	1,190,733	|2,164,040	|1.69E+07	|3.50E+07	|892,586	|14.2	|2.58E+12|JSO |Real data |
+<!---|DBPedia|	1,190,733	|2,164,040	|1.69E+07	|3.50E+07	|892,586	|14.2	|2.58E+12|JSO |Real data |-->
