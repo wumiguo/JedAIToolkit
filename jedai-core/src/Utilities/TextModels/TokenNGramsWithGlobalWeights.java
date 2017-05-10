@@ -68,7 +68,7 @@ public class TokenNGramsWithGlobalWeights extends TokenNGrams implements Constan
             }
         } else if (datasetId != oModel.getDatasetId()) { // Clean-Clean ER
             for (String key : commonKeys) {
-                similarity += 1.0 / (Math.log1p(DOC_FREQ[DATASET_1].get(key).getCounter() * DOC_FREQ[DATASET_2].get(key).getCounter()) / Math.log(2));
+                similarity += 1.0 / (Math.log1p(((double)DOC_FREQ[DATASET_1].get(key).getCounter()) * DOC_FREQ[DATASET_2].get(key).getCounter())/ Math.log(2));
             }
         } else {
             LOGGER.log(Level.SEVERE, "Both models come from dataset 1!");
