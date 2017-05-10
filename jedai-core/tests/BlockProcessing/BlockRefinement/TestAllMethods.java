@@ -70,9 +70,6 @@ public class TestAllMethods {
                 workflowName.append("->").append(blockCleaningMethod.getMethodName());
             }
             
-            IBlockProcessing blockPurging = new SizeBasedBlockPurging();
-            blocks = blockPurging.refineBlocks(blocks);
-            
             double time2 = System.currentTimeMillis();
             
             BlocksPerformance blStats = new BlocksPerformance(blocks, duplicatePropagation);
