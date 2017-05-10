@@ -51,14 +51,23 @@ public class TestAllMethods {
         for (BlockBuildingMethod blbuMethod : BlockBuildingMethod.values()) {
             double time1 = System.currentTimeMillis();
             
+            StringBuilder workflowConf = new StringBuilder();
+            StringBuilder workflowName = new StringBuilder();
+            
             System.out.println("\n\nCurrent blocking metohd\t:\t" + blbuMethod);
+            
             IBlockBuilding blockBuildingMethod = BlockBuildingMethod.getDefaultConfiguration(blbuMethod);
             List<AbstractBlock> blocks = blockBuildingMethod.getBlocks(profiles, null);
+            
+            workflowConf.append(blockBuildingMethod.getMethodConfiguration());
+            workflowName.append(blockBuildingMethod.getMethodName());
             System.out.println("Original blocks\t:\t" + blocks.size());
             
             IBlockProcessing blockCleaningMethod = BlockBuildingMethod.getDefaultBlockCleaning(blbuMethod);
             if (blockCleaningMethod != null) {
                 blocks = blockCleaningMethod.refineBlocks(blocks);
+                workflowConf.append("\n").append(blockCleaningMethod.getMethodConfiguration());
+                workflowName.append("->").append(blockCleaningMethod.getMethodName());
             }
             
             IBlockProcessing blockPurging = new SizeBasedBlockPurging();
@@ -68,7 +77,7 @@ public class TestAllMethods {
             
             BlocksPerformance blStats = new BlocksPerformance(blocks, duplicatePropagation);
             blStats.setStatistics();
-            blStats.printStatistics(time2-time1);
+            blStats.printStatistics(time2-time1, workflowConf.toString(), workflowName.toString());
         }
     }
 }

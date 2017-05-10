@@ -58,7 +58,7 @@ public class TestAllMethods {
             
             BlocksPerformance blStats = new BlocksPerformance(blocks, duplicatePropagation);
             blStats.setStatistics();
-            blStats.printStatistics(time2-time1);
+            blStats.printStatistics(time2-time1, blockBuildingMethod.getMethodConfiguration(),  blockBuildingMethod.getMethodName());
         }
     }
 }
