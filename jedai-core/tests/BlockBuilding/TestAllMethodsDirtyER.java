@@ -33,7 +33,7 @@ import java.util.List;
  * @author G.A.P. II
  */
 
-public class TestAllMethods {
+public class TestAllMethodsDirtyER {
     public static void main(String[] args) {
         String entitiesFilePath = "C:\\Users\\G.A.P. II\\Downloads\\cddbProfiles";
         String groundTruthFilePath = "C:\\Users\\G.A.P. II\\Downloads\\cddbDuplicates";
