@@ -41,11 +41,21 @@ public class WeightedEdgePruning extends AbstractMetablocking {
     }
 
     @Override
+    public String getMethodConfiguration() {
+        return "Weighting scheme=" + weightingScheme;
+    }
+    
+    @Override
     public String getMethodInfo() {
         return "Weighted Edge Pruning: a Meta-blocking method that retains all comparisons "
                 + "that have a weight higher than the average edge weight in the blocking graph.";
     }
 
+    @Override
+    public String getMethodName() {
+        return "Weighted Edge Pruning";
+    }
+    
     @Override
     public String getMethodParameters() {
         return "Weighted Edge Pruning involves a single parameter:\n"

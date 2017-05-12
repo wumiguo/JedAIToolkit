@@ -34,6 +34,11 @@ public class ReciprocalWeightedNodePruning extends WeightedNodePruning {
                 + "that correspond to edges in the blocking graph that are exceed the average edge weight "
                 + "in both adjacent node neighborhoods.";
     }
+    
+    @Override
+    public String getMethodName() {
+        return "Reciprocal Weighted Node Pruning";
+    }
 
     @Override
     public String getMethodParameters() {

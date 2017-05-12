@@ -36,6 +36,11 @@ public class ReciprocalCardinalityNodePruning extends CardinalityNodePruning {
     }
 
     @Override
+    public String getMethodName() {
+        return "Reciprocal Cardinality Node Pruning";
+    }
+    
+    @Override
     public String getMethodParameters() {
         return "Reciprocal Cardinality Node Pruning involves a single parameter:\n"
                 + "the weighting scheme that assigns weights to the edges of the blcoking graph.";

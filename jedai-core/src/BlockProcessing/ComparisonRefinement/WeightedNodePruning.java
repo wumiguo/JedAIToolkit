@@ -45,6 +45,11 @@ public class WeightedNodePruning extends WeightedEdgePruning {
     }
 
     @Override
+    public String getMethodName() {
+        return "Weighted Node Pruning";
+    }
+    
+    @Override
     public String getMethodParameters() {
         return "Weighted Node Pruning involves a single parameter:\n"
                 + "the weighting scheme that assigns weights to the edges of the blcoking graph.";
