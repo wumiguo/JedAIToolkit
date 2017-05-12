@@ -44,7 +44,7 @@ The following formats are currently supported:
 The next version will add support for more formats: SPARQL endpoints, JSON, MongoDB, Oracle and SQL Server.
   
 ### Block Building 
-It clusters entities into blocks in a lazy manner that relies on unsupervised blocking keys: every token in an attribute value forms a key. Blocks are then extracted, possibly using a transformation, based on its equality or on its similarity with other keys.
+It clusters entities into overlapping blocks in a lazy manner that relies on unsupervised blocking keys: every token in an attribute value forms a key. Blocks are then extracted, possibly using a transformation, based on its equality or on its similarity with other keys.
 
 The following methods are currently supported:
  1) Standard/Token Blocking
@@ -59,7 +59,7 @@ The following methods are currently supported:
 For more details on the functionality of these methods, see [here](http://www.vldb.org/pvldb/vol9/p312-papadakis.pdf).  
 
 ### Block Cleaning
-Its goal is to clean a set of blocks from unnecessary comparisons, which can be either *redundant* (i.e., repeated comparisons that have already been executed in a previously examined block) or *superfluous* (i.e., comparisons that involve non-matching entities). Its methods operate on the coarse level of entire blocks.
+Its goal is to clean a set of overlapping blocks from unnecessary comparisons, which can be either *redundant* (i.e., repeated comparisons that have already been executed in a previously examined block) or *superfluous* (i.e., comparisons that involve non-matching entities). Its methods operate on the coarse level of individual blocks or entities.
 
 The following methods are currently supported:
  1) Size-based Block Purging
