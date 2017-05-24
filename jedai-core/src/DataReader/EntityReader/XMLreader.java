@@ -61,7 +61,6 @@ public class XMLreader extends AbstractEntityReader {
             return null;
         }
 
-        //load the rdf model from the input file
         	SAXBuilder saxBuilder = new SAXBuilder();
             try {
 				Document document = saxBuilder.build(inputFilePath);
@@ -80,20 +79,16 @@ public class XMLreader extends AbstractEntityReader {
 
     @Override
     public String getMethodInfo() {
-        return "RDF Reader: converts an rdf file of any format into a set of entity profiles.";
+        return "XML Reader: converts an xml file of any format into a set of entity profiles.";
     }
 
     @Override
     public String getMethodParameters() {
-        return "The RDF Reader involves 1 parameter, in addition to the absolute file path:\n"
-             + "attributesToExclude: String[], default value: owl:sameAs.\n"
-             + "The names of the predicates that will be ignored during the creation of entity profiles.\n";
+        return "The XML Reader involves 1 parameter, in addition to the absolute file path:\n"
+             + "attributesToExclude: String[]";
     }
 
     private void readXMLdoc(Document document) throws IOException {
-        //read each ntriples
-        //get spo, create a separate profile for each separate subject,
-        //with Attribute=predicate and Value=object
     	Element classElement = document.getRootElement();
 
         List<Element> dblpRoot = classElement.getChildren();        
@@ -111,7 +106,6 @@ public class XMLreader extends AbstractEntityReader {
                 if (attributesToExclude.contains(attName)) continue;
                 String attValue = attr.getValue();
                 entityProfile.addAttribute(attName, attValue);
-            //if already exists a profile for the subject, simply add po as <Att>-<Value>
             }
         }
     }
