@@ -10,9 +10,9 @@ import java.util.List;
  * @author G.A.P. II
  */
 
-public class TestXMLReader {
+public class TestXMLreader {
     public static void main(String[] args) {
-        String filePath = "C:/Users/Manos/workspaceMars/JedAIToolkit-master/datasets/dblp-2016-12-01.xml";
+        String filePath = "C:/Users/Manos/workspaceMars/JedAIToolkit-master/datasets/exam.xml";
         XMLreader n3reader = new XMLreader(filePath);
         List<EntityProfile> profiles = n3reader.getEntityProfiles();
         for (EntityProfile profile : profiles) {
