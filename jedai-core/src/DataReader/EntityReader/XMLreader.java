@@ -15,7 +15,6 @@
  */
 package DataReader.EntityReader;
 
-import org.jdom2.Attribute;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
@@ -61,18 +60,15 @@ public class XMLreader extends AbstractEntityReader {
             return null;
         }
 
-        	SAXBuilder saxBuilder = new SAXBuilder();
-            try {
-				Document document = saxBuilder.build(inputFilePath);
-				readXMLdoc(document);
-			} catch (JDOMException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
+        SAXBuilder saxBuilder = new SAXBuilder();
+        try {
+            Document document = saxBuilder.build(inputFilePath);
+            readXMLdoc(document);
+        } catch (JDOMException e) {
+            LOGGER.log(Level.SEVERE, null, e);
+        } catch (IOException ex) {
+            LOGGER.log(Level.SEVERE, null, ex);
+        }
 
         return entityProfiles;
     }
@@ -85,14 +81,14 @@ public class XMLreader extends AbstractEntityReader {
     @Override
     public String getMethodParameters() {
         return "The XML Reader involves 1 parameter, in addition to the absolute file path:\n"
-             + "attributesToExclude: String[]";
+                + "attributesToExclude: String[]";
     }
 
     private void readXMLdoc(Document document) throws IOException {
-    	Element classElement = document.getRootElement();
+        Element classElement = document.getRootElement();
 
-        List<Element> dblpRoot = classElement.getChildren();        
-        for (int profCounter = 0; profCounter < dblpRoot.size(); profCounter++) {    
+        List<Element> dblpRoot = classElement.getChildren();
+        for (int profCounter = 0; profCounter < dblpRoot.size(); profCounter++) {
             Element profile = dblpRoot.get(profCounter);
             String profName = profile.getName();
             EntityProfile entityProfile = urlToEntity.get(profName);
@@ -103,7 +99,9 @@ public class XMLreader extends AbstractEntityReader {
             for (int attCounter = 0; attCounter < profAttributes.size(); attCounter++) {
                 Element attr = profAttributes.get(attCounter);
                 String attName = attr.getName();
-                if (attributesToExclude.contains(attName)) continue;
+                if (attributesToExclude.contains(attName)) {
+                    continue;
+                }
                 String attValue = attr.getValue();
                 entityProfile.addAttribute(attName, attValue);
             }
