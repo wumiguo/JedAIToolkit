@@ -109,8 +109,22 @@
     <version>2.0.6</version>
 </dependency>
 
+<!-- http://backend1.scify.org:60004/artifactory/pub-release-local -->
+<dependency>
+    <groupId>gr.demokritos</groupId>
+	  <artifactId>JInsect</artifactId>
+	  <version>1.0</version>
+</dependency>
 
 
-
-  </dependencies>
+ </dependencies>
+  
+  <repositories>
+ <repository>
+     <id>backend1</id>
+     <name>backend1-releases</name>
+     <url>http://backend1.scify.org:60004/artifactory/pub-release-local</url>
+   </repository>
+</repositories>
+  
 </project>
