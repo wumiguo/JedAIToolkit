@@ -1,26 +1,25 @@
 /*
-* Copyright [2016] [George Papadakis (gpapadis@yahoo.gr)]
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-*    http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
-
+ * Copyright [2016] [George Papadakis (gpapadis@yahoo.gr)]
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package BlockBuilding;
 
 import DataModel.AbstractBlock;
 import DataModel.BilateralBlock;
 import DataModel.UnilateralBlock;
 import Utilities.Converter;
-import java.io.IOException;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -29,15 +28,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.apache.lucene.index.Fields;
-import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.index.MultiFields;
-import org.apache.lucene.index.PostingsEnum;
-import org.apache.lucene.index.Term;
-import org.apache.lucene.index.Terms;
-import org.apache.lucene.index.TermsEnum;
-import org.apache.lucene.search.DocIdSetIterator;
-import org.apache.lucene.util.BytesRef;
 
 /**
  *
@@ -46,14 +36,14 @@ import org.apache.lucene.util.BytesRef;
 public class SortedNeighborhoodBlocking extends StandardBlocking {
 
     private static final Logger LOGGER = Logger.getLogger(SortedNeighborhoodBlocking.class.getName());
-    
+
     protected final int windowSize;
 
     public SortedNeighborhoodBlocking() {
         this(4);
         LOGGER.log(Level.INFO, "Using default configuration for Sorted Neighborhood Blocking.");
     }
-   
+
     public SortedNeighborhoodBlocking(int w) {
         super();
         windowSize = w;
@@ -64,7 +54,7 @@ public class SortedNeighborhoodBlocking extends StandardBlocking {
     public String getMethodConfiguration() {
         return "Window size=" + windowSize;
     }
-    
+
     @Override
     public String getMethodInfo() {
         return "Sorted Neighborhood: it creates blocks based on the similarity of the blocking keys of Standard Blocking:\n"
@@ -76,40 +66,26 @@ public class SortedNeighborhoodBlocking extends StandardBlocking {
     public String getMethodName() {
         return "Sorted Neighborhood";
     }
-    
+
     @Override
     public String getMethodParameters() {
         return "Sorted Neighborhood involves a single parameter, due to its unsupervised, schema-agnostic blocking keys:\n"
                 + "w, the fixed size of the sliding window.\n"
                 + "Default value: 4.";
     }
-    
-    protected Integer[] getSortedEntities(String[] sortedTerms, IndexReader iReader) {
+
+    protected Integer[] getMixedSortedEntities(String[] sortedTerms) {
+        int datasetLimit = entityProfilesD1.size();
         final List<Integer> sortedEntityIds = new ArrayList<>();
 
-        int[] documentIds = getDocumentIds(iReader);
-        for (String blockingKey : sortedTerms) {
-            List<Integer> sortedIds = getTermEntities(documentIds, iReader, blockingKey);
-            Collections.shuffle(sortedIds);
-            sortedEntityIds.addAll(sortedIds);
-        }
-
-        return sortedEntityIds.toArray(new Integer[sortedEntityIds.size()]);
-    }
-
-    protected Integer[] getSortedEntities(String[] sortedTerms, IndexReader d1Reader, IndexReader d2Reader) {
-        int datasetLimit = d1Reader.numDocs();
-        final List<Integer> sortedEntityIds = new ArrayList<>();
-
-        int[] documentIdsD1 = getDocumentIds(d1Reader);
-        int[] documentIdsD2 = getDocumentIds(d2Reader);
         for (String blockingKey : sortedTerms) {
             List<Integer> sortedIds = new ArrayList<>();
-            sortedIds.addAll(getTermEntities(documentIdsD1, d1Reader, blockingKey));
+            sortedIds.addAll(invertedIndexD1.get(blockingKey));
 
-            getTermEntities(documentIdsD2, d2Reader, blockingKey).stream().forEach((entityId) -> {
+            List<Integer> d2EntityIds = invertedIndexD2.get(blockingKey);
+            for (Integer entityId : d2EntityIds) {
                 sortedIds.add(datasetLimit + entityId);
-            });
+            }
 
             Collections.shuffle(sortedIds);
             sortedEntityIds.addAll(sortedIds);
@@ -118,52 +94,25 @@ public class SortedNeighborhoodBlocking extends StandardBlocking {
         return sortedEntityIds.toArray(new Integer[sortedEntityIds.size()]);
     }
 
-    protected List<Integer> getTermEntities(int[] docIds, IndexReader iReader, String blockingKey) {
-        try {
-            Term term = new Term(VALUE_LABEL, blockingKey);
-            List<Integer> entityIds = new ArrayList<>();
-            int docFrequency = iReader.docFreq(term);
-            if (0 < docFrequency) {
-                BytesRef text = term.bytes();
-                PostingsEnum pe = MultiFields.getTermDocsEnum(iReader, VALUE_LABEL, text);
-                int doc;
-                while ((doc = pe.nextDoc()) != DocIdSetIterator.NO_MORE_DOCS) {
-                    entityIds.add(docIds[doc]);
-                }
-            }
+    protected Integer[] getSortedEntities(String[] sortedTerms) {
+        final List<Integer> sortedEntityIds = new ArrayList<>();
 
-            return entityIds;
-        } catch (IOException ex) {
-            LOGGER.log(Level.SEVERE, null, ex);
-            return null;
+        for (String blockingKey : sortedTerms) {
+            List<Integer> sortedIds = invertedIndexD1.get(blockingKey);
+            Collections.shuffle(sortedIds);
+            sortedEntityIds.addAll(sortedIds);
         }
-    }
 
-    protected Set<String> getTerms(IndexReader iReader) {
-        Set<String> sortedTerms = new HashSet<>();
-        try {
-            Fields fields = MultiFields.getFields(iReader);
-            for (String field : fields) {
-                Terms terms = fields.terms(field);
-                TermsEnum termsEnum = terms.iterator();
-                BytesRef text;
-                while ((text = termsEnum.next()) != null) {
-                    sortedTerms.add(text.utf8ToString());
-                }
-            }
-        } catch (IOException ex) {
-            LOGGER.log(Level.SEVERE, null, ex);
-        }
-        return sortedTerms;
+        return sortedEntityIds.toArray(new Integer[sortedEntityIds.size()]);
     }
 
     @Override
-    protected void parseIndex(IndexReader iReader) {
-        final Set<String> blockingKeysSet = getTerms(iReader);
+    protected void parseIndex() {
+        final Set<String> blockingKeysSet = invertedIndexD1.keySet();
         String[] sortedTerms = blockingKeysSet.toArray(new String[blockingKeysSet.size()]);
         Arrays.sort(sortedTerms);
 
-        Integer[] allEntityIds = getSortedEntities(sortedTerms, iReader);
+        Integer[] allEntityIds = getSortedEntities(sortedTerms);
 
         //slide window over the sorted list of entity ids
         int upperLimit = allEntityIds.length - windowSize;
@@ -181,15 +130,15 @@ public class SortedNeighborhoodBlocking extends StandardBlocking {
         }
     }
 
-    protected void parseIndices(IndexReader iReader1, IndexReader iReader2) {
-        final Set<String> blockingKeysSet = getTerms(iReader1);
-        blockingKeysSet.addAll(getTerms(iReader2));
+    protected void parseIndices() {
+        final Set<String> blockingKeysSet = invertedIndexD1.keySet();
+        blockingKeysSet.addAll(invertedIndexD2.keySet());
         String[] sortedTerms = blockingKeysSet.toArray(new String[blockingKeysSet.size()]);
         Arrays.sort(sortedTerms);
 
-        Integer[] allEntityIds = getSortedEntities(sortedTerms, iReader1, iReader2);
+        Integer[] allEntityIds = getMixedSortedEntities(sortedTerms);
 
-        int datasetLimit = iReader1.numDocs();
+        int datasetLimit = entityProfilesD1.size();
         //slide window over the sorted list of entity ids
         int upperLimit = allEntityIds.length - windowSize;
         for (int i = 0; i <= upperLimit; i++) {
@@ -214,16 +163,12 @@ public class SortedNeighborhoodBlocking extends StandardBlocking {
 
     @Override
     public List<AbstractBlock> readBlocks() {
-        IndexReader iReaderD1 = openReader(indexDirectoryD1);
         if (entityProfilesD2 == null) { //Dirty ER
-            parseIndex(iReaderD1);
+            parseIndex();
         } else {
-            IndexReader iReaderD2 = openReader(indexDirectoryD2);
-            parseIndices(iReaderD1, iReaderD2);
-            closeReader(iReaderD2);
+            parseIndices();
         }
-        closeReader(iReaderD1);
-        
+
         return blocks;
     }
 }

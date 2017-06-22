@@ -1,19 +1,18 @@
 /*
-* Copyright [2016] [George Papadakis (gpapadis@yahoo.gr)]
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-*    http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
-
+ * Copyright [2016] [George Papadakis (gpapadis@yahoo.gr)]
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package BlockBuilding;
 
 import DataModel.Attribute;
@@ -22,7 +21,6 @@ import TextModels.ITextModel;
 import Utilities.Enumerations.RepresentationModel;
 import Utilities.Enumerations.SimilarityMetric;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -32,11 +30,6 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field;
-import org.apache.lucene.document.StoredField;
-import org.apache.lucene.document.StringField;
-import org.apache.lucene.index.IndexWriter;
 import org.jgrapht.alg.ConnectivityInspector;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleGraph;
@@ -51,7 +44,7 @@ public class AttributeClusteringBlocking extends StandardBlocking {
     private final static String CLUSTER_PREFIX = "#$!cl";
     private final static String CLUSTER_SUFFIX = "!$#";
     private static final Logger LOGGER = Logger.getLogger(AttributeClusteringBlocking.class.getName());
-    
+
     private final Map<String, Integer>[] attributeClusters;
     private final RepresentationModel model;
     private final SimilarityMetric simMetric;
@@ -60,7 +53,7 @@ public class AttributeClusteringBlocking extends StandardBlocking {
         this(RepresentationModel.TOKEN_UNIGRAM_GRAPHS, SimilarityMetric.GRAPH_VALUE_SIMILARITY);
         LOGGER.log(Level.INFO, "Using default configuration for Attribute Clustering Blocking.");
     }
-    
+
     public AttributeClusteringBlocking(RepresentationModel md, SimilarityMetric sMetric) {
         super();
         model = md;
@@ -80,21 +73,15 @@ public class AttributeClusteringBlocking extends StandardBlocking {
             SimpleGraph graph = compareAttributes(attributeModels1);
             clusterAttributes(attributeModels1, graph);
         }
-        
-        setMemoryDirectory();
 
-        IndexWriter iWriter1 = openWriter(indexDirectoryD1);
-        indexEntities(0, iWriter1, entityProfilesD1);
-        closeWriter(iWriter1);
+        indexEntities(0, invertedIndexD1, entityProfilesD1);
 
-        if (indexDirectoryD2 != null) {
-            IndexWriter iWriter2 = openWriter(indexDirectoryD2);
-            indexEntities(1, iWriter2, entityProfilesD2);
-            closeWriter(iWriter2);
+        if (invertedIndexD2 != null) {
+            indexEntities(1, invertedIndexD1, entityProfilesD2);
         }
     }
-    
-    private ITextModel[] buildAttributeModels(int datasetId, List<EntityProfile> profiles) {    
+
+    private ITextModel[] buildAttributeModels(int datasetId, List<EntityProfile> profiles) {
         final HashMap<String, List<String>> attributeProfiles = new HashMap<>();
         profiles.forEach((entity) -> {
             entity.getAttributes().forEach((attribute) -> {
@@ -135,7 +122,7 @@ public class AttributeClusteringBlocking extends StandardBlocking {
             } else {
                 counter++;
             }
-            
+
             for (int attributeId : cluster) {
                 attributeClusters[0].put(attributeModels[attributeId].getInstanceName(), clusterId);
             }
@@ -150,7 +137,7 @@ public class AttributeClusteringBlocking extends StandardBlocking {
         ConnectivityInspector ci = new ConnectivityInspector(graph);
         List<Set<Integer>> connectedComponents = ci.connectedSets();
         int singletonId = connectedComponents.size() + 1;
-        
+
         attributeClusters[0] = new HashMap<>(2 * d1Attributes);
         attributeClusters[1] = new HashMap<>(2 * d2Attributes);
         int counter = 0;
@@ -161,7 +148,7 @@ public class AttributeClusteringBlocking extends StandardBlocking {
             } else {
                 counter++;
             }
-            
+
             for (int attributeId : cluster) {
                 if (attributeId < d1Attributes) {
                     attributeClusters[0].put(attributeModels1[attributeId].getInstanceName(), clusterId);
@@ -242,41 +229,41 @@ public class AttributeClusteringBlocking extends StandardBlocking {
         }
         return namesGraph;
     }
-    
-    protected void indexEntities(int sourceId, IndexWriter index, List<EntityProfile> entities) {
-        try {
-            int counter = 0;
-            for (EntityProfile profile : entities) {
-                Document doc = new Document();
-                doc.add(new StoredField(DOC_ID, counter++));
-                for (Attribute attribute : profile.getAttributes()) {
-                    Integer clusterId = attributeClusters[sourceId].get(attribute.getName());
-                    if (clusterId == null) {
-                        LOGGER.log(Level.WARNING, "No cluster id found for attribute name\t:\t{0}"
-                                + ".\nCorresponding attribute value\t:\t{1}", new Object[]{attribute.getName(), attribute.getValue()});
-                        continue;
-                    }
-                    String clusterSuffix = CLUSTER_PREFIX + clusterId + CLUSTER_SUFFIX;
-                    for (String token : getTokens(attribute.getValue())) {
-                        if (0 < token.trim().length()) {
-                            doc.add(new StringField(VALUE_LABEL, token.trim() + clusterSuffix, Field.Store.YES));
-                        }
-                    }
+
+    protected void indexEntities(int sourceId, Map<String, List<Integer>> index, List<EntityProfile> entities) {
+        int counter = 0;
+        for (EntityProfile profile : entities) {
+            for (Attribute attribute : profile.getAttributes()) {
+                Integer clusterId = attributeClusters[sourceId].get(attribute.getName());
+                if (clusterId == null) {
+                    LOGGER.log(Level.WARNING, "No cluster id found for attribute name\t:\t{0}"
+                            + ".\nCorresponding attribute value\t:\t{1}", new Object[]{attribute.getName(), attribute.getValue()});
+                    continue;
                 }
 
-                index.addDocument(doc);
+                String clusterSuffix = CLUSTER_PREFIX + clusterId + CLUSTER_SUFFIX;
+                for (String token : getTokens(attribute.getValue())) {
+                    if (0 < token.trim().length()) {
+                        String normalizedKey = token.trim().toLowerCase() + clusterSuffix;
+                        List<Integer> entityList = index.get(normalizedKey);
+                        if (entityList == null) {
+                            entityList = new ArrayList<>();
+                            index.put(normalizedKey, entityList);
+                        }
+                        entityList.add(counter);
+                    }
+                }
             }
-        } catch (IOException ex) {
-            LOGGER.log(Level.SEVERE, null, ex);
+            counter++;
         }
     }
-    
+
     @Override
     public String getMethodConfiguration() {
-        return "Representation model=" + model +
-               "\nSimilarity metric=" + simMetric;
+        return "Representation model=" + model
+                + "\nSimilarity metric=" + simMetric;
     }
-    
+
     @Override
     public String getMethodInfo() {
         return "Attribute Clustering Blocking: it groups the attribute names into similarity clusters "
@@ -287,7 +274,7 @@ public class AttributeClusteringBlocking extends StandardBlocking {
     public String getMethodName() {
         return "Attribute Clustering";
     }
-    
+
     @Override
     public String getMethodParameters() {
         return "Attribute Clustering Blocking involves a single parameter:\n"
