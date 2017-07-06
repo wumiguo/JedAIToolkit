@@ -82,7 +82,7 @@ public class AttributeClusteringBlocking extends StandardBlocking {
     }
 
     private ITextModel[] buildAttributeModels(int datasetId, List<EntityProfile> profiles) {
-        final HashMap<String, List<String>> attributeProfiles = new HashMap<>();
+        final Map<String, List<String>> attributeProfiles = new HashMap<>();
         profiles.forEach((entity) -> {
             entity.getAttributes().forEach((attribute) -> {
                 List<String> values = attributeProfiles.get(attribute.getName());
@@ -90,7 +90,7 @@ public class AttributeClusteringBlocking extends StandardBlocking {
                     values = new ArrayList<>();
                     attributeProfiles.put(attribute.getName(), values);
                 }
-                values.add(attribute.getValue());
+                values.add(attribute.getValue().toLowerCase());
             });
         });
 

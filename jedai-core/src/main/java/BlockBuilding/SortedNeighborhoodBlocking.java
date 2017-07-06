@@ -79,12 +79,18 @@ public class SortedNeighborhoodBlocking extends StandardBlocking {
         final List<Integer> sortedEntityIds = new ArrayList<>();
 
         for (String blockingKey : sortedTerms) {
-            List<Integer> sortedIds = new ArrayList<>();
-            sortedIds.addAll(invertedIndexD1.get(blockingKey));
-
-            List<Integer> d2EntityIds = invertedIndexD2.get(blockingKey);
-            for (Integer entityId : d2EntityIds) {
-                sortedIds.add(datasetLimit + entityId);
+            List<Integer> sortedIds = null;
+            if (!invertedIndexD1.containsKey(blockingKey)) {
+                sortedIds = new ArrayList<>();
+            } else {
+                sortedIds = new ArrayList<>(invertedIndexD1.get(blockingKey));
+            }
+            
+            if (invertedIndexD2.containsKey(blockingKey)) {
+                List<Integer> d2EntityIds = invertedIndexD2.get(blockingKey);
+                for (Integer entityId : d2EntityIds) {
+                    sortedIds.add(datasetLimit + entityId);
+                }
             }
 
             Collections.shuffle(sortedIds);
@@ -131,7 +137,8 @@ public class SortedNeighborhoodBlocking extends StandardBlocking {
     }
 
     protected void parseIndices() {
-        final Set<String> blockingKeysSet = invertedIndexD1.keySet();
+        final Set<String> blockingKeysSet = new HashSet<>();
+        blockingKeysSet.addAll(invertedIndexD1.keySet());
         blockingKeysSet.addAll(invertedIndexD2.keySet());
         String[] sortedTerms = blockingKeysSet.toArray(new String[blockingKeysSet.size()]);
         Arrays.sort(sortedTerms);

@@ -89,7 +89,8 @@ public class ExtendedSortedNeighborhoodBlocking extends SortedNeighborhoodBlocki
 
     @Override
     protected void parseIndices() {
-        final Set<String> blockingKeysSet = invertedIndexD1.keySet();
+        final Set<String> blockingKeysSet = new HashSet<>();
+        blockingKeysSet.addAll(invertedIndexD1.keySet());
         blockingKeysSet.addAll(invertedIndexD2.keySet());
         String[] sortedTerms = blockingKeysSet.toArray(new String[blockingKeysSet.size()]);
         Arrays.sort(sortedTerms);
