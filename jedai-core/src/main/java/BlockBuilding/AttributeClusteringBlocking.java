@@ -75,9 +75,8 @@ public class AttributeClusteringBlocking extends StandardBlocking {
         }
 
         indexEntities(0, invertedIndexD1, entityProfilesD1);
-
         if (invertedIndexD2 != null) {
-            indexEntities(1, invertedIndexD1, entityProfilesD2);
+            indexEntities(1, invertedIndexD2, entityProfilesD2);
         }
     }
 

@@ -94,6 +94,12 @@
             <version>1.1</version>
         </dependency>
 
+        <!-- http://backend1.scify.org:60004/artifactory/pub-release-local -->
+        <dependency>
+            <groupId>salvo.jesus</groupId>
+            <artifactId>OpenJGraph</artifactId>
+            <version>1.1</version>
+        </dependency>
 
     </dependencies>
   

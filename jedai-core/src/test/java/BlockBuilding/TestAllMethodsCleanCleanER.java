@@ -34,22 +34,22 @@ import java.util.List;
 public class TestAllMethodsCleanCleanER {
 
     public static void main(String[] args) {
-        String[] entitiesFilePath = {"E:\\Data\\CCERdata\\abt-buy\\abtProfiles",
-            "E:\\Data\\CCERdata\\abt-buy\\buyProfiles",
-            "E:\\Data\\CCERdata\\amazon-gp\\amazonProfiles",
-            "E:\\Data\\CCERdata\\amazon-gp\\gpProfiles",
-            "E:\\Data\\CCERdata\\dblp-acm\\dblpProfiles",
-            "E:\\Data\\CCERdata\\dblp-acm\\acmProfiles",
-            "E:\\Data\\CCERdata\\dblp-scholar\\dblpProfiles2",
-            "E:\\Data\\CCERdata\\dblp-scholar\\scholarProfiles",
-            "E:\\Data\\CCERdata\\movies\\imdbProfiles",
-            "E:\\Data\\CCERdata\\movies\\dbpediaProfiles"
+        String[] entitiesFilePath = {"D:\\Data\\newDatasetFormat\\cleanCleanERfiles\\abtProfiles",
+            "D:\\Data\\newDatasetFormat\\cleanCleanERfiles\\buyProfiles",
+            "D:\\Data\\newDatasetFormat\\cleanCleanERfiles\\amazonProfiles",
+            "D:\\Data\\newDatasetFormat\\cleanCleanERfiles\\gpProfiles",
+            "D:\\Data\\newDatasetFormat\\cleanCleanERfiles\\dblpProfiles",
+            "D:\\Data\\newDatasetFormat\\cleanCleanERfiles\\acmProfiles",
+            "D:\\Data\\newDatasetFormat\\cleanCleanERfiles\\dblpProfiles2",
+            "D:\\Data\\newDatasetFormat\\cleanCleanERfiles\\scholarProfiles",
+            "D:\\Data\\newDatasetFormat\\cleanCleanERfiles\\imdbProfiles",
+            "D:\\Data\\newDatasetFormat\\cleanCleanERfiles\\dbpediaProfiles"
         };
-        String[] groundTruthFilePath = {"E:\\Data\\CCERdata\\abt-buy\\abtBuyIdDuplicates",
-            "E:\\Data\\CCERdata\\amazon-gp\\amazonGpIdDuplicates",
-            "E:\\Data\\CCERdata\\dblp-acm\\dblpAcmIdDuplicates",
-            "E:\\Data\\CCERdata\\dblp-scholar\\dblpScholarIdDuplicates",
-            "E:\\Data\\CCERdata\\movies\\moviesIdDuplicates"
+        String[] groundTruthFilePath = {"D:\\Data\\newDatasetFormat\\cleanCleanERfiles\\abtBuyIdDuplicates",
+            "D:\\Data\\newDatasetFormat\\cleanCleanERfiles\\amazonGpIdDuplicates",
+            "D:\\Data\\newDatasetFormat\\cleanCleanERfiles\\dblpAcmIdDuplicates",
+            "D:\\Data\\newDatasetFormat\\cleanCleanERfiles\\dblpScholarIdDuplicates",
+            "D:\\Data\\newDatasetFormat\\cleanCleanERfiles\\moviesIdDuplicates"
         };
 
         for (int i = 0; i < groundTruthFilePath.length; i++) {
@@ -66,10 +66,6 @@ public class TestAllMethodsCleanCleanER {
             System.out.println("Existing Duplicates\t:\t" + duplicatePropagation.getDuplicates().size());
 
             for (BlockBuildingMethod blbuMethod : BlockBuildingMethod.values()) {
-                if (!blbuMethod.equals(BlockBuildingMethod.STANDARD_BLOCKING)) {
-                    continue;
-                }
-
                 double time1 = System.currentTimeMillis();
 
                 System.out.println("\n\nCurrent blocking metohd\t:\t" + blbuMethod);
