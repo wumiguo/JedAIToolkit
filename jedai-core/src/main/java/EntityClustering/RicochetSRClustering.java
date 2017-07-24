@@ -1,3 +1,18 @@
+/*
+* Copyright [2016-2017] [George Papadakis (gpapadis@yahoo.gr)]
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*    http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+ */
 package EntityClustering;
 
 import DataModel.Comparison;
@@ -27,11 +42,15 @@ public class RicochetSRClustering extends AbstractEntityClustering {
     private static final Logger LOGGER = Logger.getLogger(RicochetSRClustering.class.getName());
 
     public RicochetSRClustering() {
-        super();
-
-        LOGGER.log(Level.INFO, "Initializing Ricochet Sequential Rippling Clustering...");
+        this(0.5);
     }
 
+    public RicochetSRClustering(double simTh) {
+        super(simTh);
+
+        LOGGER.log(Level.INFO, "{0} initiated", getMethodName());
+    }
+    
     @Override
     public List<EquivalenceCluster> getDuplicates(SimilarityPairs simPairs) {
         initializeData(simPairs);
@@ -177,7 +196,7 @@ public class RicochetSRClustering extends AbstractEntityClustering {
             if ((!NonCenter.contains(i)) && (!Center.contains(i))) {
                 Center.add(i);
                 clusterCenter[i] = i;
-                Clusters.put(i, new HashSet<Integer>(i));//initialize v1 Cluster with its own value
+                Clusters.put(i, new HashSet<>(i));//initialize v1 Cluster with its own value
                 simWithCenter[i] = 1.0;
             }
         }
@@ -192,30 +211,24 @@ public class RicochetSRClustering extends AbstractEntityClustering {
                 continue;
             }
 
-            for (Integer entityId : componentIds) {
+            componentIds.forEach((entityId) -> {
                 if (entityId < datasetLimit) {
                     newCluster.addEntityIdD1(entityId);
                 } else {
                     newCluster.addEntityIdD2(entityId - datasetLimit);
                 }
-            }
+            });
         }
         return equivalenceClusters;
     }
 
     @Override
     public String getMethodInfo() {
-        return "Ricochet SR Clustering: implements the Richochet Sequential Rippling algorithm";
+        return getMethodName() + ": it implements the Richochet Sequential Rippling algorithm.";
     }
 
     @Override
     public String getMethodName() {
-        return "Ricochet SR Clustering";
-    }
-    
-    @Override
-    public String getMethodParameters() {
-        return "The Ricochet SR Clustering algorithm involves 1 parameter:\n"
-                + explainThresholdParameter();
+        return "Ricochet Sequential Rippling Clustering";
     }
 }

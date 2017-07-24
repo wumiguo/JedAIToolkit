@@ -1,5 +1,5 @@
 /*
-* Copyright [2016] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2017] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -24,26 +24,24 @@ import Utilities.Enumerations.WeightingScheme;
  */
 public class ReciprocalCardinalityNodePruning extends CardinalityNodePruning {
 
+    public ReciprocalCardinalityNodePruning() {
+        this(WeightingScheme.ARCS);
+    }
+    
     public ReciprocalCardinalityNodePruning(WeightingScheme scheme) {
         super(scheme);
     }
 
     @Override
     public String getMethodInfo() {
-        return "Reciprocal Cardinality Node Pruning: a Meta-blocking method that retains the comparisons "
-                + "that correspond to edges in the blocking graph that are among the top-k weighted "
-                + "ones for both adjacent entities/nodes.";
+        return getMethodName() + ": a Meta-blocking method that retains the comparisons "
+               + "that correspond to edges in the blocking graph that are among the top-k weighted "
+               + "ones for both adjacent entities/nodes.";
     }
 
     @Override
     public String getMethodName() {
         return "Reciprocal Cardinality Node Pruning";
-    }
-    
-    @Override
-    public String getMethodParameters() {
-        return "Reciprocal Cardinality Node Pruning involves a single parameter:\n"
-                + "the weighting scheme that assigns weights to the edges of the blcoking graph.";
     }
 
     @Override

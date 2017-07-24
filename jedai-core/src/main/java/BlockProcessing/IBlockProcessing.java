@@ -1,5 +1,5 @@
 /*
-* Copyright [2016] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2017] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -15,28 +15,19 @@
  */
 package BlockProcessing;
 
-import Utilities.DataStructures.AbstractDuplicatePropagation;
 import DataModel.AbstractBlock;
+import Utilities.IDocumentation;
+
 import java.util.List;
 
 /**
  *
  * @author G.A.P. II
  */
-public interface IBlockProcessing {
+public interface IBlockProcessing extends IDocumentation {
 
     int DATASET_1 = 0;
     int DATASET_2 = 1;
 
-    public void deduplicateBlocks(AbstractDuplicatePropagation adp, List<AbstractBlock> blocks);
-
     public List<AbstractBlock> refineBlocks(List<AbstractBlock> blocks);
-
-    public String getMethodConfiguration();
-
-    public String getMethodInfo();
-
-    public String getMethodName();
-
-    public String getMethodParameters();
 }

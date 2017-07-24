@@ -1,5 +1,5 @@
 /*
-* Copyright [2016] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2017] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -18,6 +18,8 @@ package EntityClustering;
 
 import DataModel.EquivalenceCluster;
 import DataModel.SimilarityPairs;
+import Utilities.IDocumentation;
+
 import java.util.List;
 
 /**
@@ -25,17 +27,9 @@ import java.util.List;
  * @author G.A.P. II
  */
 
-public interface IEntityClustering {
+public interface IEntityClustering extends IDocumentation {
  
     public List<EquivalenceCluster> getDuplicates(SimilarityPairs simPairs);
-    
-    public String getMethodConfiguration();
-    
-    public String getMethodInfo();
-    
-    public String getMethodName();
-    
-    public String getMethodParameters();
     
     public void setSimilarityThreshold(double th);
 }

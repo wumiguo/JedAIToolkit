@@ -1,5 +1,5 @@
 /*
-* Copyright [2016] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2017] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -19,11 +19,15 @@ package BlockProcessing.BlockRefinement;
 import DataModel.AbstractBlock;
 import DataModel.BilateralBlock;
 import DataModel.UnilateralBlock;
+
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.apache.jena.atlas.json.JsonArray;
+import org.apache.jena.atlas.json.JsonObject;
 
 /**
  *
@@ -40,12 +44,14 @@ public class SizeBasedBlockPurging extends AbstractBlockPurging {
     
     public SizeBasedBlockPurging() {
         this(0.005);
-        LOGGER.log(Level.INFO, "Using default configuration for Size-based Block Purging.");
+        
+        LOGGER.log(Level.INFO, "Using default configuration for {0}.", getMethodName());
     }
 
     public SizeBasedBlockPurging(double pf) {
         purgingFactor = pf;
-        LOGGER.log(Level.INFO, "Purging factor\t:\t{0}", purgingFactor);
+        
+        LOGGER.log(Level.INFO, getMethodConfiguration());
     }
     
     private int getMaxBlockSize(List<AbstractBlock> blocks) {
@@ -62,28 +68,28 @@ public class SizeBasedBlockPurging extends AbstractBlockPurging {
     private int getMaxInnerBlockSize(List<AbstractBlock> blocks) {
         final Set<Integer> d1Entities = new HashSet<>();
         final Set<Integer> d2Entities = new HashSet<>();
-        for (AbstractBlock block : blocks) {
-            final BilateralBlock bilBlock = (BilateralBlock) block;
+        blocks.stream().map((block) -> (BilateralBlock) block).map((bilBlock) -> {
             for (int id1 : bilBlock.getIndex1Entities()) {
                 d1Entities.add(id1);
             }
-            
+            return bilBlock;            
+        }).forEachOrdered((bilBlock) -> {
             for (int id2 : bilBlock.getIndex2Entities()) {
                 d2Entities.add(id2);
             }
-        }
+        });
         
         return (int) Math.round(Math.min(d1Entities.size(), d2Entities.size())*purgingFactor);
     }
     
     @Override
     public String getMethodConfiguration() {
-        return "Purging factor=" + purgingFactor;
+        return getParameterName(0) + "=" + purgingFactor;
     }
     
     @Override
     public String getMethodInfo() {
-        return "Size-based Block Purging: it discards the blocks exceeding a certain number of entities.";
+        return getMethodName() + ": it discards the blocks exceeding a certain number of entities.";
     }
     
     @Override
@@ -93,10 +99,47 @@ public class SizeBasedBlockPurging extends AbstractBlockPurging {
 
     @Override
     public String getMethodParameters() {
-        return "Size-based Block Purging involves a single parameter:\n"
-                + "the purging factor pf, which helps to determine the maximum number of entities per block.";
+        return  getMethodName() + " involves a single parameter:\n"
+                + "1)" + getParameterDescription(0) + ".\n";
     }
 
+    @Override
+    public JsonArray getParameterConfiguration() {
+        JsonObject obj = new JsonObject();
+        obj.put("class", "java.lang.Double");
+        obj.put("name", getParameterName(0));
+        obj.put("defaultValue", "0.005");
+        obj.put("minValue", "0.001");
+        obj.put("maxValue", "0.100");
+        obj.put("stepValue", "0.001");
+        obj.put("description", getParameterDescription(0));
+        
+        JsonArray array = new JsonArray();
+        array.add(obj);
+        
+        return array;
+    }
+    
+    @Override
+    public String getParameterDescription(int parameterId) {
+        switch(parameterId) {
+            case 0:
+                return "The " + getParameterName(0) + " determines indirectly the maximum number of entities per block.";
+            default:
+                return "invalid parameter id";
+        }
+    }
+    
+    @Override
+    public String getParameterName(int parameterId) {
+        switch(parameterId) {
+            case 0:
+                return "Purging Factor";
+            default:
+                return "invalid parameter id";
+        }
+    }
+    
     @Override
     protected boolean satisfiesThreshold(AbstractBlock block) {
         if (isCleanCleanER) {

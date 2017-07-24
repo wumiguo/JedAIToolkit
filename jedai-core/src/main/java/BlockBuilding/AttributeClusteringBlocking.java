@@ -1,5 +1,5 @@
 /*
- * Copyright [2016] [George Papadakis (gpapadis@yahoo.gr)]
+ * Copyright [2016-2017] [George Papadakis (gpapadis@yahoo.gr)]
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,9 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.apache.jena.atlas.json.JsonArray;
+import org.apache.jena.atlas.json.JsonObject;
+
 import org.jgrapht.alg.ConnectivityInspector;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleGraph;
@@ -51,15 +54,17 @@ public class AttributeClusteringBlocking extends StandardBlocking {
 
     public AttributeClusteringBlocking() {
         this(RepresentationModel.TOKEN_UNIGRAM_GRAPHS, SimilarityMetric.GRAPH_VALUE_SIMILARITY);
-        LOGGER.log(Level.INFO, "Using default configuration for Attribute Clustering Blocking.");
+
+        LOGGER.log(Level.INFO, "Using default configuration for {0}.", getMethodName());
     }
 
     public AttributeClusteringBlocking(RepresentationModel md, SimilarityMetric sMetric) {
         super();
         model = md;
         simMetric = sMetric;
-        LOGGER.log(Level.INFO, "Representation model\t:\t{0}", model);
         attributeClusters = new HashMap[2];
+
+        LOGGER.log(Level.INFO, getMethodConfiguration());
     }
 
     @Override
@@ -259,25 +264,75 @@ public class AttributeClusteringBlocking extends StandardBlocking {
 
     @Override
     public String getMethodConfiguration() {
-        return "Representation model=" + model
-                + "\nSimilarity metric=" + simMetric;
+        return getParameterName(0) + "=" + model + "\t"
+                + getParameterName(1) + "=" + simMetric;
     }
 
     @Override
     public String getMethodInfo() {
-        return "Attribute Clustering Blocking: it groups the attribute names into similarity clusters "
+        return getMethodName() + ": it groups the attribute names into similarity clusters "
                 + "and applies Standard Blocking to the values of every cluster, independently of the others.";
     }
 
     @Override
     public String getMethodName() {
-        return "Attribute Clustering";
+        return "Attribute Clustering Blocking";
     }
 
     @Override
     public String getMethodParameters() {
-        return "Attribute Clustering Blocking involves a single parameter:\n"
-                + "model, the representation model that aggregates the values corresponding to every attribute name.\n"
-                + "It also determines the similarity measure for comparing the representations of two attribute names.";
+        return getMethodName() + " involves two parameters:\n"
+                + "1)" + getParameterDescription(0) + ".\n"
+                + "2)" + getParameterDescription(1) + ".";
+    }
+
+    @Override
+    public JsonArray getParameterConfiguration() {
+        JsonObject obj1 = new JsonObject();
+        obj1.put("class", "Utilities.Enumerations.RepresentationModel");
+        obj1.put("name", getParameterName(0));
+        obj1.put("defaultValue", "Utilities.Enumerations.RepresentationModel.TOKEN_UNIGRAM_GRAPHS");
+        obj1.put("minValue", "-");
+        obj1.put("maxValue", "-");
+        obj1.put("stepValue", "-");
+        obj1.put("description", getParameterDescription(0));
+
+        JsonObject obj2 = new JsonObject();
+        obj2.put("class", "Utilities.Enumerations.SimilarityMetric");
+        obj2.put("name", getParameterName(1));
+        obj2.put("defaultValue", "Utilities.Enumerations.SimilarityMetric.GRAPH_VALUE_SIMILARITY");
+        obj2.put("minValue", "-");
+        obj2.put("maxValue", "-");
+        obj2.put("stepValue", "-");
+        obj2.put("description", getParameterDescription(1));
+
+        JsonArray array = new JsonArray();
+        array.add(obj1);
+        array.add(obj2);
+        return array;
+    }
+
+    @Override
+    public String getParameterDescription(int parameterId) {
+        switch (parameterId) {
+            case 0:
+                return "The " + getParameterName(0) + " is a character- or token-based bag or graph model that aggregates tall attribute values in an entity profile.";
+            case 1:
+                return "The " + getParameterName(1) + " is a bag or graph similarity metric that compares the models of two entity profiles, returning a value between 0 (completely dissimlar) and 1 (identical).";
+            default:
+                return "invalid parameter id";
+        }
+    }
+
+    @Override
+    public String getParameterName(int parameterId) {
+        switch (parameterId) {
+            case 0:
+                return "Representation Model";
+            case 1:
+                return "Similarity Measure";
+            default:
+                return "invalid parameter id";
+        }
     }
 }

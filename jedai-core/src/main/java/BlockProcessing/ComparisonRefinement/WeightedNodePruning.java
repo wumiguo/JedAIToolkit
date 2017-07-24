@@ -1,5 +1,5 @@
 /*
-* Copyright [2016] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2017] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package BlockProcessing.ComparisonRefinement;
 
 import DataModel.AbstractBlock;
 import Utilities.Enumerations.WeightingScheme;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,6 +33,10 @@ public class WeightedNodePruning extends WeightedEdgePruning {
     protected int lastId;
     protected double[] averageWeight;
     
+    public WeightedNodePruning() {
+        this(WeightingScheme.ARCS);
+    }
+    
     public WeightedNodePruning(WeightingScheme scheme) {
         super(scheme);
         nodeCentric = true;
@@ -39,20 +44,14 @@ public class WeightedNodePruning extends WeightedEdgePruning {
     
     @Override
     public String getMethodInfo() {
-        return "Weighted Node Pruning: a Meta-blocking method that retains for every entity, the comparisons "
-                + "that correspond to edges in the blocking graph that are exceed the average edge weight "
-                + "in the respective node neighborhood.";
+        return getMethodName() + ": a Meta-blocking method that retains for every entity, the comparisons "
+               + "that correspond to edges in the blocking graph that are exceed the average edge weight "
+               + "in the respective node neighborhood.";
     }
 
     @Override
     public String getMethodName() {
         return "Weighted Node Pruning";
-    }
-    
-    @Override
-    public String getMethodParameters() {
-        return "Weighted Node Pruning involves a single parameter:\n"
-                + "the weighting scheme that assigns weights to the edges of the blcoking graph.";
     }
         
     protected boolean isValidComparison(int entityId, int neighborId) {
@@ -109,9 +108,9 @@ public class WeightedNodePruning extends WeightedEdgePruning {
 
     protected void setThreshold(int entityId) {
         threshold = 0;
-        for (int neighborId : validEntities) {
+        validEntities.forEach((neighborId) -> {
             threshold += getWeight(entityId, neighborId);
-        }
+        });
         threshold /= validEntities.size();
     }
 
@@ -119,26 +118,20 @@ public class WeightedNodePruning extends WeightedEdgePruning {
     protected void verifyValidEntities(int entityId, List<AbstractBlock> newBlocks) {
         retainedNeighbors.clear();
         if (!cleanCleanER) {
-            for (int neighborId : validEntities) {
-                if (isValidComparison(entityId, neighborId)) {
-                    retainedNeighbors.add(neighborId);
-                }
-            }
+            validEntities.stream().filter((neighborId) -> (isValidComparison(entityId, neighborId))).forEachOrdered((neighborId) -> {
+                retainedNeighbors.add(neighborId);
+            });
             addDecomposedBlock(entityId, retainedNeighbors, newBlocks);
         } else {
             if (entityId < datasetLimit) {
-                for (int neighborId : validEntities) {
-                    if (isValidComparison(entityId, neighborId)) {
-                        retainedNeighbors.add(neighborId - datasetLimit);
-                    }
-                }
+                validEntities.stream().filter((neighborId) -> (isValidComparison(entityId, neighborId))).forEachOrdered((neighborId) -> {
+                    retainedNeighbors.add(neighborId - datasetLimit);
+                });
                 addDecomposedBlock(entityId, retainedNeighbors, newBlocks);
             } else {
-                for (int neighborId : validEntities) {
-                    if (isValidComparison(entityId, neighborId)) {
-                        retainedNeighbors.add(neighborId);
-                    }
-                }
+                validEntities.stream().filter((neighborId) -> (isValidComparison(entityId, neighborId))).forEachOrdered((neighborId) -> {
+                    retainedNeighbors.add(neighborId);
+                });
                 addReversedDecomposedBlock(entityId - datasetLimit, retainedNeighbors, newBlocks);
             }
         }

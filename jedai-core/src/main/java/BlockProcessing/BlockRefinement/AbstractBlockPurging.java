@@ -1,5 +1,5 @@
 /*
-* Copyright [2016] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2017] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -18,8 +18,8 @@ package BlockProcessing.BlockRefinement;
 
 import BlockBuilding.AbstractBlockBuilding;
 import BlockProcessing.AbstractBlockProcessing;
-import BlockProcessing.IBlockProcessing;
 import DataModel.AbstractBlock;
+
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
@@ -30,7 +30,7 @@ import java.util.logging.Logger;
  * @author G.A.P. II
  */
 
-public abstract class AbstractBlockPurging extends AbstractBlockProcessing implements IBlockProcessing {
+public abstract class AbstractBlockPurging extends AbstractBlockProcessing {
     
     private static final Logger LOGGER = Logger.getLogger(AbstractBlockBuilding.class.getName());
 

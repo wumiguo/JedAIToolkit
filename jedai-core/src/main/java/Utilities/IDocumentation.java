@@ -14,25 +14,29 @@
 * limitations under the License.
 */
 
-package BlockBuilding;
+package Utilities;
 
-import DataModel.AbstractBlock;
-import DataModel.EntityProfile;
-import Utilities.IDocumentation;
-
-import java.util.List;
+import org.apache.jena.atlas.json.JsonArray;
 
 /**
  *
- * @author G.A.P. II
+ * @author GAP2
  */
+public interface IDocumentation {
 
-public interface IBlockBuilding extends IDocumentation {
+    String PARAMETER_FREE = "Parameter-free method";
     
-    int DATASET_1 = 0;
-    int DATASET_2 = 1;
-    
-    public List<AbstractBlock> getBlocks(List<EntityProfile> profiles);
-    
-    public List<AbstractBlock> getBlocks(List<EntityProfile> profilesD1, List<EntityProfile> profilesD2);
+    public String getMethodConfiguration();
+
+    public String getMethodInfo();
+
+    public String getMethodName();
+
+    public String getMethodParameters();
+
+    public JsonArray getParameterConfiguration();
+
+    public String getParameterDescription(int parameterId);
+
+    public String getParameterName(int parameterId);
 }

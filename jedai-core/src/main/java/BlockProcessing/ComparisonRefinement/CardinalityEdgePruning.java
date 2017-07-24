@@ -1,5 +1,5 @@
 /*
-* Copyright [2016] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2017] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import DataModel.Comparison;
 import DataModel.DecomposedBlock;
 import Utilities.Comparators.ComparisonWeightComparator;
 import Utilities.Enumerations.WeightingScheme;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -37,6 +38,10 @@ public class CardinalityEdgePruning extends WeightedEdgePruning {
 
     protected double minimumWeight;
     protected Queue<Comparison> topKEdges;
+    
+    public CardinalityEdgePruning() {
+        super(WeightingScheme.ARCS);
+    }
     
     public CardinalityEdgePruning(WeightingScheme scheme) {
         super(scheme);
@@ -65,25 +70,19 @@ public class CardinalityEdgePruning extends WeightedEdgePruning {
 
     @Override
     public String getMethodInfo() {
-        return "Cardinality Edge Pruning: a Meta-blocking method that retains the comparisons "
-                + "that correspond to the top-K weighted edges in the blocking graph.";
+        return getMethodName() + ": a Meta-blocking method that retains the comparisons "
+               + "that correspond to the top-K weighted edges in the blocking graph.";
     }
     
     @Override
     public String getMethodName() {
         return "Cardinality Edge Pruning";
     }
-
-    @Override
-    public String getMethodParameters() {
-        return "Cardinality Edge Pruning involves a single parameter:\n"
-                + "the weighting scheme that assigns weights to the edges of the blcoking graph.";
-    }
     
     @Override
     protected List<AbstractBlock> pruneEdges() {
         minimumWeight = Double.MIN_VALUE;
-        topKEdges = new PriorityQueue<Comparison>((int) (2 * threshold), new ComparisonWeightComparator());
+        topKEdges = new PriorityQueue<>((int) (2 * threshold), new ComparisonWeightComparator());
 
         int limit = cleanCleanER ? datasetLimit : noOfEntities;
         if (weightingScheme.equals(WeightingScheme.ARCS)) {
@@ -109,20 +108,17 @@ public class CardinalityEdgePruning extends WeightedEdgePruning {
     }
 
     protected void verifyValidEntities(int entityId) {
-        for (int neighborId : validEntities) {
+        validEntities.forEach((neighborId) -> {
             double weight = getWeight(entityId, neighborId);
-            if (weight < minimumWeight) {
-                continue;
+            if (!(weight < minimumWeight)) {
+                Comparison comparison = getComparison(entityId, neighborId);
+                comparison.setUtilityMeasure(weight);
+                topKEdges.add(comparison);
+                if (threshold < topKEdges.size()) {
+                    Comparison lastComparison = topKEdges.poll();
+                    minimumWeight = lastComparison.getUtilityMeasure();
+                }
             }
-
-            Comparison comparison = getComparison(entityId, neighborId);
-            comparison.setUtilityMeasure(weight);
-
-            topKEdges.add(comparison);
-            if (threshold < topKEdges.size()) {
-                Comparison lastComparison = topKEdges.poll();
-                minimumWeight = lastComparison.getUtilityMeasure();
-            }
-        }
+        });
     }
 }

@@ -1,5 +1,5 @@
 /*
-* Copyright [2016] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2017] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -20,6 +20,9 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.apache.jena.atlas.json.JsonArray;
+import org.apache.jena.atlas.json.JsonObject;
+
 /**
  *
  * @author gap2
@@ -27,12 +30,13 @@ import java.util.logging.Logger;
 public class ExtendedSuffixArraysBlocking extends SuffixArraysBlocking {
 
     private static final Logger LOGGER = Logger.getLogger(ExtendedSuffixArraysBlocking.class.getName());
-    
+
     public ExtendedSuffixArraysBlocking() {
         this(39, 6);
-        LOGGER.log(Level.INFO, "Using default configuration for Extended Suffix Arrays Blocking.");
+
+        LOGGER.log(Level.INFO, "Using default configuration for {0}.", getMethodName());
     }
-    
+
     public ExtendedSuffixArraysBlocking(int maxSize, int minLength) {
         super(maxSize, minLength);
     }
@@ -47,28 +51,13 @@ public class ExtendedSuffixArraysBlocking extends SuffixArraysBlocking {
     }
 
     @Override
-    public String getMethodConfiguration() {
-        return "Maximum block size=" + maximumBlockSize +         
-               "\nMinimum suffix length=" + minimumSuffixLength;
-    }
-    
-    @Override
     public String getMethodInfo() {
-        return "Extended Suffix Arrays Blocking: it creates one block for every substring (not just suffix) that appears in the tokens of at least two entities.";
+        return getMethodName() + ": it creates one block for every substring (not just suffix) that appears in the tokens of at least two entities.";
     }
 
     @Override
     public String getMethodName() {
         return "Extended Suffix Arrays Blocking";
-    }
-    
-    @Override
-    public String getMethodParameters() {
-        return "Extended Suffix Arrays Blocking involves two parameters:\n"
-                + "1) minLength, the minimum size of substrings that are used as blocking keys.\n"
-                + "Default value: 6.\n"
-                + "2) maxSize, the maximum frequency of every suffix, i.e., the maximum block size.\n"
-                + "Default value: 39.";
     }
 
     public Set<String> getExtendedSuffixes(int minimumLength, String blockingKey) {
@@ -86,5 +75,55 @@ public class ExtendedSuffixArraysBlocking extends SuffixArraysBlocking {
             }
         }
         return suffixes;
+    }
+
+    @Override
+    public JsonArray getParameterConfiguration() {
+        JsonObject obj1 = new JsonObject();
+        obj1.put("class", "java.lang.Integer");
+        obj1.put("name", getParameterName(0));
+        obj1.put("defaultValue", "6");
+        obj1.put("minValue", "2");
+        obj1.put("maxValue", "6");
+        obj1.put("stepValue", "1");
+        obj1.put("description", getParameterDescription(0));
+
+        JsonObject obj2 = new JsonObject();
+        obj2.put("class", "java.lang.Integer");
+        obj2.put("name", getParameterName(1));
+        obj2.put("defaultValue", "39");
+        obj2.put("minValue", "2");
+        obj2.put("maxValue", "100");
+        obj2.put("stepValue", "1");
+        obj2.put("description", getParameterDescription(1));
+
+        JsonArray array = new JsonArray();
+        array.add(obj1);
+        array.add(obj2);
+        return array;
+    }
+
+    @Override
+    public String getParameterDescription(int parameterId) {
+        switch (parameterId) {
+            case 0:
+                return "The " + getParameterName(0) + " determines the minimum number of characters in an attribute value substring that is used as blocking key.";
+            case 1:
+                return "The " + getParameterName(1) + " determines the maximum number of entities that correspond to a valid substring (i.e., maximum block size).";
+            default:
+                return "invalid parameter id";
+        }
+    }
+
+    @Override
+    public String getParameterName(int parameterId) {
+        switch (parameterId) {
+            case 0:
+                return "Minimum Substring Length";
+            case 1:
+                return "Maximum Substring Frequency";
+            default:
+                return "invalid parameter id";
+        }
     }
 }

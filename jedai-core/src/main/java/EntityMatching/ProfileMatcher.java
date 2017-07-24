@@ -1,5 +1,5 @@
 /*
-* Copyright [2016] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2017] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -23,10 +23,13 @@ import DataModel.SimilarityPairs;
 import TextModels.ITextModel;
 import Utilities.Enumerations.RepresentationModel;
 import Utilities.Enumerations.SimilarityMetric;
-import java.util.Iterator;
+
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.apache.jena.atlas.json.JsonArray;
+import org.apache.jena.atlas.json.JsonObject;
 
 /**
  *
@@ -39,10 +42,16 @@ public class ProfileMatcher extends AbstractEntityMatching {
     protected ITextModel[] entityModelsD1;
     protected ITextModel[] entityModelsD2;
 
+    public ProfileMatcher() {
+        this(RepresentationModel.TOKEN_UNIGRAM_GRAPHS, SimilarityMetric.GRAPH_VALUE_SIMILARITY);
+
+        LOGGER.log(Level.INFO, "Using default configuration for {0}.", getMethodName());
+    }
+
     public ProfileMatcher(RepresentationModel model, SimilarityMetric simMetric) {
         super(model, simMetric);
 
-        LOGGER.log(Level.INFO, "Initializing profile matcher with : {0}", model);
+        LOGGER.log(Level.INFO, getMethodConfiguration());
     }
 
     @Override
@@ -62,15 +71,38 @@ public class ProfileMatcher extends AbstractEntityMatching {
         }
 
         final SimilarityPairs simPairs = new SimilarityPairs(isCleanCleanER, blocks);
-        for (AbstractBlock block : blocks) {
-            final Iterator<Comparison> iterator = block.getComparisonIterator();
+        blocks.stream().map((block) -> block.getComparisonIterator()).forEachOrdered((iterator) -> {
             while (iterator.hasNext()) {
                 Comparison currentComparison = iterator.next();
                 currentComparison.setUtilityMeasure(getSimilarity(currentComparison));
                 simPairs.addComparison(currentComparison);
             }
-        }
+        });
         return simPairs;
+    }
+
+    @Override
+    public String getMethodInfo() {
+        return getMethodName() + ": it aggregates all attribute values of each entity profile "
+                + "into a representation model and compares them according to the given similarity metric.";
+    }
+
+    @Override
+    public String getMethodName() {
+        return "Profile Matcher";
+    }
+
+    @Override
+    public String getMethodConfiguration() {
+        return getParameterName(0) + "=" + representationModel + "\t"
+                + getParameterName(1) + "=" + simMetric;
+    }
+
+    @Override
+    public String getMethodParameters() {
+        return getMethodName() + " involves two parameters:\n"
+                + "1)" + getParameterDescription(0) + ".\n"
+                + "2)" + getParameterDescription(1) + ".";
     }
 
     private ITextModel[] getModels(int datasetId, List<EntityProfile> profiles) {
@@ -88,29 +120,53 @@ public class ProfileMatcher extends AbstractEntityMatching {
     }
 
     @Override
-    public String getMethodConfiguration() {
-        return "Representation model=" + representationModel +
-               "\nSimilarity metric=" + simMetric;
-    }
-    
-    @Override
-    public String getMethodInfo() {
-        return "Profile Matcher : it aggregates all attribute values of each entity profile "
-                + "into a representation model and compares them according to the given similarity metric.";
-    }
-    
-    @Override
-    public String getMethodName() {
-        return "Profile Matcher";
+    public JsonArray getParameterConfiguration() {
+        JsonObject obj1 = new JsonObject();
+        obj1.put("class", "Utilities.Enumerations.RepresentationModel");
+        obj1.put("name", getParameterName(0));
+        obj1.put("defaultValue", "Utilities.Enumerations.RepresentationModel.TOKEN_UNIGRAM_GRAPHS");
+        obj1.put("minValue", "-");
+        obj1.put("maxValue", "-");
+        obj1.put("stepValue", "-");
+        obj1.put("description", getParameterDescription(0));
+
+        JsonObject obj2 = new JsonObject();
+        obj2.put("class", "Utilities.Enumerations.SimilarityMetric");
+        obj2.put("name", getParameterName(1));
+        obj2.put("defaultValue", "Utilities.Enumerations.SimilarityMetric.GRAPH_VALUE_SIMILARITY");
+        obj2.put("minValue", "-");
+        obj2.put("maxValue", "-");
+        obj2.put("stepValue", "-");
+        obj2.put("description", getParameterDescription(1));
+
+        JsonArray array = new JsonArray();
+        array.add(obj1);
+        array.add(obj2);
+        return array;
     }
 
     @Override
-    public String getMethodParameters() {
-        return "The Profile Matcher involves 2 parameters:\n"
-             + "1) representation model : character- or token-based bag or graph model.\n"
-             + "It determines the building modules that form the model of all attribute values in an entity profile.\n"
-             + "2) similarity metric : bag or graph similarity metric.\n"
-             + "It determines the measure that estimates the similarity of two entity profiles.\n";
+    public String getParameterDescription(int parameterId) {
+        switch (parameterId) {
+            case 0:
+                return "The " + getParameterName(0) + " aggregates the textual values that correspond to every entity.";
+            case 1:
+                return "The " + getParameterName(1) + " compares the models of two entities, returning a value between 0 (completely dissimlar) and 1 (identical).";
+            default:
+                return "invalid parameter id";
+        }
+    }
+
+    @Override
+    public String getParameterName(int parameterId) {
+        switch (parameterId) {
+            case 0:
+                return "Representation Model";
+            case 1:
+                return "Similarity Measure";
+            default:
+                return "invalid parameter id";
+        }
     }
 
     public double getSimilarity(Comparison comparison) {

@@ -1,5 +1,5 @@
 /*
-* Copyright [2016] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2017] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -39,11 +39,15 @@ public class MergeCenterClustering extends AbstractEntityClustering {
     private static final Logger LOGGER = Logger.getLogger(MergeCenterClustering.class.getName());
 
     public MergeCenterClustering() {
-        super();
-
-        LOGGER.log(Level.INFO, "Initializing Merge Center Clustering...");
+        this(0.5);
     }
 
+    public MergeCenterClustering(double simTh) {
+        super(simTh);
+
+        LOGGER.log(Level.INFO, "{0} initiated", getMethodName());
+    }
+    
     @Override
     public List<EquivalenceCluster> getDuplicates(SimilarityPairs simPairs) {
         initializeData(simPairs);
@@ -91,17 +95,11 @@ public class MergeCenterClustering extends AbstractEntityClustering {
 
     @Override
     public String getMethodInfo() {
-        return "Merge Center Clustering: implements the MERGE-CENTER algorithm";
+        return getMethodName() + ": it implements the MERGE-CENTER algorithm.";
     }
 
     @Override
     public String getMethodName() {
         return "Merge Center Clustering";
-    }
-    
-    @Override
-    public String getMethodParameters() {
-        return "The Merge Center Clustering algorithm involves 1 parameter:\n" 
-             + explainThresholdParameter();
     }
 }

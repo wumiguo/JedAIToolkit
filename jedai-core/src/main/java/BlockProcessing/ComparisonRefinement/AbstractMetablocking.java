@@ -1,17 +1,18 @@
 /*
- *    This program is free software; you can redistribute it and/or modify
- *    it under the terms of the GNU General Public License as published by
- *    the Free Software Foundation; either version 2 of the License, or
- *    (at your option) any later version.
- *
- *    This program is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *    GNU General Public License for more details.
- *
- *    Copyright (C) 2015 George Antony Papadakis (gpapadis@yahoo.gr)
+* Copyright [2016-2017] [George Papadakis (gpapadis@yahoo.gr)]
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*    http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
  */
-
 package BlockProcessing.ComparisonRefinement;
 
 import DataModel.AbstractBlock;
@@ -19,10 +20,14 @@ import DataModel.BilateralBlock;
 import DataModel.Comparison;
 import DataModel.UnilateralBlock;
 import Utilities.Enumerations.WeightingScheme;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import org.apache.jena.atlas.json.JsonArray;
+import org.apache.jena.atlas.json.JsonObject;
 
 /**
  *
@@ -88,7 +93,7 @@ public abstract class AbstractMetablocking extends AbstractComparisonRefinementM
         counters = null;
         uBlocks = null;
     }
-    
+
     protected Comparison getComparison(int entityId, int neighborId) {
         if (!cleanCleanER) {
             if (entityId < neighborId) {
@@ -105,6 +110,12 @@ public abstract class AbstractMetablocking extends AbstractComparisonRefinementM
         }
     }
 
+    @Override
+    public String getMethodParameters() {
+        return getMethodName() + " involves a single parameter:\n"
+                + "1)" + getParameterDescription(0) + ".\n";
+    }
+
     protected int[] getNeighborEntities(int blockIndex, int entityId) {
         if (cleanCleanER) {
             if (entityId < datasetLimit) {
@@ -114,6 +125,42 @@ public abstract class AbstractMetablocking extends AbstractComparisonRefinementM
             }
         }
         return uBlocks[blockIndex].getEntities();
+    }
+
+    @Override
+    public JsonArray getParameterConfiguration() {
+        JsonObject obj1 = new JsonObject();
+        obj1.put("class", "Utilities.Enumerations.WeightingScheme");
+        obj1.put("name", getParameterName(0));
+        obj1.put("defaultValue", "Utilities.Enumerations.WeightingScheme.CBS");
+        obj1.put("minValue", "-");
+        obj1.put("maxValue", "-");
+        obj1.put("stepValue", "-");
+        obj1.put("description", getParameterDescription(0));
+
+        JsonArray array = new JsonArray();
+        array.add(obj1);
+        return array;
+    }
+
+    @Override
+    public String getParameterDescription(int parameterId) {
+        switch (parameterId) {
+            case 0:
+                return "The " + getParameterName(0) + " determines the function that assigns weights to the edges of the Blocking Graph.";
+            default:
+                return "invalid parameter id";
+        }
+    }
+
+    @Override
+    public String getParameterName(int parameterId) {
+        switch (parameterId) {
+            case 0:
+                return "Weighting Scheme";
+            default:
+                return "invalid parameter id";
+        }
     }
 
     protected double getWeight(int entityId, int neighborId) {
@@ -161,11 +208,11 @@ public abstract class AbstractMetablocking extends AbstractComparisonRefinementM
             }
         }
     }
-    
+
     protected void setStatistics() {
         distinctComparisons = 0;
         comparisonsPerEntity = new double[noOfEntities];
-        final Set<Integer> distinctNeighbors = new HashSet<Integer>();
+        final Set<Integer> distinctNeighbors = new HashSet<>();
         for (int i = 0; i < noOfEntities; i++) {
             final int[] associatedBlocks = entityIndex.getEntityBlocks(i, 0);
             if (associatedBlocks.length != 0) {

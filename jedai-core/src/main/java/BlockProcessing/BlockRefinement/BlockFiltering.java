@@ -1,5 +1,5 @@
 /*
-* Copyright [2016] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2017] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -17,24 +17,27 @@
 package BlockProcessing.BlockRefinement;
 
 import BlockProcessing.AbstractBlockProcessing;
-import BlockProcessing.IBlockProcessing;
 import DataModel.AbstractBlock;
 import DataModel.BilateralBlock;
 import DataModel.UnilateralBlock;
 import Utilities.Comparators.BlockCardinalityComparator;
 import Utilities.Converter;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.apache.jena.atlas.json.JsonArray;
+import org.apache.jena.atlas.json.JsonObject;
+
 /**
  *
  * @author gap2
  */
 
-public class BlockFiltering extends AbstractBlockProcessing implements IBlockProcessing {
+public class BlockFiltering extends AbstractBlockProcessing {
 
     private static final Logger LOGGER = Logger.getLogger(BlockFiltering.class.getName());
     
@@ -49,12 +52,14 @@ public class BlockFiltering extends AbstractBlockProcessing implements IBlockPro
     
     public BlockFiltering() {
         this(0.8); 
-        LOGGER.log(Level.INFO, "Using default configuration for Block Filtering.");
+        
+        LOGGER.log(Level.INFO, "Using default configuration for {0}.", getMethodName());
     }
     
     public BlockFiltering(double r) {
         ratio = r;
-        LOGGER.log(Level.INFO, "Filtering ratio\t:\t{0}", ratio);
+        
+        LOGGER.log(Level.INFO, getMethodConfiguration());
     }
 
     protected void countEntities(List<AbstractBlock> blocks) {
@@ -75,29 +80,29 @@ public class BlockFiltering extends AbstractBlockProcessing implements IBlockPro
                 }
             }
         } else if (blocks.get(0) instanceof UnilateralBlock) {
-            for (AbstractBlock block : blocks) {
-                UnilateralBlock uniBlock = (UnilateralBlock) block;
+            blocks.stream().map((block) -> (UnilateralBlock) block).forEachOrdered((uniBlock) -> {
                 for (int id : uniBlock.getEntities()) {
                     if (entitiesD1 < id + 1) {
                         entitiesD1 = id + 1;
                     }
                 }
-            }
+            });
         }
     }
 
     protected void getBilateralLimits(List<AbstractBlock> blocks) {
         limitsD1 = new int[entitiesD1];
         limitsD2 = new int[entitiesD2];
-        for (AbstractBlock block : blocks) {
-            BilateralBlock bilBlock = (BilateralBlock) block;
+        blocks.stream().map((block) -> (BilateralBlock) block).map((bilBlock) -> {
             for (int id1 : bilBlock.getIndex1Entities()) {
                 limitsD1[id1]++;
             }
+            return bilBlock;
+        }).forEachOrdered((bilBlock) -> {
             for (int id2 : bilBlock.getIndex2Entities()) {
                 limitsD2[id2]++;
             }
-        }
+        });
 
         for (int i = 0; i < limitsD1.length; i++) {
             limitsD1[i] = (int) Math.round(ratio * limitsD1[i]);
@@ -109,12 +114,12 @@ public class BlockFiltering extends AbstractBlockProcessing implements IBlockPro
     
     @Override
     public String getMethodConfiguration() {
-        return "Ratio=" + ratio;
+        return getParameterName(0) + "=" + ratio;
     }
     
     @Override
     public String getMethodInfo() {
-        return "Block Filtering: it retains every entity in a subset of its smallest blocks.";
+        return getMethodName() + ": it retains every entity in a subset of its smallest blocks.";
     }
     
     @Override
@@ -124,8 +129,8 @@ public class BlockFiltering extends AbstractBlockProcessing implements IBlockPro
 
     @Override
     public String getMethodParameters() {
-        return "Block Filtering involves a single parameter:\n"
-                + "r \\in [0,1], which specifies the ratio of the retained smaller blocks per entity.";
+        return getMethodName() + " involves a single parameter:\n"
+               + "1)" + getParameterDescription(0) + ".\n";
     }
 
     protected void getLimits(List<AbstractBlock> blocks) {
@@ -149,7 +154,44 @@ public class BlockFiltering extends AbstractBlockProcessing implements IBlockPro
             limitsD1[i] = (int) Math.round(ratio * limitsD1[i]);
         }
     }
+    
+    @Override
+    public JsonArray getParameterConfiguration() {
+        JsonObject obj = new JsonObject();
+        obj.put("class", "java.lang.Double");
+        obj.put("name", getParameterName(0));
+        obj.put("defaultValue", "0.8");
+        obj.put("minValue", "0.05");
+        obj.put("maxValue", "1.0");
+        obj.put("stepValue", "0.05");
+        obj.put("description", getParameterDescription(0));
+        
+        JsonArray array = new JsonArray();
+        array.add(obj);
+        
+        return array;
+    }
 
+    @Override
+    public String getParameterDescription(int parameterId) {
+        switch(parameterId) {
+            case 0:
+                return "The " + getParameterName(0) + " specifies the portion of the retained smaller blocks per entity.";
+            default:
+                return "invalid parameter id";
+        }
+    }
+    
+    @Override
+    public String getParameterName(int parameterId) {
+        switch(parameterId) {
+            case 0:
+                return "Filtering Ratio";
+            default:
+                return "invalid parameter id";
+        }
+    }
+    
     protected void initializeCounters() {
         counterD1 = new int[entitiesD1];
         counterD2 = null;
@@ -170,22 +212,19 @@ public class BlockFiltering extends AbstractBlockProcessing implements IBlockPro
     
     protected List<AbstractBlock> restructureBilateraBlocks(List<AbstractBlock> blocks) {
         final List<AbstractBlock> newBlocks = new ArrayList<>();
-        for (AbstractBlock block : blocks) {
-            BilateralBlock oldBlock = (BilateralBlock) block;
+        blocks.stream().map((block) -> (BilateralBlock) block).forEachOrdered((oldBlock) -> {
             final List<Integer> retainedEntitiesD1 = new ArrayList<>();
             for (int entityId : oldBlock.getIndex1Entities()) {
                 if (counterD1[entityId] < limitsD1[entityId]) {
                     retainedEntitiesD1.add(entityId);
                 }
             }
-
             final List<Integer> retainedEntitiesD2 = new ArrayList<>();
             for (int entityId : oldBlock.getIndex2Entities()) {
                 if (counterD2[entityId] < limitsD2[entityId]) {
                     retainedEntitiesD2.add(entityId);
                 }
             }
-
             if (!retainedEntitiesD1.isEmpty() && !retainedEntitiesD2.isEmpty()) {
                 int[] blockEntitiesD1 = Converter.convertCollectionToArray(retainedEntitiesD1);
                 for (int entityId : blockEntitiesD1) {
@@ -197,7 +236,7 @@ public class BlockFiltering extends AbstractBlockProcessing implements IBlockPro
                 }
                 newBlocks.add(new BilateralBlock(blockEntitiesD1, blockEntitiesD2));
             }
-        }
+        });
         
         return newBlocks;
     }
@@ -212,23 +251,22 @@ public class BlockFiltering extends AbstractBlockProcessing implements IBlockPro
 
     protected List<AbstractBlock> restructureUnilateraBlocks(List<AbstractBlock> blocks) {
         final List<AbstractBlock> newBlocks = new ArrayList<>();
-        for (AbstractBlock block : blocks) {
-            UnilateralBlock oldBlock = (UnilateralBlock) block;
+        blocks.stream().map((block) -> (UnilateralBlock) block).map((oldBlock) -> {
             final List<Integer> retainedEntities = new ArrayList<>();
             for (int entityId : oldBlock.getEntities()) {
                 if (counterD1[entityId] < limitsD1[entityId]) {
                     retainedEntities.add(entityId);
                 }
             }
-
-            if (1 < retainedEntities.size()) {
-                int[] blockEntities = Converter.convertCollectionToArray(retainedEntities);
-                for (int entityId : blockEntities) {
-                    counterD1[entityId]++;
-                }
-                newBlocks.add(new UnilateralBlock(blockEntities));
+            return retainedEntities;
+        }).filter((retainedEntities) -> (1 < retainedEntities.size())).map((retainedEntities) -> Converter.convertCollectionToArray(retainedEntities)).map((blockEntities) -> {
+            for (int entityId : blockEntities) {
+                counterD1[entityId]++;
             }
-        }
+            return blockEntities;
+        }).forEachOrdered((blockEntities) -> {
+            newBlocks.add(new UnilateralBlock(blockEntities));
+        });
         return newBlocks;
     }
 

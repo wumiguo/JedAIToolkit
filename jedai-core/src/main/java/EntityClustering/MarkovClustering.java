@@ -1,5 +1,5 @@
 /*
-* Copyright [2016] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2017] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -23,7 +23,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
+import org.apache.jena.atlas.json.JsonArray;
+import org.apache.jena.atlas.json.JsonObject;
 
 /**
  *
@@ -38,13 +39,13 @@ public class MarkovClustering extends AbstractEntityClustering {
     protected int similarityChecksLimit;//define check repetitions limit for the expansion-inflation process
 
     public MarkovClustering() {
-        super();
+        this(0.001, 0.00001, 2, 0.5);
+    }
 
-        clusterThreshold = 0.001;
-        matrixSimThreshold = 0.00001;
-        similarityChecksLimit = 2;
-        
-        LOGGER.log(Level.INFO, "Initializing Markov Clustering...");
+    public MarkovClustering(double ct, double mst, double scl, double st) {
+        super(st);
+
+        LOGGER.log(Level.INFO, "{0} initiated", getMethodName());
     }
 
     private void addSelfLoop(double[][] a) {
@@ -77,13 +78,11 @@ public class MarkovClustering extends AbstractEntityClustering {
 
         return true;
     }
-    
+
     private void expand2(double[][] inputMatrix) {
         double[][] input = multiply(inputMatrix, inputMatrix);
         for (int i = 0; i < inputMatrix.length; i++) {
-            for (int j = 0; j < inputMatrix[0].length; j++) {
-                inputMatrix[i][j] = input[i][j];
-            }
+            System.arraycopy(input[i], 0, inputMatrix[i], 0, inputMatrix[0].length);
         }
     }
 
@@ -91,7 +90,7 @@ public class MarkovClustering extends AbstractEntityClustering {
     public List<EquivalenceCluster> getDuplicates(SimilarityPairs simPairs) {
         initializeData(simPairs);
         initializeGraph();
-        
+
         // add an edge for every pair of entities with a weight higher than the threshold
         final Iterator<Comparison> iterator = simPairs.getPairIterator();
         double[][] simMatrix = new double[noOfEntities][noOfEntities];
@@ -108,9 +107,7 @@ public class MarkovClustering extends AbstractEntityClustering {
         int count = 0;
         do {
             for (int i = 0; i < noOfEntities; i++) {
-                for (int j = 0; j < noOfEntities; j++) {
-                    atStart[i][j] = simMatrix[i][j];
-                }
+                System.arraycopy(simMatrix[i], 0, atStart[i], 0, noOfEntities);
             }
             expand2(simMatrix);
             normalizeColumns(simMatrix);
@@ -126,7 +123,7 @@ public class MarkovClustering extends AbstractEntityClustering {
             upLimit = datasetLimit;
             lowLimit = datasetLimit;
         }
-        
+
         for (int i = 0; i < upLimit; i++) {
             for (int j = lowLimit; j < n1; j++) {
                 double sim = Math.max(simMatrix[i][j], simMatrix[j][i]);
@@ -136,22 +133,22 @@ public class MarkovClustering extends AbstractEntityClustering {
             }
         }
 
-       return getConnectedComponents();
+        return getConnectedComponents();
     }
 
     @Override
     public String getMethodConfiguration() {
-        return super.getMethodConfiguration() + 
-               "\nCluster threshold=" + clusterThreshold +
-               "\nMatrix Similarity Threshold=" + matrixSimThreshold +
-               "\nSimilarity Checks Limit=" + similarityChecksLimit;
+        return super.getMethodConfiguration()
+                + "\nCluster threshold=" + clusterThreshold
+                + "\nMatrix Similarity Threshold=" + matrixSimThreshold
+                + "\nSimilarity Checks Limit=" + similarityChecksLimit;
     }
-    
+
     @Override
     public String getMethodInfo() {
-        return "Markov Clustering: implements the Markov Cluster Algorithm.";
+        return getMethodName() + ": it implements the Markov Cluster Algorithm.";
     }
-    
+
     @Override
     public String getMethodName() {
         return "Markov Clustering";
@@ -159,14 +156,89 @@ public class MarkovClustering extends AbstractEntityClustering {
 
     @Override
     public String getMethodParameters() {
-        return "The Markov Cluster algorithm involves 4 parameters:\n" 
-             + explainThresholdParameter()
-             + "2) cluster threshold : double, default value : 0.001.\n"
-             + "It determines the similarity threshold for including an edge in the similarity graph.\n"
-             + "3) matrix similarity threshold : double, default value : 0.00001.\n"
-             + "It determines the similarity threshold for compariing all cells of two matrices and considering them similar.\n"
-             + "4) similarity checks limit : integer, default value : 2.\n"
-             + "It determines the maximum number of repetitions we apply the expansion-inflation process.\n";
+        return getMethodName() + " involves four parameters:\n"
+                + "1)" + getParameterDescription(0) + ".\n"
+                + "2)" + getParameterDescription(1) + ".\n"
+                + "3)" + getParameterDescription(2) + ".\n"
+                + "4)" + getParameterDescription(3) + ".";
+    }
+
+    @Override
+    public JsonArray getParameterConfiguration() {
+        JsonObject obj1 = new JsonObject();
+        obj1.put("class", "java.lang.Double");
+        obj1.put("name", getParameterName(0));
+        obj1.put("defaultValue", "0.5");
+        obj1.put("minValue", "0.1");
+        obj1.put("maxValue", "0.95");
+        obj1.put("stepValue", "0.05");
+        obj1.put("description", getParameterDescription(0));
+
+        JsonObject obj2 = new JsonObject();
+        obj2.put("class", "java.lang.Double");
+        obj2.put("name", getParameterName(1));
+        obj2.put("defaultValue", "0.001");
+        obj2.put("minValue", "0.001");
+        obj2.put("maxValue", "0.100");
+        obj2.put("stepValue", "0.001");
+        obj2.put("description", getParameterDescription(1));
+        
+        JsonObject obj3 = new JsonObject();
+        obj3.put("class", "java.lang.Double");
+        obj3.put("name", getParameterName(2));
+        obj3.put("defaultValue", "0.00001");
+        obj3.put("minValue", "0.00001");
+        obj3.put("maxValue", "0.00100");
+        obj3.put("stepValue", "0.00001");
+        obj3.put("description", getParameterDescription(2));
+
+        JsonObject obj4 = new JsonObject();
+        obj4.put("class", "java.lang.Integer");
+        obj4.put("name", getParameterName(3));
+        obj4.put("defaultValue", "2");
+        obj4.put("minValue", "1");
+        obj4.put("maxValue", "10");
+        obj4.put("stepValue", "1");
+        obj4.put("description", getParameterDescription(3));
+
+        JsonArray array = new JsonArray();
+        array.add(obj1);
+        array.add(obj2);
+        array.add(obj3);
+        array.add(obj4);
+        return array;
+    }
+
+    @Override
+    public String getParameterDescription(int parameterId) {
+        switch (parameterId) {
+            case 0:
+                return "The " + getParameterName(0) + " determines the cut-off similarity threshold for connecting two entities with an edge in the (initial) similarity graph.";
+            case 1:
+                return "The " + getParameterName(1) + " determines the similarity threshold for including an edge in the similarity graph.";
+            case 2:
+                return "The " + getParameterName(1) + " determines the similarity threshold for compariing all cells of two matrices and considering them similar.";
+            case 3:
+                return "The " + getParameterName(1) + " determines the maximum number of repetitions we apply the expansion-inflation process.";
+            default:
+                return "invalid parameter id";
+        }
+    }
+
+    @Override
+    public String getParameterName(int parameterId) {
+        switch (parameterId) {
+            case 0:
+                return "Similarity Threshold";
+            case 1:
+                return "Cluster Threshold";
+            case 2:
+                return "Matrix Similarity Threshold";
+            case 3:
+                return "Similarity Checks Limit";
+            default:
+                return "invalid parameter id";
+        }
     }
 
     private void hadamard(double[][] a, int pow) {
@@ -184,14 +256,14 @@ public class MarkovClustering extends AbstractEntityClustering {
         if (n1 != a[0].length) {
             throw new RuntimeException("Illegal matrix dimensions.");
         }
-        
+
         int upLimit = n1;
         int lowLimit = 0;
         if (datasetLimit != 0) {
             upLimit = datasetLimit;
             lowLimit = datasetLimit;
         }
-        
+
         double[][] c = new double[n1][n1];
         for (int i = 0; i < upLimit; i++) {
             for (int j = lowLimit; j < n1; j++) {
@@ -232,7 +304,7 @@ public class MarkovClustering extends AbstractEntityClustering {
     public void setClusterThreshold(double clusterThreshold) {
         this.clusterThreshold = clusterThreshold;
     }
-    
+
     public void setMatrixSimThreshold(double matrixSimThreshold) {
         this.matrixSimThreshold = matrixSimThreshold;
     }

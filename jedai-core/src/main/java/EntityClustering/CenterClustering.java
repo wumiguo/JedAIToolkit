@@ -1,5 +1,5 @@
 /*
-* Copyright [2016] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2017] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -39,9 +39,13 @@ public class CenterClustering extends AbstractEntityClustering {
     private static final Logger LOGGER = Logger.getLogger(CenterClustering.class.getName());
 
     public CenterClustering() {
-        super();
+        this(0.5);
+    }
+    
+    public CenterClustering(double simTh) {
+        super(simTh);
 
-        LOGGER.log(Level.INFO, "Initializing Center Clustering...");
+        LOGGER.log(Level.INFO, "{0} initiated", getMethodName());
     }
 
     @Override
@@ -107,17 +111,11 @@ public class CenterClustering extends AbstractEntityClustering {
 
     @Override
     public String getMethodInfo() {
-        return "Center Clustering: implements the CENTER algorithm such that a vertex is set as a cluster center if it has highest average edge weight from its adjacent node";
+        return getMethodName() + ": it implements the CENTER algorithm such that a vertex is set as a cluster center if it has highest average edge weight from its adjacent nodes.";
     }
     
     @Override
     public String getMethodName() {
         return "Center Clustering";
-    }
-
-    @Override
-    public String getMethodParameters() {
-        return "The Center Clustering algorithm involves 1 parameter:\n" 
-             + explainThresholdParameter();
     }
 }

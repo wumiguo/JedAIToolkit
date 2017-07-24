@@ -1,5 +1,5 @@
 /*
-* Copyright [2016] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2017] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import DataModel.EntityProfile;
 import DataModel.SimilarityPairs;
 import Utilities.Enumerations.RepresentationModel;
 import Utilities.Enumerations.SimilarityMetric;
+
 import java.util.List;
 
 /**

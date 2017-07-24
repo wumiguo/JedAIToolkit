@@ -1,5 +1,5 @@
 /*
-* Copyright [2016] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2017] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -22,6 +22,8 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.apache.jena.atlas.json.JsonArray;
+
 /**
  *
  * @author gap2
@@ -32,7 +34,8 @@ public class StandardBlocking extends AbstractBlockBuilding {
     
     public StandardBlocking() {
         super();
-        LOGGER.log(Level.INFO, "Standard Blocking initiated");
+        
+        LOGGER.log(Level.INFO, "{0} initiated", getMethodName());
     }
     
     @Override
@@ -46,12 +49,12 @@ public class StandardBlocking extends AbstractBlockBuilding {
 
     @Override
     public String getMethodConfiguration() {
-        return "parameter-free method";
+        return PARAMETER_FREE;
     }
     
     @Override
     public String getMethodInfo() {
-        return "Standard Blocking: it creates one block for every token in the attribute values of at least two entities.";
+        return getMethodName() + ": it creates one block for every token in the attribute values of at least two entities.";
     }
 
     @Override
@@ -61,7 +64,22 @@ public class StandardBlocking extends AbstractBlockBuilding {
     
     @Override
     public String getMethodParameters() {
-        return "Standard Blocking is a parameter-free method, as it uses unsupervised, schema-agnostic blocking keys:\n"
+        return getMethodName() + " is a " + PARAMETER_FREE + ", as it uses unsupervised, schema-agnostic blocking keys:\n"
                 + "every token is a blocking key.";
+    }
+
+    @Override
+    public JsonArray getParameterConfiguration() {
+        return new JsonArray();
+    }
+
+    @Override
+    public String getParameterDescription(int parameterId) {
+        return PARAMETER_FREE;
+    }
+
+    @Override
+    public String getParameterName(int parameterId) {
+        return PARAMETER_FREE;
     }
 }

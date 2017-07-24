@@ -1,5 +1,5 @@
 /*
-* Copyright [2016] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2017] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -18,13 +18,14 @@ package EntityMatching;
 import DataModel.AbstractBlock;
 import DataModel.EntityProfile;
 import DataModel.SimilarityPairs;
+import Utilities.IDocumentation;
 import java.util.List;
 
 /**
  *
  * @author G.A.P. II
  */
-public interface IEntityMatching {
+public interface IEntityMatching extends IDocumentation {
 
     int DATASET_1 = 0;
     int DATASET_2 = 1;
@@ -32,13 +33,4 @@ public interface IEntityMatching {
     public SimilarityPairs executeComparisons(List<AbstractBlock> blocks, List<EntityProfile> profiles);
 
     public SimilarityPairs executeComparisons(List<AbstractBlock> blocks, List<EntityProfile> profilesD1, List<EntityProfile> profilesD2);
-
-    public String getMethodConfiguration();
-    
-    public String getMethodInfo();
-
-    public String getMethodName();
-    
-    public String getMethodParameters();
-
 }

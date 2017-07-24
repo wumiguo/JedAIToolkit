@@ -1,5 +1,5 @@
 /*
-* Copyright [2016] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2017] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -12,14 +12,15 @@
 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 * See the License for the specific language governing permissions and
 * limitations under the License.
-*/
-
+ */
 package BlockProcessing.ComparisonRefinement;
 
-import Utilities.DataStructures.AbstractDuplicatePropagation;
 import DataModel.AbstractBlock;
+
 import java.util.ArrayList;
 import java.util.List;
+
+import org.apache.jena.atlas.json.JsonArray;
 
 /**
  *
@@ -43,20 +44,15 @@ public class ComparisonPropagation extends AbstractComparisonRefinementMethod {
     }
 
     @Override
-    public void deduplicateBlocks(AbstractDuplicatePropagation adp, List<AbstractBlock> blocks) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public String getMethodConfiguration() {
+        return PARAMETER_FREE;
     }
 
     @Override
-    public String getMethodConfiguration() {
-        return "parameter-free method";
-    }
-    
-    @Override
     public String getMethodInfo() {
-        return "Comparison Propagation: it eliminates all redundant comparisons from a set of overlapping blocks.";
+        return getMethodName() + ": it eliminates all redundant comparisons from a set of overlapping blocks.";
     }
-    
+
     @Override
     public String getMethodName() {
         return "Comparison Propagation";
@@ -64,7 +60,22 @@ public class ComparisonPropagation extends AbstractComparisonRefinementMethod {
 
     @Override
     public String getMethodParameters() {
-        return "Comparisons Propagation is parameter-free approach.";
+        return getMethodName() + " is a " + PARAMETER_FREE + ".";
+    }
+
+    @Override
+    public JsonArray getParameterConfiguration() {
+        return new JsonArray();
+    }
+
+    @Override
+    public String getParameterDescription(int parameterId) {
+        return PARAMETER_FREE;
+    }
+
+    @Override
+    public String getParameterName(int parameterId) {
+        return PARAMETER_FREE;
     }
 
     private void processBilateralBlocks(List<AbstractBlock> newBlocks) {

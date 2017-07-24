@@ -1,5 +1,5 @@
 /*
-* Copyright [2016] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2017] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -20,8 +20,8 @@ import DataModel.EquivalenceCluster;
 import DataModel.SimilarityEdge;
 import DataModel.SimilarityPairs;
 import Utilities.Comparators.SimilarityEdgeComparator;
-import java.util.ArrayList;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -42,10 +42,14 @@ public class UniqueMappingClustering extends AbstractEntityClustering {
     private final Set<Integer> matchedIds; //the ids of entities that have been already matched
     
     public UniqueMappingClustering() {
-        super();
+        this(0.5);
+    }
+    
+    public UniqueMappingClustering(double simTh) {
+        super(simTh);
         matchedIds = new HashSet<>();
         
-        LOGGER.log(Level.INFO, "Initializing Unique Mapping Clustering...");
+        LOGGER.log(Level.INFO, "{0} initiated", getMethodName());
     }
 
     @Override
@@ -86,17 +90,11 @@ public class UniqueMappingClustering extends AbstractEntityClustering {
 
     @Override
     public String getMethodInfo() {
-        return "Unique Mapping Clustering: Create a cluster for each pair of entities, none of which has been matched previously. ";
+        return getMethodName() + ": it create a cluster for each pair of entities, none of which has been matched previously. ";
     }
 
     @Override
     public String getMethodName() {
         return "Unique Mapping Clustering";
-    }
-    
-    @Override
-    public String getMethodParameters() {
-        return "The Unique Mapping Clustering algorithm involves 1 parameter:\n" 
-             + explainThresholdParameter();
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright [2016] [George Papadakis (gpapadis@yahoo.gr)]
+ * Copyright [2016-2017] [George Papadakis (gpapadis@yahoo.gr)]
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -128,38 +127,26 @@ public abstract class AbstractBlockBuilding implements IBlockBuilding {
 
     protected Map<String, int[]> parseD1Index() {
         final Map<String, int[]> hashedBlocks = new HashMap<>();
-        for (Entry<String, List<Integer>> entry : invertedIndexD1.entrySet()) {
+        invertedIndexD1.entrySet().stream().filter((entry) -> !(!invertedIndexD2.containsKey(entry.getKey()))).forEachOrdered((entry) -> {
             // check whether it is a common term
-            if (!invertedIndexD2.containsKey(entry.getKey())) {
-                continue;
-            }
-
             int[] idsArray = Converter.convertCollectionToArray(entry.getValue());
             hashedBlocks.put(entry.getKey(), idsArray);
-        }
+        });
         return hashedBlocks;
     }
 
     protected void parseD2Index(Map<String, int[]> hashedBlocks) {
-        for (Entry<String, List<Integer>> entry : invertedIndexD2.entrySet()) {
-            if (!hashedBlocks.containsKey(entry.getKey())) {
-                continue;
-            }
-
+        invertedIndexD2.entrySet().stream().filter((entry) -> !(!hashedBlocks.containsKey(entry.getKey()))).forEachOrdered((entry) -> {
             int[] idsArray = Converter.convertCollectionToArray(entry.getValue());
             int[] d1Entities = hashedBlocks.get(entry.getKey());
             blocks.add(new BilateralBlock(d1Entities, idsArray));
-        }
+        });
     }
 
     protected void parseIndex() {
-        for (List<Integer> entityList : invertedIndexD1.values()) {
-            if (1 < entityList.size()) {
-                int[] idsArray = Converter.convertCollectionToArray(entityList);
-                UnilateralBlock block = new UnilateralBlock(idsArray);
-                blocks.add(block);
-            }
-        }
+        invertedIndexD1.values().stream().filter((entityList) -> (1 < entityList.size())).map((entityList) -> Converter.convertCollectionToArray(entityList)).map((idsArray) -> new UnilateralBlock(idsArray)).forEachOrdered((block) -> {
+            blocks.add(block);
+        });
     }
 
     //read blocks from Lucene index

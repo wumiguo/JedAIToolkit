@@ -1,5 +1,5 @@
 /*
-* Copyright [2016] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2017] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -16,9 +16,9 @@
 
 package BlockProcessing.ComparisonRefinement;
 
-import Utilities.DataStructures.AbstractDuplicatePropagation;
 import DataModel.AbstractBlock;
 import Utilities.Enumerations.WeightingScheme;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,36 +30,29 @@ public class WeightedEdgePruning extends AbstractMetablocking {
 
     protected double noOfEdges;
 
+    public WeightedEdgePruning() {
+        this(WeightingScheme.CBS);
+    }
+    
     public WeightedEdgePruning(WeightingScheme scheme) {
         super(scheme);
         nodeCentric = false;
     }
 
     @Override
-    public void deduplicateBlocks(AbstractDuplicatePropagation adp, List<AbstractBlock> blocks) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
     public String getMethodConfiguration() {
-        return "Weighting scheme=" + weightingScheme;
+        return getParameterName(0) + "=" + weightingScheme;
     }
     
     @Override
     public String getMethodInfo() {
-        return "Weighted Edge Pruning: a Meta-blocking method that retains all comparisons "
+        return getMethodName() + ": a Meta-blocking method that retains all comparisons "
                 + "that have a weight higher than the average edge weight in the blocking graph.";
     }
 
     @Override
     public String getMethodName() {
         return "Weighted Edge Pruning";
-    }
-    
-    @Override
-    public String getMethodParameters() {
-        return "Weighted Edge Pruning involves a single parameter:\n"
-                + "the weighting scheme that assigns weights to the edges of the blcoking graph.";
     }
     
     protected void processArcsEntity(int entityId) {
@@ -72,15 +65,18 @@ public class WeightedEdgePruning extends AbstractMetablocking {
         for (int blockIndex : associatedBlocks) {
             double blockComparisons = cleanCleanER ? bBlocks[blockIndex].getNoOfComparisons() : uBlocks[blockIndex].getNoOfComparisons();
             setNormalizedNeighborEntities(blockIndex, entityId);
-            for (int neighborId : neighbors) {
+            neighbors.stream().map((neighborId) -> {
                 if (flags[neighborId] != entityId) {
                     counters[neighborId] = 0;
                     flags[neighborId] = entityId;
                 }
-
+                return neighborId;
+            }).map((neighborId) -> {
                 counters[neighborId] += 1 / blockComparisons;
+                return neighborId;
+            }).forEachOrdered((neighborId) -> {
                 validEntities.add(neighborId);
-            }
+            });
         }
     }
 
@@ -93,15 +89,18 @@ public class WeightedEdgePruning extends AbstractMetablocking {
 
         for (int blockIndex : associatedBlocks) {
             setNormalizedNeighborEntities(blockIndex, entityId);
-            for (int neighborId : neighbors) {
+            neighbors.stream().map((neighborId) -> {
                 if (flags[neighborId] != entityId) {
                     counters[neighborId] = 0;
                     flags[neighborId] = entityId;
                 }
-
+                return neighborId;
+            }).map((neighborId) -> {
                 counters[neighborId]++;
+                return neighborId;
+            }).forEachOrdered((neighborId) -> {
                 validEntities.add(neighborId);
-            }
+            });
         }
     }
 
@@ -146,37 +145,37 @@ public class WeightedEdgePruning extends AbstractMetablocking {
 
     protected void updateThreshold(int entityId) {
         noOfEdges += validEntities.size();
-        for (int neighborId : validEntities) {
+        validEntities.forEach((neighborId) -> {
             threshold += getWeight(entityId, neighborId);
-        }
+        });
     }
 
     protected void verifyValidEntities(int entityId, List<AbstractBlock> newBlocks) {
         retainedNeighbors.clear();
         if (!cleanCleanER) {
-            for (int neighborId : validEntities) {
+            validEntities.forEach((neighborId) -> {
                 double weight = getWeight(entityId, neighborId);
                 if (threshold <= weight) {
                     retainedNeighbors.add(neighborId);
                 }
-            }
+            });
             addDecomposedBlock(entityId, retainedNeighbors, newBlocks);
         } else {
             if (entityId < datasetLimit) {
-                for (int neighborId : validEntities) {
+                validEntities.forEach((neighborId) -> {
                     double weight = getWeight(entityId, neighborId);
                     if (threshold <= weight) {
                         retainedNeighbors.add(neighborId-datasetLimit);
                     }
-                }
+                });
                 addDecomposedBlock(entityId, retainedNeighbors, newBlocks);
             } else {
-                for (int neighborId : validEntities) {
+                validEntities.forEach((neighborId) -> {
                     double weight = getWeight(entityId, neighborId);
                     if (threshold <= weight) {
                         retainedNeighbors.add(neighborId);
                     }
-                }
+                });
                 addReversedDecomposedBlock(entityId-datasetLimit, retainedNeighbors, newBlocks);
             }
         }

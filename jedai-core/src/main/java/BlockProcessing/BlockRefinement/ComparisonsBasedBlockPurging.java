@@ -1,5 +1,5 @@
 /*
-* Copyright [2016] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2017] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -13,17 +13,20 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
  */
-
 package BlockProcessing.BlockRefinement;
 
 import DataModel.AbstractBlock;
 import Utilities.Comparators.BlockCardinalityComparator;
+
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.apache.jena.atlas.json.JsonArray;
+import org.apache.jena.atlas.json.JsonObject;
 
 /**
  *
@@ -32,30 +35,32 @@ import java.util.logging.Logger;
 public class ComparisonsBasedBlockPurging extends AbstractBlockPurging {
 
     private static final Logger LOGGER = Logger.getLogger(ComparisonsBasedBlockPurging.class.getName());
-    
+
     private double smoothingFactor;
     private double maxComparisonsPerBlock;
-    
+
     public ComparisonsBasedBlockPurging() {
         this(1.025);
-        LOGGER.log(Level.INFO, "Using default configuration for Comparison-based Block Purging.");
+
+        LOGGER.log(Level.INFO, "Using default configuration for {0}.", getMethodName());
     }
 
     public ComparisonsBasedBlockPurging(double sf) {
         smoothingFactor = sf;
-        LOGGER.log(Level.INFO, "Smoothing factor\t:\t{0}", smoothingFactor);
+
+        LOGGER.log(Level.INFO, getMethodConfiguration());
     }
 
     @Override
     public String getMethodConfiguration() {
-        return "Smothing factor=" + smoothingFactor;
+        return getParameterName(0) + "=" + smoothingFactor;
     }
-    
+
     @Override
     public String getMethodInfo() {
-        return "Comparison-based Block Purging: it discards the blocks exceeding a certain number of comparisons.";
+        return getMethodName() + ": it discards the blocks exceeding a certain number of comparisons.";
     }
-    
+
     @Override
     public String getMethodName() {
         return "Comparison-based Block Purging";
@@ -63,9 +68,46 @@ public class ComparisonsBasedBlockPurging extends AbstractBlockPurging {
 
     @Override
     public String getMethodParameters() {
-        return "Comparison-based Block Purging involves a single parameter:\n"
-                + "the smoothing factor sf, which is the termination criterion for automatically estimating the "
-                + "maximum number of comparisons per block.";
+        return getMethodName() + " involves a single parameter:\n"
+                + "1)" + getParameterDescription(0) + ".\n";
+    }
+
+    @Override
+    public JsonArray getParameterConfiguration() {
+        JsonObject obj = new JsonObject();
+        obj.put("class", "java.lang.Double");
+        obj.put("name", getParameterName(0));
+        obj.put("defaultValue", "1.025");
+        obj.put("minValue", "1.0");
+        obj.put("maxValue", "2.0");
+        obj.put("stepValue", "0.01");
+        obj.put("description", getParameterDescription(0));
+
+        JsonArray array = new JsonArray();
+        array.add(obj);
+
+        return array;
+    }
+
+    @Override
+    public String getParameterDescription(int parameterId) {
+        switch (parameterId) {
+            case 0:
+                return "The " + getParameterName(0) + " determines the termination criterion for automatically estimating the "
+                        + "maximum number of comparisons per block.";
+            default:
+                return "invalid parameter id";
+        }
+    }
+
+    @Override
+    public String getParameterName(int parameterId) {
+        switch (parameterId) {
+            case 0:
+                return "Smoothing Factor";
+            default:
+                return "invalid parameter id";
+        }
     }
 
     @Override
@@ -76,10 +118,10 @@ public class ComparisonsBasedBlockPurging extends AbstractBlockPurging {
     @Override
     protected void setThreshold(List<AbstractBlock> blocks) {
         Collections.sort(blocks, new BlockCardinalityComparator());
-        final Set<Double> distinctComparisonsLevel = new HashSet<Double>();
-        for (AbstractBlock block : blocks) {
+        final Set<Double> distinctComparisonsLevel = new HashSet<>();
+        blocks.forEach((block) -> {
             distinctComparisonsLevel.add(block.getNoOfComparisons());
-        }
+        });
 
         int index = -1;
         double[] blockAssignments = new double[distinctComparisonsLevel.size()];

@@ -1,5 +1,5 @@
 /*
-* Copyright [2016] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2017] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -26,12 +26,13 @@ import Utilities.Enumerations.RepresentationModel;
 import Utilities.Enumerations.SimilarityMetric;
 import TextModels.ITextModel;
 
-import java.util.Iterator;
 import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.apache.jena.atlas.json.JsonArray;
+import org.apache.jena.atlas.json.JsonObject;
 
 import org.jgrapht.WeightedGraph;
 import org.jgrapht.graph.DefaultWeightedEdge;
@@ -49,11 +50,17 @@ public class GroupLinkage extends AbstractEntityMatching {
     protected ITextModel[][] entityModelsD1;
     protected ITextModel[][] entityModelsD2;
 
-    public GroupLinkage(RepresentationModel model, SimilarityMetric simMetric) {
+    public GroupLinkage() {
+        this(0.1, RepresentationModel.TOKEN_UNIGRAM_GRAPHS, SimilarityMetric.GRAPH_VALUE_SIMILARITY);
+        
+        LOGGER.log(Level.INFO, "Using default configuration for {0}.", getMethodName());
+    }
+    
+    public GroupLinkage(double simThr, RepresentationModel model, SimilarityMetric simMetric) {
         super(model, simMetric);
-        similarityThreshold = 0.1;
-
-        LOGGER.log(Level.INFO, "Initializing Group Linkage with : {0}", model);
+        similarityThreshold = simThr;
+        
+        LOGGER.log(Level.INFO, getMethodConfiguration());
     }
 
     @Override
@@ -73,8 +80,7 @@ public class GroupLinkage extends AbstractEntityMatching {
         }
 
         final SimilarityPairs simPairs = new SimilarityPairs(isCleanCleanER, blocks);
-        for (AbstractBlock block : blocks) {
-            final Iterator<Comparison> iterator = block.getComparisonIterator();
+        blocks.stream().map((block) -> block.getComparisonIterator()).forEachOrdered((iterator) -> {
             while (iterator.hasNext()) {
                 Comparison currentComparison = iterator.next();
                 final Queue<SimilarityEdge> similarityQueue = getSimilarityEdges(currentComparison);
@@ -88,20 +94,21 @@ public class GroupLinkage extends AbstractEntityMatching {
                 currentComparison.setUtilityMeasure(getSimilarity(similarityGraph, verticesNum));
                 simPairs.addComparison(currentComparison);
             }
-        }
+        });
 
         return simPairs;
     }
-    
-    @Override
-    public String getMethodConfiguration() {
-        return "Representation model=" + representationModel +
-               "\nSimilarity metric=" + simMetric;
-    }
 
     @Override
+    public String getMethodConfiguration() {
+        return getParameterName(0) + "=" + representationModel + "\t" +
+               getParameterName(1) + "=" + simMetric + "\t" +
+               getParameterName(2) + "=" + similarityThreshold;
+    }
+    
+    @Override
     public String getMethodInfo() {
-        return "Group Linkage : it implements the group linkage algorithm for schema-agnostic comparison of the attribute values of two entity profiles.";
+        return getMethodName() + ": it implements the group linkage algorithm for schema-agnostic comparison of the attribute values of two entity profiles.";
     }
     
     @Override
@@ -111,13 +118,10 @@ public class GroupLinkage extends AbstractEntityMatching {
 
     @Override
     public String getMethodParameters() {
-        return "The Group Linkage involves 3 parameters:\n"
-             + "1) representation model : character- or token-based bag or graph model.\n"
-             + "It determines the building modules that form the model of individual attribute values.\n"
-             + "2) similarity metric : bag or graph similarity metric.\n"
-             + "It determines the measure that estimates the similarity of two attribute values.\n"
-             + "3) similarity threshold : double, default value : 0.1\n"
-             + "It determines the similarity value over which two compared attribute values are connected with an edge on the bipartite graph.";
+        return getMethodName() + " involves three parameters:\n"
+               + "1)" + getParameterDescription(0) + ".\n"
+               + "2)" + getParameterDescription(1) + ".\n"
+               + "3)" + getParameterDescription(2) + ".";
     }
 
     //Every element of the getModels list is an ITextModel[] array, corresponding to 
@@ -127,11 +131,7 @@ public class GroupLinkage extends AbstractEntityMatching {
         final ITextModel[][] ModelsList = new ITextModel[profiles.size()][];
         for (EntityProfile profile : profiles) {
             int validAttributes = 0;
-            for (Attribute attribute : profile.getAttributes()) {
-                if (!attribute.getValue().isEmpty()) {
-                    validAttributes++;
-                }
-            }
+            validAttributes = profile.getAttributes().stream().filter((attribute) -> (!attribute.getValue().isEmpty())).map((_item) -> 1).reduce(validAttributes, Integer::sum);
             
             int counter = 0;
             ModelsList[entityCounter] = new ITextModel[validAttributes];
@@ -149,6 +149,70 @@ public class GroupLinkage extends AbstractEntityMatching {
         return ModelsList;
     }
 
+    @Override
+    public JsonArray getParameterConfiguration() {
+        JsonObject obj1 = new JsonObject();
+        obj1.put("class", "Utilities.Enumerations.RepresentationModel");
+        obj1.put("name", getParameterName(0));
+        obj1.put("defaultValue", "Utilities.Enumerations.RepresentationModel.TOKEN_UNIGRAM_GRAPHS");
+        obj1.put("minValue", "-");
+        obj1.put("maxValue", "-");
+        obj1.put("stepValue", "-");
+        obj1.put("description", getParameterDescription(0));
+
+        JsonObject obj2 = new JsonObject();
+        obj2.put("class", "Utilities.Enumerations.SimilarityMetric");
+        obj2.put("name", getParameterName(1));
+        obj2.put("defaultValue", "Utilities.Enumerations.SimilarityMetric.GRAPH_VALUE_SIMILARITY");
+        obj2.put("minValue", "-");
+        obj2.put("maxValue", "-");
+        obj2.put("stepValue", "-");
+        obj2.put("description", getParameterDescription(1));
+        
+        JsonObject obj3 = new JsonObject();
+        obj3.put("class", "java.lang.Double");
+        obj3.put("name", getParameterName(2));
+        obj3.put("defaultValue", "0.5");
+        obj3.put("minValue", "0.1");
+        obj3.put("maxValue", "0.95");
+        obj3.put("stepValue", "0.05");
+        obj3.put("description", getParameterDescription(2));
+
+        JsonArray array = new JsonArray();
+        array.add(obj1);
+        array.add(obj2);
+        array.add(obj3);
+        return array;
+    }
+
+    @Override
+    public String getParameterDescription(int parameterId) {
+        switch (parameterId) {
+            case 0:
+                return "The " + getParameterName(0) + " builds the modules that form the model of individual attribute values.";
+            case 1:
+                return "The " + getParameterName(1) + " compares the models of two attribute values, returning a value between 0 (completely dissimlar) and 1 (identical).";
+            case 2:
+                return "The " + getParameterName(2) + " determines the similarity value over which two compared attribute values are connected with an edge in the bipartite graph.";
+            default:
+                return "invalid parameter id";
+        }
+    }
+    
+    @Override
+    public String getParameterName(int parameterId) {
+        switch (parameterId) {
+            case 0:
+                return "Representation Model";
+            case 1:
+                return "Similarity Measure";
+            case 2:
+                return "Similarity Threshold";
+            default:
+                return "invalid parameter id";
+        }
+    }
+    
     private double getSimilarity(WeightedGraph<String, DefaultWeightedEdge> simGraph, int verticesNum) {
         double nominator = 0;
         double denominator = (double) verticesNum; //m1+m2
@@ -184,7 +248,7 @@ public class GroupLinkage extends AbstractEntityMatching {
     }
 
     private WeightedGraph<String, DefaultWeightedEdge> getSimilarityGraph(Queue<SimilarityEdge> seQueue) {
-        WeightedGraph<String, DefaultWeightedEdge> graph = new SimpleDirectedWeightedGraph<String, DefaultWeightedEdge>(DefaultWeightedEdge.class);
+        WeightedGraph<String, DefaultWeightedEdge> graph = new SimpleDirectedWeightedGraph<>(DefaultWeightedEdge.class);
         while (seQueue.size() > 0) {
             SimilarityEdge se = seQueue.remove();
             int i = se.getModel1Pos();

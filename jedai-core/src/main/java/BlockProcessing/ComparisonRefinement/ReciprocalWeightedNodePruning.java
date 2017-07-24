@@ -1,5 +1,5 @@
 /*
-* Copyright [2016] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2017] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -24,15 +24,19 @@ import Utilities.Enumerations.WeightingScheme;
  */
 public class ReciprocalWeightedNodePruning extends WeightedNodePruning {
 
+    public ReciprocalWeightedNodePruning() {
+        this(WeightingScheme.ARCS);
+    }
+    
     public ReciprocalWeightedNodePruning(WeightingScheme scheme) {
         super(scheme);
     }
 
     @Override
     public String getMethodInfo() {
-        return "Reciprocal Weighted Node Pruning: a Meta-blocking method that retains the comparisons "
-                + "that correspond to edges in the blocking graph that are exceed the average edge weight "
-                + "in both adjacent node neighborhoods.";
+        return getMethodName() + ": a Meta-blocking method that retains the comparisons "
+               + "that correspond to edges in the blocking graph that are exceed the average edge weight "
+               + "in both adjacent node neighborhoods.";
     }
     
     @Override
@@ -40,12 +44,6 @@ public class ReciprocalWeightedNodePruning extends WeightedNodePruning {
         return "Reciprocal Weighted Node Pruning";
     }
 
-    @Override
-    public String getMethodParameters() {
-        return "Reciprocal Weighted Node Pruning involves a single parameter:\n"
-                + "the weighting scheme that assigns weights to the edges of the blcoking graph.";
-    }
-    
     @Override
     protected boolean isValidComparison(int entityId, int neighborId) {
         double weight = getWeight(entityId, neighborId);

@@ -1,5 +1,5 @@
 /*
- * Copyright [2016] [George Papadakis (gpapadis@yahoo.gr)]
+ * Copyright [2016-2017] [George Papadakis (gpapadis@yahoo.gr)]
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,7 +36,8 @@ public class ExtendedSortedNeighborhoodBlocking extends SortedNeighborhoodBlocki
 
     public ExtendedSortedNeighborhoodBlocking() {
         this(2);
-        LOGGER.log(Level.INFO, "Using default configuration for Extended Sorted Neighborhood Blocking.");
+        
+        LOGGER.log(Level.INFO, "Using default configuration for {0}.", getMethodName());
     }
 
     public ExtendedSortedNeighborhoodBlocking(int w) {
@@ -45,24 +46,17 @@ public class ExtendedSortedNeighborhoodBlocking extends SortedNeighborhoodBlocki
 
     @Override
     public String getMethodConfiguration() {
-        return "Window size=" + windowSize;
+        return getParameterName(0) + "=" + windowSize;
     }
 
     @Override
     public String getMethodInfo() {
-        return "Extended Sorted Neighborhood: it improves Sorted Neighborhood by sliding the window over the sorted list of blocking keys.";
+        return getMethodName() + ": it improves " + super.getMethodName() + " by sliding the window over the sorted list of blocking keys.";
     }
 
     @Override
     public String getMethodName() {
-        return "Extended Sorted Neighborhood";
-    }
-
-    @Override
-    public String getMethodParameters() {
-        return "Extended Sorted Neighborhood involves a single parameter, due to its unsupervised, schema-agnostic blocking keys:\n"
-                + "w, the fixed size of the window that slides over the sorted list of blocking keys.\n"
-                + "Default value: 2.";
+        return "Extended Sorted Neighborhood Blocking";
     }
 
     @Override

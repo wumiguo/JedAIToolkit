@@ -1,5 +1,5 @@
 /*
- * Copyright [2016] [George Papadakis (gpapadis@yahoo.gr)]
+ * Copyright [2016-2017] [George Papadakis (gpapadis@yahoo.gr)]
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,9 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.apache.jena.atlas.json.JsonArray;
+import org.apache.jena.atlas.json.JsonObject;
+
 /**
  *
  * @author gap2
@@ -41,13 +44,15 @@ public class SortedNeighborhoodBlocking extends StandardBlocking {
 
     public SortedNeighborhoodBlocking() {
         this(4);
-        LOGGER.log(Level.INFO, "Using default configuration for Sorted Neighborhood Blocking.");
+        
+        LOGGER.log(Level.INFO, "Using default configuration for {0}.", getMethodName());
     }
 
     public SortedNeighborhoodBlocking(int w) {
         super();
         windowSize = w;
-        LOGGER.log(Level.INFO, "Window size\t:\t{0}", windowSize);
+        
+        LOGGER.log(Level.INFO, getMethodConfiguration());
     }
 
     @Override
@@ -57,21 +62,20 @@ public class SortedNeighborhoodBlocking extends StandardBlocking {
 
     @Override
     public String getMethodInfo() {
-        return "Sorted Neighborhood: it creates blocks based on the similarity of the blocking keys of Standard Blocking:\n"
+        return getMethodName() + ": it creates blocks based on the similarity of the blocking keys of Standard Blocking:\n"
                 + "it sorts the keys in alphabetical order, it sorts the entities accordingly and then, it slides a window over the sorted list of entities;\n"
                 + "the entities that co-occur inside the window in every iteration form a block and are compared with each other.";
     }
 
     @Override
     public String getMethodName() {
-        return "Sorted Neighborhood";
+        return "Sorted Neighborhood Blocking";
     }
 
     @Override
     public String getMethodParameters() {
-        return "Sorted Neighborhood involves a single parameter, due to its unsupervised, schema-agnostic blocking keys:\n"
-                + "w, the fixed size of the sliding window.\n"
-                + "Default value: 4.";
+        return getMethodName() + " involves a single parameter:\n"
+               + "1)" + getParameterDescription(0) + ".\n";
     }
 
     protected Integer[] getMixedSortedEntities(String[] sortedTerms) {
@@ -100,6 +104,42 @@ public class SortedNeighborhoodBlocking extends StandardBlocking {
         return sortedEntityIds.toArray(new Integer[sortedEntityIds.size()]);
     }
 
+    @Override
+    public JsonArray getParameterConfiguration() {
+        JsonObject obj1 = new JsonObject();
+        obj1.put("class", "java.lang.Integer");
+        obj1.put("name", getParameterName(0));
+        obj1.put("defaultValue", "2");
+        obj1.put("minValue", "2");
+        obj1.put("maxValue", "100");
+        obj1.put("stepValue", "1");
+        obj1.put("description", getParameterDescription(0));
+
+        JsonArray array = new JsonArray();
+        array.add(obj1);
+        return array;
+    }
+
+    @Override
+    public String getParameterDescription(int parameterId) {
+        switch (parameterId) {
+            case 0:
+                return "The " + getParameterName(0) + " determines the fixed size of the window that slides over the sorted list of blocking keys.";
+            default:
+                return "invalid parameter id";
+        }
+    }
+    
+    @Override
+    public String getParameterName(int parameterId) {
+        switch (parameterId) {
+            case 0:
+                return "Window Size";
+            default:
+                return "invalid parameter id";
+        }
+    }
+    
     protected Integer[] getSortedEntities(String[] sortedTerms) {
         final List<Integer> sortedEntityIds = new ArrayList<>();
 

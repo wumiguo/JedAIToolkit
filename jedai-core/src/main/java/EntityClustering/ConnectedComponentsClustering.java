@@ -1,5 +1,5 @@
 /*
-* Copyright [2016] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2017] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -32,9 +32,13 @@ public class ConnectedComponentsClustering extends AbstractEntityClustering {
     private static final Logger LOGGER = Logger.getLogger(ConnectedComponentsClustering.class.getName());
 
     public ConnectedComponentsClustering() {
-        super();
+        this(0.5);
+    }
+    
+    public ConnectedComponentsClustering(double simTh) {
+        super(simTh);
         
-        LOGGER.log(Level.INFO, "Initializing Connected Components Clustering...");
+        LOGGER.log(Level.INFO, "{0} initiated", getMethodName());
     }
 
     @Override
@@ -56,17 +60,11 @@ public class ConnectedComponentsClustering extends AbstractEntityClustering {
 
     @Override
     public String getMethodInfo() {
-        return "Connected Components Clustering: gets duplicate clsuters from the transitive closure of the similarity graph";
+        return getMethodName() + ": it gets equivalence clsuters from the transitive closure of the similarity graph.";
     }
 
     @Override
     public String getMethodName() {
         return "Connected Components Clustering";
-    }
-    
-    @Override
-    public String getMethodParameters() {
-        return "The Connected Components Clustering algorithm involves 1 parameter:\n" 
-             + explainThresholdParameter();
     }
 }

@@ -1,5 +1,5 @@
 /*
-* Copyright [2016] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2017] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import DataModel.AbstractBlock;
 import DataModel.Comparison;
 import Utilities.Comparators.ComparisonWeightComparator;
 import Utilities.Enumerations.WeightingScheme;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -37,6 +38,10 @@ public class CardinalityNodePruning extends CardinalityEdgePruning {
     protected int lastId;
     protected Set<Comparison>[] nearestEntities;
     
+    public CardinalityNodePruning() {
+        this(WeightingScheme.ARCS);
+    }
+    
     public CardinalityNodePruning(WeightingScheme scheme) {
         super(scheme);
         nodeCentric = true;
@@ -44,19 +49,13 @@ public class CardinalityNodePruning extends CardinalityEdgePruning {
 
     @Override
     public String getMethodInfo() {
-        return "Cardinality Node Pruning: a Meta-blocking method that retains for every entity, "
-                + "the comparisons that correspond to its top-k weighted edges in the blocking graph.";
+        return getMethodName() + ": a Meta-blocking method that retains for every entity, "
+               + "the comparisons that correspond to its top-k weighted edges in the blocking graph.";
     }
     
     @Override
     public String getMethodName() {
         return "Cardinality Node Pruning";
-    }
-
-    @Override
-    public String getMethodParameters() {
-        return "Cardinality Node Pruning involves a single parameter:\n"
-                + "the weighting scheme that assigns weights to the edges of the blcoking graph.";
     }
     
     protected boolean isValidComparison(int entityId, Comparison comparison) {
@@ -79,7 +78,7 @@ public class CardinalityNodePruning extends CardinalityEdgePruning {
     @Override
     protected List<AbstractBlock> pruneEdges() {
         nearestEntities = new Set[noOfEntities];
-        topKEdges = new PriorityQueue<Comparison>((int) (2 * threshold), new ComparisonWeightComparator());
+        topKEdges = new PriorityQueue<>((int) (2 * threshold), new ComparisonWeightComparator());
         if (weightingScheme.equals(WeightingScheme.ARCS)) {
             for (int i = 0; i < noOfEntities; i++) {
                 processArcsEntity(i);
@@ -129,21 +128,18 @@ public class CardinalityNodePruning extends CardinalityEdgePruning {
 
         topKEdges.clear();
         minimumWeight = Double.MIN_VALUE;
-        for (int neighborId : validEntities) {
+        validEntities.forEach((neighborId) -> {
             double weight = getWeight(entityId, neighborId);
-            if (weight < minimumWeight) {
-                continue;
+            if (!(weight < minimumWeight)) {
+                Comparison comparison = getComparison(entityId, neighborId);
+                comparison.setUtilityMeasure(weight);
+                topKEdges.add(comparison);
+                if (threshold < topKEdges.size()) {
+                    Comparison lastComparison = topKEdges.poll();
+                    minimumWeight = lastComparison.getUtilityMeasure();
+                }
             }
-
-            Comparison comparison = getComparison(entityId, neighborId);
-            comparison.setUtilityMeasure(weight);
-
-            topKEdges.add(comparison);
-            if (threshold < topKEdges.size()) {
-                Comparison lastComparison = topKEdges.poll();
-                minimumWeight = lastComparison.getUtilityMeasure();
-            }
-        }
-        nearestEntities[entityId] = new HashSet<Comparison>(topKEdges);
+        });
+        nearestEntities[entityId] = new HashSet<>(topKEdges);
     }
 }
