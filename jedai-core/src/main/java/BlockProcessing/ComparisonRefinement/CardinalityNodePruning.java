@@ -26,6 +26,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -33,6 +35,8 @@ import java.util.Set;
  */
 
 public class CardinalityNodePruning extends CardinalityEdgePruning {
+    
+    private static final Logger LOGGER = Logger.getLogger(CardinalityNodePruning.class.getName());
     
     protected int firstId;
     protected int lastId;
@@ -45,6 +49,8 @@ public class CardinalityNodePruning extends CardinalityEdgePruning {
     public CardinalityNodePruning(WeightingScheme scheme) {
         super(scheme);
         nodeCentric = true;
+        
+        LOGGER.log(Level.INFO, "{0} initiated", getMethodName());
     }
 
     @Override
@@ -118,6 +124,8 @@ public class CardinalityNodePruning extends CardinalityEdgePruning {
     @Override
     protected void setThreshold() {
         threshold = Math.max(1, blockAssingments / noOfEntities);
+        
+        LOGGER.log(Level.INFO, "Edge Pruning Cardinality Threshold\t:\t{0}", threshold);
     }
     
     @Override

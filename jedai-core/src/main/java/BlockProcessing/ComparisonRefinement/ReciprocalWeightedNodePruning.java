@@ -17,6 +17,8 @@
 package BlockProcessing.ComparisonRefinement;
 
 import Utilities.Enumerations.WeightingScheme;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -24,12 +26,16 @@ import Utilities.Enumerations.WeightingScheme;
  */
 public class ReciprocalWeightedNodePruning extends WeightedNodePruning {
 
+    private static final Logger LOGGER = Logger.getLogger(ReciprocalWeightedNodePruning.class.getName());
+    
     public ReciprocalWeightedNodePruning() {
         this(WeightingScheme.ARCS);
     }
     
     public ReciprocalWeightedNodePruning(WeightingScheme scheme) {
         super(scheme);
+        
+        LOGGER.log(Level.INFO, "{0} initiated", getMethodName());
     }
 
     @Override

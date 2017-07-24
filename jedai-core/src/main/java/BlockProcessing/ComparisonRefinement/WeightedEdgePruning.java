@@ -21,6 +21,8 @@ import Utilities.Enumerations.WeightingScheme;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -28,6 +30,8 @@ import java.util.List;
  */
 public class WeightedEdgePruning extends AbstractMetablocking {
 
+    private static final Logger LOGGER = Logger.getLogger(WeightedEdgePruning.class.getName());
+    
     protected double noOfEdges;
 
     public WeightedEdgePruning() {
@@ -37,6 +41,8 @@ public class WeightedEdgePruning extends AbstractMetablocking {
     public WeightedEdgePruning(WeightingScheme scheme) {
         super(scheme);
         nodeCentric = false;
+        
+        LOGGER.log(Level.INFO, "{0} initiated", getMethodName());
     }
 
     @Override
@@ -141,6 +147,8 @@ public class WeightedEdgePruning extends AbstractMetablocking {
         }
 
         threshold /= noOfEdges;
+        
+        LOGGER.log(Level.INFO, "Edge Pruning Weight Threshold\t:\t{0}", threshold);
     }
 
     protected void updateThreshold(int entityId) {

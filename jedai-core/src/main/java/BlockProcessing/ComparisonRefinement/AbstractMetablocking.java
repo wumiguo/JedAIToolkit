@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import org.apache.jena.atlas.json.JsonArray;
 import org.apache.jena.atlas.json.JsonObject;
@@ -35,6 +36,8 @@ import org.apache.jena.atlas.json.JsonObject;
  */
 public abstract class AbstractMetablocking extends AbstractComparisonRefinementMethod {
 
+    private static final Logger LOGGER = Logger.getLogger(AbstractMetablocking.class.getName());
+    
     protected boolean nodeCentric;
 
     protected int[] flags;

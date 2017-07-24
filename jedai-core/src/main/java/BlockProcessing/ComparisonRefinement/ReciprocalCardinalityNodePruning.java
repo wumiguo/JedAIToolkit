@@ -17,6 +17,8 @@ package BlockProcessing.ComparisonRefinement;
 
 import DataModel.Comparison;
 import Utilities.Enumerations.WeightingScheme;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -24,12 +26,16 @@ import Utilities.Enumerations.WeightingScheme;
  */
 public class ReciprocalCardinalityNodePruning extends CardinalityNodePruning {
 
+    private static final Logger LOGGER = Logger.getLogger(ReciprocalCardinalityNodePruning.class.getName());
+    
     public ReciprocalCardinalityNodePruning() {
         this(WeightingScheme.ARCS);
     }
     
     public ReciprocalCardinalityNodePruning(WeightingScheme scheme) {
         super(scheme);
+        
+        LOGGER.log(Level.INFO, "{0} initiated", getMethodName());
     }
 
     @Override

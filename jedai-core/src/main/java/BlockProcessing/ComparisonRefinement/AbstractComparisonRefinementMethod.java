@@ -28,6 +28,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Logger;
 
 /**
  *
@@ -36,6 +37,8 @@ import java.util.Set;
 
 public abstract class AbstractComparisonRefinementMethod implements IBlockProcessing {
 
+    private static final Logger LOGGER = Logger.getLogger(AbstractComparisonRefinementMethod.class.getName());
+    
     protected boolean cleanCleanER;
 
     protected int datasetLimit;

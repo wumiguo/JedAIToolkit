@@ -21,6 +21,8 @@ import Utilities.Enumerations.WeightingScheme;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -29,6 +31,8 @@ import java.util.List;
 
 public class WeightedNodePruning extends WeightedEdgePruning {
 
+    private static final Logger LOGGER = Logger.getLogger(WeightedNodePruning.class.getName());
+    
     protected int firstId;
     protected int lastId;
     protected double[] averageWeight;
@@ -40,6 +44,8 @@ public class WeightedNodePruning extends WeightedEdgePruning {
     public WeightedNodePruning(WeightingScheme scheme) {
         super(scheme);
         nodeCentric = true;
+        
+        LOGGER.log(Level.INFO, "{0} initiated", getMethodName());
     }
     
     @Override

@@ -19,6 +19,8 @@ import DataModel.AbstractBlock;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.apache.jena.atlas.json.JsonArray;
 
@@ -28,8 +30,12 @@ import org.apache.jena.atlas.json.JsonArray;
  */
 public class ComparisonPropagation extends AbstractComparisonRefinementMethod {
 
+    private static final Logger LOGGER = Logger.getLogger(ComparisonPropagation.class.getName());
+    
     public ComparisonPropagation() {
         super();
+        
+        LOGGER.log(Level.INFO, "{0} initiated", getMethodName());
     }
 
     @Override

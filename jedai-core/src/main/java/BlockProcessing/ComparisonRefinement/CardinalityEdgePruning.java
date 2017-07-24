@@ -28,6 +28,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Queue;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -36,6 +38,8 @@ import java.util.Queue;
 
 public class CardinalityEdgePruning extends WeightedEdgePruning {
 
+    private static final Logger LOGGER = Logger.getLogger(CardinalityEdgePruning.class.getName());
+    
     protected double minimumWeight;
     protected Queue<Comparison> topKEdges;
     
@@ -46,6 +50,8 @@ public class CardinalityEdgePruning extends WeightedEdgePruning {
     public CardinalityEdgePruning(WeightingScheme scheme) {
         super(scheme);
         nodeCentric = false;
+        
+        LOGGER.log(Level.INFO, "{0} initiated", getMethodName());
     }
 
     protected void addDecomposedBlock(Collection<Comparison> comparisons, List<AbstractBlock> newBlocks) {
@@ -105,6 +111,8 @@ public class CardinalityEdgePruning extends WeightedEdgePruning {
     @Override
     protected void setThreshold() {
         threshold = blockAssingments / 2;
+        
+        LOGGER.log(Level.INFO, "Edge Pruning Cardinality Threshold\t:\t{0}", threshold);
     }
 
     protected void verifyValidEntities(int entityId) {
