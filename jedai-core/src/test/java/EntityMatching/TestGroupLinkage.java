@@ -92,7 +92,7 @@ public class TestGroupLinkage {
             	if (model.equals(RepresentationModel.CHARACTER_BIGRAMS))
             	{
 
-                GroupLinkage gp = new GroupLinkage(model, SimilarityMetric.getModelDefaultSimMetric(model));
+                GroupLinkage gp = new GroupLinkage(0.1, model, SimilarityMetric.getModelDefaultSimMetric(model));
                 gp.setSimilarityThreshold(0.1);
                 SimilarityPairs simPairs = gp.executeComparisons(blocks, profiles1);//
                 //System.out.println();
