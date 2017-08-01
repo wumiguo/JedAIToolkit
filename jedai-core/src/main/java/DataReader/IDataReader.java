@@ -16,16 +16,14 @@
 
 package DataReader;
 
+import Utilities.IDocumentation;
+
 /**
  *
  * @author G.A.P. II
  */
 
-public interface IDataReader {
-    
-    public String getMethodInfo();
-    
-    public String getMethodParameters();
-    
+public interface IDataReader extends IDocumentation {
+         
     public void storeSerializedObject(Object object, String outputPath);
 }

@@ -13,22 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package DataReader.EntityReader;
 
 import DataModel.EntityProfile;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.apache.jena.atlas.json.JsonArray;
+import org.apache.jena.atlas.json.JsonObject;
 
 /**
  *
  * @author G.A.P. II
  */
 public class EntitySerializationReader extends AbstractEntityReader {
-    
+
     private static final Logger LOGGER = Logger.getLogger(EntitySerializationReader.class.getName());
-    
+
     public EntitySerializationReader(String filePath) {
         super(filePath);
     }
@@ -38,24 +39,70 @@ public class EntitySerializationReader extends AbstractEntityReader {
         if (!entityProfiles.isEmpty()) {
             return entityProfiles;
         }
-        
+
         if (inputFilePath == null) {
             LOGGER.log(Level.SEVERE, "Input file path has not been set!");
             return null;
         }
-        
+
         entityProfiles.addAll((List<EntityProfile>) loadSerializedObject(inputFilePath));
         return entityProfiles;
     }
 
     @Override
+    public String getMethodConfiguration() {
+        return getParameterName(0) + "=" + inputFilePath;
+    }
+
+    @Override
     public String getMethodInfo() {
-        return "Serialization Reader: loads a file with Java serialized EntityProfile objects into memory.";
+        return getMethodName() + ": it loads a file with Java serialized EntityProfile objects into memory.";
+    }
+
+    @Override
+    public String getMethodName() {
+        return "Serialization Reader";
     }
 
     @Override
     public String getMethodParameters() {
-        return "No other parameter is required, apart from the absolute file path";
+        return getMethodName() + " involves a single parameter:\n"
+                + "1)" + getParameterDescription(0) + ".";
     }
-    
+
+    @Override
+    public JsonArray getParameterConfiguration() {
+        JsonObject obj1 = new JsonObject();
+        obj1.put("class", "java.lang.String");
+        obj1.put("name", getParameterName(0));
+        obj1.put("defaultValue", "-");
+        obj1.put("minValue", "-");
+        obj1.put("maxValue", "-");
+        obj1.put("stepValue", "-");
+        obj1.put("description", getParameterDescription(0));
+
+        JsonArray array = new JsonArray();
+        array.add(obj1);
+        return array;
+    }
+
+    @Override
+    public String getParameterDescription(int parameterId) {
+        switch (parameterId) {
+            case 0:
+                return "The " + getParameterName(0) + " determines the absolute path to the JSO file that will be read into main memory.";
+            default:
+                return "invalid parameter id";
+        }
+    }
+
+    @Override
+    public String getParameterName(int parameterId) {
+        switch (parameterId) {
+            case 0:
+                return "File Path";
+            default:
+                return "invalid parameter id";
+        }
+    }
 }

@@ -25,6 +25,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.apache.jena.atlas.json.JsonArray;
+import org.apache.jena.atlas.json.JsonObject;
 
 /**
  *
@@ -33,11 +35,11 @@ import java.util.logging.Logger;
 public class EntityCSVReader extends AbstractEntityReader {
 
     private static final Logger LOGGER = Logger.getLogger(EntityCSVReader.class.getName());
-    
+
     private boolean attributeNamesInFirstRow;
     private char separator;
     private int idIndex;
-    private String[] attributeNames; // FIX set this!!!
+    private String[] attributeNames; 
     private final Set<Integer> attributesToExclude;
 
     public EntityCSVReader(String filePath) {
@@ -54,12 +56,12 @@ public class EntityCSVReader extends AbstractEntityReader {
         if (!entityProfiles.isEmpty()) {
             return entityProfiles;
         }
-        
+
         if (inputFilePath == null) {
             LOGGER.log(Level.SEVERE, "Input file path has not been set!");
             return null;
         }
-        
+
         try {
             //creating reader
             CSVReader reader = new CSVReader(new FileReader(inputFilePath), separator);
@@ -81,7 +83,7 @@ public class EntityCSVReader extends AbstractEntityReader {
                 for (int i = 0; i < noOfAttributes; i++) {
                     attributeNames[i] = "attribute" + (i + 1);
                 }
-                
+
                 entityCounter++; //first line corresponds to entity
                 readEntity(entityCounter, firstLine);
             }
@@ -90,12 +92,12 @@ public class EntityCSVReader extends AbstractEntityReader {
             String[] nextLine = null;
             while ((nextLine = reader.readNext()) != null) {
                 entityCounter++;
-                
-                if (nextLine.length < attributeNames.length - 1) { 
+
+                if (nextLine.length < attributeNames.length - 1) {
                     LOGGER.log(Level.WARNING, "Line with missing attribute names : {0}", Arrays.toString(nextLine));
                     continue;
-                }                
-                    
+                }
+
                 readEntity(entityCounter, nextLine);
             }
 
@@ -107,24 +109,133 @@ public class EntityCSVReader extends AbstractEntityReader {
     }
 
     @Override
+    public String getMethodConfiguration() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("{");
+        for (Integer attributeId : attributesToExclude) {
+            sb.append(attributeId).append(",");
+        }
+        sb.append("}");
+
+        return getParameterName(0) + "=" + inputFilePath + "\t"
+                + getParameterName(1) + "=" + attributeNamesInFirstRow + "\t"
+                + getParameterName(2) + "=" + separator + "\t"
+                + getParameterName(3) + "=" + idIndex + "\t"
+                + getParameterName(4) + "=" + sb.toString();
+    }
+
+    @Override
     public String getMethodInfo() {
-        return "CSV Reader: converts a csv file into a set of entity profiles.";
+        return getMethodName() + ": it converts a CSV file into a set of entity profiles.";
+    }
+
+    @Override
+    public String getMethodName() {
+        return "CSV Reader";
     }
 
     @Override
     public String getMethodParameters() {
-        return "The CSV Reader involves 4 parameters, in addition to the absolute file path:\n"
-             + "1) attributeNamesInFirstRow : boolean, default value: false.\n"
-             + "If true, it reads the attribute name from the first line of the CSV file.\n"
-             + "If false, the first line is converted into an entity profile.\n"
-             + "2) separator : character, default value: ','.\n"
-             + "It determines the character used to tokenize every line into attribute values.\n"
-             + "3) Id index: integer parameter, default value: -1. Counting starts from 0.\n"
-             + "If id>0, the values of corresponding column are used for assigning the id of every entity.\n"
-             + "If the given id is larger than the number of columns, an exception is thrown and getEntityProfiles() returns null.\n"
-             + "If id<0, an auto-incremented integer is assigned as id to every entity.\n"
-             + "4) attributesToExclude: int[], default value: empty. Counting starts from 0.\n"
-             + "The column ids assigned to this parameter will be ignored during the creation of entity profiles.\n";
+        return getMethodName() + " involves five parameters:\n"
+                + "1)" + getParameterDescription(0) + ".\n"
+                + "2)" + getParameterDescription(1) + ".\n"
+                + "3)" + getParameterDescription(2) + ".\n"
+                + "4)" + getParameterDescription(3) + ".\n"
+                + "5)" + getParameterDescription(4) + ".";
+    }
+
+    @Override
+    public JsonArray getParameterConfiguration() {
+        JsonObject obj1 = new JsonObject();
+        obj1.put("class", "java.lang.String");
+        obj1.put("name", getParameterName(0));
+        obj1.put("defaultValue", "-");
+        obj1.put("minValue", "-");
+        obj1.put("maxValue", "-");
+        obj1.put("stepValue", "-");
+        obj1.put("description", getParameterDescription(0));
+
+        JsonObject obj2 = new JsonObject();
+        obj2.put("class", "java.lang.Boolean");
+        obj2.put("name", getParameterName(1));
+        obj2.put("defaultValue", "true");
+        obj2.put("minValue", "-");
+        obj2.put("maxValue", "-");
+        obj2.put("stepValue", "-");
+        obj2.put("description", getParameterDescription(1));
+        
+        JsonObject obj3 = new JsonObject();
+        obj3.put("class", "java.lang.Character");
+        obj3.put("name", getParameterName(2));
+        obj3.put("defaultValue", ",");
+        obj3.put("minValue", "-");
+        obj3.put("maxValue", "-");
+        obj3.put("stepValue", "-");
+        obj3.put("description", getParameterDescription(2));
+        
+        JsonObject obj4 = new JsonObject();
+        obj4.put("class", "java.lang.Integer");
+        obj4.put("name", getParameterName(3));
+        obj4.put("defaultValue", "0");
+        obj4.put("minValue", "0");
+        obj4.put("maxValue", "-");
+        obj4.put("stepValue", "-");
+        obj4.put("description", getParameterDescription(3));
+        
+        JsonObject obj5 = new JsonObject();
+        obj5.put("class", "java.util.Set<Integer>");
+        obj5.put("name", getParameterName(4));
+        obj5.put("defaultValue", "-");
+        obj5.put("minValue", "-");
+        obj5.put("maxValue", "-");
+        obj5.put("stepValue", "-");
+        obj5.put("description", getParameterDescription(4));
+
+        JsonArray array = new JsonArray();
+        array.add(obj1);
+        array.add(obj2);
+        array.add(obj3);
+        array.add(obj4);
+        array.add(obj5);
+        return array;
+    }
+
+    @Override
+    public String getParameterDescription(int parameterId) {
+        switch (parameterId) {
+            case 0:
+                return "The " + getParameterName(0) + " determines the absolute path to the CSV file that will be read into main memory.";
+            case 1:
+                return "The " + getParameterName(1) + " determines whether the first line of the CSV file contains the attribute names (true), or it contains an entity profile (false).";
+            case 2:
+                return "The " + getParameterName(2) + " determines the character used to tokenize every line into attribute values.";
+            case 3:
+                return "The " + getParameterName(3) + " determines the number of column/attribute (starting from 0) that contains the entity ids. "
+                       + "If the given id is larger than the number of columns, an exception is thrown. "
+                       + "If id<0, an auto-incremented integer is assigned as id to every entity.";
+            case 4:
+                return "The " + getParameterName(4) + " specifies the column ids (in the form of comma-separated integers) that will be ignored during the creation of entity profiles.";
+            default:
+                return "invalid parameter id";
+        }
+    }
+
+    @Override
+    public String getParameterName(int parameterId) {
+        switch (parameterId) {
+            case 0:
+                return "File Path";
+            case 1:
+                return "Attribute Names In First Row";
+            case 2:
+                return "Separator";
+            case 3:
+                return "Id index";
+            case 4:
+                return "Attributes To Exclude";
+            default:
+                return "invalid parameter id";
+        }
     }
 
     private void readEntity(int index, String[] currentLine) throws IOException {
@@ -134,7 +245,7 @@ public class EntityCSVReader extends AbstractEntityReader {
         } else {
             entityId = currentLine[idIndex];
         }
-        
+
         EntityProfile newProfile = new EntityProfile(entityId);
         for (int i = 0; i < currentLine.length; i++) {
             if (attributesToExclude.contains(i)) {

@@ -46,8 +46,8 @@ public abstract class AbstractGtReader extends AbstractReader implements IGround
         super(filePath);
         idDuplicates = new HashSet<>();
         duplicatesGraph = new SimpleGraph(DefaultEdge.class);
-        urlToEntityId1 = new HashMap<String, Integer>();
-        urlToEntityId2 = new HashMap<String, Integer>();
+        urlToEntityId1 = new HashMap<>();
+        urlToEntityId2 = new HashMap<>();
     }
     
     @Override

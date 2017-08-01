@@ -15,14 +15,6 @@
  */
 package DataReader.EntityReader;
 
-import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.Property;
-import org.apache.jena.rdf.model.RDFNode;
-import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.rdf.model.Statement;
-import org.apache.jena.rdf.model.StmtIterator;
-import org.apache.jena.riot.RDFDataMgr;
-
 import DataModel.EntityProfile;
 
 import java.io.IOException;
@@ -34,6 +26,16 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.apache.jena.atlas.json.JsonArray;
+import org.apache.jena.atlas.json.JsonObject;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.Property;
+import org.apache.jena.rdf.model.RDFNode;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.Statement;
+import org.apache.jena.rdf.model.StmtIterator;
+import org.apache.jena.riot.RDFDataMgr;
 
 /**
  *
@@ -48,9 +50,10 @@ public class EntityRDFReader extends AbstractEntityReader {
 
     public EntityRDFReader(String filePath) {
         super(filePath);
+        
+        urlToEntity = new HashMap<>();
         attributesToExclude = new HashSet<>();
         attributesToExclude.add("owl:sameAs");
-        urlToEntity = new HashMap<>();
     }
 
     @Override
@@ -77,15 +80,83 @@ public class EntityRDFReader extends AbstractEntityReader {
     }
 
     @Override
+    public String getMethodConfiguration() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("{");
+        attributesToExclude.forEach((attributeName) -> {
+            sb.append(attributeName).append(",");
+        });
+        sb.append("}");
+    
+        return getParameterName(0) + "=" + inputFilePath + "\t"
+                + getParameterName(1) + "=" + sb.toString();
+    }
+
+    @Override
     public String getMethodInfo() {
-        return "RDF Reader: converts an rdf file of any format into a set of entity profiles.";
+        return getMethodName() + ": it converts an RDF file of any format into a set of entity profiles.";
+    }
+
+    @Override
+    public String getMethodName() {
+        return "RDF Reader";
     }
 
     @Override
     public String getMethodParameters() {
-        return "The RDF Reader involves 1 parameter, in addition to the absolute file path:\n"
-             + "attributesToExclude: String[], default value: owl:sameAs.\n"
-             + "The names of the predicates that will be ignored during the creation of entity profiles.\n";
+        return getMethodName() + " involves two parameters:\n"
+                + "1)" + getParameterDescription(0) + ".\n"
+                + "2)" + getParameterDescription(1) + ".";
+    }
+
+    @Override
+    public JsonArray getParameterConfiguration() {
+        JsonObject obj1 = new JsonObject();
+        obj1.put("class", "java.lang.String");
+        obj1.put("name", getParameterName(0));
+        obj1.put("defaultValue", "-");
+        obj1.put("minValue", "-");
+        obj1.put("maxValue", "-");
+        obj1.put("stepValue", "-");
+        obj1.put("description", getParameterDescription(0));
+
+        JsonObject obj2 = new JsonObject();
+        obj2.put("class", "java.util.Set<String>");
+        obj2.put("name", getParameterName(1));
+        obj2.put("defaultValue", "-");
+        obj2.put("minValue", "-");
+        obj2.put("maxValue", "-");
+        obj2.put("stepValue", "-");
+        obj2.put("description", getParameterDescription(1));
+
+        JsonArray array = new JsonArray();
+        array.add(obj1);
+        array.add(obj2);
+        return array;
+    }
+
+    @Override
+    public String getParameterDescription(int parameterId) {
+        switch (parameterId) {
+            case 0:
+                return "The " + getParameterName(0) + " determines the absolute path to the RDF file that will be read into main memory.";
+            case 1:
+                return "The " + getParameterName(1) + " specifies the predicates that will be ignored during the creation of entity profiles.";
+            default:
+                return "invalid parameter id";
+        }
+    }
+
+    @Override
+    public String getParameterName(int parameterId) {
+        switch (parameterId) {
+            case 0:
+                return "File Path";
+            case 1:
+                return "Predicates To Exclude";
+            default:
+                return "invalid parameter id";
+        }
     }
 
     private void readModel(Model m) throws IOException {
@@ -114,8 +185,8 @@ public class EntityRDFReader extends AbstractEntityReader {
                 entityProfile = new EntityProfile(sub);
                 entityProfiles.add(entityProfile);
                 urlToEntity.put(sub, entityProfile);
-            } 
-            
+            }
+
             if (!obj.isEmpty()) {
                 entityProfile.addAttribute(pred, obj);
             }

@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package DataReader.GroundTruthReader;
 
 import DataModel.EntityProfile;
@@ -27,13 +26,14 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.apache.jena.atlas.json.JsonArray;
+import org.apache.jena.atlas.json.JsonObject;
 import org.jgrapht.alg.ConnectivityInspector;
 
 /**
  *
  * @author G.A.P. II
  */
-
 public class GtCSVReader extends AbstractGtReader {
 
     private static final Logger LOGGER = Logger.getLogger(GtCSVReader.class.getName());
@@ -48,18 +48,92 @@ public class GtCSVReader extends AbstractGtReader {
     }
 
     @Override
+    public String getMethodConfiguration() {
+        return getParameterName(0) + "=" + inputFilePath + "\t"
+                + getParameterName(1) + "=" + ignoreFirstRow + "\t"
+                + getParameterName(2) + "=" + separator;
+    }
+
+    @Override
     public String getMethodInfo() {
-        return "CSV Ground-truth Reader : converts a csv file into a set of pairs of duplicate entity profiles.";
+        return getMethodName() + ": it converts a CSV file into a set of pairs of duplicate entity profiles.";
+    }
+
+    @Override
+    public String getMethodName() {
+        return "CSV Ground-truth Reader";
     }
 
     @Override
     public String getMethodParameters() {
-        return "The CSV Ground-truth Reader involves 4 parameters, in addition to the absolute file path:\n"
-             + "1) ignoreFirstRow : boolean, default value: false.\n"
-             + "If true, it starts reading the pairs of duplicates from the second line of the CSV file, as the first one contains labels.\n"
-             + "If false, the first line is converted into a pair of duplicate entity profiles.\n"
-             + "2) separator : character, default value: ','.\n"
-             + "It determines the character used to tokenize every line into two entity identifiers.\n";
+        return getMethodName() + " involves three parameters:\n"
+                + "1)" + getParameterDescription(0) + ".\n"
+                + "2)" + getParameterDescription(1) + ".\n"
+                + "3)" + getParameterDescription(2) + ".";
+    }
+
+    @Override
+    public JsonArray getParameterConfiguration() {
+        JsonObject obj1 = new JsonObject();
+        obj1.put("class", "java.lang.String");
+        obj1.put("name", getParameterName(0));
+        obj1.put("defaultValue", "-");
+        obj1.put("minValue", "-");
+        obj1.put("maxValue", "-");
+        obj1.put("stepValue", "-");
+        obj1.put("description", getParameterDescription(0));
+
+        JsonObject obj2 = new JsonObject();
+        obj2.put("class", "java.lang.Boolean");
+        obj2.put("name", getParameterName(1));
+        obj2.put("defaultValue", "false");
+        obj2.put("minValue", "-");
+        obj2.put("maxValue", "-");
+        obj2.put("stepValue", "-");
+        obj2.put("description", getParameterDescription(1));
+
+        JsonObject obj3 = new JsonObject();
+        obj3.put("class", "java.lang.Character");
+        obj3.put("name", getParameterName(2));
+        obj3.put("defaultValue", ",");
+        obj3.put("minValue", "-");
+        obj3.put("maxValue", "-");
+        obj3.put("stepValue", "-");
+        obj3.put("description", getParameterDescription(2));
+
+        JsonArray array = new JsonArray();
+        array.add(obj1);
+        array.add(obj2);
+        array.add(obj3);
+        return array;
+    }
+
+    @Override
+    public String getParameterDescription(int parameterId) {
+        switch (parameterId) {
+            case 0:
+                return "The " + getParameterName(0) + " determines the absolute path to the CSV file that will be read into main memory.";
+            case 1:
+                return "The " + getParameterName(1) + " determines whether the first line of the CSV file contains attribute names and, thus, should be ignored (true), or it contains a pair of matching entity profiles (false).";
+            case 2:
+                return "The " + getParameterName(2) + " determines the character used to break every line into a pair of entity ids.";
+            default:
+                return "invalid parameter id";
+        }
+    }
+
+    @Override
+    public String getParameterName(int parameterId) {
+        switch (parameterId) {
+            case 0:
+                return "File Path";
+            case 1:
+                return "Ignore First Row";
+            case 2:
+                return "Separator";
+            default:
+                return "invalid parameter id";
+        }
     }
 
     protected void getBilateralConnectedComponents(List<Set<Integer>> connectedComponents) {
@@ -120,7 +194,7 @@ public class GtCSVReader extends AbstractGtReader {
 
                 // add a new edge for every pair of duplicate entities
                 int entityId1 = urlToEntityId1.get(nextLine[0]);
-                int entityId2 = urlToEntityId1.get(nextLine[1])+datasetLimit;
+                int entityId2 = urlToEntityId1.get(nextLine[1]) + datasetLimit;
                 duplicatesGraph.addEdge(entityId1, entityId2);
             }
         } catch (FileNotFoundException ex) {
@@ -195,7 +269,7 @@ public class GtCSVReader extends AbstractGtReader {
     public void setIgnoreFirstRow(boolean ignoreFirstRow) {
         this.ignoreFirstRow = ignoreFirstRow;
     }
-    
+
     public void setSeparator(char separator) {
         this.separator = separator;
     }

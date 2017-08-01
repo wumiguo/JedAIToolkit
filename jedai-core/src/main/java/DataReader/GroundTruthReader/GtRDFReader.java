@@ -29,6 +29,8 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.apache.jena.atlas.json.JsonArray;
+import org.apache.jena.atlas.json.JsonObject;
 
 import org.jgrapht.alg.ConnectivityInspector;
 
@@ -112,13 +114,60 @@ public class GtRDFReader extends AbstractGtReader {
     }
 
     @Override
+    public String getMethodConfiguration() {
+        return getParameterName(0) + "=" + inputFilePath;
+    }
+
+    @Override
     public String getMethodInfo() {
-        return "RDF Ground-truth Reader: converts an rdf file of any format into a set of pairs of duplicate entity profiles.";
+        return getMethodName() + ": it converts an rdf file of any format into a set of pairs of duplicate entity profiles.";
+    }
+
+    @Override
+    public String getMethodName() {
+        return "RDF Ground-truth Reader";
     }
 
     @Override
     public String getMethodParameters() {
-        return "The RDF Ground-truth Reader involves no parameters, apart from the absolute file path.";
+        return getMethodName() + " involves a single parameter:\n"
+                + "1)" + getParameterDescription(0) + ".";
+    }
+
+    @Override
+    public JsonArray getParameterConfiguration() {
+        JsonObject obj1 = new JsonObject();
+        obj1.put("class", "java.lang.String");
+        obj1.put("name", getParameterName(0));
+        obj1.put("defaultValue", "-");
+        obj1.put("minValue", "-");
+        obj1.put("maxValue", "-");
+        obj1.put("stepValue", "-");
+        obj1.put("description", getParameterDescription(0));
+
+        JsonArray array = new JsonArray();
+        array.add(obj1);
+        return array;
+    }
+
+    @Override
+    public String getParameterDescription(int parameterId) {
+        switch (parameterId) {
+            case 0:
+                return "The " + getParameterName(0) + " determines the absolute path to the RDF file that will be read into main memory.";
+            default:
+                return "invalid parameter id";
+        }
+    }
+
+    @Override
+    public String getParameterName(int parameterId) {
+        switch (parameterId) {
+            case 0:
+                return "File Path";
+            default:
+                return "invalid parameter id";
+        }
     }
 
     protected void getUnilateralConnectedComponents(List<Set<Integer>> connectedComponents) {

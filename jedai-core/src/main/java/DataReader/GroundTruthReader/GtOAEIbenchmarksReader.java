@@ -43,12 +43,12 @@ public class GtOAEIbenchmarksReader extends GtRDFReader {
 
     @Override
     public String getMethodInfo() {
-        return "RDF OAEI Benchmark Ground-truth Reader: converts an xml ground-truth file of an OAEI Benchmark dataset into a set of pairs of duplicate entity profiles.";
+        return getMethodName() + ": it converts an XML ground-truth file of an OAEI Benchmark dataset into a set of pairs of duplicate entity profiles.";
     }
 
     @Override
-    public String getMethodParameters() {
-        return "The RDF OAEI Benchmark Ground-truth Reader involves no parameters, apart from the absolute file path.";
+    public String getMethodName() {
+        return "RDF OAEI Benchmark Ground-truth Reader";
     }
     
     // we keep as duplicates the entity1 and entity2 instances

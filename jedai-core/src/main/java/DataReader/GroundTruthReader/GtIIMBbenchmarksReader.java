@@ -46,12 +46,12 @@ public class GtIIMBbenchmarksReader extends GtRDFReader {
 
     @Override
     public String getMethodInfo() {
-        return "RDF IIMB Benchmark Ground-truth Reader: converts two ground-truth files of an IIMB Benchmark dataset into a set of pairs of duplicate entity profiles.";
+        return getMethodName() + ": it converts two ground-truth files of an IIMB Benchmark dataset into a set of pairs of duplicate entity profiles.";
     }
 
     @Override
-    public String getMethodParameters() {
-        return "The RDF IIMB Benchmark Ground-truth Reader involves no parameters, apart from the absolute file paths.";
+    public String getMethodName() {
+        return "RDF IIMB Benchmark Ground-truth Reader";
     }
 
     // we parse both gt files and keep as duplicates the entity-instances
