@@ -38,14 +38,14 @@ import org.apache.jena.atlas.json.JsonObject;
  *
  * @author G.A.P. II
  */
-public class XMLreader extends AbstractEntityReader {
+public class EntityXMLreader extends AbstractEntityReader {
 
-    private static final Logger LOGGER = Logger.getLogger(XMLreader.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(EntityXMLreader.class.getName());
 
     private final Set<String> attributesToExclude;
     private final Map<String, EntityProfile> urlToEntity;
 
-    public XMLreader(String filePath) {
+    public EntityXMLreader(String filePath) {
         super(filePath);
         attributesToExclude = new HashSet<>();
         urlToEntity = new HashMap<>();
