@@ -24,6 +24,12 @@
             <version>3.0.3</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.esotericsoftware.minlog</groupId>
+            <artifactId>minlog</artifactId>
+            <version>1.2-slf4j-jdanbrown-0</version>
+        </dependency>
+
         <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 -->
         <dependency>
             <groupId>org.apache.commons</groupId>
@@ -115,6 +121,11 @@
             <id>backend1</id>
             <name>backend1-releases</name>
             <url>http://backend1.scify.org:60004/artifactory/pub-release-local</url>
+        </repository>
+        
+        <repository>
+            <id>premise</id>
+            <url>http://premise.artifactoryonline.com/premise/public</url>
         </repository>
     </repositories>
 </project>
