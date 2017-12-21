@@ -25,7 +25,6 @@ import gnu.trove.set.hash.TIntHashSet;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.logging.Logger;
 
 /**
  *
@@ -39,8 +38,6 @@ public class ExtendedSortedNeighborhoodBlocking extends SortedNeighborhoodBlocki
 
     public ExtendedSortedNeighborhoodBlocking(int w) {
         super(w);
-        
-        LOGGER = Logger.getLogger(ExtendedSortedNeighborhoodBlocking.class.getName());
     }
 
     @Override

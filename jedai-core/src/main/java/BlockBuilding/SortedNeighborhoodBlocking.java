@@ -28,7 +28,6 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
-import java.util.logging.Logger;
 
 import org.apache.jena.atlas.json.JsonArray;
 import org.apache.jena.atlas.json.JsonObject;
@@ -50,8 +49,6 @@ public class SortedNeighborhoodBlocking extends StandardBlocking {
         super();
         windowSize = w;
         random = new Random();
-        
-        LOGGER = Logger.getLogger(SortedNeighborhoodBlocking.class.getName());
     }
 
     @Override

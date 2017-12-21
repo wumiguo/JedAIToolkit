@@ -21,6 +21,8 @@ import DataModel.BilateralBlock;
 import DataModel.EntityProfile;
 import DataModel.UnilateralBlock;
 
+import com.esotericsoftware.minlog.Log;
+
 import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TIntArrayList;
 
@@ -29,16 +31,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
  * @author gap2
  */
 public abstract class AbstractBlockBuilding implements IBlockBuilding {
-
-    protected Logger LOGGER;
 
     protected double noOfEntitiesD1;
     protected double noOfEntitiesD2;
@@ -74,11 +72,10 @@ public abstract class AbstractBlockBuilding implements IBlockBuilding {
     public List<AbstractBlock> getBlocks(List<EntityProfile> profilesD1,
             List<EntityProfile> profilesD2) {
 
-        LOGGER.log(Level.INFO, "Applying {0} with the following configuration : {1}", new Object[]{getMethodName(), getMethodConfiguration()});
+        Log.info("Applying " + getMethodName() + " with the following configuration : " + getMethodConfiguration());
 
         if (profilesD1 == null) {
-            LOGGER.log(Level.SEVERE, "First list of entity profiles is null! "
-                    + "The first argument should always contain entities.");
+            Log.debug("First list of entity profiles is null! The first argument should always contain entities.");
             return null;
         }
 

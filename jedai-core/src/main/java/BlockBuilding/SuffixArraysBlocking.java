@@ -22,7 +22,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-import java.util.logging.Logger;
 
 import org.apache.jena.atlas.json.JsonArray;
 import org.apache.jena.atlas.json.JsonObject;
@@ -45,8 +44,6 @@ public class SuffixArraysBlocking extends StandardBlocking {
         super();
         maximumBlockSize = maxSize;
         minimumSuffixLength = minLength;
-
-        LOGGER = Logger.getLogger(SuffixArraysBlocking.class.getName());
     }
 
     @Override

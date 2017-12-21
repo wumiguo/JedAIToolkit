@@ -16,7 +16,6 @@
 
 package BlockProcessing;
 
-import BlockBuilding.AbstractBlockBuilding;
 import DataModel.AbstractBlock;
 
 import java.util.List;
@@ -30,7 +29,7 @@ import java.util.logging.Logger;
 
 public abstract class AbstractBlockProcessing implements IBlockProcessing {
     
-    private static final Logger LOGGER = Logger.getLogger(AbstractBlockBuilding.class.getName());
+    protected Logger LOGGER;
     
     protected void printOriginalStatistics(List<AbstractBlock> inputBlocks) {
         double comparisons = 0;

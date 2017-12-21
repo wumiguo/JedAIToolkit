@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.logging.Logger;
 
 import org.apache.jena.atlas.json.JsonArray;
 import org.apache.jena.atlas.json.JsonObject;
@@ -39,8 +38,6 @@ public class QGramsBlocking extends StandardBlocking {
     public QGramsBlocking(int n) {
         super();
         nGramSize = n;
-
-        LOGGER = Logger.getLogger(QGramsBlocking.class.getName());
     }
 
     @Override

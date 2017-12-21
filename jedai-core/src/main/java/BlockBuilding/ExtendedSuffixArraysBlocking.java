@@ -17,7 +17,6 @@ package BlockBuilding;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.logging.Logger;
 
 import org.apache.jena.atlas.json.JsonArray;
 import org.apache.jena.atlas.json.JsonObject;
@@ -34,8 +33,6 @@ public class ExtendedSuffixArraysBlocking extends SuffixArraysBlocking {
 
     public ExtendedSuffixArraysBlocking(int maxSize, int minLength) {
         super(maxSize, minLength);
-        
-        LOGGER = Logger.getLogger(ExtendedSuffixArraysBlocking.class.getName());
     }
 
     @Override

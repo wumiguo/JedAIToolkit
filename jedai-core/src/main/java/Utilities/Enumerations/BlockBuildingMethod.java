@@ -24,9 +24,9 @@ import BlockBuilding.QGramsBlocking;
 import BlockBuilding.SortedNeighborhoodBlocking;
 import BlockBuilding.StandardBlocking;
 import BlockBuilding.SuffixArraysBlocking;
-import BlockProcessing.BlockRefinement.BlockFiltering;
-import BlockProcessing.ComparisonRefinement.ComparisonPropagation;
-import BlockProcessing.ComparisonRefinement.WeightedEdgePruning;
+import BlockProcessing.BlockCleaning.BlockFiltering;
+import BlockProcessing.ComparisonCleaning.ComparisonPropagation;
+import BlockProcessing.ComparisonCleaning.WeightedEdgePruning;
 import BlockProcessing.IBlockProcessing;
 
 /**
