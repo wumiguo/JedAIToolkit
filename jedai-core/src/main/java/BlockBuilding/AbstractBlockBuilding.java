@@ -20,7 +20,9 @@ import DataModel.Attribute;
 import DataModel.BilateralBlock;
 import DataModel.EntityProfile;
 import DataModel.UnilateralBlock;
-import Utilities.Converter;
+
+import gnu.trove.list.TIntList;
+import gnu.trove.list.array.TIntArrayList;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -36,7 +38,7 @@ import java.util.logging.Logger;
  */
 public abstract class AbstractBlockBuilding implements IBlockBuilding {
 
-    private static final Logger LOGGER = Logger.getLogger(AbstractBlockBuilding.class.getName());
+    protected Logger LOGGER;
 
     protected double noOfEntitiesD1;
     protected double noOfEntitiesD2;
@@ -44,8 +46,8 @@ public abstract class AbstractBlockBuilding implements IBlockBuilding {
     protected final List<AbstractBlock> blocks;
     protected List<EntityProfile> entityProfilesD1;
     protected List<EntityProfile> entityProfilesD2;
-    protected Map<String, List<Integer>> invertedIndexD1;
-    protected Map<String, List<Integer>> invertedIndexD2;
+    protected Map<String, TIntList> invertedIndexD1;
+    protected Map<String, TIntList> invertedIndexD2;
 
     public AbstractBlockBuilding() {
         blocks = new ArrayList<>();
@@ -71,6 +73,9 @@ public abstract class AbstractBlockBuilding implements IBlockBuilding {
     @Override
     public List<AbstractBlock> getBlocks(List<EntityProfile> profilesD1,
             List<EntityProfile> profilesD2) {
+
+        LOGGER.log(Level.INFO, "Applying {0} with the following configuration : {1}", new Object[]{getMethodName(), getMethodConfiguration()});
+
         if (profilesD1 == null) {
             LOGGER.log(Level.SEVERE, "First list of entity profiles is null! "
                     + "The first argument should always contain entities.");
@@ -104,17 +109,16 @@ public abstract class AbstractBlockBuilding implements IBlockBuilding {
         return noOfEntitiesD1 + noOfEntitiesD2;
     }
 
-    protected void indexEntities(Map<String, List<Integer>> index, List<EntityProfile> entities) {
+    protected void indexEntities(Map<String, TIntList> index, List<EntityProfile> entities) {
         int counter = 0;
         for (EntityProfile profile : entities) {
             for (Attribute attribute : profile.getAttributes()) {
-                Set<String> keys = getBlockingKeys(attribute.getValue());
-                for (String key : keys) {
+                for (String key : getBlockingKeys(attribute.getValue())) {
                     String normalizedKey = key.trim().toLowerCase();
                     if (0 < normalizedKey.length()) {
-                        List<Integer> entityList = index.get(normalizedKey);
+                        TIntList entityList = index.get(normalizedKey);
                         if (entityList == null) {
-                            entityList = new ArrayList<>();
+                            entityList = new TIntArrayList();
                             index.put(normalizedKey, entityList);
                         }
                         entityList.add(counter);
@@ -125,37 +129,27 @@ public abstract class AbstractBlockBuilding implements IBlockBuilding {
         }
     }
 
-    protected Map<String, int[]> parseD1Index() {
-        final Map<String, int[]> hashedBlocks = new HashMap<>();
-        invertedIndexD1.entrySet().stream().filter((entry) -> !(!invertedIndexD2.containsKey(entry.getKey()))).forEachOrdered((entry) -> {
-            // check whether it is a common term
-            int[] idsArray = Converter.convertCollectionToArray(entry.getValue());
-            hashedBlocks.put(entry.getKey(), idsArray);
-        });
-        return hashedBlocks;
-    }
-
-    protected void parseD2Index(Map<String, int[]> hashedBlocks) {
-        invertedIndexD2.entrySet().stream().filter((entry) -> !(!hashedBlocks.containsKey(entry.getKey()))).forEachOrdered((entry) -> {
-            int[] idsArray = Converter.convertCollectionToArray(entry.getValue());
-            int[] d1Entities = hashedBlocks.get(entry.getKey());
-            blocks.add(new BilateralBlock(d1Entities, idsArray));
-        });
-    }
-
     protected void parseIndex() {
-        invertedIndexD1.values().stream().filter((entityList) -> (1 < entityList.size())).map((entityList) -> Converter.convertCollectionToArray(entityList)).map((idsArray) -> new UnilateralBlock(idsArray)).forEachOrdered((block) -> {
-            blocks.add(block);
+        invertedIndexD1.values().stream().filter((entityList) -> (1 < entityList.size())).forEachOrdered((entityList) -> {
+            blocks.add(new UnilateralBlock(entityList.toArray()));
         });
     }
 
-    //read blocks from Lucene index
+    protected void parseIndices() {
+        invertedIndexD1.entrySet().forEach((entry) -> {
+            final TIntList entityIdsD2 = invertedIndexD2.get(entry.getKey());
+            if (entityIdsD2 != null && !entityIdsD2.isEmpty()) {
+                blocks.add(new BilateralBlock(entry.getValue().toArray(), entityIdsD2.toArray()));
+            }
+        });
+    }
+
+    //read blocks from the inverted index
     public List<AbstractBlock> readBlocks() {
         if (entityProfilesD2 == null) { //Dirty ER
             parseIndex();
-        } else {
-            Map<String, int[]> hashedBlocks = parseD1Index();
-            parseD2Index(hashedBlocks);
+        } else { // Clean-Clean ER
+            parseIndices();
         }
 
         return blocks;

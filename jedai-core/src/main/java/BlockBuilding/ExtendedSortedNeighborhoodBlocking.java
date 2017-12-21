@@ -17,13 +17,14 @@ package BlockBuilding;
 
 import DataModel.BilateralBlock;
 import DataModel.UnilateralBlock;
-import Utilities.Converter;
+
+import gnu.trove.list.TIntList;
+import gnu.trove.set.TIntSet;
+import gnu.trove.set.hash.TIntHashSet;
 
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -32,21 +33,14 @@ import java.util.logging.Logger;
  */
 public class ExtendedSortedNeighborhoodBlocking extends SortedNeighborhoodBlocking {
 
-    private static final Logger LOGGER = Logger.getLogger(ExtendedSortedNeighborhoodBlocking.class.getName());
-
     public ExtendedSortedNeighborhoodBlocking() {
         this(2);
-        
-        LOGGER.log(Level.INFO, "Using default configuration for {0}.", getMethodName());
     }
 
     public ExtendedSortedNeighborhoodBlocking(int w) {
         super(w);
-    }
-
-    @Override
-    public String getMethodConfiguration() {
-        return getParameterName(0) + "=" + windowSize;
+        
+        LOGGER = Logger.getLogger(ExtendedSortedNeighborhoodBlocking.class.getName());
     }
 
     @Override
@@ -62,21 +56,19 @@ public class ExtendedSortedNeighborhoodBlocking extends SortedNeighborhoodBlocki
     @Override
     protected void parseIndex() {
         final Set<String> blockingKeysSet = invertedIndexD1.keySet();
-        String[] sortedTerms = blockingKeysSet.toArray(new String[blockingKeysSet.size()]);
+        final String[] sortedTerms = blockingKeysSet.toArray(new String[blockingKeysSet.size()]);
         Arrays.sort(sortedTerms);
 
         //slide window over the sorted list of blocking keys
         int upperLimit = sortedTerms.length - windowSize;
         for (int i = 0; i <= upperLimit; i++) {
-            final Set<Integer> entityIds = new HashSet<>();
+            final TIntSet entityIds = new TIntHashSet();
             for (int j = 0; j < windowSize; j++) {
                 entityIds.addAll(invertedIndexD1.get(sortedTerms[i + j]));
             }
 
             if (1 < entityIds.size()) {
-                int[] idsArray = Converter.convertCollectionToArray(entityIds);
-                UnilateralBlock uBlock = new UnilateralBlock(idsArray);
-                blocks.add(uBlock);
+                blocks.add(new UnilateralBlock(entityIds.toArray()));
             }
         }
     }
@@ -86,31 +78,28 @@ public class ExtendedSortedNeighborhoodBlocking extends SortedNeighborhoodBlocki
         final Set<String> blockingKeysSet = new HashSet<>();
         blockingKeysSet.addAll(invertedIndexD1.keySet());
         blockingKeysSet.addAll(invertedIndexD2.keySet());
-        String[] sortedTerms = blockingKeysSet.toArray(new String[blockingKeysSet.size()]);
+        final String[] sortedTerms = blockingKeysSet.toArray(new String[blockingKeysSet.size()]);
         Arrays.sort(sortedTerms);
 
         //slide window over the sorted list of blocking keys
         int upperLimit = sortedTerms.length - windowSize;
         for (int i = 0; i <= upperLimit; i++) {
-            final Set<Integer> entityIds1 = new HashSet<>();
-            final Set<Integer> entityIds2 = new HashSet<>();
+            final TIntSet entityIds1 = new TIntHashSet();
+            final TIntSet entityIds2 = new TIntHashSet();
             for (int j = 0; j < windowSize; j++) {
-                List<Integer> d1Entities = invertedIndexD1.get(sortedTerms[i + j]);
+                final TIntList d1Entities = invertedIndexD1.get(sortedTerms[i + j]);
                 if (d1Entities != null) {
                     entityIds1.addAll(d1Entities);
                 }
 
-                List<Integer> d2Entities = invertedIndexD2.get(sortedTerms[i + j]);
+                final TIntList d2Entities = invertedIndexD2.get(sortedTerms[i + j]);
                 if (d2Entities != null) {
                     entityIds2.addAll(d2Entities);
                 }
             }
 
             if (!entityIds1.isEmpty() && !entityIds2.isEmpty()) {
-                int[] idsArray1 = Converter.convertCollectionToArray(entityIds1);
-                int[] idsArray2 = Converter.convertCollectionToArray(entityIds2);
-                BilateralBlock bBlock = new BilateralBlock(idsArray1, idsArray2);
-                blocks.add(bBlock);
+                blocks.add(new BilateralBlock(entityIds1.toArray(), entityIds2.toArray()));
             }
         }
     }

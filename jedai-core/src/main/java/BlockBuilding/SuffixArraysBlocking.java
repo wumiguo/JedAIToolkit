@@ -22,7 +22,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.jena.atlas.json.JsonArray;
@@ -34,15 +33,12 @@ import org.apache.jena.atlas.json.JsonObject;
  */
 public class SuffixArraysBlocking extends StandardBlocking {
 
-    private static final Logger LOGGER = Logger.getLogger(SuffixArraysBlocking.class.getName());
-
     protected final int maximumBlockSize;
     protected final int minimumSuffixLength;
 
     public SuffixArraysBlocking() {
         this(53, 6);
 
-        LOGGER.log(Level.INFO, "Using default configuration for {0}.", getMethodName());
     }
 
     public SuffixArraysBlocking(int maxSize, int minLength) {
@@ -50,17 +46,16 @@ public class SuffixArraysBlocking extends StandardBlocking {
         maximumBlockSize = maxSize;
         minimumSuffixLength = minLength;
 
-        LOGGER.log(Level.INFO, getMethodConfiguration());
+        LOGGER = Logger.getLogger(SuffixArraysBlocking.class.getName());
     }
 
     @Override
     public List<AbstractBlock> getBlocks(List<EntityProfile> profilesD1,
             List<EntityProfile> profilesD2) {
-        List<AbstractBlock> purgedBlocks = super.getBlocks(profilesD1, profilesD2);
-        Iterator<AbstractBlock> blocksIterator = purgedBlocks.iterator();
+        final List<AbstractBlock> purgedBlocks = super.getBlocks(profilesD1, profilesD2);
+        final Iterator<AbstractBlock> blocksIterator = purgedBlocks.iterator();
         while (blocksIterator.hasNext()) {
-            AbstractBlock block = (AbstractBlock) blocksIterator.next();
-            if (maximumBlockSize < block.getTotalBlockAssignments()) {
+            if (maximumBlockSize < blocksIterator.next().getTotalBlockAssignments()) {
                 blocksIterator.remove();
             }
         }
@@ -78,7 +73,7 @@ public class SuffixArraysBlocking extends StandardBlocking {
 
     @Override
     public String getMethodConfiguration() {
-        return getParameterName(0) + "=" + maximumBlockSize + "\t"
+        return getParameterName(0) + "=" + maximumBlockSize + ",\t"
                 + getParameterName(1) + "=" + minimumSuffixLength;
     }
 

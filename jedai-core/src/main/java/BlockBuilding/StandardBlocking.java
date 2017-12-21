@@ -19,7 +19,6 @@ package BlockBuilding;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.jena.atlas.json.JsonArray;
@@ -29,13 +28,11 @@ import org.apache.jena.atlas.json.JsonArray;
  * @author gap2
  */
 public class StandardBlocking extends AbstractBlockBuilding {
-
-    private static final Logger LOGGER = Logger.getLogger(StandardBlocking.class.getName());
     
     public StandardBlocking() {
         super();
         
-        LOGGER.log(Level.INFO, "{0} initiated", getMethodName());
+        LOGGER = Logger.getLogger(StandardBlocking.class.getName());
     }
     
     @Override

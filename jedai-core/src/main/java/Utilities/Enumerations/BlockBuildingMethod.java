@@ -16,7 +16,6 @@
 
 package Utilities.Enumerations;
 
-import BlockBuilding.AttributeClusteringBlocking;
 import BlockBuilding.ExtendedQGramsBlocking;
 import BlockBuilding.ExtendedSortedNeighborhoodBlocking;
 import BlockBuilding.ExtendedSuffixArraysBlocking;
@@ -36,7 +35,6 @@ import BlockProcessing.IBlockProcessing;
  */
 public enum BlockBuildingMethod {
 
-    ATTRIBUTE_CLUSTERING,
     EXTENDED_Q_GRAMS_BLOCKING,
     EXTENDED_SORTED_NEIGHBORHOOD,
     EXTENDED_SUFFIX_ARRAYS,
@@ -47,8 +45,6 @@ public enum BlockBuildingMethod {
     
     public static IBlockBuilding getDefaultConfiguration(BlockBuildingMethod blbuMethod) {
         switch (blbuMethod) {
-            case ATTRIBUTE_CLUSTERING:
-                return new AttributeClusteringBlocking();
             case EXTENDED_Q_GRAMS_BLOCKING:
                 return new ExtendedQGramsBlocking();
             case EXTENDED_SORTED_NEIGHBORHOOD:
@@ -69,8 +65,6 @@ public enum BlockBuildingMethod {
     
     public static IBlockProcessing getDefaultBlockCleaning(BlockBuildingMethod blbuMethod) {
         switch (blbuMethod) {
-            case ATTRIBUTE_CLUSTERING:
-                return new BlockFiltering(0.50);
             case EXTENDED_Q_GRAMS_BLOCKING:
                 return new BlockFiltering(0.50);
             case EXTENDED_SORTED_NEIGHBORHOOD:
@@ -91,8 +85,6 @@ public enum BlockBuildingMethod {
     
     public static IBlockProcessing getDefaultComparisonCleaning(BlockBuildingMethod blbuMethod) {
         switch (blbuMethod) {
-            case ATTRIBUTE_CLUSTERING:
-                return new WeightedEdgePruning(WeightingScheme.CBS);
             case EXTENDED_Q_GRAMS_BLOCKING:
                 return new WeightedEdgePruning(WeightingScheme.EJS);
             case EXTENDED_SORTED_NEIGHBORHOOD:

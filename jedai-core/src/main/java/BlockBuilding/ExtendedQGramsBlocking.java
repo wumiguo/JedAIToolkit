@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.jena.atlas.json.JsonArray;
@@ -32,21 +31,18 @@ import org.apache.jena.atlas.json.JsonObject;
 public class ExtendedQGramsBlocking extends QGramsBlocking {
 
     private final static int MAX_Q_GRAMS = 15;
-    private static final Logger LOGGER = Logger.getLogger(ExtendedQGramsBlocking.class.getName());
 
     private final double threshold;
 
     public ExtendedQGramsBlocking() {
         this(0.95, 6);
-
-        LOGGER.log(Level.INFO, "Using default configuration for {0}.", getMethodName());
     }
 
     public ExtendedQGramsBlocking(double t, int n) {
         super(n);
         threshold = t;
 
-        LOGGER.log(Level.INFO, getMethodConfiguration());
+        LOGGER = Logger.getLogger(ExtendedQGramsBlocking.class.getName());
     }
 
     @Override
@@ -75,8 +71,8 @@ public class ExtendedQGramsBlocking extends QGramsBlocking {
             return new HashSet<>();
         }
 
-        List<String> remainingElements = new ArrayList<>(sublists);
-        String lastSublist = remainingElements.remove(sublists.size() - 1);
+        final List<String> remainingElements = new ArrayList<>(sublists);
+        final String lastSublist = remainingElements.remove(sublists.size() - 1);
 
         final Set<String> combinationsExclusiveX = getCombinationsFor(remainingElements, sublistLength);
         final Set<String> combinationsInclusiveX = getCombinationsFor(remainingElements, sublistLength - 1);
@@ -95,7 +91,7 @@ public class ExtendedQGramsBlocking extends QGramsBlocking {
 
     @Override
     public String getMethodConfiguration() {
-        return getParameterName(0) + "=" + nGramSize + "\t"
+        return getParameterName(0) + "=" + nGramSize + ",\t"
                 + getParameterName(1) + "=" + threshold;
     }
 

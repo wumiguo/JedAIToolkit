@@ -15,18 +15,19 @@
  */
 package BlockBuilding;
 
-import DataModel.AbstractBlock;
 import DataModel.BilateralBlock;
 import DataModel.UnilateralBlock;
-import Utilities.Converter;
 
-import java.util.ArrayList;
+import gnu.trove.iterator.TIntIterator;
+import gnu.trove.list.TIntList;
+import gnu.trove.list.array.TIntArrayList;
+import gnu.trove.set.TIntSet;
+import gnu.trove.set.hash.TIntHashSet;
+
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
+import java.util.Random;
 import java.util.Set;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.jena.atlas.json.JsonArray;
@@ -38,26 +39,24 @@ import org.apache.jena.atlas.json.JsonObject;
  */
 public class SortedNeighborhoodBlocking extends StandardBlocking {
 
-    private static final Logger LOGGER = Logger.getLogger(SortedNeighborhoodBlocking.class.getName());
-
     protected final int windowSize;
-
+    protected final Random random;
+    
     public SortedNeighborhoodBlocking() {
         this(4);
-        
-        LOGGER.log(Level.INFO, "Using default configuration for {0}.", getMethodName());
     }
 
     public SortedNeighborhoodBlocking(int w) {
         super();
         windowSize = w;
+        random = new Random();
         
-        LOGGER.log(Level.INFO, getMethodConfiguration());
+        LOGGER = Logger.getLogger(SortedNeighborhoodBlocking.class.getName());
     }
 
     @Override
     public String getMethodConfiguration() {
-        return "Window size=" + windowSize;
+        return getParameterName(0) + "=" + windowSize;
     }
 
     @Override
@@ -75,33 +74,32 @@ public class SortedNeighborhoodBlocking extends StandardBlocking {
     @Override
     public String getMethodParameters() {
         return getMethodName() + " involves a single parameter:\n"
-               + "1)" + getParameterDescription(0) + ".\n";
+                + "1)" + getParameterDescription(0) + ".\n";
     }
-
-    protected Integer[] getMixedSortedEntities(String[] sortedTerms) {
+    
+    protected int[] getMixedSortedEntities(String[] sortedTerms) {
         int datasetLimit = entityProfilesD1.size();
-        final List<Integer> sortedEntityIds = new ArrayList<>();
+        final TIntList sortedEntityIds = new TIntArrayList();
 
         for (String blockingKey : sortedTerms) {
-            List<Integer> sortedIds = null;
-            if (!invertedIndexD1.containsKey(blockingKey)) {
-                sortedIds = new ArrayList<>();
-            } else {
-                sortedIds = new ArrayList<>(invertedIndexD1.get(blockingKey));
+            final TIntList sortedIds = new TIntArrayList();
+            final TIntList d1EntityIds = invertedIndexD1.get(blockingKey);
+            if (d1EntityIds != null) {
+                sortedIds.addAll(d1EntityIds);
             }
-            
-            if (invertedIndexD2.containsKey(blockingKey)) {
-                List<Integer> d2EntityIds = invertedIndexD2.get(blockingKey);
-                for (Integer entityId : d2EntityIds) {
-                    sortedIds.add(datasetLimit + entityId);
+
+            final TIntList d2EntityIds = invertedIndexD2.get(blockingKey);
+            if (d2EntityIds != null) {
+                for (TIntIterator iterator = d2EntityIds.iterator(); iterator.hasNext();) {
+                    sortedIds.add(datasetLimit + iterator.next());
                 }
             }
 
-            Collections.shuffle(sortedIds);
+            sortedIds.shuffle(random);
             sortedEntityIds.addAll(sortedIds);
         }
 
-        return sortedEntityIds.toArray(new Integer[sortedEntityIds.size()]);
+        return sortedEntityIds.toArray();
     }
 
     @Override
@@ -129,7 +127,7 @@ public class SortedNeighborhoodBlocking extends StandardBlocking {
                 return "invalid parameter id";
         }
     }
-    
+
     @Override
     public String getParameterName(int parameterId) {
         switch (parameterId) {
@@ -140,57 +138,56 @@ public class SortedNeighborhoodBlocking extends StandardBlocking {
         }
     }
     
-    protected Integer[] getSortedEntities(String[] sortedTerms) {
-        final List<Integer> sortedEntityIds = new ArrayList<>();
+    protected int[] getSortedEntities(String[] sortedTerms) {
+        final TIntList sortedEntityIds = new TIntArrayList();
 
         for (String blockingKey : sortedTerms) {
-            List<Integer> sortedIds = invertedIndexD1.get(blockingKey);
-            Collections.shuffle(sortedIds);
+            final TIntList sortedIds = invertedIndexD1.get(blockingKey);
+            sortedIds.shuffle(random);
             sortedEntityIds.addAll(sortedIds);
         }
 
-        return sortedEntityIds.toArray(new Integer[sortedEntityIds.size()]);
+        return sortedEntityIds.toArray();
     }
-
+    
     @Override
     protected void parseIndex() {
         final Set<String> blockingKeysSet = invertedIndexD1.keySet();
-        String[] sortedTerms = blockingKeysSet.toArray(new String[blockingKeysSet.size()]);
+        final String[] sortedTerms = blockingKeysSet.toArray(new String[blockingKeysSet.size()]);
         Arrays.sort(sortedTerms);
 
-        Integer[] allEntityIds = getSortedEntities(sortedTerms);
+        final int[] allEntityIds = getSortedEntities(sortedTerms);
 
         //slide window over the sorted list of entity ids
         int upperLimit = allEntityIds.length - windowSize;
         for (int i = 0; i <= upperLimit; i++) {
-            final Set<Integer> entityIds = new HashSet<>();
+            final TIntSet entityIds = new TIntHashSet();
             for (int j = 0; j < windowSize; j++) {
                 entityIds.add(allEntityIds[i + j]);
             }
 
             if (1 < entityIds.size()) {
-                int[] idsArray = Converter.convertCollectionToArray(entityIds);
-                UnilateralBlock uBlock = new UnilateralBlock(idsArray);
-                blocks.add(uBlock);
+                blocks.add(new UnilateralBlock(entityIds.toArray()));
             }
         }
     }
-
+    
+    @Override
     protected void parseIndices() {
         final Set<String> blockingKeysSet = new HashSet<>();
         blockingKeysSet.addAll(invertedIndexD1.keySet());
         blockingKeysSet.addAll(invertedIndexD2.keySet());
-        String[] sortedTerms = blockingKeysSet.toArray(new String[blockingKeysSet.size()]);
+        final String[] sortedTerms = blockingKeysSet.toArray(new String[blockingKeysSet.size()]);
         Arrays.sort(sortedTerms);
 
-        Integer[] allEntityIds = getMixedSortedEntities(sortedTerms);
+        final int[] allEntityIds = getMixedSortedEntities(sortedTerms);
 
         int datasetLimit = entityProfilesD1.size();
         //slide window over the sorted list of entity ids
         int upperLimit = allEntityIds.length - windowSize;
         for (int i = 0; i <= upperLimit; i++) {
-            final Set<Integer> entityIds1 = new HashSet<>();
-            final Set<Integer> entityIds2 = new HashSet<>();
+            final TIntSet entityIds1 = new TIntHashSet();
+            final TIntSet entityIds2 = new TIntHashSet();
             for (int j = 0; j < windowSize; j++) {
                 if (allEntityIds[i + j] < datasetLimit) {
                     entityIds1.add(allEntityIds[i + j]);
@@ -200,22 +197,8 @@ public class SortedNeighborhoodBlocking extends StandardBlocking {
             }
 
             if (!entityIds1.isEmpty() && !entityIds2.isEmpty()) {
-                int[] idsArray1 = Converter.convertCollectionToArray(entityIds1);
-                int[] idsArray2 = Converter.convertCollectionToArray(entityIds2);
-                BilateralBlock bBlock = new BilateralBlock(idsArray1, idsArray2);
-                blocks.add(bBlock);
+                blocks.add(new BilateralBlock(entityIds1.toArray(), entityIds2.toArray()));
             }
         }
-    }
-
-    @Override
-    public List<AbstractBlock> readBlocks() {
-        if (entityProfilesD2 == null) { //Dirty ER
-            parseIndex();
-        } else {
-            parseIndices();
-        }
-
-        return blocks;
     }
 }

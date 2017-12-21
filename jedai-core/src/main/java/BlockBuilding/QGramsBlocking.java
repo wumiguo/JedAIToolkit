@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.jena.atlas.json.JsonArray;
@@ -31,21 +30,17 @@ import org.apache.jena.atlas.json.JsonObject;
  */
 public class QGramsBlocking extends StandardBlocking {
 
-    private static final Logger LOGGER = Logger.getLogger(QGramsBlocking.class.getName());
-
     protected final int nGramSize;
 
     public QGramsBlocking() {
         this(6);
-
-        LOGGER.log(Level.INFO, "Using default configuration for {0}.", getMethodName());
     }
 
     public QGramsBlocking(int n) {
         super();
         nGramSize = n;
 
-        LOGGER.log(Level.INFO, getMethodConfiguration());
+        LOGGER = Logger.getLogger(QGramsBlocking.class.getName());
     }
 
     @Override
