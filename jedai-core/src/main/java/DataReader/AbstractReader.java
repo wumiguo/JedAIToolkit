@@ -67,6 +67,32 @@ public abstract class AbstractReader implements IDataReader {
         return object;
     }
     
+    public void convertToRDFfile(List<EntityProfile> profiles, String outputPath) {
+        try {
+    	    FileWriter fileWriter = new FileWriter(outputPath);
+    	    PrintWriter printWriter = new PrintWriter(fileWriter);
+    	    printWriter.println("<?xml version=\"1.0\"?>");
+    	    printWriter.println();
+    	    printWriter.println("<rdf:RDF");
+    	    printWriter.println("xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"");
+    	    printWriter.println("xmlns:obj=\"https://www.w3schools.com/rdf/\">");
+    	    for (EntityProfile profile : profiles) {
+          	  printWriter.println("<rdf:Description rdf:about=\""+profile.getEntityUrl().replace("&", "")+"\">");
+              for (Attribute attribute : profile.getAttributes()) {
+            	  printWriter.print("<obj:"+attribute.getName().replace("&", "")+">");
+            	  printWriter.print(attribute.getValue().replace("&", ""));
+            	  printWriter.println("</obj:"+attribute.getName().replace("&", "")+">");
+              }
+        	  printWriter.println("</rdf:Description>");
+
+          }
+    	    printWriter.println("</rdf:RDF>");
+    	    printWriter.close();
+        } catch (IOException ioex) {
+            LOGGER.log(Level.SEVERE, null, ioex);
+        }
+    }
+    
     @Override
     public void storeSerializedObject(Object object, String outputPath) {
         try {
