@@ -1,5 +1,5 @@
 /*
-* Copyright [2016] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2018] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -15,9 +15,9 @@
  */
 package DataModel;
 
+import com.esotericsoftware.minlog.Log;
+
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -26,7 +26,6 @@ import java.util.logging.Logger;
 public class SimilarityPairs {
 
     private final static int MAX_COMPARISONS = Integer.MAX_VALUE - 2;
-    private static final Logger LOGGER = Logger.getLogger(SimilarityPairs.class.getName());
 
     private final boolean isCleanCleanER;
     private int currentIndex;
@@ -55,7 +54,7 @@ public class SimilarityPairs {
         }
 
         if (MAX_COMPARISONS < comparisons) {
-            LOGGER.log(Level.SEVERE, "Very high number of comparisons to be executed! "
+            Log.error("Very high number of comparisons to be executed! "
                     + "Maximum allowed number is : " + MAX_COMPARISONS);
             System.exit(-1);
         }

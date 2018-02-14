@@ -1,5 +1,5 @@
 /*
-* Copyright [2016-2017] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2018] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -12,8 +12,7 @@
 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 * See the License for the specific language governing permissions and
 * limitations under the License.
-*/
-
+ */
 package BlockProcessing.ComparisonCleaning;
 
 import DataModel.AbstractBlock;
@@ -21,6 +20,8 @@ import DataModel.Comparison;
 import DataModel.DecomposedBlock;
 import Utilities.Comparators.ComparisonWeightComparator;
 import Utilities.Enumerations.WeightingScheme;
+import com.esotericsoftware.minlog.Log;
+import gnu.trove.iterator.TIntIterator;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -28,30 +29,23 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Queue;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
  * @author gap2
  */
-
 public class CardinalityEdgePruning extends WeightedEdgePruning {
 
-    private static final Logger LOGGER = Logger.getLogger(CardinalityEdgePruning.class.getName());
-    
     protected double minimumWeight;
     protected Queue<Comparison> topKEdges;
-    
+
     public CardinalityEdgePruning() {
         super(WeightingScheme.ARCS);
     }
-    
+
     public CardinalityEdgePruning(WeightingScheme scheme) {
         super(scheme);
         nodeCentric = false;
-        
-        LOGGER.log(Level.INFO, "{0} initiated", getMethodName());
     }
 
     protected void addDecomposedBlock(Collection<Comparison> comparisons, List<AbstractBlock> newBlocks) {
@@ -59,11 +53,11 @@ public class CardinalityEdgePruning extends WeightedEdgePruning {
             return;
         }
 
-        int[] entityIds1 = new int[comparisons.size()];
-        int[] entityIds2 = new int[comparisons.size()];
+        final int[] entityIds1 = new int[comparisons.size()];
+        final int[] entityIds2 = new int[comparisons.size()];
 
         int index = 0;
-        Iterator<Comparison> iterator = comparisons.iterator();
+        final Iterator<Comparison> iterator = comparisons.iterator();
         while (iterator.hasNext()) {
             Comparison comparison = iterator.next();
             entityIds1[index] = comparison.getEntityId1();
@@ -77,14 +71,14 @@ public class CardinalityEdgePruning extends WeightedEdgePruning {
     @Override
     public String getMethodInfo() {
         return getMethodName() + ": a Meta-blocking method that retains the comparisons "
-               + "that correspond to the top-K weighted edges in the blocking graph.";
+                + "that correspond to the top-K weighted edges in the blocking graph.";
     }
-    
+
     @Override
     public String getMethodName() {
         return "Cardinality Edge Pruning";
     }
-    
+
     @Override
     protected List<AbstractBlock> pruneEdges() {
         minimumWeight = Double.MIN_VALUE;
@@ -103,7 +97,7 @@ public class CardinalityEdgePruning extends WeightedEdgePruning {
             }
         }
 
-        List<AbstractBlock> newBlocks = new ArrayList<>();
+        final List<AbstractBlock> newBlocks = new ArrayList<>();
         addDecomposedBlock(topKEdges, newBlocks);
         return newBlocks;
     }
@@ -111,22 +105,22 @@ public class CardinalityEdgePruning extends WeightedEdgePruning {
     @Override
     protected void setThreshold() {
         threshold = blockAssingments / 2;
-        
-        LOGGER.log(Level.INFO, "Edge Pruning Cardinality Threshold\t:\t{0}", threshold);
+        Log.info("Edge Pruning Cardinality Threshold\t:\t{" + threshold);
     }
 
     protected void verifyValidEntities(int entityId) {
-        validEntities.forEach((neighborId) -> {
+        for (TIntIterator iterator = validEntities.iterator(); iterator.hasNext();) {
+            int neighborId = iterator.next();
             double weight = getWeight(entityId, neighborId);
             if (!(weight < minimumWeight)) {
-                Comparison comparison = getComparison(entityId, neighborId);
+                final Comparison comparison = getComparison(entityId, neighborId);
                 comparison.setUtilityMeasure(weight);
                 topKEdges.add(comparison);
                 if (threshold < topKEdges.size()) {
-                    Comparison lastComparison = topKEdges.poll();
+                    final Comparison lastComparison = topKEdges.poll();
                     minimumWeight = lastComparison.getUtilityMeasure();
                 }
             }
-        });
+        }
     }
 }

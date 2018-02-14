@@ -1,5 +1,5 @@
 /*
-* Copyright [2016-2017] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2018] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -21,14 +21,13 @@ import DataModel.SimilarityEdge;
 import DataModel.SimilarityPairs;
 import Utilities.Comparators.SimilarityEdgeComparator;
 
-import java.util.HashSet;
+import gnu.trove.set.TIntSet;
+import gnu.trove.set.hash.TIntHashSet;
+
 import java.util.Iterator;
 import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Queue;
-import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -36,16 +35,12 @@ import java.util.logging.Logger;
  */
 public class MergeCenterClustering extends AbstractEntityClustering {
 
-    private static final Logger LOGGER = Logger.getLogger(MergeCenterClustering.class.getName());
-
     public MergeCenterClustering() {
         this(0.5);
     }
 
     public MergeCenterClustering(double simTh) {
         super(simTh);
-
-        LOGGER.log(Level.INFO, "{0} initiated", getMethodName());
     }
     
     @Override
@@ -57,19 +52,19 @@ public class MergeCenterClustering extends AbstractEntityClustering {
         final Queue<SimilarityEdge> SEqueue = new PriorityQueue<>(simPairs.getNoOfComparisons(), new SimilarityEdgeComparator());
         final Iterator<Comparison> iterator = simPairs.getPairIterator();
         while (iterator.hasNext()) {
-            Comparison comparison = iterator.next();
+            final Comparison comparison = iterator.next();
             if (threshold < comparison.getUtilityMeasure()) {
                 SEqueue.add(new SimilarityEdge(comparison.getEntityId1(), (comparison.getEntityId2() + datasetLimit), comparison.getUtilityMeasure()));
             }
         }
 
-        final Set<Integer> Center = new HashSet<>();
-        final Set<Integer> NonCenter = new HashSet<>();
+        final TIntSet Center = new TIntHashSet();
+        final TIntSet NonCenter = new TIntHashSet();
         while (!SEqueue.isEmpty()) {
-            SimilarityEdge se = SEqueue.remove();
+            final SimilarityEdge se = SEqueue.remove();
             int v1 = se.getModel1Pos();
             int v2 = se.getModel2Pos();
-
+            
             boolean v1IsCenter = Center.contains(v1);
             boolean v2IsCenter = Center.contains(v2);
             boolean v1IsNonCenter = NonCenter.contains(v1);

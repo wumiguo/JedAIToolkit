@@ -1,5 +1,5 @@
 /*
-* Copyright [2016] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2018] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -12,8 +12,7 @@
 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 * See the License for the specific language governing permissions and
 * limitations under the License.
-*/
-
+ */
 package Utilities.DataStructures;
 
 import DataModel.AbstractBlock;
@@ -22,8 +21,12 @@ import DataModel.Comparison;
 import DataModel.DecomposedBlock;
 import DataModel.IdDuplicates;
 import DataModel.UnilateralBlock;
-import java.util.ArrayList;
-import java.util.HashSet;
+
+import com.esotericsoftware.minlog.Log;
+import gnu.trove.list.TIntList;
+import gnu.trove.list.array.TIntArrayList;
+import gnu.trove.set.TIntSet;
+import gnu.trove.set.hash.TIntHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -63,14 +66,14 @@ public class GroundTruthIndex {
         }
     }
 
-    public List<Integer> getCommonBlockIndices(int blockIndex, Comparison comparison) {
-        int[] blocks1 = entityBlocks[comparison.getEntityId1()];
-        int[] blocks2 = entityBlocks[comparison.getEntityId2() + datasetLimit];
+    public TIntList getCommonBlockIndices(int blockIndex, Comparison comparison) {
+        final int[] blocks1 = entityBlocks[comparison.getEntityId1()];
+        final int[] blocks2 = entityBlocks[comparison.getEntityId2() + datasetLimit];
 
         boolean firstCommonIndex = false;
         int noOfBlocks1 = blocks1.length;
         int noOfBlocks2 = blocks2.length;
-        final List<Integer> indices = new ArrayList<Integer>();
+        final TIntList indices = new TIntArrayList();
         for (int i = 0; i < noOfBlocks1; i++) {
             for (int j = 0; j < noOfBlocks2; j++) {
                 if (blocks2[j] < blocks1[i]) {
@@ -109,13 +112,13 @@ public class GroundTruthIndex {
     }
 
     public int getNoOfCommonBlocks(int blockIndex, Comparison comparison) {
-        int[] blocks1 = entityBlocks[comparison.getEntityId1()];
-        int[] blocks2 = entityBlocks[comparison.getEntityId2() + datasetLimit];
+        final int[] blocks1 = entityBlocks[comparison.getEntityId1()];
+        final int[] blocks2 = entityBlocks[comparison.getEntityId2() + datasetLimit];
 
-        boolean firstCommonIndex = false;
         int commonBlocks = 0;
         int noOfBlocks1 = blocks1.length;
         int noOfBlocks2 = blocks2.length;
+        boolean firstCommonIndex = false;
         for (int i = 0; i < noOfBlocks1; i++) {
             for (int j = 0; j < noOfBlocks2; j++) {
                 if (blocks2[j] < blocks1[i]) {
@@ -154,11 +157,11 @@ public class GroundTruthIndex {
         return entityBlocks[entityId].length;
     }
 
-    public List<Integer> getTotalCommonIndices(Comparison comparison) {
-        final List<Integer> indices = new ArrayList<Integer>();
+    public TIntList getTotalCommonIndices(Comparison comparison) {
+        final TIntList indices = new TIntArrayList();
 
-        int[] blocks1 = entityBlocks[comparison.getEntityId1()];
-        int[] blocks2 = entityBlocks[comparison.getEntityId2() + datasetLimit];
+        final int[] blocks1 = entityBlocks[comparison.getEntityId1()];
+        final int[] blocks2 = entityBlocks[comparison.getEntityId2() + datasetLimit];
         if (blocks1 == null || blocks2 == null) {
             return indices;
         }
@@ -185,8 +188,8 @@ public class GroundTruthIndex {
     }
 
     public int getTotalNoOfCommonBlocks(Comparison comparison) {
-        int[] blocks1 = entityBlocks[comparison.getEntityId1()];
-        int[] blocks2 = entityBlocks[comparison.getEntityId2() + datasetLimit];
+        final int[] blocks1 = entityBlocks[comparison.getEntityId1()];
+        final int[] blocks2 = entityBlocks[comparison.getEntityId2() + datasetLimit];
         if (blocks1 == null || blocks2 == null) {
             return 0;
         }
@@ -215,14 +218,14 @@ public class GroundTruthIndex {
 
     private void indexBilateralEntities(List<AbstractBlock> blocks) {
         //find matching entities
-        Set<Integer> matchingEntities = new HashSet<Integer>();
+        final TIntSet matchingEntities = new TIntHashSet();
         for (IdDuplicates pair : duplicates) {
             matchingEntities.add(pair.getEntityId1());
             matchingEntities.add(pair.getEntityId2() + datasetLimit);
         }
-        
+
         //count blocks per matching entity
-        int[] counters = new int[noOfEntities];
+        final int[] counters = new int[noOfEntities];
         for (AbstractBlock block : blocks) {
             BilateralBlock bilBlock = (BilateralBlock) block;
             for (int id1 : bilBlock.getIndex1Entities()) {
@@ -230,22 +233,22 @@ public class GroundTruthIndex {
                     counters[id1]++;
                 }
             }
-            
+
             for (int id2 : bilBlock.getIndex2Entities()) {
-                int entityId = datasetLimit+id2;
+                int entityId = datasetLimit + id2;
                 if (matchingEntities.contains(entityId)) {
                     counters[entityId]++;
                 }
             }
         }
-        
+
         //initialize inverted index
         entityBlocks = new int[noOfEntities][];
         for (int i = 0; i < noOfEntities; i++) {
             entityBlocks[i] = new int[counters[i]];
             counters[i] = 0;
         }
-        
+
         //build inverted index
         for (AbstractBlock block : blocks) {
             BilateralBlock bilBlock = (BilateralBlock) block;
@@ -255,9 +258,9 @@ public class GroundTruthIndex {
                     counters[id1]++;
                 }
             }
-            
+
             for (int id2 : bilBlock.getIndex2Entities()) {
-                int entityId = datasetLimit+id2;
+                int entityId = datasetLimit + id2;
                 if (matchingEntities.contains(entityId)) {
                     entityBlocks[entityId][counters[entityId]] = block.getBlockIndex();
                     counters[entityId]++;
@@ -276,14 +279,14 @@ public class GroundTruthIndex {
 
     private void indexUnilateralEntities(List<AbstractBlock> blocks) {
         //find matching entities
-        Set<Integer> matchingEntities = new HashSet<Integer>();
+        final TIntSet matchingEntities = new TIntHashSet();
         for (IdDuplicates pair : duplicates) {
             matchingEntities.add(pair.getEntityId1());
             matchingEntities.add(pair.getEntityId2());
         }
 
         //count blocks per matching entity
-        int[] counters = new int[noOfEntities];
+        final int[] counters = new int[noOfEntities];
         for (AbstractBlock block : blocks) {
             UnilateralBlock uniBlock = (UnilateralBlock) block;
             for (int id : uniBlock.getEntities()) {
@@ -292,14 +295,14 @@ public class GroundTruthIndex {
                 }
             }
         }
-        
+
         //initialize inverted index
         entityBlocks = new int[noOfEntities][];
         for (int i = 0; i < noOfEntities; i++) {
             entityBlocks[i] = new int[counters[i]];
             counters[i] = 0;
         }
-        
+
         //build inverted index
         for (AbstractBlock block : blocks) {
             UnilateralBlock uniBlock = (UnilateralBlock) block;
@@ -313,8 +316,8 @@ public class GroundTruthIndex {
     }
 
     public boolean isRepeated(int blockIndex, Comparison comparison) {
-        int[] blocks1 = entityBlocks[comparison.getEntityId1()];
-        int[] blocks2 = entityBlocks[comparison.getEntityId2() + datasetLimit];
+        final int[] blocks1 = entityBlocks[comparison.getEntityId1()];
+        final int[] blocks2 = entityBlocks[comparison.getEntityId2() + datasetLimit];
 
         int noOfBlocks1 = blocks1.length;
         int noOfBlocks2 = blocks2.length;
@@ -334,7 +337,7 @@ public class GroundTruthIndex {
             }
         }
 
-        System.err.println("Error!!!!");
+        Log.error("Error!!!!");
         return false;
     }
 

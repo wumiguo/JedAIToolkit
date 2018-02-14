@@ -1,5 +1,5 @@
 /*
-* Copyright [2016-2017] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2018] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -22,22 +22,21 @@ import DataModel.BilateralBlock;
 import DataModel.DecomposedBlock;
 import DataModel.UnilateralBlock;
 import Utilities.DataStructures.EntityIndex;
-import Utilities.Converter;
 
-import java.util.Collection;
-import java.util.HashSet;
+import com.esotericsoftware.minlog.Log;
+
+import gnu.trove.TIntCollection;
+import gnu.trove.set.TIntSet;
+import gnu.trove.set.hash.TIntHashSet;
+
 import java.util.List;
-import java.util.Set;
-import java.util.logging.Logger;
 
 /**
  *
  * @author gap2
  */
 
-public abstract class AbstractComparisonRefinementMethod implements IBlockProcessing {
-
-    private static final Logger LOGGER = Logger.getLogger(AbstractComparisonRefinementMethod.class.getName());
+public abstract class AbstractComparisonCleaning implements IBlockProcessing {
     
     protected boolean cleanCleanER;
 
@@ -47,30 +46,30 @@ public abstract class AbstractComparisonRefinementMethod implements IBlockProces
 
     protected EntityIndex entityIndex;
     protected BilateralBlock[] bBlocks;
-    protected final Set<Integer> validEntities;
+    protected final TIntSet validEntities;
     protected UnilateralBlock[] uBlocks;
 
-    public AbstractComparisonRefinementMethod() {
-        validEntities = new HashSet<>();
+    public AbstractComparisonCleaning() {
+        validEntities = new TIntHashSet();
     }
 
-    protected void addDecomposedBlock(int entityId, Collection<Integer> neighbors, List<AbstractBlock> newBlocks) {
+    protected void addDecomposedBlock(int entityId, TIntCollection neighbors, List<AbstractBlock> newBlocks) {
         if (neighbors.isEmpty()) {
             return;
         }
 
-        int[] entityIds1 = replicateId(entityId, neighbors.size());
-        int[] entityIds2 = Converter.convertCollectionToArray(neighbors);
+        final int[] entityIds1 = replicateId(entityId, neighbors.size());
+        final int[] entityIds2 = neighbors.toArray();
         newBlocks.add(new DecomposedBlock(cleanCleanER, entityIds1, entityIds2));
     }
     
-    protected void addReversedDecomposedBlock(int entityId, Collection<Integer> neighbors, List<AbstractBlock> newBlocks) {
+    protected void addReversedDecomposedBlock(int entityId, TIntCollection neighbors, List<AbstractBlock> newBlocks) {
         if (neighbors.isEmpty()) {
             return;
         }
 
-        int[] entityIds1 = Converter.convertCollectionToArray(neighbors);
-        int[] entityIds2 = replicateId(entityId, neighbors.size());
+        final int[] entityIds1 = neighbors.toArray();
+        final int[] entityIds2 = replicateId(entityId, neighbors.size());
         newBlocks.add(new DecomposedBlock(cleanCleanER, entityIds1, entityIds2));
     }
     
@@ -78,6 +77,8 @@ public abstract class AbstractComparisonRefinementMethod implements IBlockProces
 
     @Override
     public List<AbstractBlock> refineBlocks(List<AbstractBlock> blocks) {
+        Log.info("Applying " + getMethodName() + " with the following configuration : " + getMethodConfiguration());
+        
         entityIndex = new EntityIndex(blocks);
         
         cleanCleanER = entityIndex.isCleanCleanER();
@@ -92,7 +93,7 @@ public abstract class AbstractComparisonRefinementMethod implements IBlockProces
     
     protected int[] replicateId(int entityId, int times) {
         int counter = 0;
-        int[] array = new int[times];
+        final int[] array = new int[times];
         for (int i = 0; i < times; i++) {
             array[counter++] = entityId;
         }

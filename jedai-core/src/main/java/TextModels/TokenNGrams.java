@@ -1,5 +1,5 @@
 /*
-* Copyright [2016] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2018] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -33,7 +33,7 @@ public class TokenNGrams extends BagModel {
     
     @Override
     public void updateModel(String text) {
-        String[] tokens = gr.demokritos.iit.jinsect.utils.splitToWords(text);
+        final String[] tokens = gr.demokritos.iit.jinsect.utils.splitToWords(text);
         
         int noOfTokens = tokens.length;
         noOfTotalTerms += noOfTokens;

@@ -1,5 +1,5 @@
 /*
-* Copyright [2016] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2018] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -19,17 +19,16 @@ import Utilities.DataStructures.BilateralDuplicatePropagation;
 import Utilities.DataStructures.AbstractDuplicatePropagation;
 import DataModel.Comparison;
 import DataModel.EquivalenceCluster;
+
+import com.esotericsoftware.minlog.Log;
+import gnu.trove.iterator.TIntIterator;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
  * @author gap2
  */
 public class ClustersPerformance {
-
-    private static final Logger LOGGER = Logger.getLogger(ClustersPerformance.class.getName());
 
     private double fMeasure;
     private double precision;
@@ -48,7 +47,7 @@ public class ClustersPerformance {
     public int getDetectedDuplicates() {
         return abstractDP.getNoOfDuplicates();
     }
-    
+
     public int getEntityClusters() {
         return entityClusters.size();
     }
@@ -90,25 +89,25 @@ public class ClustersPerformance {
 
     public void setStatistics() {
         if (entityClusters.isEmpty()) {
-            LOGGER.log(Level.WARNING, "Empty set of equivalence clusters given as input!");
+            Log.warn("Empty set of equivalence clusters given as input!");
             return;
         }
 
         totalMatches = 0;
         if (abstractDP instanceof BilateralDuplicatePropagation) { // Clean-Clean ER
             for (EquivalenceCluster cluster : entityClusters) {
-                for (int entityId1 : cluster.getEntityIdsD1()) {
-                    for (int entityid2 : cluster.getEntityIdsD2()) {
+                for (TIntIterator outIterator = cluster.getEntityIdsD1().iterator(); outIterator.hasNext();) {
+                    int entityId1 = outIterator.next();
+                    for (TIntIterator inIterator = cluster.getEntityIdsD2().iterator(); inIterator.hasNext();) {
                         totalMatches++;
-                        Comparison comparison = new Comparison(true, entityId1, entityid2);
+                        Comparison comparison = new Comparison(true, entityId1, inIterator.next());
                         abstractDP.isSuperfluous(comparison);
                     }
                 }
             }
         } else { // Dirty ER
             for (EquivalenceCluster cluster : entityClusters) {
-                List<Integer> duplicates = cluster.getEntityIdsD1();
-                Integer[] duplicatesArray = duplicates.toArray(new Integer[duplicates.size()]);
+                final int[] duplicatesArray = cluster.getEntityIdsD1().toArray();
 
                 for (int i = 0; i < duplicatesArray.length; i++) {
                     for (int j = i + 1; j < duplicatesArray.length; j++) {

@@ -1,5 +1,5 @@
 /*
-* Copyright [2016-2017] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2018] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -21,17 +21,17 @@ import DataModel.SimilarityPairs;
 import DataModel.VertexWeight;
 import Utilities.Comparators.VertexWeightComparator;
 
+import gnu.trove.iterator.TIntIterator;
+import gnu.trove.map.hash.TIntDoubleHashMap;
+import gnu.trove.map.hash.TIntObjectHashMap;
+import gnu.trove.set.TIntSet;
+import gnu.trove.set.hash.TIntHashSet;
+
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Queue;
-import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -39,18 +39,14 @@ import java.util.logging.Logger;
  */
 public class RicochetSRClustering extends AbstractEntityClustering {
 
-    private static final Logger LOGGER = Logger.getLogger(RicochetSRClustering.class.getName());
-
     public RicochetSRClustering() {
         this(0.5);
     }
 
     public RicochetSRClustering(double simTh) {
         super(simTh);
-
-        LOGGER.log(Level.INFO, "{0} initiated", getMethodName());
     }
-    
+
     @Override
     public List<EquivalenceCluster> getDuplicates(SimilarityPairs simPairs) {
         initializeData(simPairs);
@@ -58,14 +54,14 @@ public class RicochetSRClustering extends AbstractEntityClustering {
         final Queue<VertexWeight> VWqueue = new PriorityQueue<>(noOfEntities, new VertexWeightComparator());
         final double[] edgesWeight = new double[noOfEntities];
         final int[] edgesAttached = new int[noOfEntities];
-        final List<Map<Integer, Double>> connections = new ArrayList<>();
+        final List<TIntDoubleHashMap> connections = new ArrayList<>();
         for (int i = 0; i < noOfEntities; i++) {
-            connections.add(i, new HashMap<>());
+            connections.add(i, new TIntDoubleHashMap());
         }
 
         final Iterator<Comparison> iterator = simPairs.getPairIterator();
         while (iterator.hasNext()) {	// add an edge for every pair of entities with a weight higher than the threshold
-            Comparison comparison = iterator.next();
+            final Comparison comparison = iterator.next();
             int entityId2 = comparison.getEntityId2() + datasetLimit;
             if (threshold < comparison.getUtilityMeasure()) {
                 edgesWeight[comparison.getEntityId1()] += comparison.getUtilityMeasure();
@@ -89,9 +85,9 @@ public class RicochetSRClustering extends AbstractEntityClustering {
             return new ArrayList<>();
         }
 
-        final Set<Integer> Center = new HashSet<>();
-        final Set<Integer> NonCenter = new HashSet<>();
-        final Map<Integer, Set<Integer>> Clusters = new HashMap<>();
+        final TIntSet Center = new TIntHashSet();
+        final TIntSet NonCenter = new TIntHashSet();
+        final TIntObjectHashMap<TIntSet> Clusters = new TIntObjectHashMap();
         final int[] clusterCenter = new int[noOfEntities];
         final double[] simWithCenter = new double[noOfEntities]; // similarity with center
 
@@ -100,11 +96,10 @@ public class RicochetSRClustering extends AbstractEntityClustering {
         int v1 = vw.getPos();
         Center.add(v1);
         clusterCenter[v1] = v1;
-        Clusters.put(v1, new HashSet<>());
-        Clusters.get(v1).add(v1);//initialize v1 Cluster with its own value
+        Clusters.put(v1, new TIntHashSet(v1));//initialize v1 Cluster with its own value
         simWithCenter[v1] = 1.0;
-        Map<Integer, Double> connect = vw.Connections();
-        for (int v2 : connect.keySet()) {
+        TIntDoubleHashMap connect = vw.Connections();
+        for (int v2 : connect.keys()) {
             NonCenter.add(v2);
             clusterCenter[v2] = v1;
             simWithCenter[v2] = connect.get(v2);//similarity between v1 and v2
@@ -115,9 +110,9 @@ public class RicochetSRClustering extends AbstractEntityClustering {
             vw = VWqueue.remove();
             v1 = vw.getPos();
             connect = vw.Connections();
-            final Set<Integer> toReassign = new HashSet<>();
-            final Set<Integer> centersToReassign = new HashSet<>();
-            for (int v2 : connect.keySet()) {
+            final TIntSet toReassign = new TIntHashSet();
+            final TIntSet centersToReassign = new TIntHashSet();
+            for (int v2 : connect.keys()) {
                 if (Center.contains(v2)) {
                     continue;
                 }
@@ -146,7 +141,8 @@ public class RicochetSRClustering extends AbstractEntityClustering {
                 Center.add(v1);
             }
 
-            for (int v2 : toReassign) {
+            for (TIntIterator tIterator = toReassign.iterator(); tIterator.hasNext();) {
+                int v2 = tIterator.next();
                 if (v2 == v1) {
                     continue;
                 }
@@ -165,7 +161,8 @@ public class RicochetSRClustering extends AbstractEntityClustering {
                 simWithCenter[v2] = connect.get(v2);
             }
 
-            for (int ctr : centersToReassign) {
+            for (TIntIterator cIterator = centersToReassign.iterator(); cIterator.hasNext();) {
+                int ctr = cIterator.next();
                 if (Clusters.get(ctr).size() > 1) {
                     continue;
                 }
@@ -174,10 +171,11 @@ public class RicochetSRClustering extends AbstractEntityClustering {
 
                 double max = 0.0;
                 int newCenter = v1;//in case there is no close similarity
-                for (int center : Center) {
-                    final Map<Integer, Double> currentConnections = connections.get(center);
-                    Double newSim = currentConnections.get(ctr);
-                    if (newSim != null) {
+                for (TIntIterator eIterator = Center.iterator(); eIterator.hasNext();) {
+                    int center = eIterator.next();
+                    final TIntDoubleHashMap currentConnections = connections.get(center);
+                    double newSim = currentConnections.get(ctr);
+                    if (0 < newSim) {
                         if (newSim > max) {
                             max = newSim;
                             newCenter = center;
@@ -196,28 +194,29 @@ public class RicochetSRClustering extends AbstractEntityClustering {
             if ((!NonCenter.contains(i)) && (!Center.contains(i))) {
                 Center.add(i);
                 clusterCenter[i] = i;
-                Clusters.put(i, new HashSet<>(i));//initialize v1 Cluster with its own value
+                Clusters.put(i, new TIntHashSet(i));//initialize v1 Cluster with its own value
                 simWithCenter[i] = 1.0;
             }
         }
 
         // get connected components
         final List<EquivalenceCluster> equivalenceClusters = new ArrayList<>();
-        for (Set<Integer> componentIds : Clusters.values()) {
-            EquivalenceCluster newCluster = new EquivalenceCluster();
+        for (TIntSet componentIds : Clusters.valueCollection()) {
+            final EquivalenceCluster newCluster = new EquivalenceCluster();
             equivalenceClusters.add(newCluster);
             if (!simPairs.isCleanCleanER()) {
                 newCluster.loadBulkEntityIdsD1(componentIds);
                 continue;
             }
 
-            componentIds.forEach((entityId) -> {
+            for (TIntIterator oIterator = componentIds.iterator(); oIterator.hasNext();) {
+                int entityId = oIterator.next();
                 if (entityId < datasetLimit) {
                     newCluster.addEntityIdD1(entityId);
                 } else {
                     newCluster.addEntityIdD2(entityId - datasetLimit);
                 }
-            });
+            }
         }
         return equivalenceClusters;
     }

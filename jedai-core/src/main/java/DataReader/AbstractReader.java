@@ -1,5 +1,5 @@
 /*
- * Copyright [2016] [George Papadakis (gpapadis@yahoo.gr)]
+ * Copyright [2016-2018] [George Papadakis (gpapadis@yahoo.gr)]
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,15 @@
 
 package DataReader;
 
+import DataModel.Attribute;
+import DataModel.EntityProfile;
+import com.esotericsoftware.minlog.Log;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInput;
@@ -27,8 +32,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.io.PrintWriter;
+import java.util.List;
 
 /**
  *
@@ -37,8 +42,6 @@ import java.util.logging.Logger;
 
 public abstract class AbstractReader implements IDataReader {
     
-    private static final Logger LOGGER = Logger.getLogger(AbstractReader.class.getName());
-    
     protected String inputFilePath;
     
     public AbstractReader (String filePath) {
@@ -46,21 +49,18 @@ public abstract class AbstractReader implements IDataReader {
     }
     
     public static Object loadSerializedObject(String fileName) {
-        Object object = null;
+        Object object;
         try {
-            InputStream file = new FileInputStream(fileName);
-            InputStream buffer = new BufferedInputStream(file);
-            ObjectInput input = new ObjectInputStream(buffer);
-            try {
+            final InputStream file = new FileInputStream(fileName);
+            final InputStream buffer = new BufferedInputStream(file);
+            try (ObjectInput input = new ObjectInputStream(buffer)) {
                 object = input.readObject();
-            } finally {
-                input.close();
             }
         } catch (ClassNotFoundException cnfEx) {
-            LOGGER.log(Level.SEVERE, null, cnfEx);
+            Log.error("Missing class", cnfEx);
             return null;
         } catch (IOException ioex) {
-            LOGGER.log(Level.SEVERE, null, ioex);
+            Log.error("Error in data reading", ioex);
             return null;
         }
 
@@ -89,23 +89,20 @@ public abstract class AbstractReader implements IDataReader {
     	    printWriter.println("</rdf:RDF>");
     	    printWriter.close();
         } catch (IOException ioex) {
-            LOGGER.log(Level.SEVERE, null, ioex);
+            Log.error("Error in converting to RDF", ioex);
         }
     }
     
     @Override
     public void storeSerializedObject(Object object, String outputPath) {
         try {
-            OutputStream file = new FileOutputStream(outputPath);
-            OutputStream buffer = new BufferedOutputStream(file);
-            ObjectOutput output = new ObjectOutputStream(buffer);
-            try {
+            final OutputStream file = new FileOutputStream(outputPath);
+            final OutputStream buffer = new BufferedOutputStream(file);
+            try (ObjectOutput output = new ObjectOutputStream(buffer)) {
                 output.writeObject(object);
-            } finally {
-                output.close();
             }
         } catch (IOException ioex) {
-            LOGGER.log(Level.SEVERE, null, ioex);
+            Log.error("Error in data reading", ioex);
         }
     }
 }

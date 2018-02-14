@@ -1,5 +1,5 @@
 /*
-* Copyright [2016-2017] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2018] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -17,16 +17,12 @@
 package BlockProcessing.ComparisonCleaning;
 
 import Utilities.Enumerations.WeightingScheme;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
  * @author G.A.P. II
  */
 public class ReciprocalWeightedNodePruning extends WeightedNodePruning {
-
-    private static final Logger LOGGER = Logger.getLogger(ReciprocalWeightedNodePruning.class.getName());
     
     public ReciprocalWeightedNodePruning() {
         this(WeightingScheme.ARCS);
@@ -34,8 +30,6 @@ public class ReciprocalWeightedNodePruning extends WeightedNodePruning {
     
     public ReciprocalWeightedNodePruning(WeightingScheme scheme) {
         super(scheme);
-        
-        LOGGER.log(Level.INFO, "{0} initiated", getMethodName());
     }
 
     @Override

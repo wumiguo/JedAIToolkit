@@ -1,5 +1,5 @@
 /*
-* Copyright [2016-2017] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2018] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -18,12 +18,13 @@ package BlockProcessing.BlockCleaning;
 import DataModel.AbstractBlock;
 import Utilities.Comparators.BlockCardinalityComparator;
 
+import com.esotericsoftware.minlog.Log;
+
+import gnu.trove.set.TDoubleSet;
+import gnu.trove.set.hash.TDoubleHashSet;
+
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.apache.jena.atlas.json.JsonArray;
 import org.apache.jena.atlas.json.JsonObject;
@@ -34,21 +35,15 @@ import org.apache.jena.atlas.json.JsonObject;
  */
 public class ComparisonsBasedBlockPurging extends AbstractBlockPurging {
 
-    private static final Logger LOGGER = Logger.getLogger(ComparisonsBasedBlockPurging.class.getName());
-
     private double smoothingFactor;
     private double maxComparisonsPerBlock;
 
     public ComparisonsBasedBlockPurging() {
         this(1.025);
-
-        LOGGER.log(Level.INFO, "Using default configuration for {0}.", getMethodName());
     }
 
     public ComparisonsBasedBlockPurging(double sf) {
         smoothingFactor = sf;
-
-        LOGGER.log(Level.INFO, getMethodConfiguration());
     }
 
     @Override
@@ -74,7 +69,7 @@ public class ComparisonsBasedBlockPurging extends AbstractBlockPurging {
 
     @Override
     public JsonArray getParameterConfiguration() {
-        JsonObject obj = new JsonObject();
+        final JsonObject obj = new JsonObject();
         obj.put("class", "java.lang.Double");
         obj.put("name", getParameterName(0));
         obj.put("defaultValue", "1.025");
@@ -83,7 +78,7 @@ public class ComparisonsBasedBlockPurging extends AbstractBlockPurging {
         obj.put("stepValue", "0.01");
         obj.put("description", getParameterDescription(0));
 
-        JsonArray array = new JsonArray();
+        final JsonArray array = new JsonArray();
         array.add(obj);
 
         return array;
@@ -118,7 +113,7 @@ public class ComparisonsBasedBlockPurging extends AbstractBlockPurging {
     @Override
     protected void setThreshold(List<AbstractBlock> blocks) {
         Collections.sort(blocks, new BlockCardinalityComparator());
-        final Set<Double> distinctComparisonsLevel = new HashSet<>();
+        final TDoubleSet distinctComparisonsLevel = new TDoubleHashSet();
         blocks.forEach((block) -> {
             distinctComparisonsLevel.add(block.getNoOfComparisons());
         });
@@ -166,6 +161,6 @@ public class ComparisonsBasedBlockPurging extends AbstractBlockPurging {
         }
 
         maxComparisonsPerBlock = previousSize;
-        LOGGER.log(Level.INFO, "Maximum comparisons per block\t:\t{0}", maxComparisonsPerBlock);
+        Log.info("Maximum comparisons per block\t:\t" + maxComparisonsPerBlock);
     }
 }

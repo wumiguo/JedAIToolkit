@@ -1,5 +1,5 @@
 /*
-* Copyright [2016-2017] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2018] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -20,10 +20,10 @@ import DataModel.EquivalenceCluster;
 import DataModel.GomoryHuTree;
 import DataModel.SimilarityPairs;
 
+import com.esotericsoftware.minlog.Log;
+
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.apache.jena.atlas.json.JsonArray;
 import org.apache.jena.atlas.json.JsonObject;
 
@@ -36,8 +36,6 @@ import org.jgrapht.graph.SimpleWeightedGraph;
  */
 public class CutClustering extends AbstractEntityClustering {
 
-    private static final Logger LOGGER = Logger.getLogger(CutClustering.class.getName());
-
     protected double Acap;
     protected SimpleWeightedGraph weightedGraph;
 
@@ -48,8 +46,6 @@ public class CutClustering extends AbstractEntityClustering {
     public CutClustering(double ac, double simTh) {
         super(simTh);
         Acap = ac;
-
-        LOGGER.log(Level.INFO, "{0} initiated", getMethodName());
     }
 
     @Override
@@ -159,7 +155,7 @@ public class CutClustering extends AbstractEntityClustering {
             weightedGraph.setEdgeWeight(e, Acap); //connecting the artificial sink with all vertices
         }
 
-        LOGGER.log(Level.INFO, "Added {0} nodes in the graph", noOfEntities);
+        Log.info("Added " + noOfEntities + " nodes in the graph");
     }
 
     public void setA(double Acap) {

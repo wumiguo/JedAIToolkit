@@ -1,6 +1,23 @@
+/*
+ * Copyright [2016-2018] [George Papadakis (gpapadis@yahoo.gr)]
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package DataReader.EntityReader;
 
 import DataModel.EntityProfile;
+
+import com.esotericsoftware.minlog.Log;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -9,8 +26,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.apache.jena.atlas.json.JsonArray;
 import org.apache.jena.atlas.json.JsonObject;
@@ -21,9 +36,7 @@ import org.apache.jena.query.QueryFactory;
 import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ResultSet;
 
-public class EndpointReader extends AbstractEntityReader {
-
-    private static final Logger LOGGER = Logger.getLogger(EndpointReader.class.getName());
+public class EntitySPARQLReader extends AbstractEntityReader {
 
     private String password;
     private String user;
@@ -31,7 +44,7 @@ public class EndpointReader extends AbstractEntityReader {
     private final Set<String> attributesToExclude;
     private final Map<String, EntityProfile> urlToEntity;
 
-    public EndpointReader(String endpointUrl) {
+    public EntitySPARQLReader(String endpointUrl) {
         super(endpointUrl);
 
         password = null;
@@ -49,7 +62,7 @@ public class EndpointReader extends AbstractEntityReader {
         }
 
         if (inputFilePath == null) {
-            LOGGER.log(Level.SEVERE, "Input file path has not been set!");
+            Log.error("Input file path has not been set!");
             return null;
         }
 
@@ -57,7 +70,7 @@ public class EndpointReader extends AbstractEntityReader {
         try {
             readEndpoint(inputFilePath);
         } catch (IOException ex) {
-            LOGGER.log(Level.SEVERE, null, ex);
+            Log.error("Error in data reading", ex);
             return null;
         }
 
@@ -66,17 +79,17 @@ public class EndpointReader extends AbstractEntityReader {
 
     @Override
     public String getMethodConfiguration() {
-        StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
         sb.append("{");
         for (String attributeName : attributesToExclude) {
             sb.append(attributeName).append(",");
         }
         sb.append("}");
-    
+
         return getParameterName(0) + "=" + inputFilePath + "\t"
-               + getParameterName(1) + "=" + user + "\t"
-               + getParameterName(2) + "=" + password + "\t"
-               + getParameterName(3) + "=" + sb.toString();
+                + getParameterName(1) + "=" + user + "\t"
+                + getParameterName(2) + "=" + password + "\t"
+                + getParameterName(3) + "=" + sb.toString();
     }
 
     @Override
@@ -100,7 +113,7 @@ public class EndpointReader extends AbstractEntityReader {
 
     @Override
     public JsonArray getParameterConfiguration() {
-        JsonObject obj1 = new JsonObject();
+        final JsonObject obj1 = new JsonObject();
         obj1.put("class", "java.lang.String");
         obj1.put("name", getParameterName(0));
         obj1.put("defaultValue", "-");
@@ -109,7 +122,7 @@ public class EndpointReader extends AbstractEntityReader {
         obj1.put("stepValue", "-");
         obj1.put("description", getParameterDescription(0));
 
-        JsonObject obj2 = new JsonObject();
+        final JsonObject obj2 = new JsonObject();
         obj2.put("class", "java.lang.String");
         obj2.put("name", getParameterName(1));
         obj2.put("defaultValue", "-");
@@ -117,8 +130,8 @@ public class EndpointReader extends AbstractEntityReader {
         obj2.put("maxValue", "-");
         obj2.put("stepValue", "-");
         obj2.put("description", getParameterDescription(1));
-        
-        JsonObject obj3 = new JsonObject();
+
+        final JsonObject obj3 = new JsonObject();
         obj3.put("class", "java.lang.String");
         obj3.put("name", getParameterName(2));
         obj3.put("defaultValue", "-");
@@ -126,8 +139,8 @@ public class EndpointReader extends AbstractEntityReader {
         obj3.put("maxValue", "-");
         obj3.put("stepValue", "-");
         obj3.put("description", getParameterDescription(2));
-                
-        JsonObject obj4 = new JsonObject();
+
+        final JsonObject obj4 = new JsonObject();
         obj4.put("class", "java.util.Set<String>");
         obj4.put("name", getParameterName(3));
         obj4.put("defaultValue", "-");
@@ -136,7 +149,7 @@ public class EndpointReader extends AbstractEntityReader {
         obj4.put("stepValue", "-");
         obj4.put("description", getParameterDescription(3));
 
-        JsonArray array = new JsonArray();
+        final JsonArray array = new JsonArray();
         array.add(obj1);
         array.add(obj2);
         array.add(obj3);
@@ -180,37 +193,39 @@ public class EndpointReader extends AbstractEntityReader {
         //read each ntriples
         //get spo, create a separate profile for each separate subject,
         //with Attribute=predicate and Value=object
-        String sparqlQueryString1 = "select ?a ?b ?c where {?a ?b ?c}";
+        final String sparqlQueryString1 = "select ?a ?b ?c where {?a ?b ?c}";
 
-        Query query = QueryFactory.create(sparqlQueryString1);
-        QueryExecution qexec = QueryExecutionFactory.sparqlService(endpointUrl, query);
-        ResultSet results = qexec.execSelect();
-        //ResultSetFormatter.out(System.out, results, query);       
-        //results = qexec.execSelect();
-
-        while (results.hasNext()) {
-            QuerySolution qs = results.next();
-
-            String sub = qs.get("a").toString();
-            String pred = qs.get("b").toString();
-            String obj = qs.get("c").toString();
-            if (attributesToExclude.contains(pred)) {
-                continue;
-            }
-
-            //if already exists a profile for the subject, simply add po as <Att>-<Value>
-            EntityProfile entityProfile = urlToEntity.get(sub);
-            if (entityProfile == null) {
-                entityProfile = new EntityProfile(sub);
-                entityProfiles.add(entityProfile);
-                urlToEntity.put(sub, entityProfile);
-            }
-
-            if (!obj.isEmpty()) {
-                entityProfile.addAttribute(pred, obj);
+        final Query query = QueryFactory.create(sparqlQueryString1);
+        try (QueryExecution qexec = QueryExecutionFactory.sparqlService(endpointUrl, query)) {
+            final ResultSet results = qexec.execSelect();
+            //ResultSetFormatter.out(System.out, results, query);
+            //results = qexec.execSelect();
+            
+            while (results.hasNext()) {
+                final QuerySolution qs = results.next();
+                
+                final String sub = qs.get("a").toString();
+                final String pred = qs.get("b").toString();
+                final String obj = qs.get("c").toString();
+                if (attributesToExclude.contains(pred)) {
+                    continue;
+                }
+                
+                //if already exists a profile for the subject, simply add po as <Att>-<Value>
+                EntityProfile entityProfile = urlToEntity.get(sub);
+                if (entityProfile == null) {
+                    entityProfile = new EntityProfile(sub);
+                    entityProfiles.add(entityProfile);
+                    urlToEntity.put(sub, entityProfile);
+                }
+                
+                if (!obj.isEmpty()) {
+                    entityProfile.addAttribute(pred, obj);
+                }
             }
         }
-        qexec.close();
+        //ResultSetFormatter.out(System.out, results, query);
+        //results = qexec.execSelect();
     }
 
     public void setAttributesToExclude(String[] attributesNamesToExclude) {

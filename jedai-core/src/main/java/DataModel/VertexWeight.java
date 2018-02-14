@@ -1,5 +1,5 @@
 /*
-* Copyright [2016] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2018] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
  */
 package DataModel;
 
-import java.util.Map;
+import gnu.trove.map.hash.TIntDoubleHashMap;
 
 /**
  *
@@ -26,9 +26,9 @@ public class VertexWeight {
     private final int pos;
     private final double weight;
     private final int noOfAdj;
-    private final Map<Integer, Double> Connections;
+    private final TIntDoubleHashMap Connections;
 
-    public VertexWeight(int pos, double weight, int noOfAdj, Map<Integer, Double> Connections) {
+    public VertexWeight(int pos, double weight, int noOfAdj, TIntDoubleHashMap Connections) {
         this.pos = pos;
         this.weight = weight;
         this.noOfAdj = noOfAdj;
@@ -47,7 +47,7 @@ public class VertexWeight {
         return this.noOfAdj;
     }
 
-    public Map<Integer, Double> Connections() {
+    public TIntDoubleHashMap Connections() {
         return this.Connections;
     }
 

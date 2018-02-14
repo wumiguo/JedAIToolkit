@@ -1,5 +1,5 @@
 /*
-* Copyright [2016] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2018] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -148,7 +148,7 @@ public class EntityIndex implements Serializable {
     }
     
     private void indexBilateralEntities() {
-        int[] counters = new int[noOfEntities];
+        final int[] counters = new int[noOfEntities];
         entityComparisons = new double[noOfEntities];
         for (BilateralBlock block : bBlocks) {
             int innerSize1 = block.getIndex1Entities().length;
@@ -191,7 +191,7 @@ public class EntityIndex implements Serializable {
 
     private void indexUnilateralEntities() {
         //count valid entities & blocks per entity
-        int[] counters = new int[noOfEntities];
+        final int[] counters = new int[noOfEntities];
         entityComparisons = new double[noOfEntities];
         for (UnilateralBlock block : uBlocks) {
             int blockSize = block.getEntities().length;

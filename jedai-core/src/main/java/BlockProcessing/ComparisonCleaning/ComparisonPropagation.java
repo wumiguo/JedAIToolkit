@@ -1,5 +1,5 @@
 /*
-* Copyright [2016-2017] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2018] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -19,8 +19,6 @@ import DataModel.AbstractBlock;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.apache.jena.atlas.json.JsonArray;
 
@@ -28,19 +26,15 @@ import org.apache.jena.atlas.json.JsonArray;
  *
  * @author gap2
  */
-public class ComparisonPropagation extends AbstractComparisonRefinementMethod {
-
-    private static final Logger LOGGER = Logger.getLogger(ComparisonPropagation.class.getName());
+public class ComparisonPropagation extends AbstractComparisonCleaning {
     
     public ComparisonPropagation() {
         super();
-        
-        LOGGER.log(Level.INFO, "{0} initiated", getMethodName());
     }
 
     @Override
     protected List<AbstractBlock> applyMainProcessing() {
-        List<AbstractBlock> newBlocks = new ArrayList<>();
+        final List<AbstractBlock> newBlocks = new ArrayList<>();
         if (cleanCleanER) {
             processBilateralBlocks(newBlocks);
         } else {

@@ -1,5 +1,5 @@
 /*
-* Copyright [2016] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2018] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -24,19 +24,19 @@ import DataModel.ComparisonIterator;
 import DataModel.DecomposedBlock;
 import DataModel.IdDuplicates;
 import DataModel.UnilateralBlock;
-import java.util.HashSet;
+
+import com.esotericsoftware.minlog.Log;
+
+import gnu.trove.set.TIntSet;
+import gnu.trove.set.hash.TIntHashSet;
+
 import java.util.List;
-import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
  * @author gap2
  */
 public class BlocksPerformance {
-
-    private static final Logger LOGGER = Logger.getLogger(BlocksPerformance.class.getName());
 
     private boolean isCleanCleanER;
 
@@ -63,12 +63,12 @@ public class BlocksPerformance {
     }
 
     private boolean areCooccurring(boolean cleanCleanER, IdDuplicates pairOfDuplicates) {
-        int[] blocks1 = entityIndex.getEntityBlocks(pairOfDuplicates.getEntityId1(), 0);
+        final int[] blocks1 = entityIndex.getEntityBlocks(pairOfDuplicates.getEntityId1(), 0);
         if (blocks1 == null) {
             return false;
         }
 
-        int[] blocks2 = entityIndex.getEntityBlocks(pairOfDuplicates.getEntityId2(), cleanCleanER ? 1 : 0);
+        final int[] blocks2 = entityIndex.getEntityBlocks(pairOfDuplicates.getEntityId2(), cleanCleanER ? 1 : 0);
         if (blocks2 == null) {
             return false;
         }
@@ -129,11 +129,11 @@ public class BlocksPerformance {
     }
 
     private void getDecomposedBlocksEntities() {
-        final Set<Integer> entitiesD1 = new HashSet<Integer>((int) aggregateCardinality);
+        final TIntSet entitiesD1 = new TIntHashSet((int) aggregateCardinality);
         if (isCleanCleanER) {
-            final Set<Integer> entitiesD2 = new HashSet<Integer>((int) aggregateCardinality);
+            final TIntSet entitiesD2 = new TIntHashSet((int) aggregateCardinality);
             for (AbstractBlock block : blocks) {
-                ComparisonIterator iterator = block.getComparisonIterator();
+                final ComparisonIterator iterator = block.getComparisonIterator();
                 while (iterator.hasNext()) {
                     Comparison comparison = iterator.next();
                     entitiesD1.add(comparison.getEntityId1());
@@ -144,7 +144,7 @@ public class BlocksPerformance {
             noOfD2Entities = entitiesD2.size();
         } else {
             for (AbstractBlock block : blocks) {
-                ComparisonIterator iterator = block.getComparisonIterator();
+                final ComparisonIterator iterator = block.getComparisonIterator();
                 while (iterator.hasNext()) {
                     Comparison comparison = iterator.next();
                     entitiesD1.add(comparison.getEntityId1());
@@ -170,7 +170,11 @@ public class BlocksPerformance {
         detectedDuplicates = abstractDP.getNoOfDuplicates();
         pc = ((double) abstractDP.getNoOfDuplicates()) / abstractDP.getExistingDuplicates();
         pq = abstractDP.getNoOfDuplicates() / aggregateCardinality;
-        fMeasure =  2 * pc * pq / (pc + pq);
+        if (0 < pc && 0 < pq ) {
+            fMeasure =  2 * pc * pq / (pc + pq);
+        } else {
+            fMeasure = 0;
+        }
     }
 
     private void getDuplicatesWithEntityIndex() {
@@ -190,19 +194,19 @@ public class BlocksPerformance {
 
     private void getEntities() {
         if (blocks.get(0) instanceof UnilateralBlock) {
-            final Set<Integer> distinctEntities = new HashSet<Integer>();
+            final TIntSet distinctEntities = new TIntHashSet();
             for (AbstractBlock block : blocks) {
-                UnilateralBlock uBlock = (UnilateralBlock) block;
+                final UnilateralBlock uBlock = (UnilateralBlock) block;
                 for (int entityId : uBlock.getEntities()) {
                     distinctEntities.add(entityId);
                 }
             }
             noOfD1Entities = distinctEntities.size();
         } else {
-            final Set<Integer> distinctEntitiesD1 = new HashSet<Integer>();
-            final Set<Integer> distinctEntitiesD2 = new HashSet<Integer>();
+            final TIntSet distinctEntitiesD1 = new TIntHashSet();
+            final TIntSet distinctEntitiesD2 = new TIntHashSet();
             for (AbstractBlock block : blocks) {
-                BilateralBlock bBlock = (BilateralBlock) block;
+                final BilateralBlock bBlock = (BilateralBlock) block;
                 for (int entityId : bBlock.getIndex1Entities()) {
                     distinctEntitiesD1.add(entityId);
                 }
@@ -268,7 +272,7 @@ public class BlocksPerformance {
 
     public void setStatistics() {
         if (blocks.isEmpty()) {
-            LOGGER.log(Level.WARNING, "Empty set of equivalence clusters given as input!");
+            Log.warn("Empty set of equivalence clusters given as input!");
             return;
         }
 

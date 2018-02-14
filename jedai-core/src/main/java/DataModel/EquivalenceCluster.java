@@ -1,5 +1,5 @@
 /*
-* Copyright [2016] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2018] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -16,9 +16,9 @@
 
 package DataModel;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import gnu.trove.TIntCollection;
+import gnu.trove.list.TIntList;
+import gnu.trove.list.array.TIntArrayList;
 
 /**
  *
@@ -27,12 +27,12 @@ import java.util.List;
 
 public class EquivalenceCluster {
     
-    private final List<Integer> entityIdsD1;
-    private final List<Integer> entityIdsD2;
+    private final TIntList entityIdsD1;
+    private final TIntList entityIdsD2;
     
     public EquivalenceCluster() {
-        entityIdsD1 = new ArrayList<>();
-        entityIdsD2 = new ArrayList<>();
+        entityIdsD1 = new TIntArrayList();
+        entityIdsD2 = new TIntArrayList();
     }
     
     public void addEntityIdD1(int id) {
@@ -43,15 +43,15 @@ public class EquivalenceCluster {
         entityIdsD2.add(id);
     }
     
-    public List<Integer> getEntityIdsD1() {
+    public TIntList getEntityIdsD1() {
         return entityIdsD1;
     }
     
-    public List<Integer> getEntityIdsD2() {
+    public TIntList getEntityIdsD2() {
         return entityIdsD2;
     }
     
-    public void loadBulkEntityIdsD1(Collection<Integer> ids) {
+    public void loadBulkEntityIdsD1(TIntCollection ids) {
         entityIdsD1.addAll(ids);
     }
 }

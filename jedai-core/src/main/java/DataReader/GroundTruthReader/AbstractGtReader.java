@@ -1,5 +1,5 @@
 /*
- * Copyright [2016] [George Papadakis (gpapadis@yahoo.gr)]
+ * Copyright [2016-2018] [George Papadakis (gpapadis@yahoo.gr)]
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,11 +19,13 @@ package DataReader.GroundTruthReader;
 import DataModel.EntityProfile;
 import DataModel.IdDuplicates;
 import DataReader.AbstractReader;
-import java.util.HashMap;
+
+import gnu.trove.map.hash.TObjectIntHashMap;
+
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
+
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleGraph;
 
@@ -38,16 +40,16 @@ public abstract class AbstractGtReader extends AbstractReader implements IGround
     protected int noOfEntities;
 
     protected final Set<IdDuplicates> idDuplicates;
-    protected final Map<String, Integer> urlToEntityId1;
-    protected final Map<String, Integer> urlToEntityId2;
+    protected final TObjectIntHashMap<String> urlToEntityId1;
+    protected final TObjectIntHashMap<String> urlToEntityId2;
     protected final SimpleGraph duplicatesGraph;
     
     public AbstractGtReader (String filePath) {
         super(filePath);
         idDuplicates = new HashSet<>();
         duplicatesGraph = new SimpleGraph(DefaultEdge.class);
-        urlToEntityId1 = new HashMap<>();
-        urlToEntityId2 = new HashMap<>();
+        urlToEntityId1 = new TObjectIntHashMap();
+        urlToEntityId2 = new TObjectIntHashMap();
     }
     
     @Override

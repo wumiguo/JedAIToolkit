@@ -1,5 +1,5 @@
 /*
-* Copyright [2016-2017] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2018] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -24,9 +24,9 @@ import TextModels.ITextModel;
 import Utilities.Enumerations.RepresentationModel;
 import Utilities.Enumerations.SimilarityMetric;
 
+import com.esotericsoftware.minlog.Log;
+
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.apache.jena.atlas.json.JsonArray;
 import org.apache.jena.atlas.json.JsonObject;
@@ -37,28 +37,24 @@ import org.apache.jena.atlas.json.JsonObject;
  */
 public class ProfileMatcher extends AbstractEntityMatching {
 
-    private static final Logger LOGGER = Logger.getLogger(ProfileMatcher.class.getName());
-
     protected ITextModel[] entityModelsD1;
     protected ITextModel[] entityModelsD2;
 
     public ProfileMatcher() {
         this(RepresentationModel.TOKEN_UNIGRAM_GRAPHS, SimilarityMetric.GRAPH_VALUE_SIMILARITY);
-
-        LOGGER.log(Level.INFO, "Using default configuration for {0}.", getMethodName());
     }
 
     public ProfileMatcher(RepresentationModel model, SimilarityMetric simMetric) {
         super(model, simMetric);
-
-        LOGGER.log(Level.INFO, getMethodConfiguration());
     }
 
     @Override
     public SimilarityPairs executeComparisons(List<AbstractBlock> blocks,
             List<EntityProfile> profilesD1, List<EntityProfile> profilesD2) {
+        Log.info("Applying " + getMethodName() + " with the following configuration : " + getMethodConfiguration());
+
         if (profilesD1 == null) {
-            LOGGER.log(Level.SEVERE, "First list of entity profiles is null! "
+            Log.error("First list of entity profiles is null! "
                     + "The first argument should always contain entities.");
             System.exit(-1);
         }
@@ -121,7 +117,7 @@ public class ProfileMatcher extends AbstractEntityMatching {
 
     @Override
     public JsonArray getParameterConfiguration() {
-        JsonObject obj1 = new JsonObject();
+        final JsonObject obj1 = new JsonObject();
         obj1.put("class", "Utilities.Enumerations.RepresentationModel");
         obj1.put("name", getParameterName(0));
         obj1.put("defaultValue", "Utilities.Enumerations.RepresentationModel.TOKEN_UNIGRAM_GRAPHS");
@@ -130,7 +126,7 @@ public class ProfileMatcher extends AbstractEntityMatching {
         obj1.put("stepValue", "-");
         obj1.put("description", getParameterDescription(0));
 
-        JsonObject obj2 = new JsonObject();
+        final JsonObject obj2 = new JsonObject();
         obj2.put("class", "Utilities.Enumerations.SimilarityMetric");
         obj2.put("name", getParameterName(1));
         obj2.put("defaultValue", "Utilities.Enumerations.SimilarityMetric.GRAPH_VALUE_SIMILARITY");
@@ -139,7 +135,7 @@ public class ProfileMatcher extends AbstractEntityMatching {
         obj2.put("stepValue", "-");
         obj2.put("description", getParameterDescription(1));
 
-        JsonArray array = new JsonArray();
+        final JsonArray array = new JsonArray();
         array.add(obj1);
         array.add(obj2);
         return array;

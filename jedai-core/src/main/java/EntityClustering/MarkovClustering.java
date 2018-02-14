@@ -1,5 +1,5 @@
 /*
-* Copyright [2016-2017] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2018] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -21,8 +21,7 @@ import DataModel.SimilarityPairs;
 
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 import org.apache.jena.atlas.json.JsonArray;
 import org.apache.jena.atlas.json.JsonObject;
 
@@ -31,8 +30,6 @@ import org.apache.jena.atlas.json.JsonObject;
  * @author G.A.P. II
  */
 public class MarkovClustering extends AbstractEntityClustering {
-
-    private static final Logger LOGGER = Logger.getLogger(MarkovClustering.class.getName());
 
     protected double clusterThreshold;//define similarity threshold for including in final graph
     protected double matrixSimThreshold;//define similarity threshold for matrix comparison
@@ -44,8 +41,6 @@ public class MarkovClustering extends AbstractEntityClustering {
 
     public MarkovClustering(double ct, double mst, double scl, double st) {
         super(st);
-
-        LOGGER.log(Level.INFO, "{0} initiated", getMethodName());
     }
 
     private void addSelfLoop(double[][] a) {
@@ -80,7 +75,7 @@ public class MarkovClustering extends AbstractEntityClustering {
     }
 
     private void expand2(double[][] inputMatrix) {
-        double[][] input = multiply(inputMatrix, inputMatrix);
+        final double[][] input = multiply(inputMatrix, inputMatrix);
         for (int i = 0; i < inputMatrix.length; i++) {
             System.arraycopy(input[i], 0, inputMatrix[i], 0, inputMatrix[0].length);
         }
@@ -95,7 +90,7 @@ public class MarkovClustering extends AbstractEntityClustering {
         final Iterator<Comparison> iterator = simPairs.getPairIterator();
         double[][] simMatrix = new double[noOfEntities][noOfEntities];
         while (iterator.hasNext()) {
-            Comparison comparison = iterator.next();
+            final Comparison comparison = iterator.next();
             if (threshold < comparison.getUtilityMeasure()) {
                 simMatrix[comparison.getEntityId1()][comparison.getEntityId2() + datasetLimit] = comparison.getUtilityMeasure();
             }
@@ -165,7 +160,7 @@ public class MarkovClustering extends AbstractEntityClustering {
 
     @Override
     public JsonArray getParameterConfiguration() {
-        JsonObject obj1 = new JsonObject();
+        final JsonObject obj1 = new JsonObject();
         obj1.put("class", "java.lang.Double");
         obj1.put("name", getParameterName(0));
         obj1.put("defaultValue", "0.5");
@@ -174,7 +169,7 @@ public class MarkovClustering extends AbstractEntityClustering {
         obj1.put("stepValue", "0.05");
         obj1.put("description", getParameterDescription(0));
 
-        JsonObject obj2 = new JsonObject();
+        final JsonObject obj2 = new JsonObject();
         obj2.put("class", "java.lang.Double");
         obj2.put("name", getParameterName(1));
         obj2.put("defaultValue", "0.001");
@@ -183,7 +178,7 @@ public class MarkovClustering extends AbstractEntityClustering {
         obj2.put("stepValue", "0.001");
         obj2.put("description", getParameterDescription(1));
         
-        JsonObject obj3 = new JsonObject();
+        final JsonObject obj3 = new JsonObject();
         obj3.put("class", "java.lang.Double");
         obj3.put("name", getParameterName(2));
         obj3.put("defaultValue", "0.00001");
@@ -192,7 +187,7 @@ public class MarkovClustering extends AbstractEntityClustering {
         obj3.put("stepValue", "0.00001");
         obj3.put("description", getParameterDescription(2));
 
-        JsonObject obj4 = new JsonObject();
+        final JsonObject obj4 = new JsonObject();
         obj4.put("class", "java.lang.Integer");
         obj4.put("name", getParameterName(3));
         obj4.put("defaultValue", "2");
@@ -201,7 +196,7 @@ public class MarkovClustering extends AbstractEntityClustering {
         obj4.put("stepValue", "1");
         obj4.put("description", getParameterDescription(3));
 
-        JsonArray array = new JsonArray();
+        final JsonArray array = new JsonArray();
         array.add(obj1);
         array.add(obj2);
         array.add(obj3);
@@ -264,7 +259,7 @@ public class MarkovClustering extends AbstractEntityClustering {
             lowLimit = datasetLimit;
         }
 
-        double[][] c = new double[n1][n1];
+        final double[][] c = new double[n1][n1];
         for (int i = 0; i < upLimit; i++) {
             for (int j = lowLimit; j < n1; j++) {
                 for (int k = 0; k < n1; k++) {

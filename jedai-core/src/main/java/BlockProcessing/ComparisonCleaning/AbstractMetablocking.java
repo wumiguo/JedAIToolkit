@@ -1,5 +1,5 @@
 /*
-* Copyright [2016-2017] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2018] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -21,11 +21,12 @@ import DataModel.Comparison;
 import DataModel.UnilateralBlock;
 import Utilities.Enumerations.WeightingScheme;
 
-import java.util.ArrayList;
-import java.util.HashSet;
+import gnu.trove.list.TIntList;
+import gnu.trove.list.array.TIntArrayList;
+import gnu.trove.set.TIntSet;
+import gnu.trove.set.hash.TIntHashSet;
+
 import java.util.List;
-import java.util.Set;
-import java.util.logging.Logger;
 
 import org.apache.jena.atlas.json.JsonArray;
 import org.apache.jena.atlas.json.JsonObject;
@@ -34,9 +35,7 @@ import org.apache.jena.atlas.json.JsonObject;
  *
  * @author G.A.P. II
  */
-public abstract class AbstractMetablocking extends AbstractComparisonRefinementMethod {
-
-    private static final Logger LOGGER = Logger.getLogger(AbstractMetablocking.class.getName());
+public abstract class AbstractMetablocking extends AbstractComparisonCleaning {
     
     protected boolean nodeCentric;
 
@@ -48,14 +47,14 @@ public abstract class AbstractMetablocking extends AbstractComparisonRefinementM
     protected double[] comparisonsPerEntity;
     protected double[] counters;
 
-    protected final List<Integer> neighbors;
-    protected final List<Integer> retainedNeighbors;
+    protected final TIntList neighbors;
+    protected final TIntList retainedNeighbors;
     protected WeightingScheme weightingScheme;
 
     public AbstractMetablocking(WeightingScheme wScheme) {
         super();
-        neighbors = new ArrayList<>();
-        retainedNeighbors = new ArrayList<>();
+        neighbors = new TIntArrayList();
+        retainedNeighbors = new TIntArrayList();
         weightingScheme = wScheme;
     }
 
@@ -132,7 +131,7 @@ public abstract class AbstractMetablocking extends AbstractComparisonRefinementM
 
     @Override
     public JsonArray getParameterConfiguration() {
-        JsonObject obj1 = new JsonObject();
+        final JsonObject obj1 = new JsonObject();
         obj1.put("class", "Utilities.Enumerations.WeightingScheme");
         obj1.put("name", getParameterName(0));
         obj1.put("defaultValue", "Utilities.Enumerations.WeightingScheme.CBS");
@@ -141,7 +140,7 @@ public abstract class AbstractMetablocking extends AbstractComparisonRefinementM
         obj1.put("stepValue", "-");
         obj1.put("description", getParameterDescription(0));
 
-        JsonArray array = new JsonArray();
+        final JsonArray array = new JsonArray();
         array.add(obj1);
         return array;
     }
@@ -215,7 +214,7 @@ public abstract class AbstractMetablocking extends AbstractComparisonRefinementM
     protected void setStatistics() {
         distinctComparisons = 0;
         comparisonsPerEntity = new double[noOfEntities];
-        final Set<Integer> distinctNeighbors = new HashSet<>();
+        final TIntSet distinctNeighbors = new TIntHashSet();
         for (int i = 0; i < noOfEntities; i++) {
             final int[] associatedBlocks = entityIndex.getEntityBlocks(i, 0);
             if (associatedBlocks.length != 0) {

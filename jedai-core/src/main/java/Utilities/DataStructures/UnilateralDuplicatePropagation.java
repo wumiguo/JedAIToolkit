@@ -1,5 +1,5 @@
 /*
-* Copyright [2016] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2018] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -28,11 +28,11 @@ import java.util.Set;
 
 public class UnilateralDuplicatePropagation extends AbstractDuplicatePropagation {
  
-    private Set<IdDuplicates> detectedDuplicates;
+    private final Set<IdDuplicates> detectedDuplicates;
     
     public UnilateralDuplicatePropagation (Set<IdDuplicates> matches) {
         super(matches);
-        detectedDuplicates = new HashSet<IdDuplicates>(2*matches.size());
+        detectedDuplicates = new HashSet<>(2*matches.size());
     }
     
     @Override
@@ -63,6 +63,6 @@ public class UnilateralDuplicatePropagation extends AbstractDuplicatePropagation
 
     @Override
     public void resetDuplicates() {
-        detectedDuplicates = new HashSet<IdDuplicates>();
+        detectedDuplicates.clear();
     }
 }

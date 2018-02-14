@@ -1,5 +1,5 @@
 /*
-* Copyright [2016] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2018] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -61,7 +61,7 @@ public abstract class AbstractBlock implements Serializable {
     public List<Comparison> getComparisons() {
         final List<Comparison> comparisonsList = new ArrayList<>();
 
-        ComparisonIterator iterator = getComparisonIterator();
+        final ComparisonIterator iterator = getComparisonIterator();
         while (iterator.hasNext()) {
             Comparison comparison = iterator.next();
             comparisonsList.add(comparison);

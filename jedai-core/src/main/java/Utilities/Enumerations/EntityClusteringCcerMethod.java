@@ -1,5 +1,5 @@
 /*
-* Copyright [2016-2018] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2017] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -12,30 +12,26 @@
 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 * See the License for the specific language governing permissions and
 * limitations under the License.
-*/
-package Utilities;
+ */
 
-import org.apache.jena.atlas.json.JsonArray;
+package Utilities.Enumerations;
+
+import EntityClustering.IEntityClustering;
+import EntityClustering.UniqueMappingClustering;
 
 /**
  *
  * @author GAP2
  */
-public interface IDocumentation {
+public enum EntityClusteringCcerMethod {
+    UNIQUE_MAPPING_CLUSTERING;
 
-    String PARAMETER_FREE = "Parameter-free method";
-    
-    public String getMethodConfiguration();
-
-    public String getMethodInfo();
-
-    public String getMethodName();
-
-    public String getMethodParameters();
-
-    public JsonArray getParameterConfiguration();
-
-    public String getParameterDescription(int parameterId);
-
-    public String getParameterName(int parameterId);
+    public static IEntityClustering getDefaultConfiguration(EntityClusteringCcerMethod ecMethod) {
+        switch (ecMethod) {
+            case UNIQUE_MAPPING_CLUSTERING:
+                return new UniqueMappingClustering();
+            default:
+                return new UniqueMappingClustering();
+        }
+    }
 }

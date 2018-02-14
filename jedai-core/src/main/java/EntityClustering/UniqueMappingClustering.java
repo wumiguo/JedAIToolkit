@@ -1,5 +1,5 @@
 /*
-* Copyright [2016-2017] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2018] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -21,15 +21,14 @@ import DataModel.SimilarityEdge;
 import DataModel.SimilarityPairs;
 import Utilities.Comparators.SimilarityEdgeComparator;
 
+import gnu.trove.set.TIntSet;
+import gnu.trove.set.hash.TIntHashSet;
+
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Queue;
-import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -37,9 +36,7 @@ import java.util.logging.Logger;
  */
 public class UniqueMappingClustering extends AbstractEntityClustering {
 
-    private static final Logger LOGGER = Logger.getLogger(UniqueMappingClustering.class.getName());
-
-    private final Set<Integer> matchedIds; //the ids of entities that have been already matched
+    private final TIntSet matchedIds; //the ids of entities that have been already matched
     
     public UniqueMappingClustering() {
         this(0.5);
@@ -47,9 +44,8 @@ public class UniqueMappingClustering extends AbstractEntityClustering {
     
     public UniqueMappingClustering(double simTh) {
         super(simTh);
-        matchedIds = new HashSet<>();
         
-        LOGGER.log(Level.INFO, "{0} initiated", getMethodName());
+        matchedIds = new TIntHashSet();
     }
 
     @Override
@@ -59,6 +55,10 @@ public class UniqueMappingClustering extends AbstractEntityClustering {
         }
         
         initializeData(simPairs);
+        if (!isCleanCleanER) {
+            return null; //the method is only applicable to Clean-Clean ER
+        }
+        
         initializeGraph();
         final Queue<SimilarityEdge> SEqueue = new PriorityQueue<>(simPairs.getNoOfComparisons(), new SimilarityEdgeComparator());
 
@@ -71,7 +71,7 @@ public class UniqueMappingClustering extends AbstractEntityClustering {
         }
 
         while (!SEqueue.isEmpty()) {
-            SimilarityEdge se = SEqueue.remove();            
+            final SimilarityEdge se = SEqueue.remove();            
             int e1 = se.getModel1Pos();
             int e2 = se.getModel2Pos();
                        

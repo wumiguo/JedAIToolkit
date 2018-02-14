@@ -1,5 +1,5 @@
 /*
-* Copyright [2016] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2018] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -93,7 +93,7 @@ public class SuffixArraysBlocking extends StandardBlocking {
 
     @Override
     public JsonArray getParameterConfiguration() {
-        JsonObject obj1 = new JsonObject();
+        final JsonObject obj1 = new JsonObject();
         obj1.put("class", "java.lang.Integer");
         obj1.put("name", getParameterName(0));
         obj1.put("defaultValue", "6");
@@ -102,7 +102,7 @@ public class SuffixArraysBlocking extends StandardBlocking {
         obj1.put("stepValue", "1");
         obj1.put("description", getParameterDescription(0));
 
-        JsonObject obj2 = new JsonObject();
+        final JsonObject obj2 = new JsonObject();
         obj2.put("class", "java.lang.Integer");
         obj2.put("name", getParameterName(1));
         obj2.put("defaultValue", "53");
@@ -111,7 +111,7 @@ public class SuffixArraysBlocking extends StandardBlocking {
         obj2.put("stepValue", "1");
         obj2.put("description", getParameterDescription(1));
 
-        JsonArray array = new JsonArray();
+        final JsonArray array = new JsonArray();
         array.add(obj1);
         array.add(obj2);
         return array;

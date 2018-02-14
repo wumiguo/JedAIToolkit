@@ -1,5 +1,5 @@
 /*
-* Copyright [2016] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2018] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -17,6 +17,8 @@ package DataReader.EntityReader;
 
 import DataModel.EntityProfile;
 
+import com.esotericsoftware.minlog.Log;
+
 import java.io.IOException;
 
 import java.sql.Connection;
@@ -30,8 +32,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.apache.jena.atlas.json.JsonArray;
 import org.apache.jena.atlas.json.JsonObject;
@@ -41,8 +41,6 @@ import org.apache.jena.atlas.json.JsonObject;
  * @author G.A.P. II
  */
 public class EntityDBReader extends AbstractEntityReader {
-
-    private static final Logger LOGGER = Logger.getLogger(EntityDBReader.class.getName());
 
     private boolean ssl;
 
@@ -70,38 +68,38 @@ public class EntityDBReader extends AbstractEntityReader {
         }
 
         if (inputFilePath == null) {
-            LOGGER.log(Level.SEVERE, "Database url has not been set!");
+            Log.error("Database url has not been set!");
             return null;
         }
 
         //inputFilePath is assigned the Database URL
         try {
             if (user == null) {
-                LOGGER.log(Level.SEVERE, "Database user has not been set!");
+                Log.error("Database user has not been set!");
                 return null;
             }
             if (password == null) {
-                LOGGER.log(Level.SEVERE, "Database password has not been set!");
+                Log.error("Database password has not been set!");
                 return null;
             }
             if (table == null) {
-                LOGGER.log(Level.SEVERE, "Database table has not been set!");
+                Log.error("Database table has not been set!");
                 return null;
             }
 
-            Connection conn = null;
+            Connection conn;
             if (inputFilePath.startsWith("mysql")) {
                 conn = getMySQLconnection(inputFilePath);
             } else if (inputFilePath.startsWith("postgresql")) {
                 conn = getPostgreSQLconnection(inputFilePath);
             } else {
-                LOGGER.log(Level.SEVERE, "Only MySQL and PostgreSQL are supported for the time being!");
+                Log.error("Only MySQL and PostgreSQL are supported for the time being!");
                 return null;
             }
 
-            Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT * FROM " + table);//retrieve the appropriate table
-            ResultSetMetaData rsmd = rs.getMetaData();
+            final Statement stmt = conn.createStatement();
+            final ResultSet rs = stmt.executeQuery("SELECT * FROM " + table);//retrieve the appropriate table
+            final ResultSetMetaData rsmd = rs.getMetaData();
             int columnsNum = rsmd.getColumnCount();
             String[] columns = new String[columnsNum];
             for (int i = 0; i < columnsNum; i++) {
@@ -111,22 +109,22 @@ public class EntityDBReader extends AbstractEntityReader {
             //Extract data from result set
             while (rs.next()) {
                 //Retrieve by column name
-                String id = rs.getString(columns[0]);
-                EntityProfile newProfile = new EntityProfile(id);//create a new profile for each record
+                final String id = rs.getString(columns[0]);
+                final EntityProfile newProfile = new EntityProfile(id);//create a new profile for each record
                 entityProfiles.add(newProfile);
                 for (int i = 1; i < columnsNum; i++) {
-                    String attributeName = columns[i];
+                    final String attributeName = columns[i];
                     if (attributesToExclude.contains(attributeName)) {
                         continue;
                     }
 
-                    String value = rs.getString(columns[i]);
+                    final String value = rs.getString(columns[i]);
                     newProfile.addAttribute(attributeName, value);
                 }
             }
             rs.close();
         } catch (Exception ex) {
-            LOGGER.log(Level.SEVERE, null, ex);
+            Log.error("Error in entities reading!", ex);
             return null;
         }
 
@@ -135,7 +133,7 @@ public class EntityDBReader extends AbstractEntityReader {
 
     @Override
     public String getMethodConfiguration() {
-        StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
         sb.append("{");
         attributesToExclude.forEach((attributeName) -> {
             sb.append(attributeName).append(",");
@@ -174,17 +172,16 @@ public class EntityDBReader extends AbstractEntityReader {
     private Connection getMySQLconnection(String dbURL) throws IOException {
         try {
             Class.forName("com.mysql.jdbc.Driver");
-            Connection conn = DriverManager.getConnection("jdbc:" + dbURL + "?user=" + user + "&password=" + password);
-            return conn;
+            return DriverManager.getConnection("jdbc:" + dbURL + "?user=" + user + "&password=" + password);
         } catch (Exception ex) {
-            LOGGER.log(Level.SEVERE, null, ex);
+            Log.error("Error with database connection!", ex);
             return null;
         }
     }
 
     @Override
     public JsonArray getParameterConfiguration() {
-        JsonObject obj1 = new JsonObject();
+        final JsonObject obj1 = new JsonObject();
         obj1.put("class", "java.lang.String");
         obj1.put("name", getParameterName(0));
         obj1.put("defaultValue", "-");
@@ -193,7 +190,7 @@ public class EntityDBReader extends AbstractEntityReader {
         obj1.put("stepValue", "-");
         obj1.put("description", getParameterDescription(0));
 
-        JsonObject obj2 = new JsonObject();
+        final JsonObject obj2 = new JsonObject();
         obj2.put("class", "java.lang.String");
         obj2.put("name", getParameterName(1));
         obj2.put("defaultValue", "-");
@@ -202,7 +199,7 @@ public class EntityDBReader extends AbstractEntityReader {
         obj2.put("stepValue", "-");
         obj2.put("description", getParameterDescription(1));
         
-        JsonObject obj3 = new JsonObject();
+        final JsonObject obj3 = new JsonObject();
         obj3.put("class", "java.lang.String");
         obj3.put("name", getParameterName(2));
         obj3.put("defaultValue", "-");
@@ -211,7 +208,7 @@ public class EntityDBReader extends AbstractEntityReader {
         obj3.put("stepValue", "-");
         obj3.put("description", getParameterDescription(2));
         
-        JsonObject obj4 = new JsonObject();
+        final JsonObject obj4 = new JsonObject();
         obj4.put("class", "java.lang.String");
         obj4.put("name", getParameterName(3));
         obj4.put("defaultValue", "-");
@@ -220,7 +217,7 @@ public class EntityDBReader extends AbstractEntityReader {
         obj4.put("stepValue", "-");
         obj4.put("description", getParameterDescription(3));
         
-        JsonObject obj5 = new JsonObject();
+        final JsonObject obj5 = new JsonObject();
         obj5.put("class", "java.util.Set<String>");
         obj5.put("name", getParameterName(4));
         obj5.put("defaultValue", "-");
@@ -229,7 +226,7 @@ public class EntityDBReader extends AbstractEntityReader {
         obj5.put("stepValue", "-");
         obj5.put("description", getParameterDescription(4));
         
-        JsonObject obj6 = new JsonObject();
+        final JsonObject obj6 = new JsonObject();
         obj6.put("class", "java.lang.Boolean");
         obj6.put("name", getParameterName(5));
         obj6.put("defaultValue", "true");
@@ -238,7 +235,7 @@ public class EntityDBReader extends AbstractEntityReader {
         obj6.put("stepValue", "-");
         obj6.put("description", getParameterDescription(5));
 
-        JsonArray array = new JsonArray();
+        final JsonArray array = new JsonArray();
         array.add(obj1);
         array.add(obj2);
         array.add(obj3);
@@ -290,7 +287,7 @@ public class EntityDBReader extends AbstractEntityReader {
 
     private Connection getPostgreSQLconnection(String dbURL) throws IOException {
         try {
-            Properties props = new Properties();
+            final Properties props = new Properties();
             if (!(user == null)) {
                 props.setProperty("user", user);
             }
@@ -302,7 +299,7 @@ public class EntityDBReader extends AbstractEntityReader {
             }
             return DriverManager.getConnection("jdbc:" + dbURL, props);
         } catch (Exception ex) {
-            LOGGER.log(Level.SEVERE, null, ex);
+            Log.error("Error with database connection!", ex);
             return null;
         }
     }

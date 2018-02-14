@@ -1,5 +1,5 @@
 /*
-* Copyright [2016] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2018] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -25,10 +25,9 @@ import java.util.Comparator;
  */
 
 public class SimilarityEdgeComparator implements Comparator<SimilarityEdge> {
-
-    // orders edges from the highest weight/similarity to the lowest one
     
     @Override
+    // orders edges from the highest weight/similarity to the lowest one
     public int compare(SimilarityEdge se1,SimilarityEdge se2) {
         double test = se1.getSimilarity()-se2.getSimilarity(); 
         if (test > 0) {

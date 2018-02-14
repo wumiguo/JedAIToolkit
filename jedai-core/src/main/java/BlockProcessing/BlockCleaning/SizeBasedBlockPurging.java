@@ -1,5 +1,5 @@
 /*
-* Copyright [2016-2017] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2018] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -20,11 +20,12 @@ import DataModel.AbstractBlock;
 import DataModel.BilateralBlock;
 import DataModel.UnilateralBlock;
 
-import java.util.HashSet;
+import com.esotericsoftware.minlog.Log;
+
+import gnu.trove.set.TIntSet;
+import gnu.trove.set.hash.TIntHashSet;
+
 import java.util.List;
-import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.apache.jena.atlas.json.JsonArray;
 import org.apache.jena.atlas.json.JsonObject;
@@ -36,48 +37,36 @@ import org.apache.jena.atlas.json.JsonObject;
 
 public class SizeBasedBlockPurging extends AbstractBlockPurging {
     
-    private static final Logger LOGGER = Logger.getLogger(SizeBasedBlockPurging.class.getName());
-    
     private boolean isCleanCleanER;
     private double purgingFactor;
     private double maxEntities;
     
     public SizeBasedBlockPurging() {
         this(0.005);
-        
-        LOGGER.log(Level.INFO, "Using default configuration for {0}.", getMethodName());
     }
 
     public SizeBasedBlockPurging(double pf) {
         purgingFactor = pf;
-        
-        LOGGER.log(Level.INFO, getMethodConfiguration());
     }
     
     private int getMaxBlockSize(List<AbstractBlock> blocks) {
-        final Set<Integer> entities = new HashSet<>();
-        blocks.stream().map((aBlock) -> (UnilateralBlock) aBlock).forEachOrdered((uBlock) -> {
-            for (int id1 : uBlock.getEntities()) {
-                entities.add(id1);
-            }
-        });
+        final TIntSet entities = new TIntHashSet();
+        for (AbstractBlock aBlock : blocks) {
+            UnilateralBlock uBlock = (UnilateralBlock) aBlock;
+            entities.addAll(uBlock.getEntities());
+        }
         
         return (int) Math.round(entities.size()*purgingFactor);
     }
     
     private int getMaxInnerBlockSize(List<AbstractBlock> blocks) {
-        final Set<Integer> d1Entities = new HashSet<>();
-        final Set<Integer> d2Entities = new HashSet<>();
-        blocks.stream().map((block) -> (BilateralBlock) block).map((bilBlock) -> {
-            for (int id1 : bilBlock.getIndex1Entities()) {
-                d1Entities.add(id1);
-            }
-            return bilBlock;            
-        }).forEachOrdered((bilBlock) -> {
-            for (int id2 : bilBlock.getIndex2Entities()) {
-                d2Entities.add(id2);
-            }
-        });
+        final TIntSet d1Entities = new TIntHashSet();
+        final TIntSet d2Entities = new TIntHashSet();
+        for (AbstractBlock aBlock : blocks) {
+            BilateralBlock bBlock = (BilateralBlock) aBlock;
+            d1Entities.addAll(bBlock.getIndex1Entities());
+            d2Entities.addAll(bBlock.getIndex2Entities());
+        }
         
         return (int) Math.round(Math.min(d1Entities.size(), d2Entities.size())*purgingFactor);
     }
@@ -105,7 +94,7 @@ public class SizeBasedBlockPurging extends AbstractBlockPurging {
 
     @Override
     public JsonArray getParameterConfiguration() {
-        JsonObject obj = new JsonObject();
+        final JsonObject obj = new JsonObject();
         obj.put("class", "java.lang.Double");
         obj.put("name", getParameterName(0));
         obj.put("defaultValue", "0.005");
@@ -114,7 +103,7 @@ public class SizeBasedBlockPurging extends AbstractBlockPurging {
         obj.put("stepValue", "0.001");
         obj.put("description", getParameterDescription(0));
         
-        JsonArray array = new JsonArray();
+        final JsonArray array = new JsonArray();
         array.add(obj);
         
         return array;
@@ -154,11 +143,11 @@ public class SizeBasedBlockPurging extends AbstractBlockPurging {
         if (blocks.get(0) instanceof UnilateralBlock) {
             isCleanCleanER = false;
             maxEntities = getMaxBlockSize(blocks);
-            LOGGER.log(Level.INFO, "Maximum entities per block\t:\t{0}", maxEntities);
+            Log.info("Maximum entities per block\t:\t"+ maxEntities);
         } else {
             isCleanCleanER = true;
             maxEntities = getMaxInnerBlockSize(blocks);
-            LOGGER.log(Level.INFO, "Maximum inner block size per block\t:\t{0}", maxEntities);
+            Log.info("Maximum inner block size per block\t:\t" + maxEntities);
         }
     }
 }

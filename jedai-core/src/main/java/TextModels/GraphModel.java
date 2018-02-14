@@ -1,5 +1,5 @@
 /*
-* Copyright [2016] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2018] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -17,19 +17,16 @@ package TextModels;
 
 import Utilities.Enumerations.RepresentationModel;
 import Utilities.Enumerations.SimilarityMetric;
+import com.esotericsoftware.minlog.Log;
 import gr.demokritos.iit.jinsect.documentModel.comparators.NGramCachedGraphComparator;
 import gr.demokritos.iit.jinsect.documentModel.representations.DocumentNGramGraph;
 import gr.demokritos.iit.jinsect.structs.GraphSimilarity;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
  * @author gap2
  */
 public abstract class GraphModel extends AbstractModel {
-
-    private static final Logger LOGGER = Logger.getLogger(GraphModel.class.getName());
 
     protected DocumentNGramGraph graphModel;
     protected final static NGramCachedGraphComparator COMPARATOR = new NGramCachedGraphComparator();
@@ -66,7 +63,7 @@ public abstract class GraphModel extends AbstractModel {
                 }
                 return overallSimilarity / 2;
             default:
-                LOGGER.log(Level.SEVERE, "The given similarity metric is incompatible with the n-gram graphs representation model!");
+                Log.error("The given similarity metric is incompatible with the n-gram graphs representation model!");
                 System.exit(-1);
                 return -1;
         }

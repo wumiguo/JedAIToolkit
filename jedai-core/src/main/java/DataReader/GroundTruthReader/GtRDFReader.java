@@ -1,5 +1,5 @@
 /*
- * Copyright [2016] [George Papadakis (gpapadis@yahoo.gr)]
+ * Copyright [2016-2018] [George Papadakis (gpapadis@yahoo.gr)]
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,8 @@ package DataReader.GroundTruthReader;
 import DataModel.EntityProfile;
 import DataModel.IdDuplicates;
 
+import com.esotericsoftware.minlog.Log;
+
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.rdf.model.StmtIterator;
@@ -27,8 +29,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 import org.apache.jena.atlas.json.JsonArray;
 import org.apache.jena.atlas.json.JsonObject;
 
@@ -40,8 +41,6 @@ import org.jgrapht.alg.ConnectivityInspector;
  */
 public class GtRDFReader extends AbstractGtReader {
 
-    private static final Logger LOGGER = Logger.getLogger(GtRDFReader.class.getName());
-
     public GtRDFReader(String filePath) {
         super(filePath);
     }
@@ -49,7 +48,7 @@ public class GtRDFReader extends AbstractGtReader {
     protected void getBilateralConnectedComponents(List<Set<Integer>> connectedComponents) {
         for (Set<Integer> cluster : connectedComponents) {
             if (cluster.size() != 2) {
-                LOGGER.log(Level.WARNING, "Connected component that does not involve just a couple of entities!\t{0}", cluster.toString());
+                Log.warn("Connected component that does not involve just a couple of entities!\t" + cluster.toString());
                 continue;
             }
 
@@ -60,14 +59,14 @@ public class GtRDFReader extends AbstractGtReader {
             if (id1 < id2) {
                 id2 = id2 - datasetLimit; // normalize id to [0, profilesD2.size()]
                 if (id2 < 0) {
-                    LOGGER.log(Level.WARNING, "Entity id not corresponding to dataset 2!\t{0}", id2);
+                    Log.warn("Entity id not corresponding to dataset 2!\t" + id2);
                     continue;
                 }
                 idDuplicates.add(new IdDuplicates(id1, id2));
             } else {
                 id1 = id1 - datasetLimit; // normalize id to [0, profilesD2.size()]
                 if (id1 < 0) {
-                    LOGGER.log(Level.WARNING, "Entity id not corresponding to dataset 2!\t{0}", id1);
+                    Log.warn("Entity id not corresponding to dataset 2!\t" + id1);
                     continue;
                 }
                 idDuplicates.add(new IdDuplicates(id2, id1));
@@ -83,7 +82,7 @@ public class GtRDFReader extends AbstractGtReader {
         }
 
         if (profilesD1 == null) {
-            LOGGER.log(Level.SEVERE, "First list of entity profiles is null! "
+            Log.error("First list of entity profiles is null! "
                     + "The first argument should always contain entities.");
             return null;
         }
@@ -92,15 +91,15 @@ public class GtRDFReader extends AbstractGtReader {
         try {
             performReading();
         } catch (NoSuchElementException ex) {
-            LOGGER.log(Level.SEVERE, null, ex);
+            Log.error("Error in duplicates reading!", ex);
             return null;
         }
-        LOGGER.log(Level.INFO, "Total edges in duplicates graph\t:\t{0}", duplicatesGraph.edgeSet().size());
+        Log.info("Total edges in duplicates graph\t:\t" + duplicatesGraph.edgeSet().size());
 
         // get connected components
-        ConnectivityInspector ci = new ConnectivityInspector(duplicatesGraph);
+        final ConnectivityInspector ci = new ConnectivityInspector(duplicatesGraph);
         final List<Set<Integer>> connectedComponents = ci.connectedSets();
-        LOGGER.log(Level.INFO, "Total connected components in duplicate graph\t:\t{0}", connectedComponents.size());
+        Log.info("Total connected components in duplicate graph\t:\t" + connectedComponents.size());
 
         // transform connected components into pairs of duplicates
         if (profilesD2 != null) { // Clean-Clean ER
@@ -108,7 +107,7 @@ public class GtRDFReader extends AbstractGtReader {
         } else { // Dirty ER
             getUnilateralConnectedComponents(connectedComponents);
         }
-        LOGGER.log(Level.INFO, "Total pair of duplicats\t:\t{0}", idDuplicates.size());
+        Log.info("Total pair of duplicats\t:\t" + idDuplicates.size());
 
         return idDuplicates;
     }
@@ -136,7 +135,7 @@ public class GtRDFReader extends AbstractGtReader {
 
     @Override
     public JsonArray getParameterConfiguration() {
-        JsonObject obj1 = new JsonObject();
+        final JsonObject obj1 = new JsonObject();
         obj1.put("class", "java.lang.String");
         obj1.put("name", getParameterName(0));
         obj1.put("defaultValue", "-");
@@ -145,7 +144,7 @@ public class GtRDFReader extends AbstractGtReader {
         obj1.put("stepValue", "-");
         obj1.put("description", getParameterDescription(0));
 
-        JsonArray array = new JsonArray();
+        final JsonArray array = new JsonArray();
         array.add(obj1);
         return array;
     }
@@ -173,7 +172,7 @@ public class GtRDFReader extends AbstractGtReader {
     protected void getUnilateralConnectedComponents(List<Set<Integer>> connectedComponents) {
         for (Set<Integer> cluster : connectedComponents) {
             if (cluster.size() < 2) {
-                LOGGER.log(Level.WARNING, "Connected component with a single element!{0}", cluster.toString());
+                Log.warn("Connected component with a single element!" + cluster.toString());
                 continue;
             }
 
@@ -213,7 +212,7 @@ public class GtRDFReader extends AbstractGtReader {
         for (int i = 0; i < noOfEntities; i++) {
             duplicatesGraph.addVertex(i);
         }
-        LOGGER.log(Level.INFO, "Total nodes in duplicate graph\t:\t{0}", duplicatesGraph.vertexSet().size());
+        Log.info("Total nodes in duplicate graph\t:\t" + duplicatesGraph.vertexSet().size());
     }
 
     protected void performReading() {
@@ -222,13 +221,13 @@ public class GtRDFReader extends AbstractGtReader {
         while (iter.hasNext()) {
             Statement stmt = iter.nextStatement();
 
-            String pred = stmt.getPredicate().toString();
+            final String pred = stmt.getPredicate().toString();
             if (!(pred.contains("sameAs"))) {
                 continue;
             }
 
-            String sub = stmt.getSubject().toString();
-            String obj = stmt.getObject().toString();
+            final String sub = stmt.getSubject().toString();
+            final String obj = stmt.getObject().toString();
 
             // add a new edge for every pair of duplicate entities
             int entityId1 = urlToEntityId1.get(sub);

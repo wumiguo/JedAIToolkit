@@ -1,5 +1,5 @@
 /*
-* Copyright [2016] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2018] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -15,6 +15,8 @@
 */
 
 package DataModel;
+
+import com.esotericsoftware.minlog.Log;
 
 import java.util.Iterator;
 
@@ -68,7 +70,7 @@ public class ComparisonIterator implements Iterator<Comparison> {
     @Override
     public Comparison next() {
         if (totalComparisons <= executedComparisons) {
-            System.err.println("All comparisons were already executed!");
+            Log.error("All comparisons were already executed!");
             return null;
         }
         
@@ -80,7 +82,7 @@ public class ComparisonIterator implements Iterator<Comparison> {
                 innerLoop = 0;
                 outerLoop++;
                 if (outerLimit < outerLoop) {
-                    System.err.println("All comparisons were already executed!");
+                    Log.error("All comparisons were already executed!");
                     return null;
                 }
             }
@@ -92,7 +94,7 @@ public class ComparisonIterator implements Iterator<Comparison> {
             if (innerLimit < innerLoop) {
                 outerLoop++;
                 if (outerLimit < outerLoop) {
-                    System.err.println("All comparisons were already executed!");
+                    Log.error("All comparisons were already executed!");
                     return null;
                 }
                 innerLoop = outerLoop+1;

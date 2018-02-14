@@ -1,5 +1,5 @@
 /*
-* Copyright [2016-2017] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2018] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -18,9 +18,9 @@ package BlockProcessing;
 
 import DataModel.AbstractBlock;
 
+import com.esotericsoftware.minlog.Log;
+
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -29,13 +29,13 @@ import java.util.logging.Logger;
 
 public abstract class AbstractBlockProcessing implements IBlockProcessing {
     
-    protected Logger LOGGER;
-    
     protected void printOriginalStatistics(List<AbstractBlock> inputBlocks) {
         double comparisons = 0;
-        comparisons = inputBlocks.stream().map((aBlock) -> aBlock.getNoOfComparisons()).reduce(comparisons, (accumulator, _item) -> accumulator + _item);
+        for (AbstractBlock block : inputBlocks) {
+            comparisons+= block.getNoOfComparisons();
+        }
         
-        LOGGER.log(Level.INFO, "Original blocks\t:\t{0}", inputBlocks.size());
-        LOGGER.log(Level.INFO, "Original comparisons\t:\t{0}", comparisons);
+        Log.info("Original blocks\t:\t{0}" + inputBlocks.size());
+        Log.info("Original comparisons\t:\t" + comparisons);
     }
 }

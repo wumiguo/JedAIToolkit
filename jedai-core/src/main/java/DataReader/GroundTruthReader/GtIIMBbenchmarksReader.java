@@ -1,5 +1,5 @@
 /*
- * Copyright [2016] [George Papadakis (gpapadis@yahoo.gr)]
+ * Copyright [2016-2018] [George Papadakis (gpapadis@yahoo.gr)]
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +15,9 @@
  */
 package DataReader.GroundTruthReader;
 
+import com.esotericsoftware.minlog.Log;
+
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -34,8 +34,6 @@ import org.xml.sax.SAXException;
  * @author G.A.P. II
  */
 public class GtIIMBbenchmarksReader extends GtRDFReader {
-
-    private static final Logger LOGGER = Logger.getLogger(GtIIMBbenchmarksReader.class.getName());
 
     private final String baseGTfile;
 
@@ -60,27 +58,28 @@ public class GtIIMBbenchmarksReader extends GtRDFReader {
     @Override
     protected void performReading() {
         try {
-            DocumentBuilder dBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+            final DocumentBuilder dBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
             
-            Document doc1 = dBuilder.parse(baseGTfile);
+            final Document doc1 = dBuilder.parse(baseGTfile);
             doc1.getDocumentElement().normalize();
             
-            Document doc2 = dBuilder.parse(inputFilePath);
+            final Document doc2 = dBuilder.parse(inputFilePath);
             
-            NodeList nList1 = doc1.getElementsByTagName("Cell");
-            NodeList nList2 = doc2.getElementsByTagName("Cell");
+            final NodeList nList1 = doc1.getElementsByTagName("Cell");
+            final NodeList nList2 = doc2.getElementsByTagName("Cell");
             for (int temp = 0; temp < nList1.getLength(); temp++) {
-                Node nNode1 = nList1.item(temp);
-                Node nNode2 = nList2.item(temp);
+                final Node nNode1 = nList1.item(temp);
+                final Node nNode2 = nList2.item(temp);
                 int entityId1;
                 int entityId2;
                 if (nNode1.getNodeType() == Node.ELEMENT_NODE) {
                     Element eElement = (Element) nNode1;
-                    Element eElement1 = (Element) eElement.getElementsByTagName("entity2").item(0);
+                    final Element eElement1 = (Element) eElement.getElementsByTagName("entity2").item(0);
                     entityId1 = urlToEntityId1.get(eElement1.getAttribute("rdf:resource"));
                     if (nNode1.getNodeType() == Node.ELEMENT_NODE) {
                         eElement = (Element) nNode2;
-                        Element eElement2 = (Element) eElement.getElementsByTagName("entity2").item(0);
+                        
+                        final Element eElement2 = (Element) eElement.getElementsByTagName("entity2").item(0);
                         entityId2 = urlToEntityId2.get(eElement2.getAttribute("rdf:resource"));
                         duplicatesGraph.addEdge(entityId1, entityId2);
                     }
@@ -88,7 +87,7 @@ public class GtIIMBbenchmarksReader extends GtRDFReader {
                 }
             }
         } catch (ParserConfigurationException | SAXException | IOException ex) {
-            LOGGER.log(Level.SEVERE, null, ex);
+            Log.error("Error in duplicates reading!", ex);
         }
     }
 }

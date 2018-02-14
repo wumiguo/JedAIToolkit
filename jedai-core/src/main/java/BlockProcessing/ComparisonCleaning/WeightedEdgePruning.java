@@ -1,5 +1,5 @@
 /*
-* Copyright [2016-2017] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2018] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -12,17 +12,17 @@
 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 * See the License for the specific language governing permissions and
 * limitations under the License.
-*/
-
+ */
 package BlockProcessing.ComparisonCleaning;
 
 import DataModel.AbstractBlock;
 import Utilities.Enumerations.WeightingScheme;
 
+import com.esotericsoftware.minlog.Log;
+import gnu.trove.iterator.TIntIterator;
+
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -30,26 +30,22 @@ import java.util.logging.Logger;
  */
 public class WeightedEdgePruning extends AbstractMetablocking {
 
-    private static final Logger LOGGER = Logger.getLogger(WeightedEdgePruning.class.getName());
-    
     protected double noOfEdges;
 
     public WeightedEdgePruning() {
         this(WeightingScheme.CBS);
     }
-    
+
     public WeightedEdgePruning(WeightingScheme scheme) {
         super(scheme);
         nodeCentric = false;
-        
-        LOGGER.log(Level.INFO, "{0} initiated", getMethodName());
     }
 
     @Override
     public String getMethodConfiguration() {
         return getParameterName(0) + "=" + weightingScheme;
     }
-    
+
     @Override
     public String getMethodInfo() {
         return getMethodName() + ": a Meta-blocking method that retains all comparisons "
@@ -60,7 +56,7 @@ public class WeightedEdgePruning extends AbstractMetablocking {
     public String getMethodName() {
         return "Weighted Edge Pruning";
     }
-    
+
     protected void processArcsEntity(int entityId) {
         validEntities.clear();
         final int[] associatedBlocks = entityIndex.getEntityBlocks(entityId, 0);
@@ -71,18 +67,16 @@ public class WeightedEdgePruning extends AbstractMetablocking {
         for (int blockIndex : associatedBlocks) {
             double blockComparisons = cleanCleanER ? bBlocks[blockIndex].getNoOfComparisons() : uBlocks[blockIndex].getNoOfComparisons();
             setNormalizedNeighborEntities(blockIndex, entityId);
-            neighbors.stream().map((neighborId) -> {
+            for (TIntIterator tIterator = neighbors.iterator(); tIterator.hasNext();) {
+                int neighborId = tIterator.next();
                 if (flags[neighborId] != entityId) {
                     counters[neighborId] = 0;
                     flags[neighborId] = entityId;
                 }
-                return neighborId;
-            }).map((neighborId) -> {
+
                 counters[neighborId] += 1 / blockComparisons;
-                return neighborId;
-            }).forEachOrdered((neighborId) -> {
                 validEntities.add(neighborId);
-            });
+            }
         }
     }
 
@@ -95,18 +89,16 @@ public class WeightedEdgePruning extends AbstractMetablocking {
 
         for (int blockIndex : associatedBlocks) {
             setNormalizedNeighborEntities(blockIndex, entityId);
-            neighbors.stream().map((neighborId) -> {
+            for (TIntIterator tIterator = neighbors.iterator(); tIterator.hasNext();) {
+                int neighborId = tIterator.next();
                 if (flags[neighborId] != entityId) {
                     counters[neighborId] = 0;
                     flags[neighborId] = entityId;
                 }
-                return neighborId;
-            }).map((neighborId) -> {
+
                 counters[neighborId]++;
-                return neighborId;
-            }).forEachOrdered((neighborId) -> {
                 validEntities.add(neighborId);
-            });
+            }
         }
     }
 
@@ -147,44 +139,47 @@ public class WeightedEdgePruning extends AbstractMetablocking {
         }
 
         threshold /= noOfEdges;
-        
-        LOGGER.log(Level.INFO, "Edge Pruning Weight Threshold\t:\t{0}", threshold);
+
+        Log.info("Edge Pruning Weight Threshold\t:\t" + threshold);
     }
 
     protected void updateThreshold(int entityId) {
         noOfEdges += validEntities.size();
-        validEntities.forEach((neighborId) -> {
-            threshold += getWeight(entityId, neighborId);
-        });
+        for (TIntIterator tIterator = validEntities.iterator(); tIterator.hasNext();) {
+            threshold += getWeight(entityId, tIterator.next());
+        }
     }
 
     protected void verifyValidEntities(int entityId, List<AbstractBlock> newBlocks) {
         retainedNeighbors.clear();
         if (!cleanCleanER) {
-            validEntities.forEach((neighborId) -> {
+            for (TIntIterator tIterator = validEntities.iterator(); tIterator.hasNext();) {
+                int neighborId = tIterator.next();
                 double weight = getWeight(entityId, neighborId);
                 if (threshold <= weight) {
                     retainedNeighbors.add(neighborId);
                 }
-            });
+            }
             addDecomposedBlock(entityId, retainedNeighbors, newBlocks);
         } else {
             if (entityId < datasetLimit) {
-                validEntities.forEach((neighborId) -> {
+                for (TIntIterator tIterator = validEntities.iterator(); tIterator.hasNext();) {
+                    int neighborId = tIterator.next();
                     double weight = getWeight(entityId, neighborId);
                     if (threshold <= weight) {
-                        retainedNeighbors.add(neighborId-datasetLimit);
+                        retainedNeighbors.add(neighborId - datasetLimit);
                     }
-                });
+                }
                 addDecomposedBlock(entityId, retainedNeighbors, newBlocks);
             } else {
-                validEntities.forEach((neighborId) -> {
+                for (TIntIterator tIterator = validEntities.iterator(); tIterator.hasNext();) {
+                    int neighborId = tIterator.next();
                     double weight = getWeight(entityId, neighborId);
                     if (threshold <= weight) {
                         retainedNeighbors.add(neighborId);
                     }
-                });
-                addReversedDecomposedBlock(entityId-datasetLimit, retainedNeighbors, newBlocks);
+                }
+                addReversedDecomposedBlock(entityId - datasetLimit, retainedNeighbors, newBlocks);
             }
         }
     }

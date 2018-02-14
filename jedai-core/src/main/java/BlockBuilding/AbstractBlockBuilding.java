@@ -1,5 +1,5 @@
 /*
- * Copyright [2016-2017] [George Papadakis (gpapadis@yahoo.gr)]
+ * Copyright [2016-2018] [George Papadakis (gpapadis@yahoo.gr)]
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -71,11 +71,10 @@ public abstract class AbstractBlockBuilding implements IBlockBuilding {
     @Override
     public List<AbstractBlock> getBlocks(List<EntityProfile> profilesD1,
             List<EntityProfile> profilesD2) {
-
         Log.info("Applying " + getMethodName() + " with the following configuration : " + getMethodConfiguration());
 
         if (profilesD1 == null) {
-            Log.debug("First list of entity profiles is null! The first argument should always contain entities.");
+            Log.error("First list of entity profiles is null! The first argument should always contain entities.");
             return null;
         }
 

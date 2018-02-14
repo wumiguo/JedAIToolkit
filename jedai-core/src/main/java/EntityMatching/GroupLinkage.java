@@ -1,5 +1,5 @@
 /*
-* Copyright [2016-2017] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2018] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -26,11 +26,11 @@ import Utilities.Enumerations.RepresentationModel;
 import Utilities.Enumerations.SimilarityMetric;
 import TextModels.ITextModel;
 
+import com.esotericsoftware.minlog.Log;
+
 import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Queue;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.apache.jena.atlas.json.JsonArray;
 import org.apache.jena.atlas.json.JsonObject;
 
@@ -44,30 +44,26 @@ import org.jgrapht.graph.SimpleDirectedWeightedGraph;
  */
 public class GroupLinkage extends AbstractEntityMatching {
 
-    private static final Logger LOGGER = Logger.getLogger(GroupLinkage.class.getName());
-
     protected double similarityThreshold;
     protected ITextModel[][] entityModelsD1;
     protected ITextModel[][] entityModelsD2;
 
     public GroupLinkage() {
         this(0.1, RepresentationModel.TOKEN_UNIGRAM_GRAPHS, SimilarityMetric.GRAPH_VALUE_SIMILARITY);
-        
-        LOGGER.log(Level.INFO, "Using default configuration for {0}.", getMethodName());
     }
     
     public GroupLinkage(double simThr, RepresentationModel model, SimilarityMetric simMetric) {
         super(model, simMetric);
         similarityThreshold = simThr;
-        
-        LOGGER.log(Level.INFO, getMethodConfiguration());
     }
 
     @Override
     public SimilarityPairs executeComparisons(List<AbstractBlock> blocks,
             List<EntityProfile> profilesD1, List<EntityProfile> profilesD2) {
+        Log.info("Applying " + getMethodName() + " with the following configuration : " + getMethodConfiguration());
+        
         if (profilesD1 == null) {
-            LOGGER.log(Level.SEVERE, "First list of entity profiles is null! "
+            Log.error("First list of entity profiles is null! "
                     + "The first argument should always contain entities.");
             System.exit(-1);
         }
@@ -82,9 +78,9 @@ public class GroupLinkage extends AbstractEntityMatching {
         final SimilarityPairs simPairs = new SimilarityPairs(isCleanCleanER, blocks);
         blocks.stream().map((block) -> block.getComparisonIterator()).forEachOrdered((iterator) -> {
             while (iterator.hasNext()) {
-                Comparison currentComparison = iterator.next();
+                final Comparison currentComparison = iterator.next();
                 final Queue<SimilarityEdge> similarityQueue = getSimilarityEdges(currentComparison);
-                WeightedGraph<String, DefaultWeightedEdge> similarityGraph = getSimilarityGraph(similarityQueue);
+                final WeightedGraph<String, DefaultWeightedEdge> similarityGraph = getSimilarityGraph(similarityQueue);
                 int verticesNum = entityModelsD1[currentComparison.getEntityId1()].length;
                 if (isCleanCleanER) {
                     verticesNum += entityModelsD2[currentComparison.getEntityId2()].length;
@@ -151,7 +147,7 @@ public class GroupLinkage extends AbstractEntityMatching {
 
     @Override
     public JsonArray getParameterConfiguration() {
-        JsonObject obj1 = new JsonObject();
+        final JsonObject obj1 = new JsonObject();
         obj1.put("class", "Utilities.Enumerations.RepresentationModel");
         obj1.put("name", getParameterName(0));
         obj1.put("defaultValue", "Utilities.Enumerations.RepresentationModel.TOKEN_UNIGRAM_GRAPHS");
@@ -160,7 +156,7 @@ public class GroupLinkage extends AbstractEntityMatching {
         obj1.put("stepValue", "-");
         obj1.put("description", getParameterDescription(0));
 
-        JsonObject obj2 = new JsonObject();
+        final JsonObject obj2 = new JsonObject();
         obj2.put("class", "Utilities.Enumerations.SimilarityMetric");
         obj2.put("name", getParameterName(1));
         obj2.put("defaultValue", "Utilities.Enumerations.SimilarityMetric.GRAPH_VALUE_SIMILARITY");
@@ -169,7 +165,7 @@ public class GroupLinkage extends AbstractEntityMatching {
         obj2.put("stepValue", "-");
         obj2.put("description", getParameterDescription(1));
         
-        JsonObject obj3 = new JsonObject();
+        final JsonObject obj3 = new JsonObject();
         obj3.put("class", "java.lang.Double");
         obj3.put("name", getParameterName(2));
         obj3.put("defaultValue", "0.5");
@@ -178,7 +174,7 @@ public class GroupLinkage extends AbstractEntityMatching {
         obj3.put("stepValue", "0.05");
         obj3.put("description", getParameterDescription(2));
 
-        JsonArray array = new JsonArray();
+        final JsonArray array = new JsonArray();
         array.add(obj1);
         array.add(obj2);
         array.add(obj3);
@@ -224,7 +220,7 @@ public class GroupLinkage extends AbstractEntityMatching {
     }
 
     private Queue<SimilarityEdge> getSimilarityEdges(Comparison comparison) {
-        ITextModel[] model1 = entityModelsD1[comparison.getEntityId1()];
+        final ITextModel[] model1 = entityModelsD1[comparison.getEntityId1()];
         ITextModel[] model2;
         if (isCleanCleanER) {
             model2 = entityModelsD2[comparison.getEntityId2()];
@@ -248,7 +244,7 @@ public class GroupLinkage extends AbstractEntityMatching {
     }
 
     private WeightedGraph<String, DefaultWeightedEdge> getSimilarityGraph(Queue<SimilarityEdge> seQueue) {
-        WeightedGraph<String, DefaultWeightedEdge> graph = new SimpleDirectedWeightedGraph<>(DefaultWeightedEdge.class);
+        final WeightedGraph<String, DefaultWeightedEdge> graph = new SimpleDirectedWeightedGraph<>(DefaultWeightedEdge.class);
         while (seQueue.size() > 0) {
             SimilarityEdge se = seQueue.remove();
             int i = se.getModel1Pos();

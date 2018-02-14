@@ -1,3 +1,19 @@
+/*
+* Copyright [2016-2018] [George Papadakis (gpapadis@yahoo.gr)]
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*    http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+
 package DataModel;
 
 import java.util.HashMap;
@@ -14,6 +30,11 @@ import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.SimpleGraph;
 import org.jgrapht.graph.SimpleWeightedGraph;
 
+/**
+ *
+ * @author manos
+ */
+
 public class GomoryHuTree<V, E> {
 
     protected final SimpleWeightedGraph<V, E> graph;
@@ -24,7 +45,7 @@ public class GomoryHuTree<V, E> {
     }
 
     private DefaultDirectedWeightedGraph<V, DefaultWeightedEdge> makeDirectedCopy(UndirectedGraph<V, E> graph) {
-        DefaultDirectedWeightedGraph<V, DefaultWeightedEdge> copy = new DefaultDirectedWeightedGraph<>(DefaultWeightedEdge.class);
+        final DefaultDirectedWeightedGraph<V, DefaultWeightedEdge> copy = new DefaultDirectedWeightedGraph<>(DefaultWeightedEdge.class);
 
         Graphs.addAllVertices(copy, graph.vertexSet());
         for (E e : graph.edgeSet()) {
@@ -51,8 +72,8 @@ public class GomoryHuTree<V, E> {
         }
 
         final DefaultDirectedWeightedGraph<V, DefaultWeightedEdge> returnGraphClone = new DefaultDirectedWeightedGraph<>(DefaultWeightedEdge.class);
-        final SimpleGraph<Integer, DefaultEdge> returnGraph = new SimpleGraph<Integer, DefaultEdge>(DefaultEdge.class);
-        final MinSourceSinkCut<V, DefaultWeightedEdge> minSourceSinkCut = new MinSourceSinkCut<V, DefaultWeightedEdge>(directedGraph);
+        final SimpleGraph<Integer, DefaultEdge> returnGraph = new SimpleGraph<>(DefaultEdge.class);
+        final MinSourceSinkCut<V, DefaultWeightedEdge> minSourceSinkCut = new MinSourceSinkCut<>(directedGraph);
         
         final Iterator<V> itVertices = directedGraph.vertexSet().iterator();
         itVertices.next();

@@ -1,5 +1,5 @@
 /*
-* Copyright [2016] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2018] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -17,21 +17,18 @@ package TextModels;
 
 import Utilities.Enumerations.RepresentationModel;
 import Utilities.Enumerations.SimilarityMetric;
+import com.esotericsoftware.minlog.Log;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
  * @author G.A.P. II
  */
 public class TokenNGramsWithGlobalWeights extends TokenNGrams {
-
-    private static final Logger LOGGER = Logger.getLogger(TokenNGramsWithGlobalWeights.class.getName());
 
     protected final static Map<String, IncrementalCounter>[] DOC_FREQ = new HashMap[2];
 
@@ -56,7 +53,7 @@ public class TokenNGramsWithGlobalWeights extends TokenNGrams {
     }
 
     protected double getARCSSimilarity(TokenNGramsWithGlobalWeights oModel) {
-        Set<String> commonKeys = new HashSet(itemsFrequency.keySet());
+        final Set<String> commonKeys = new HashSet(itemsFrequency.keySet());
         commonKeys.retainAll(oModel.getItemsFrequency().keySet());
 
         double similarity = 0;
@@ -70,7 +67,7 @@ public class TokenNGramsWithGlobalWeights extends TokenNGrams {
                 similarity += 1.0 / (Math.log1p(((double)DOC_FREQ[DATASET_1].get(key).getCounter()) * DOC_FREQ[DATASET_2].get(key).getCounter())/ Math.log(2));
             }
         } else {
-            LOGGER.log(Level.SEVERE, "Both models come from dataset 1!");
+            Log.error("Both models come from dataset 1!");
             System.exit(-1);
         }
 
@@ -85,7 +82,7 @@ public class TokenNGramsWithGlobalWeights extends TokenNGrams {
 
         double weight = -0;
         if (NO_OF_DOCUMENTS[datasetId] < frequency.getCounter()) {
-            LOGGER.log(Level.SEVERE, "Error in the computation of IDF weights!!!");
+            Log.error("Error in the computation of IDF weights!!!");
         } else if (frequency.getCounter() < NO_OF_DOCUMENTS[datasetId]) {
             weight = Math.log10(NO_OF_DOCUMENTS[datasetId] / (1 + frequency.getCounter()));
         }
@@ -95,7 +92,7 @@ public class TokenNGramsWithGlobalWeights extends TokenNGrams {
 
     protected double getSigmaSimilarity(TokenNGramsWithGlobalWeights oModel) {
         double totalTerms2 = oModel.getNoOfTotalTerms();
-        Map<String, IncrementalCounter> itemVector2 = oModel.getItemsFrequency();
+        final Map<String, IncrementalCounter> itemVector2 = oModel.getItemsFrequency();
 
         double numerator = 0.0;
         for (Entry<String, IncrementalCounter> entry : itemsFrequency.entrySet()) {
@@ -132,7 +129,7 @@ public class TokenNGramsWithGlobalWeights extends TokenNGrams {
             case SIGMA_SIMILARITY:
                 return getSigmaSimilarity((TokenNGramsWithGlobalWeights) oModel);
             default:
-                LOGGER.log(Level.SEVERE, "The given similarity metric is incompatible with the bag representation model!");
+                Log.error("The given similarity metric is incompatible with the bag representation model!");
                 System.exit(-1);
                 return -1;
         }
@@ -157,7 +154,7 @@ public class TokenNGramsWithGlobalWeights extends TokenNGrams {
 
     protected double getTfIdfGeneralizedJaccardSimilarity(TokenNGramsWithGlobalWeights oModel) {
         double totalTerms2 = oModel.getNoOfTotalTerms();
-        Map<String, IncrementalCounter> itemVector2 = oModel.getItemsFrequency();
+        final Map<String, IncrementalCounter> itemVector2 = oModel.getItemsFrequency();
 
         double numerator = 0.0;
         for (Entry<String, IncrementalCounter> entry : itemsFrequency.entrySet()) {

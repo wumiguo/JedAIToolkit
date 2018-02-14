@@ -1,5 +1,5 @@
 /*
- * Copyright [2016-2017] [George Papadakis (gpapadis@yahoo.gr)]
+ * Copyright [2016-2018] [George Papadakis (gpapadis@yahoo.gr)]
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -101,7 +101,7 @@ public class SortedNeighborhoodBlocking extends StandardBlocking {
 
     @Override
     public JsonArray getParameterConfiguration() {
-        JsonObject obj1 = new JsonObject();
+        final JsonObject obj1 = new JsonObject();
         obj1.put("class", "java.lang.Integer");
         obj1.put("name", getParameterName(0));
         obj1.put("defaultValue", "2");
@@ -110,7 +110,7 @@ public class SortedNeighborhoodBlocking extends StandardBlocking {
         obj1.put("stepValue", "1");
         obj1.put("description", getParameterDescription(0));
 
-        JsonArray array = new JsonArray();
+        final JsonArray array = new JsonArray();
         array.add(obj1);
         return array;
     }
@@ -174,6 +174,7 @@ public class SortedNeighborhoodBlocking extends StandardBlocking {
         final Set<String> blockingKeysSet = new HashSet<>();
         blockingKeysSet.addAll(invertedIndexD1.keySet());
         blockingKeysSet.addAll(invertedIndexD2.keySet());
+        
         final String[] sortedTerms = blockingKeysSet.toArray(new String[blockingKeysSet.size()]);
         Arrays.sort(sortedTerms);
 

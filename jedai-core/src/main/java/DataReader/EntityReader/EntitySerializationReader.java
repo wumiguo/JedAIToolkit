@@ -1,5 +1,5 @@
 /*
- * Copyright [2016] [George Papadakis (gpapadis@yahoo.gr)]
+ * Copyright [2016-2018] [George Papadakis (gpapadis@yahoo.gr)]
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,11 @@
 package DataReader.EntityReader;
 
 import DataModel.EntityProfile;
+
+import com.esotericsoftware.minlog.Log;
+
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 import org.apache.jena.atlas.json.JsonArray;
 import org.apache.jena.atlas.json.JsonObject;
 
@@ -27,8 +29,6 @@ import org.apache.jena.atlas.json.JsonObject;
  * @author G.A.P. II
  */
 public class EntitySerializationReader extends AbstractEntityReader {
-
-    private static final Logger LOGGER = Logger.getLogger(EntitySerializationReader.class.getName());
 
     public EntitySerializationReader(String filePath) {
         super(filePath);
@@ -41,7 +41,7 @@ public class EntitySerializationReader extends AbstractEntityReader {
         }
 
         if (inputFilePath == null) {
-            LOGGER.log(Level.SEVERE, "Input file path has not been set!");
+            Log.error("Input file path has not been set!");
             return null;
         }
 
@@ -72,7 +72,7 @@ public class EntitySerializationReader extends AbstractEntityReader {
 
     @Override
     public JsonArray getParameterConfiguration() {
-        JsonObject obj1 = new JsonObject();
+        final JsonObject obj1 = new JsonObject();
         obj1.put("class", "java.lang.String");
         obj1.put("name", getParameterName(0));
         obj1.put("defaultValue", "-");
@@ -81,7 +81,7 @@ public class EntitySerializationReader extends AbstractEntityReader {
         obj1.put("stepValue", "-");
         obj1.put("description", getParameterDescription(0));
 
-        JsonArray array = new JsonArray();
+        final JsonArray array = new JsonArray();
         array.add(obj1);
         return array;
     }

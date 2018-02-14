@@ -1,5 +1,5 @@
 /*
-* Copyright [2016-2017] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2018] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -16,14 +16,13 @@
 
 package BlockProcessing.BlockCleaning;
 
-import BlockBuilding.AbstractBlockBuilding;
 import BlockProcessing.AbstractBlockProcessing;
 import DataModel.AbstractBlock;
 
+import com.esotericsoftware.minlog.Log;
+
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -31,14 +30,14 @@ import java.util.logging.Logger;
  */
 
 public abstract class AbstractBlockPurging extends AbstractBlockProcessing {
-    
-    private static final Logger LOGGER = Logger.getLogger(AbstractBlockBuilding.class.getName());
 
     public AbstractBlockPurging() {
     }
 
     @Override
     public List<AbstractBlock> refineBlocks(List<AbstractBlock> blocks) {
+        Log.info("Applying " + getMethodName() + " with the following configuration : " + getMethodConfiguration());
+        
         printOriginalStatistics(blocks);
         setThreshold(blocks);
 
@@ -55,9 +54,9 @@ public abstract class AbstractBlockPurging extends AbstractBlockProcessing {
             }
         }
         
-        LOGGER.log(Level.INFO, "Purged blocks\t:\t{0}", noOfPurgedBlocks);
-        LOGGER.log(Level.INFO, "Retained blocks\t:\t{0}", blocks.size());
-        LOGGER.log(Level.INFO, "Retained comparisons\t:\t{0}", totalComparisons);
+        Log.info("Purged blocks\t:\t" + noOfPurgedBlocks);
+        Log.info("Retained blocks\t:\t" + blocks.size());
+        Log.info("Retained comparisons\t:\t" + totalComparisons);
 
         return blocks;
     }

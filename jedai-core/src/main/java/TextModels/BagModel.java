@@ -1,5 +1,5 @@
 /*
-* Copyright [2016] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2018] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -17,21 +17,18 @@ package TextModels;
 
 import Utilities.Enumerations.RepresentationModel;
 import Utilities.Enumerations.SimilarityMetric;
+import com.esotericsoftware.minlog.Log;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
  * @author G.A.P. II
  */
 public abstract class BagModel extends AbstractModel {
-
-    private static final Logger LOGGER = Logger.getLogger(BagModel.class.getName());
 
     protected double noOfTotalTerms;
     protected final Map<String, IncrementalCounter> itemsFrequency;
@@ -94,7 +91,7 @@ public abstract class BagModel extends AbstractModel {
             case JACCARD_SIMILARITY:
                 return getJaccardSimilarity((BagModel) oModel);
             default:
-                LOGGER.log(Level.SEVERE, "The given similarity metric is incompatible with the bag representation model!");
+                Log.error("The given similarity metric is incompatible with the bag representation model!");
                 System.exit(-1);
                 return -1;
         }

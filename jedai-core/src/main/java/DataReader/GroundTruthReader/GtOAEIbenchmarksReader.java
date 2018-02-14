@@ -1,5 +1,5 @@
 /*
- * Copyright [2016] [George Papadakis (gpapadis@yahoo.gr)]
+ * Copyright [2016-2018] [George Papadakis (gpapadis@yahoo.gr)]
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +15,9 @@
  */
 package DataReader.GroundTruthReader;
 
+import com.esotericsoftware.minlog.Log;
+
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -34,8 +34,6 @@ import org.xml.sax.SAXException;
  * @author G.A.P. II
  */
 public class GtOAEIbenchmarksReader extends GtRDFReader {
-
-    private static final Logger LOGGER = Logger.getLogger(GtOAEIbenchmarksReader.class.getName());
 
     public GtOAEIbenchmarksReader(String filePath) {
         super(filePath);
@@ -56,27 +54,27 @@ public class GtOAEIbenchmarksReader extends GtRDFReader {
     @Override
     protected void performReading() {
         try {
-            DocumentBuilder dBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-            Document doc = dBuilder.parse(inputFilePath);
+            final DocumentBuilder dBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+            final Document doc = dBuilder.parse(inputFilePath);
             doc.getDocumentElement().normalize();
             
             final NodeList nList = doc.getElementsByTagName("Cell");
             for (int temp = 0; temp < nList.getLength(); temp++) {
-                Node nNode = nList.item(temp);
+                final Node nNode = nList.item(temp);
                 if (nNode.getNodeType() == Node.ELEMENT_NODE) {
-                    Element eElement = (Element) nNode;
+                    final Element eElement = (Element) nNode;
                     
-                    Element eElement1 = (Element) eElement.getElementsByTagName("entity1").item(0);
+                    final Element eElement1 = (Element) eElement.getElementsByTagName("entity1").item(0);
                     int entityId1 = urlToEntityId1.get(eElement1.getAttribute("rdf:resource"));
                     
-                    Element eElement2 = (Element) eElement.getElementsByTagName("entity2").item(0);
+                    final Element eElement2 = (Element) eElement.getElementsByTagName("entity2").item(0);
                     int entityId2 = urlToEntityId2.get(eElement2.getAttribute("rdf:resource"));
                     
                     duplicatesGraph.addEdge(entityId1, entityId2);
                 }
             }
         } catch (ParserConfigurationException | SAXException | IOException ex) {
-            LOGGER.log(Level.SEVERE, null, ex);
+            Log.error("Error in duplicates reading!", ex);
         }
     }
 }

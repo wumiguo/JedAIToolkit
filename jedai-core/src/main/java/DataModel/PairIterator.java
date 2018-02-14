@@ -1,5 +1,5 @@
 /*
-* Copyright [2016] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2018] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -41,7 +41,7 @@ public class PairIterator implements Iterator<Comparison> {
 
     @Override
     public Comparison next() {
-        Comparison comparison = new Comparison(true, 
+        final Comparison comparison = new Comparison(true, 
                 similarityPairs.getEntityIds1()[currentIndex], 
                 similarityPairs.getEntityIds2()[currentIndex]);
         comparison.setUtilityMeasure(similarityPairs.getSimilarities()[currentIndex]);

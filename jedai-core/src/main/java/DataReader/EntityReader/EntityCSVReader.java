@@ -1,5 +1,5 @@
 /*
- * Copyright [2016] [George Papadakis (gpapadis@yahoo.gr)]
+ * Copyright [2016-2018] [George Papadakis (gpapadis@yahoo.gr)]
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,15 +16,18 @@
 package DataReader.EntityReader;
 
 import DataModel.EntityProfile;
+
+import com.esotericsoftware.minlog.Log;
+
 import com.opencsv.CSVReader;
+
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 import org.apache.jena.atlas.json.JsonArray;
 import org.apache.jena.atlas.json.JsonObject;
 
@@ -34,12 +37,10 @@ import org.apache.jena.atlas.json.JsonObject;
  */
 public class EntityCSVReader extends AbstractEntityReader {
 
-    private static final Logger LOGGER = Logger.getLogger(EntityCSVReader.class.getName());
-
     private boolean attributeNamesInFirstRow;
     private char separator;
     private int idIndex;
-    private String[] attributeNames; 
+    private String[] attributeNames;
     private final Set<Integer> attributesToExclude;
 
     public EntityCSVReader(String filePath) {
@@ -58,19 +59,19 @@ public class EntityCSVReader extends AbstractEntityReader {
         }
 
         if (inputFilePath == null) {
-            LOGGER.log(Level.SEVERE, "Input file path has not been set!");
+            Log.error("Input file path has not been set!");
             return null;
         }
 
         try {
             //creating reader
-            CSVReader reader = new CSVReader(new FileReader(inputFilePath), separator);
+            final CSVReader reader = new CSVReader(new FileReader(inputFilePath), separator);
 
             //getting first line
-            String[] firstLine = reader.readNext();
+            final String[] firstLine = reader.readNext();
             int noOfAttributes = firstLine.length;
             if (noOfAttributes - 1 < idIndex) {
-                LOGGER.log(Level.SEVERE, "Id index does not correspond to a valid column index! Counting starts from 0.");
+                Log.error("Id index does not correspond to a valid column index! Counting starts from 0.");
                 return null;
             }
 
@@ -89,12 +90,12 @@ public class EntityCSVReader extends AbstractEntityReader {
             }
 
             //read entity profiles
-            String[] nextLine = null;
+            String[] nextLine;
             while ((nextLine = reader.readNext()) != null) {
                 entityCounter++;
 
                 if (nextLine.length < attributeNames.length - 1) {
-                    LOGGER.log(Level.WARNING, "Line with missing attribute names : {0}", Arrays.toString(nextLine));
+                    Log.warn("Line with missing attribute names : " + Arrays.toString(nextLine));
                     continue;
                 }
 
@@ -103,14 +104,14 @@ public class EntityCSVReader extends AbstractEntityReader {
 
             return entityProfiles;
         } catch (IOException ex) {
-            LOGGER.log(Level.SEVERE, null, ex);
+            Log.error("Error in entities reading!", ex);
             return null;
         }
     }
 
     @Override
     public String getMethodConfiguration() {
-        StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
         sb.append("{");
         for (Integer attributeId : attributesToExclude) {
             sb.append(attributeId).append(",");
@@ -146,7 +147,7 @@ public class EntityCSVReader extends AbstractEntityReader {
 
     @Override
     public JsonArray getParameterConfiguration() {
-        JsonObject obj1 = new JsonObject();
+        final JsonObject obj1 = new JsonObject();
         obj1.put("class", "java.lang.String");
         obj1.put("name", getParameterName(0));
         obj1.put("defaultValue", "-");
@@ -155,7 +156,7 @@ public class EntityCSVReader extends AbstractEntityReader {
         obj1.put("stepValue", "-");
         obj1.put("description", getParameterDescription(0));
 
-        JsonObject obj2 = new JsonObject();
+        final JsonObject obj2 = new JsonObject();
         obj2.put("class", "java.lang.Boolean");
         obj2.put("name", getParameterName(1));
         obj2.put("defaultValue", "true");
@@ -163,8 +164,8 @@ public class EntityCSVReader extends AbstractEntityReader {
         obj2.put("maxValue", "-");
         obj2.put("stepValue", "-");
         obj2.put("description", getParameterDescription(1));
-        
-        JsonObject obj3 = new JsonObject();
+
+        final JsonObject obj3 = new JsonObject();
         obj3.put("class", "java.lang.Character");
         obj3.put("name", getParameterName(2));
         obj3.put("defaultValue", ",");
@@ -172,8 +173,8 @@ public class EntityCSVReader extends AbstractEntityReader {
         obj3.put("maxValue", "-");
         obj3.put("stepValue", "-");
         obj3.put("description", getParameterDescription(2));
-        
-        JsonObject obj4 = new JsonObject();
+
+        final JsonObject obj4 = new JsonObject();
         obj4.put("class", "java.lang.Integer");
         obj4.put("name", getParameterName(3));
         obj4.put("defaultValue", "0");
@@ -181,8 +182,8 @@ public class EntityCSVReader extends AbstractEntityReader {
         obj4.put("maxValue", "-");
         obj4.put("stepValue", "-");
         obj4.put("description", getParameterDescription(3));
-        
-        JsonObject obj5 = new JsonObject();
+
+        final JsonObject obj5 = new JsonObject();
         obj5.put("class", "java.util.Set<Integer>");
         obj5.put("name", getParameterName(4));
         obj5.put("defaultValue", "-");
@@ -191,7 +192,7 @@ public class EntityCSVReader extends AbstractEntityReader {
         obj5.put("stepValue", "-");
         obj5.put("description", getParameterDescription(4));
 
-        JsonArray array = new JsonArray();
+        final JsonArray array = new JsonArray();
         array.add(obj1);
         array.add(obj2);
         array.add(obj3);
@@ -211,8 +212,8 @@ public class EntityCSVReader extends AbstractEntityReader {
                 return "The " + getParameterName(2) + " determines the character used to tokenize every line into attribute values.";
             case 3:
                 return "The " + getParameterName(3) + " determines the number of column/attribute (starting from 0) that contains the entity ids. "
-                       + "If the given id is larger than the number of columns, an exception is thrown. "
-                       + "If id<0, an auto-incremented integer is assigned as id to every entity.";
+                        + "If the given id is larger than the number of columns, an exception is thrown. "
+                        + "If id<0, an auto-incremented integer is assigned as id to every entity.";
             case 4:
                 return "The " + getParameterName(4) + " specifies the column ids (in the form of comma-separated integers) that will be ignored during the creation of entity profiles.";
             default:
@@ -246,7 +247,7 @@ public class EntityCSVReader extends AbstractEntityReader {
             entityId = currentLine[idIndex];
         }
 
-        EntityProfile newProfile = new EntityProfile(entityId);
+        final EntityProfile newProfile = new EntityProfile(entityId);
         for (int i = 0; i < currentLine.length; i++) {
             if (attributesToExclude.contains(i)) {
                 continue;
