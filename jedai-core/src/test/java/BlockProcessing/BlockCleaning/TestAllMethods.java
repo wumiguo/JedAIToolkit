@@ -14,9 +14,9 @@
 * limitations under the License.
 */
 
-package BlockProcessing.BlockRefinement;
+package BlockProcessing.BlockCleaning;
 
-import BlockBuilding.*;
+import BlockBuilding.IBlockBuilding;
 import Utilities.DataStructures.AbstractDuplicatePropagation;
 import BlockProcessing.IBlockProcessing;
 import Utilities.DataStructures.UnilateralDuplicatePropagation;
@@ -37,8 +37,8 @@ import java.util.List;
 
 public class TestAllMethods {
     public static void main(String[] args) {
-        String entitiesFilePath = "C:\\Users\\G.A.P. II\\Downloads\\cddbProfiles";
-        String groundTruthFilePath = "C:\\Users\\G.A.P. II\\Downloads\\cddbDuplicates";
+        String entitiesFilePath = "C:\\Users\\GAP2\\Downloads\\cddbProfiles";
+        String groundTruthFilePath = "C:\\Users\\GAP2\\Downloads\\cddbIdDuplicates";
         
         IEntityReader eReader = new EntitySerializationReader(entitiesFilePath);
         List<EntityProfile> profiles = eReader.getEntityProfiles();

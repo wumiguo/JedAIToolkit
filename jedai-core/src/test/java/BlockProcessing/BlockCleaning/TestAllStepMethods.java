@@ -12,9 +12,8 @@
 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 * See the License for the specific language governing permissions and
 * limitations under the License.
-*/
-
-package BlockProcessing.ComparisonCleaning;
+ */
+package BlockProcessing.BlockCleaning;
 
 import BlockBuilding.IBlockBuilding;
 import Utilities.DataStructures.AbstractDuplicatePropagation;
@@ -28,60 +27,55 @@ import DataReader.GroundTruthReader.GtSerializationReader;
 import DataReader.GroundTruthReader.IGroundTruthReader;
 import Utilities.Enumerations.BlockBuildingMethod;
 import Utilities.BlocksPerformance;
+import Utilities.Enumerations.BlockCleaningMethod;
 import java.util.List;
 
 /**
  *
  * @author G.A.P. II
  */
+public class TestAllStepMethods {
 
-public class TestAllMethods {
     public static void main(String[] args) {
         String entitiesFilePath = "C:\\Users\\GAP2\\Downloads\\cddbProfiles";
         String groundTruthFilePath = "C:\\Users\\GAP2\\Downloads\\cddbIdDuplicates";
-        
+
         IEntityReader eReader = new EntitySerializationReader(entitiesFilePath);
         List<EntityProfile> profiles = eReader.getEntityProfiles();
         System.out.println("Input Entity Profiles\t:\t" + profiles.size());
-        
+
         IGroundTruthReader gtReader = new GtSerializationReader(groundTruthFilePath);
         final AbstractDuplicatePropagation duplicatePropagation = new UnilateralDuplicatePropagation(gtReader.getDuplicatePairs(eReader.getEntityProfiles()));
         System.out.println("Existing Duplicates\t:\t" + duplicatePropagation.getDuplicates().size());
-        
-        for (BlockBuildingMethod blbuMethod : BlockBuildingMethod.values()) {
-            double time1 = System.currentTimeMillis();
+
+        System.out.println("\n\nCurrent blocking metohd\t:\t" + BlockBuildingMethod.STANDARD_BLOCKING);
             
-            StringBuilder workflowConf = new StringBuilder();
-            StringBuilder workflowName = new StringBuilder();
+        double time1 = System.currentTimeMillis();
+        IBlockBuilding blockBuildingMethod = BlockBuildingMethod.getDefaultConfiguration(BlockBuildingMethod.STANDARD_BLOCKING);
+        List<AbstractBlock> blocks = blockBuildingMethod.getBlocks(profiles, null);
+
+        double time2 = System.currentTimeMillis();
+        BlocksPerformance blStats = new BlocksPerformance(blocks, duplicatePropagation);
+        blStats.setStatistics();
+        blStats.printStatistics(time2 - time1, blockBuildingMethod.getMethodConfiguration(), blockBuildingMethod.getMethodName());
+
+        for (BlockCleaningMethod blclMethod : BlockCleaningMethod.values()) {
+            double time3 = System.currentTimeMillis();
+
+            IBlockProcessing blockCleaningMethod = BlockCleaningMethod.getDefaultConfiguration(blclMethod);
+            List<AbstractBlock> localBlocks = blockCleaningMethod.refineBlocks(blocks);
             
-            System.out.println("\n\nCurrent blocking metohd\t:\t" + blbuMethod);
+            double time4 = System.currentTimeMillis();
             
-            IBlockBuilding blockBuildingMethod = BlockBuildingMethod.getDefaultConfiguration(blbuMethod);
-            List<AbstractBlock> blocks = blockBuildingMethod.getBlocks(profiles, null);
-            
-            workflowConf.append(blockBuildingMethod.getMethodConfiguration());
-            workflowName.append(blockBuildingMethod.getMethodName());
-            System.out.println("Original blocks\t:\t" + blocks.size());
-            
-            IBlockProcessing blockCleaningMethod = BlockBuildingMethod.getDefaultBlockCleaning(blbuMethod);
-            if (blockCleaningMethod != null) {
-                blocks = blockCleaningMethod.refineBlocks(blocks);
-                workflowConf.append("\n").append(blockCleaningMethod.getMethodConfiguration());
-                workflowName.append("->").append(blockCleaningMethod.getMethodName());
-            }
-            
-            IBlockProcessing comparisonCleaningMethod = BlockBuildingMethod.getDefaultComparisonCleaning(blbuMethod);
-            if (comparisonCleaningMethod != null) {
-                blocks = comparisonCleaningMethod.refineBlocks(blocks);
-                workflowConf.append("\n").append(comparisonCleaningMethod.getMethodConfiguration());
-                workflowName.append("->").append(comparisonCleaningMethod.getMethodName());
-            }
-            
-            double time2 = System.currentTimeMillis();
-            
-            BlocksPerformance blStats = new BlocksPerformance(blocks, duplicatePropagation);
+            StringBuilder workflowConf = new StringBuilder(blockBuildingMethod.getMethodConfiguration());
+            StringBuilder workflowName = new StringBuilder(blockBuildingMethod.getMethodName());
+
+            workflowConf.append("\n").append(blockCleaningMethod.getMethodConfiguration());
+            workflowName.append("->").append(blockCleaningMethod.getMethodName());
+
+            blStats = new BlocksPerformance(localBlocks, duplicatePropagation);
             blStats.setStatistics();
-            blStats.printStatistics(time2-time1, workflowConf.toString(), workflowName.toString());
+            blStats.printStatistics(time4 - time3, workflowConf.toString(), workflowName.toString());
         }
     }
 }

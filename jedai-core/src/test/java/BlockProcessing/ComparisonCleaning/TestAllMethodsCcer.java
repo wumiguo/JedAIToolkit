@@ -12,76 +12,81 @@
 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 * See the License for the specific language governing permissions and
 * limitations under the License.
- */
-package EntityMatching;
+*/
 
-import BlockBuilding.*;
+package BlockProcessing.ComparisonCleaning;
+
+import BlockBuilding.IBlockBuilding;
 import Utilities.DataStructures.AbstractDuplicatePropagation;
 import BlockProcessing.IBlockProcessing;
 import Utilities.DataStructures.UnilateralDuplicatePropagation;
 import DataModel.AbstractBlock;
 import DataModel.EntityProfile;
-import DataModel.SimilarityPairs;
 import DataReader.EntityReader.IEntityReader;
 import DataReader.EntityReader.EntitySerializationReader;
 import DataReader.GroundTruthReader.GtSerializationReader;
 import DataReader.GroundTruthReader.IGroundTruthReader;
 import Utilities.Enumerations.BlockBuildingMethod;
-import Utilities.Enumerations.RepresentationModel;
-import Utilities.Enumerations.SimilarityMetric;
-
+import Utilities.BlocksPerformance;
 import java.util.List;
 
 /**
  *
  * @author G.A.P. II
  */
-public class TestGroupLinkage {
 
+public class TestAllMethodsCcer {
     public static void main(String[] args) {
-        String entitiesFilePath1 = "/home/ethanos/Downloads/JEDAIfiles/im-identity/oaei2014_identity_aPROFILES";
-        String groundTruthFilePath = "/home/ethanos/Downloads/JEDAIfiles/cddbTestDuplicates";
+        String mainDirectory = "C:\\Users\\GAP2\\Downloads\\";
+        String[] entitiesFilePaths = { mainDirectory + "abtProfiles", mainDirectory +  "buyProfiles" };
+        String groundTruthFilePath = mainDirectory + "abtBuyIdDuplicates";
 
-        IEntityReader eReader1 = new EntitySerializationReader(entitiesFilePath1);
-        List<EntityProfile> profiles1 = eReader1.getEntityProfiles();
-        System.out.println("Input Entity Profiles\t:\t" + profiles1.size());
-
+        IEntityReader eReader = new EntitySerializationReader(entitiesFilePaths[0]);
+        List<EntityProfile> profilesD1 = eReader.getEntityProfiles();
+        System.out.println("Input Entity Profiles D1\t:\t" + profilesD1.size());
+        
+        eReader = new EntitySerializationReader(entitiesFilePaths[1]);
+        List<EntityProfile> profilesD2 = eReader.getEntityProfiles();
+        System.out.println("Input Entity Profiles D2\t:\t" + profilesD2.size());
+        
         IGroundTruthReader gtReader = new GtSerializationReader(groundTruthFilePath);
-        final AbstractDuplicatePropagation duplicatePropagation = new UnilateralDuplicatePropagation(gtReader.getDuplicatePairs(eReader1.getEntityProfiles()));
+        final AbstractDuplicatePropagation duplicatePropagation = new UnilateralDuplicatePropagation(gtReader.getDuplicatePairs(eReader.getEntityProfiles()));
         System.out.println("Existing Duplicates\t:\t" + duplicatePropagation.getDuplicates().size());
-
+        
         for (BlockBuildingMethod blbuMethod : BlockBuildingMethod.values()) {
+            double time1 = System.currentTimeMillis();
+            
+            StringBuilder workflowConf = new StringBuilder();
+            StringBuilder workflowName = new StringBuilder();
+            
             System.out.println("\n\nCurrent blocking metohd\t:\t" + blbuMethod);
+            
             IBlockBuilding blockBuildingMethod = BlockBuildingMethod.getDefaultConfiguration(blbuMethod);
-            List<AbstractBlock> blocks = blockBuildingMethod.getBlocks(profiles1);//
+            List<AbstractBlock> blocks = blockBuildingMethod.getBlocks(profilesD1, profilesD2);
+            
+            workflowConf.append(blockBuildingMethod.getMethodConfiguration());
+            workflowName.append(blockBuildingMethod.getMethodName());
             System.out.println("Original blocks\t:\t" + blocks.size());
-
+            
             IBlockProcessing blockCleaningMethod = BlockBuildingMethod.getDefaultBlockCleaning(blbuMethod);
             if (blockCleaningMethod != null) {
                 blocks = blockCleaningMethod.refineBlocks(blocks);
+                workflowConf.append("\n").append(blockCleaningMethod.getMethodConfiguration());
+                workflowName.append("->").append(blockCleaningMethod.getMethodName());
             }
-
+            
             IBlockProcessing comparisonCleaningMethod = BlockBuildingMethod.getDefaultComparisonCleaning(blbuMethod);
             if (comparisonCleaningMethod != null) {
                 blocks = comparisonCleaningMethod.refineBlocks(blocks);
+                workflowConf.append("\n").append(comparisonCleaningMethod.getMethodConfiguration());
+                workflowName.append("->").append(comparisonCleaningMethod.getMethodName());
             }
-
-            long start = System.nanoTime();
-            for (RepresentationModel model : RepresentationModel.values()) {
-                if (model.equals(RepresentationModel.CHARACTER_BIGRAMS)) {
-                    GroupLinkage gp = new GroupLinkage(0.1, model, SimilarityMetric.getModelDefaultSimMetric(model));
-                    gp.setSimilarityThreshold(0.1);
-                    SimilarityPairs simPairs = gp.executeComparisons(blocks, profiles1);//
-                    
-                    for (int i = 0; i < simPairs.getNoOfComparisons(); i++) {
-                        System.out.println(simPairs.getEntityIds1()[i] + "\t\t" + simPairs.getEntityIds2()[i] + "\t\t" + simPairs.getSimilarities()[i]);
-                    }
-                }
-
-                long elapsedTime = System.nanoTime() - start;
-                System.out.println("time=" + elapsedTime / 1000000000.0);
-            }
-
+            
+            double time2 = System.currentTimeMillis();
+            
+            BlocksPerformance blStats = new BlocksPerformance(blocks, duplicatePropagation);
+            blStats.setStatistics();
+            blStats.printStatistics(time2-time1, workflowConf.toString(), workflowName.toString());
         }
     }
 }

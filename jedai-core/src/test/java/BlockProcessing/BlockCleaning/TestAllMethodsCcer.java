@@ -14,7 +14,7 @@
 * limitations under the License.
 */
 
-package BlockProcessing.ComparisonCleaning;
+package BlockProcessing.BlockCleaning;
 
 import BlockBuilding.IBlockBuilding;
 import Utilities.DataStructures.AbstractDuplicatePropagation;
@@ -35,14 +35,19 @@ import java.util.List;
  * @author G.A.P. II
  */
 
-public class TestAllMethods {
+public class TestAllMethodsCcer {
     public static void main(String[] args) {
-        String entitiesFilePath = "C:\\Users\\GAP2\\Downloads\\cddbProfiles";
-        String groundTruthFilePath = "C:\\Users\\GAP2\\Downloads\\cddbIdDuplicates";
+        String mainDirectory = "C:\\Users\\GAP2\\Downloads\\";
+        String[] entitiesFilePaths = { mainDirectory + "abtProfiles", mainDirectory +  "buyProfiles" };
+        String groundTruthFilePath = mainDirectory + "abtBuyIdDuplicates";
+
+        IEntityReader eReader = new EntitySerializationReader(entitiesFilePaths[0]);
+        List<EntityProfile> profilesD1 = eReader.getEntityProfiles();
+        System.out.println("Input Entity Profiles D1\t:\t" + profilesD1.size());
         
-        IEntityReader eReader = new EntitySerializationReader(entitiesFilePath);
-        List<EntityProfile> profiles = eReader.getEntityProfiles();
-        System.out.println("Input Entity Profiles\t:\t" + profiles.size());
+        eReader = new EntitySerializationReader(entitiesFilePaths[1]);
+        List<EntityProfile> profilesD2 = eReader.getEntityProfiles();
+        System.out.println("Input Entity Profiles D2\t:\t" + profilesD2.size());
         
         IGroundTruthReader gtReader = new GtSerializationReader(groundTruthFilePath);
         final AbstractDuplicatePropagation duplicatePropagation = new UnilateralDuplicatePropagation(gtReader.getDuplicatePairs(eReader.getEntityProfiles()));
@@ -57,7 +62,7 @@ public class TestAllMethods {
             System.out.println("\n\nCurrent blocking metohd\t:\t" + blbuMethod);
             
             IBlockBuilding blockBuildingMethod = BlockBuildingMethod.getDefaultConfiguration(blbuMethod);
-            List<AbstractBlock> blocks = blockBuildingMethod.getBlocks(profiles, null);
+            List<AbstractBlock> blocks = blockBuildingMethod.getBlocks(profilesD1, profilesD2);
             
             workflowConf.append(blockBuildingMethod.getMethodConfiguration());
             workflowName.append(blockBuildingMethod.getMethodName());
@@ -68,13 +73,6 @@ public class TestAllMethods {
                 blocks = blockCleaningMethod.refineBlocks(blocks);
                 workflowConf.append("\n").append(blockCleaningMethod.getMethodConfiguration());
                 workflowName.append("->").append(blockCleaningMethod.getMethodName());
-            }
-            
-            IBlockProcessing comparisonCleaningMethod = BlockBuildingMethod.getDefaultComparisonCleaning(blbuMethod);
-            if (comparisonCleaningMethod != null) {
-                blocks = comparisonCleaningMethod.refineBlocks(blocks);
-                workflowConf.append("\n").append(comparisonCleaningMethod.getMethodConfiguration());
-                workflowName.append("->").append(comparisonCleaningMethod.getMethodName());
             }
             
             double time2 = System.currentTimeMillis();
