@@ -33,10 +33,13 @@ public class PrintToFile {
         final PrintWriter pw = new PrintWriter(new File(filename));
         final StringBuilder sb = new StringBuilder();
 
+        int counter = 0;
         for (EquivalenceCluster eqc : entityClusters) {
             if (eqc.getEntityIdsD1().isEmpty()) {
                 continue;
             }
+            counter++;
+            sb.append("\nEquivalence cluster : ").append(counter).append("\n").append("Dataset 1 : ");;
             for (TIntIterator iterator = eqc.getEntityIdsD1().iterator(); iterator.hasNext();) {
                 sb.append(iterator.next());
                 sb.append(',');
@@ -46,7 +49,8 @@ public class PrintToFile {
             if (eqc.getEntityIdsD2().isEmpty()) {
                 continue;
             }
-            sb.deleteCharAt(sb.length() - 1);
+            sb.append("Dataset 2 : ");
+//            sb.deleteCharAt(sb.length() - 1);
             for (TIntIterator iterator = eqc.getEntityIdsD2().iterator(); iterator.hasNext();) {
                 sb.append(iterator.next());
                 sb.append(',');
