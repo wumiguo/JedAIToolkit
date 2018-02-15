@@ -15,6 +15,7 @@
  */
 package DemoWorkflows;
 
+import DemoWorkflows.Groundtruth.GtDblpRdfAcmCsvReader;
 import BlockBuilding.IBlockBuilding;
 import BlockBuilding.StandardBlocking;
 import BlockProcessing.BlockCleaning.BlockFiltering;
@@ -25,7 +26,7 @@ import DataModel.EntityProfile;
 import DataModel.EquivalenceCluster;
 import DataModel.SimilarityPairs;
 import DataReader.EntityReader.EntityCSVReader;
-import DataReader.GroundTruthReader.GtCSVReader;
+import DataReader.EntityReader.EntityRDFReader;
 import EntityClustering.ConnectedComponentsClustering;
 import EntityClustering.IEntityClustering;
 import EntityMatching.IEntityMatching;
@@ -42,30 +43,27 @@ import java.util.List;
  *
  * @author gap2
  */
-public class CsvDblpAcm {
+public class RdfCsvDblpAcm {
 
     public static void main(String[] args) throws FileNotFoundException {
-        String mainDirectory = "C:\\Users\\gap2\\Downloads\\DBLP-ACM\\";
+        String mainDirectory = "C:\\Users\\gap2\\Downloads\\";
 
-        EntityCSVReader csvEntityReader = new EntityCSVReader(mainDirectory + "DBLP2.csv");
-        csvEntityReader.setAttributeNamesInFirstRow(true);
-        csvEntityReader.setIdIndex(0);
-        csvEntityReader.setSeparator(',');
-        List<EntityProfile> csvDBLP = csvEntityReader.getEntityProfiles();
-        System.out.println("CSV DBLP Entity Profiles\t:\t" + csvDBLP.size());
+        EntityRDFReader rdfEntityReader = new EntityRDFReader(mainDirectory + "DBLP2toRDFxml.xml");
+        List<EntityProfile> rdfDBLP = rdfEntityReader.getEntityProfiles();
+        System.out.println("RDF DBLP Entity Profiles\t:\t" + rdfDBLP.size());
         
-        csvEntityReader = new EntityCSVReader(mainDirectory + "ACM.csv");
+        EntityCSVReader csvEntityReader = new EntityCSVReader(mainDirectory + "DBLP-ACM\\ACM.csv");
         csvEntityReader.setAttributeNamesInFirstRow(true);
         csvEntityReader.setIdIndex(0);
         csvEntityReader.setSeparator(',');
         List<EntityProfile> csvACM = csvEntityReader.getEntityProfiles();
-        System.out.println("CSV ACM Entity Profiles\t:\t" + csvACM.size());
+        System.out.println("RDF ACM Entity Profiles\t:\t" + csvACM.size());
 
-        GtCSVReader csvGtReader = new GtCSVReader(mainDirectory + "DBLP-ACM_perfectMapping.csv");
+        GtDblpRdfAcmCsvReader csvGtReader = new GtDblpRdfAcmCsvReader(mainDirectory + "DBLP-ACM\\DBLP-ACM_perfectMapping.csv");
         csvGtReader.setIgnoreFirstRow(true);
         csvGtReader.setSeparator(',');
-        csvGtReader.getDuplicatePairs(csvDBLP, csvACM);
-        final AbstractDuplicatePropagation duplicatePropagation = new BilateralDuplicatePropagation(csvGtReader.getDuplicatePairs(csvDBLP, csvACM));
+        csvGtReader.getDuplicatePairs(rdfDBLP, csvACM);
+        final AbstractDuplicatePropagation duplicatePropagation = new BilateralDuplicatePropagation(csvGtReader.getDuplicatePairs(rdfDBLP, csvACM));
         System.out.println("Existing Duplicates\t:\t" + duplicatePropagation.getDuplicates().size());
 
         StringBuilder workflowConf = new StringBuilder();
@@ -74,7 +72,7 @@ public class CsvDblpAcm {
         double time1 = System.currentTimeMillis();
 
         IBlockBuilding tokenBlocking = new StandardBlocking();
-        List<AbstractBlock> blocks = tokenBlocking.getBlocks(csvDBLP, csvACM);
+        List<AbstractBlock> blocks = tokenBlocking.getBlocks(rdfDBLP, csvACM);
         workflowConf.append(tokenBlocking.getMethodConfiguration());
         workflowName.append(tokenBlocking.getMethodName());
 
@@ -97,7 +95,7 @@ public class CsvDblpAcm {
         double time3 = System.currentTimeMillis();
         
         IEntityMatching entityMatching = new ProfileMatcher();
-        SimilarityPairs simPairs = entityMatching.executeComparisons(blocks, csvDBLP, csvACM);
+        SimilarityPairs simPairs = entityMatching.executeComparisons(blocks, rdfDBLP, csvACM);
         workflowConf.append("\n").append(entityMatching.getMethodConfiguration());
         workflowName.append("->").append(entityMatching.getMethodName());
 
@@ -112,7 +110,7 @@ public class CsvDblpAcm {
         clp.setStatistics();
         clp.printStatistics(time4 - time3, workflowConf.toString(), workflowName.toString());
         
-        PrintToFile.toCSV(entityClusters, mainDirectory + "foundMatches.csv");
+        PrintToFile.toCSV(entityClusters, mainDirectory + "foundMatchesRDF.csv");
     }
 
 }
