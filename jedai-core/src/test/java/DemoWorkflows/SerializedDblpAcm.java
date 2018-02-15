@@ -22,13 +22,22 @@ import BlockProcessing.ComparisonCleaning.CardinalityNodePruning;
 import BlockProcessing.IBlockProcessing;
 import DataModel.AbstractBlock;
 import DataModel.EntityProfile;
+import DataModel.EquivalenceCluster;
+import DataModel.SimilarityPairs;
 import DataReader.EntityReader.EntitySerializationReader;
 import DataReader.EntityReader.IEntityReader;
 import DataReader.GroundTruthReader.GtSerializationReader;
 import DataReader.GroundTruthReader.IGroundTruthReader;
+import EntityClustering.ConnectedComponentsClustering;
+import EntityClustering.IEntityClustering;
+import EntityMatching.IEntityMatching;
+import EntityMatching.ProfileMatcher;
 import Utilities.BlocksPerformance;
+import Utilities.ClustersPerformance;
 import Utilities.DataStructures.AbstractDuplicatePropagation;
 import Utilities.DataStructures.BilateralDuplicatePropagation;
+import Utilities.PrintToFile;
+import java.io.FileNotFoundException;
 import java.util.List;
 
 /**
@@ -37,7 +46,7 @@ import java.util.List;
  */
 public class SerializedDblpAcm {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws FileNotFoundException {
         String mainDirectory = "C:\\Users\\gap2\\Downloads\\";
 
         IEntityReader serializedEntityReader = new EntitySerializationReader(mainDirectory + "dblpProfiles");
@@ -58,24 +67,44 @@ public class SerializedDblpAcm {
         double time1 = System.currentTimeMillis();
 
         IBlockBuilding tokenBlocking = new StandardBlocking();
-        List<AbstractBlock> blocks = tokenBlocking.getBlocks(serializedACM, serializedDBLP);
+        List<AbstractBlock> blocks = tokenBlocking.getBlocks(serializedDBLP, serializedACM);
         workflowConf.append(tokenBlocking.getMethodConfiguration());
         workflowName.append(tokenBlocking.getMethodName());
 
         IBlockProcessing blockCleaning = new BlockFiltering();
         List<AbstractBlock> bcBlocks = blockCleaning.refineBlocks(blocks);
-        workflowConf.append(blockCleaning.getMethodConfiguration());
-        workflowName.append(blockCleaning.getMethodName());
-        
+        workflowConf.append("\n").append(blockCleaning.getMethodConfiguration());
+        workflowName.append("->").append(blockCleaning.getMethodName());
+
         IBlockProcessing comparisonCleaning = new CardinalityNodePruning();
         List<AbstractBlock> ccBlocks = comparisonCleaning.refineBlocks(bcBlocks);
-        workflowConf.append(comparisonCleaning.getMethodConfiguration());
-        workflowName.append(comparisonCleaning.getMethodName());
-                
+        workflowConf.append("\n").append(comparisonCleaning.getMethodConfiguration());
+        workflowName.append("->").append(comparisonCleaning.getMethodName());
+
         double time2 = System.currentTimeMillis();
 
         BlocksPerformance blStats = new BlocksPerformance(ccBlocks, duplicatePropagation);
         blStats.setStatistics();
         blStats.printStatistics(time2 - time1, workflowConf.toString(), workflowName.toString());
+
+        double time3 = System.currentTimeMillis();
+
+        IEntityMatching entityMatching = new ProfileMatcher();
+        SimilarityPairs simPairs = entityMatching.executeComparisons(blocks, serializedDBLP, serializedACM);
+        workflowConf.append("\n").append(entityMatching.getMethodConfiguration());
+        workflowName.append("->").append(entityMatching.getMethodName());
+
+        IEntityClustering entityClusttering = new ConnectedComponentsClustering();
+        List<EquivalenceCluster> entityClusters = entityClusttering.getDuplicates(simPairs);
+        workflowConf.append("\n").append(entityClusttering.getMethodConfiguration());
+        workflowName.append("->").append(entityClusttering.getMethodName());
+
+        double time4 = System.currentTimeMillis();
+
+        ClustersPerformance clp = new ClustersPerformance(entityClusters, duplicatePropagation);
+        clp.setStatistics();
+        clp.printStatistics(time4 - time3, workflowConf.toString(), workflowName.toString());
+        
+        PrintToFile.toCSV(entityClusters, mainDirectory + "foundMatches.csv");
     }
 }
