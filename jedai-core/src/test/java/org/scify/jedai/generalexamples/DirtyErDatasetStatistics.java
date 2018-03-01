@@ -15,6 +15,7 @@
  */
 package org.scify.jedai.generalexamples;
 
+import java.io.File;
 import org.scify.jedai.datamodel.EntityProfile;
 import org.scify.jedai.datareader.entityreader.EntitySerializationReader;
 import org.scify.jedai.datareader.entityreader.IEntityReader;
@@ -31,7 +32,7 @@ import java.util.List;
 public class DirtyErDatasetStatistics {
 
     public static void main(String[] args) {
-        String mainFolder = "C:\\Users\\G.A.P. II\\Downloads\\JedAIToolkit-master\\JedAIToolkit-master\\datasets\\";
+        String mainFolder = "data" + File.separator + "dirtyErDatasets" + File.separator;
         String[] entitiesFiles = {mainFolder + "restaurantProfiles",
             mainFolder + "censusProfiles",
             mainFolder + "coraProfiles",

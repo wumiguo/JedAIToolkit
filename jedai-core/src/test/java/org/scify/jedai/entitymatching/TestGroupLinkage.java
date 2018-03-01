@@ -15,7 +15,6 @@
  */
 package org.scify.jedai.entitymatching;
 
-import org.scify.jedai.entitymatching.GroupLinkage;
 import org.scify.jedai.blockbuilding.IBlockBuilding;
 import org.scify.jedai.utilities.datastructures.AbstractDuplicatePropagation;
 import org.scify.jedai.blockprocessing.IBlockProcessing;

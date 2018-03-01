@@ -2,7 +2,6 @@ package org.scify.jedai.datareader;
 
 import org.scify.jedai.datamodel.EntityProfile;
 import org.scify.jedai.datamodel.IdDuplicates;
-import org.scify.jedai.datareader.entityreader.EntityCSVReader;
 import org.scify.jedai.datareader.entityreader.EntityRDFReader;
 import org.scify.jedai.datareader.groundtruthreader.GtRDFReader;
 

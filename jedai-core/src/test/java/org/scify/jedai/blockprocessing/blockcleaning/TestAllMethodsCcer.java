@@ -16,6 +16,7 @@
 
 package org.scify.jedai.blockprocessing.blockcleaning;
 
+import java.io.File;
 import org.scify.jedai.blockbuilding.IBlockBuilding;
 import org.scify.jedai.utilities.datastructures.AbstractDuplicatePropagation;
 import org.scify.jedai.blockprocessing.IBlockProcessing;
@@ -37,7 +38,7 @@ import java.util.List;
 
 public class TestAllMethodsCcer {
     public static void main(String[] args) {
-        String mainDirectory = "C:\\Users\\GAP2\\Downloads\\";
+        String mainDirectory = "data" + File.separator + "cleanCleanErDatasets" + File.separator;
         String[] entitiesFilePaths = { mainDirectory + "abtProfiles", mainDirectory +  "buyProfiles" };
         String groundTruthFilePath = mainDirectory + "abtBuyIdDuplicates";
 

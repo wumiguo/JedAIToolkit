@@ -16,6 +16,7 @@
 
 package org.scify.jedai.demoworkflows;
 
+import java.io.File;
 import org.scify.jedai.datamodel.Attribute;
 import org.scify.jedai.datamodel.EntityProfile;
 import org.scify.jedai.datareader.entityreader.EntitySerializationReader;
@@ -29,7 +30,7 @@ import java.util.List;
 
 public class ViewEntityProfiles {
     public static void main(String[] args) {
-        String mainDirectory = "C:\\Users\\gap2\\Downloads\\";
+        String mainDirectory = "data" + File.separator + "cleanCleanErDatasets" + File.separator;
 
         IEntityReader serializedEntityReader = new EntitySerializationReader(mainDirectory + "dblpProfiles");
         List<EntityProfile> serializedDBLP = serializedEntityReader.getEntityProfiles();

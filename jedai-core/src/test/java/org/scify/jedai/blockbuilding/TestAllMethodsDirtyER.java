@@ -15,7 +15,7 @@
  */
 package org.scify.jedai.blockbuilding;
 
-import org.scify.jedai.blockbuilding.IBlockBuilding;
+import java.io.File;
 import org.scify.jedai.utilities.datastructures.AbstractDuplicatePropagation;
 import org.scify.jedai.utilities.datastructures.UnilateralDuplicatePropagation;
 import org.scify.jedai.datamodel.AbstractBlock;
@@ -35,7 +35,7 @@ import java.util.List;
 public class TestAllMethodsDirtyER {
 
     public static void main(String[] args) {
-        String mainDirectory = "D:\\Data\\newDatasetFormat\\dirtyERfiles\\";
+        String mainDirectory = "data" + File.separator + "dirtyErDatasets" + File.separator;
         String[] datasets = {"abtBuy", "amazonGp", "cddb", "census", "cora", "dblpAcm", "dblpScholar", "movies", "restaurant"};
         for (String dataset : datasets) {
             System.out.println("\n\n\n\nCurrent dataset\t:\t" + dataset);

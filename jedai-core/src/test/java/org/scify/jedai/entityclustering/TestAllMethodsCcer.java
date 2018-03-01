@@ -15,7 +15,7 @@
  */
 package org.scify.jedai.entityclustering;
 
-import org.scify.jedai.entityclustering.IEntityClustering;
+import java.io.File;
 import org.scify.jedai.blockbuilding.IBlockBuilding;
 import org.scify.jedai.utilities.datastructures.AbstractDuplicatePropagation;
 import org.scify.jedai.blockprocessing.IBlockProcessing;
@@ -43,7 +43,7 @@ import java.util.List;
 public class TestAllMethodsCcer {
 
     public static void main(String[] args) {
-        String mainDirectory = "C:\\Users\\GAP2\\Downloads\\";
+        String mainDirectory = "data" + File.separator + "cleanCleanErDatasets" + File.separator;
         String[] entitiesFilePaths = { mainDirectory + "amazonProfiles", mainDirectory +  "gpProfiles" };
         String groundTruthFilePath = mainDirectory + "amazonGpIdDuplicates";
 

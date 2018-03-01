@@ -15,7 +15,7 @@
  */
 package org.scify.jedai.entityclustering;
 
-import org.scify.jedai.entityclustering.IEntityClustering;
+import java.io.File;
 import org.scify.jedai.blockbuilding.IBlockBuilding;
 import org.scify.jedai.utilities.datastructures.AbstractDuplicatePropagation;
 import org.scify.jedai.blockprocessing.IBlockProcessing;
@@ -43,8 +43,8 @@ import java.util.List;
 public class TestAllMethods {
 
     public static void main(String[] args) {
-        String entitiesFilePath = "C:\\Users\\GAP2\\Downloads\\coraProfiles";
-        String groundTruthFilePath = "C:\\Users\\GAP2\\Downloads\\coraIdDuplicates";
+        String entitiesFilePath = "data" + File.separator + "dirtyErDatasets" + File.separator + "coraProfiles";
+        String groundTruthFilePath = "data" + File.separator + "dirtyErDatasets" + File.separator + "coraIdDuplicates";
 
         IEntityReader eReader = new EntitySerializationReader(entitiesFilePath);
         List<EntityProfile> profiles = eReader.getEntityProfiles();

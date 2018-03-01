@@ -15,6 +15,7 @@
  */
 package org.scify.jedai.demoworkflows;
 
+import java.io.File;
 import org.scify.jedai.blockbuilding.IBlockBuilding;
 import org.scify.jedai.blockbuilding.StandardBlocking;
 import org.scify.jedai.blockprocessing.blockcleaning.BlockFiltering;
@@ -47,7 +48,7 @@ import java.util.List;
 public class SerializedDblpAcm {
 
     public static void main(String[] args) throws FileNotFoundException {
-        String mainDirectory = "C:\\Users\\gap2\\Downloads\\";
+        String mainDirectory = "data" + File.separator + "cleanCleanErDatasets" + File.separator;
 
         IEntityReader serializedEntityReader = new EntitySerializationReader(mainDirectory + "dblpProfiles");
         List<EntityProfile> serializedDBLP = serializedEntityReader.getEntityProfiles();

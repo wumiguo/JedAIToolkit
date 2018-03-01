@@ -16,8 +16,7 @@
 
 package org.scify.jedai.entitymatching;
 
-import org.scify.jedai.entitymatching.ProfileMatcher;
-import org.scify.jedai.entitymatching.IEntityMatching;
+import java.io.File;
 import org.scify.jedai.blockbuilding.IBlockBuilding;
 import org.scify.jedai.utilities.datastructures.AbstractDuplicatePropagation;
 import org.scify.jedai.blockprocessing.IBlockProcessing;
@@ -41,8 +40,8 @@ import java.util.List;
 
 public class TestAllMethods {
     public static void main(String[] args) {
-        String entitiesFilePath = "C:\\Users\\GAP2\\Downloads\\cddbProfiles";
-        String groundTruthFilePath = "C:\\Users\\GAP2\\Downloads\\cddbIdDuplicates";
+        String entitiesFilePath = "data" + File.separator + "dirtyErDatasets" + File.separator + "cddbProfiles";
+        String groundTruthFilePath = "data" + File.separator + "dirtyErDatasets" + File.separator + "cddbIdDuplicates";
         
         IEntityReader eReader = new EntitySerializationReader(entitiesFilePath);
         List<EntityProfile> profiles = eReader.getEntityProfiles();

@@ -15,7 +15,7 @@
  */
 package org.scify.jedai.blockbuilding;
 
-import org.scify.jedai.blockbuilding.IBlockBuilding;
+import java.io.File;
 import org.scify.jedai.utilities.datastructures.AbstractDuplicatePropagation;
 import org.scify.jedai.datamodel.AbstractBlock;
 import org.scify.jedai.datamodel.EntityProfile;
@@ -35,22 +35,22 @@ import java.util.List;
 public class TestAllMethodsCleanCleanER {
 
     public static void main(String[] args) {
-        String[] entitiesFilePath = {"D:\\Data\\newDatasetFormat\\cleanCleanERfiles\\abtProfiles",
-            "D:\\Data\\newDatasetFormat\\cleanCleanERfiles\\buyProfiles",
-            "D:\\Data\\newDatasetFormat\\cleanCleanERfiles\\amazonProfiles",
-            "D:\\Data\\newDatasetFormat\\cleanCleanERfiles\\gpProfiles",
-            "D:\\Data\\newDatasetFormat\\cleanCleanERfiles\\dblpProfiles",
-            "D:\\Data\\newDatasetFormat\\cleanCleanERfiles\\acmProfiles",
-            "D:\\Data\\newDatasetFormat\\cleanCleanERfiles\\dblpProfiles2",
-            "D:\\Data\\newDatasetFormat\\cleanCleanERfiles\\scholarProfiles",
-            "D:\\Data\\newDatasetFormat\\cleanCleanERfiles\\imdbProfiles",
-            "D:\\Data\\newDatasetFormat\\cleanCleanERfiles\\dbpediaProfiles"
+        String[] entitiesFilePath = {"data" + File.separator + "cleanCleanErDatasets" + File.separator + "abtProfiles",
+            "data" + File.separator + "cleanCleanErDatasets" + File.separator + "buyProfiles",
+            "data" + File.separator + "cleanCleanErDatasets" + File.separator + "amazonProfiles",
+            "data" + File.separator + "cleanCleanErDatasets" + File.separator + "gpProfiles",
+            "data" + File.separator + "cleanCleanErDatasets" + File.separator + "dblpProfiles",
+            "data" + File.separator + "cleanCleanErDatasets" + File.separator + "acmProfiles",
+            "data" + File.separator + "cleanCleanErDatasets" + File.separator + "dblpProfiles2",
+            "data" + File.separator + "cleanCleanErDatasets" + File.separator + "scholarProfiles",
+            "data" + File.separator + "cleanCleanErDatasets" + File.separator + "imdbProfiles",
+            "data" + File.separator + "cleanCleanErDatasets" + File.separator + "dbpediaProfiles"
         };
-        String[] groundTruthFilePath = {"D:\\Data\\newDatasetFormat\\cleanCleanERfiles\\abtBuyIdDuplicates",
-            "D:\\Data\\newDatasetFormat\\cleanCleanERfiles\\amazonGpIdDuplicates",
-            "D:\\Data\\newDatasetFormat\\cleanCleanERfiles\\dblpAcmIdDuplicates",
-            "D:\\Data\\newDatasetFormat\\cleanCleanERfiles\\dblpScholarIdDuplicates",
-            "D:\\Data\\newDatasetFormat\\cleanCleanERfiles\\moviesIdDuplicates"
+        String[] groundTruthFilePath = {"data" + File.separator + "cleanCleanErDatasets" + File.separator + "abtBuyIdDuplicates",
+            "data" + File.separator + "cleanCleanErDatasets" + File.separator + "amazonGpIdDuplicates",
+            "data" + File.separator + "cleanCleanErDatasets" + File.separator + "dblpAcmIdDuplicates",
+            "data" + File.separator + "cleanCleanErDatasets" + File.separator + "dblpScholarIdDuplicates",
+            "data" + File.separator + "cleanCleanErDatasets" + File.separator + "moviesIdDuplicates"
         };
 
         for (int i = 0; i < groundTruthFilePath.length; i++) {

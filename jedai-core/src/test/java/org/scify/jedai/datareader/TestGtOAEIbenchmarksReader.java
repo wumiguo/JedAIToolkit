@@ -1,10 +1,8 @@
 package org.scify.jedai.datareader;
 
-import org.scify.jedai.datamodel.Attribute;
 import org.scify.jedai.datamodel.EntityProfile;
 import org.scify.jedai.datamodel.IdDuplicates;
 import org.scify.jedai.datareader.entityreader.EntitySerializationReader;
-import org.scify.jedai.datareader.groundtruthreader.GtCSVReader;
 import org.scify.jedai.datareader.groundtruthreader.GtOAEIbenchmarksReader;
 
 import java.util.List;
