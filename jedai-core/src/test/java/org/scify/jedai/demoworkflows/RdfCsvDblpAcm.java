@@ -15,6 +15,7 @@
  */
 package org.scify.jedai.demoworkflows;
 
+import java.io.File;
 import org.scify.jedai.demoworkflows.groundtruth.GtDblpRdfAcmCsvReader;
 import org.scify.jedai.blockbuilding.IBlockBuilding;
 import org.scify.jedai.blockbuilding.StandardBlocking;
@@ -46,20 +47,20 @@ import java.util.List;
 public class RdfCsvDblpAcm {
 
     public static void main(String[] args) throws FileNotFoundException {
-        String mainDirectory = "C:\\Users\\gap2\\Downloads\\";
+        String mainDirectory = "data" + File.separator + "cleanCleanErDatasets" + File.separator;
 
         EntityRDFReader rdfEntityReader = new EntityRDFReader(mainDirectory + "DBLP2toRDFxml.xml");
         List<EntityProfile> rdfDBLP = rdfEntityReader.getEntityProfiles();
         System.out.println("RDF DBLP Entity Profiles\t:\t" + rdfDBLP.size());
         
-        EntityCSVReader csvEntityReader = new EntityCSVReader(mainDirectory + "DBLP-ACM\\ACM.csv");
+        EntityCSVReader csvEntityReader = new EntityCSVReader(mainDirectory + "DBLP-ACM" + File.separator + "ACM.csv");
         csvEntityReader.setAttributeNamesInFirstRow(true);
         csvEntityReader.setIdIndex(0);
         csvEntityReader.setSeparator(',');
         List<EntityProfile> csvACM = csvEntityReader.getEntityProfiles();
         System.out.println("RDF ACM Entity Profiles\t:\t" + csvACM.size());
 
-        GtDblpRdfAcmCsvReader csvGtReader = new GtDblpRdfAcmCsvReader(mainDirectory + "DBLP-ACM\\DBLP-ACM_perfectMapping.csv");
+        GtDblpRdfAcmCsvReader csvGtReader = new GtDblpRdfAcmCsvReader(mainDirectory + "DBLP-ACM" + File.separator + "DBLP-ACM_perfectMapping.csv");
         csvGtReader.setIgnoreFirstRow(true);
         csvGtReader.setSeparator(',');
         csvGtReader.getDuplicatePairs(rdfDBLP, csvACM);

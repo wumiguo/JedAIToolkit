@@ -15,6 +15,7 @@
  */
 package org.scify.jedai.demoworkflows;
 
+import java.io.File;
 import org.scify.jedai.blockbuilding.IBlockBuilding;
 import org.scify.jedai.blockbuilding.StandardBlocking;
 import org.scify.jedai.blockprocessing.blockcleaning.BlockFiltering;
@@ -45,7 +46,7 @@ import java.util.List;
 public class CsvDblpAcm {
 
     public static void main(String[] args) throws FileNotFoundException {
-        String mainDirectory = "C:\\Users\\gap2\\Downloads\\DBLP-ACM\\";
+        String mainDirectory = "data" + File.separator + "cleanCleanErDatasets" + File.separator + "DBLP-ACM" + File.separator;
 
         EntityCSVReader csvEntityReader = new EntityCSVReader(mainDirectory + "DBLP2.csv");
         csvEntityReader.setAttributeNamesInFirstRow(true);
