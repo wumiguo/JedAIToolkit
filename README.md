@@ -9,7 +9,7 @@ JedAI can be used in three different ways:
   
 This repository contains the code (in Java 8) of JedAI's open source library. The code of JedAI's desktop application and workbench is available in this [repository](https://github.com/scify/jedai-ui). 
 
-Several datasets already converted in the serialized data type of JedAI can be found [here](jedai-core/data).
+Several **datasets** already converted into the serialized data type of JedAI can be found [here](jedai-core/data).
 
 You can find a short presentation of JedAI Toolkit [here](documentation/JedAIpresentation.pptx).
 
@@ -42,7 +42,8 @@ The following formats are currently supported:
  1) CSV 
  2) RDF (any format, including XML, OWL)
  3) SQL (mySQL, PostgreSQL)
- 4) SPARQL endpoints
+ 4) SPARQL endpoints\
+ 5) Java serialized objects
  
 The next version will add support for more formats: JSON, MongoDB, Oracle and SQL Server.
   
