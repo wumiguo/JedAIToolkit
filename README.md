@@ -40,21 +40,21 @@ The following formats are currently supported:
  1) CSV 
  2) RDF (any format, including XML, OWL)
  3) SQL (mySQL, PostgreSQL)
+ 4) SPARQL endpoints
  
-The next version will add support for more formats: SPARQL endpoints, JSON, MongoDB, Oracle and SQL Server.
+The next version will add support for more formats: JSON, MongoDB, Oracle and SQL Server.
   
 ### Block Building 
 It clusters entities into overlapping blocks in a lazy manner that relies on unsupervised blocking keys: every token in an attribute value forms a key. Blocks are then extracted, possibly using a transformation, based on its equality or on its similarity with other keys.
 
 The following methods are currently supported:
  1) Standard/Token Blocking
- 2) Attribute Clustering
- 3) Sorted Neighborhood
- 4) Extended Sorted Neighborhood
- 5) Q-Grams Blocking
- 6) Extended Q-Grams Blocking
- 7) Suffix Arrays Blocking
- 8) Extended Suffix Arrays Blocking
+ 2) Sorted Neighborhood
+ 3) Extended Sorted Neighborhood
+ 4) Q-Grams Blocking
+ 5) Extended Q-Grams Blocking
+ 6) Suffix Arrays Blocking
+ 7) Extended Suffix Arrays Blocking
   
 For more details on the functionality of these methods, see [here](http://www.vldb.org/pvldb/vol9/p312-papadakis.pdf).  
 
