@@ -32,6 +32,7 @@ import org.scify.jedai.utilities.datastructures.BilateralDuplicatePropagation;
 import org.scify.jedai.utilities.enumerations.BlockCleaningMethod;
 import org.scify.jedai.utilities.enumerations.ComparisonCleaningMethod;
 import java.util.List;
+import org.apache.log4j.BasicConfigurator;
 
 /**
  *
@@ -40,6 +41,8 @@ import java.util.List;
 public class TestAllStepMethodsCcer {
 
     public static void main(String[] args) {
+        BasicConfigurator.configure();
+        
         String mainDirectory = "data" + File.separator + "cleanCleanErDatasets" + File.separator;
         String[] entitiesFilePaths = { mainDirectory + "abtProfiles", mainDirectory +  "buyProfiles" };
         String groundTruthFilePath = mainDirectory + "abtBuyIdDuplicates";

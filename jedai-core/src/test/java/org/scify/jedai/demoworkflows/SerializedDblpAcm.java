@@ -40,6 +40,7 @@ import org.scify.jedai.utilities.datastructures.BilateralDuplicatePropagation;
 import org.scify.jedai.utilities.PrintToFile;
 import java.io.FileNotFoundException;
 import java.util.List;
+import org.apache.log4j.BasicConfigurator;
 
 /**
  *
@@ -48,6 +49,8 @@ import java.util.List;
 public class SerializedDblpAcm {
 
     public static void main(String[] args) throws FileNotFoundException {
+        BasicConfigurator.configure();
+        
         String mainDirectory = "data" + File.separator + "cleanCleanErDatasets" + File.separator;
 
         IEntityReader serializedEntityReader = new EntitySerializationReader(mainDirectory + "dblpProfiles");

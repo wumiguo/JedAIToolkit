@@ -30,6 +30,7 @@ import org.scify.jedai.datareader.groundtruthreader.IGroundTruthReader;
 import org.scify.jedai.utilities.enumerations.BlockBuildingMethod;
 import org.scify.jedai.utilities.BlocksPerformance;
 import java.util.List;
+import org.apache.log4j.BasicConfigurator;
 
 /**
  *
@@ -38,6 +39,8 @@ import java.util.List;
 
 public class TestAllMethodsCcer {
     public static void main(String[] args) {
+        BasicConfigurator.configure();
+        
         String mainDirectory = "data" + File.separator + "cleanCleanErDatasets" + File.separator;
         String[] entitiesFilePaths = { mainDirectory + "abtProfiles", mainDirectory +  "buyProfiles" };
         String groundTruthFilePath = mainDirectory + "abtBuyIdDuplicates";

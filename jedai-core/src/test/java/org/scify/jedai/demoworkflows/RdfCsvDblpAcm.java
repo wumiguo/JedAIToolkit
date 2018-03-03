@@ -39,6 +39,7 @@ import org.scify.jedai.utilities.datastructures.BilateralDuplicatePropagation;
 import org.scify.jedai.utilities.PrintToFile;
 import java.io.FileNotFoundException;
 import java.util.List;
+import org.apache.log4j.BasicConfigurator;
 
 /**
  *
@@ -47,6 +48,8 @@ import java.util.List;
 public class RdfCsvDblpAcm {
 
     public static void main(String[] args) throws FileNotFoundException {
+        BasicConfigurator.configure();
+        
         String mainDirectory = "data" + File.separator + "cleanCleanErDatasets" + File.separator;
 
         EntityRDFReader rdfEntityReader = new EntityRDFReader(mainDirectory + "DBLP2toRDFxml.xml");

@@ -30,6 +30,7 @@ import org.scify.jedai.utilities.enumerations.BlockBuildingMethod;
 import org.scify.jedai.utilities.BlocksPerformance;
 import org.scify.jedai.utilities.enumerations.BlockCleaningMethod;
 import java.util.List;
+import org.apache.log4j.BasicConfigurator;
 
 /**
  *
@@ -38,6 +39,8 @@ import java.util.List;
 public class TestAllStepMethods {
 
     public static void main(String[] args) {
+        BasicConfigurator.configure();
+        
         String entitiesFilePath = "data" + File.separator + "dirtyErDatasets" + File.separator + "cddbProfiles";
         String groundTruthFilePath = "data" + File.separator + "dirtyErDatasets" + File.separator + "cddbIdDuplicates";
 

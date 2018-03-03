@@ -27,6 +27,7 @@ import org.scify.jedai.datareader.groundtruthreader.IGroundTruthReader;
 import org.scify.jedai.utilities.enumerations.BlockBuildingMethod;
 import org.scify.jedai.utilities.BlocksPerformance;
 import java.util.List;
+import org.apache.log4j.BasicConfigurator;
 
 /**
  *
@@ -35,6 +36,8 @@ import java.util.List;
 public class TestAllMethodsDirtyER {
 
     public static void main(String[] args) {
+        BasicConfigurator.configure();
+        
         String mainDirectory = "data" + File.separator + "dirtyErDatasets" + File.separator;
         String[] datasets = {"abtBuy", "amazonGp", "cddb", "census", "cora", "dblpAcm", "dblpScholar", "movies", "restaurant"};
         for (String dataset : datasets) {

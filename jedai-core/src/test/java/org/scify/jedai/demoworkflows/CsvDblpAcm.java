@@ -38,6 +38,7 @@ import org.scify.jedai.utilities.datastructures.BilateralDuplicatePropagation;
 import org.scify.jedai.utilities.PrintToFile;
 import java.io.FileNotFoundException;
 import java.util.List;
+import org.apache.log4j.BasicConfigurator;
 
 /**
  *
@@ -46,6 +47,8 @@ import java.util.List;
 public class CsvDblpAcm {
 
     public static void main(String[] args) throws FileNotFoundException {
+        BasicConfigurator.configure();
+        
         String mainDirectory = "data" + File.separator + "cleanCleanErDatasets" + File.separator + "DBLP-ACM" + File.separator;
 
         EntityCSVReader csvEntityReader = new EntityCSVReader(mainDirectory + "DBLP2.csv");

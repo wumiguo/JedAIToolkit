@@ -22,6 +22,7 @@ import org.scify.jedai.datamodel.EntityProfile;
 import org.scify.jedai.datareader.entityreader.EntitySerializationReader;
 import org.scify.jedai.datareader.entityreader.IEntityReader;
 import java.util.List;
+import org.apache.log4j.BasicConfigurator;
 
 /**
  *
@@ -30,6 +31,8 @@ import java.util.List;
 
 public class ViewEntityProfiles {
     public static void main(String[] args) {
+        BasicConfigurator.configure();
+        
         String mainDirectory = "data" + File.separator + "cleanCleanErDatasets" + File.separator;
 
         IEntityReader serializedEntityReader = new EntitySerializationReader(mainDirectory + "dblpProfiles");

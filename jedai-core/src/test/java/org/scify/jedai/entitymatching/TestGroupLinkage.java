@@ -31,6 +31,7 @@ import org.scify.jedai.utilities.enumerations.RepresentationModel;
 import org.scify.jedai.utilities.enumerations.SimilarityMetric;
 
 import java.util.List;
+import org.apache.log4j.BasicConfigurator;
 
 /**
  *
@@ -39,6 +40,8 @@ import java.util.List;
 public class TestGroupLinkage {
 
     public static void main(String[] args) {
+        BasicConfigurator.configure();
+        
         String entitiesFilePath1 = "/home/ethanos/Downloads/JEDAIfiles/im-identity/oaei2014_identity_aPROFILES";
         String groundTruthFilePath = "/home/ethanos/Downloads/JEDAIfiles/cddbTestDuplicates";
 

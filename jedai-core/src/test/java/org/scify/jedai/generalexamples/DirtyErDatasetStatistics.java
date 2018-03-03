@@ -24,6 +24,7 @@ import org.scify.jedai.datareader.groundtruthreader.IGroundTruthReader;
 import org.scify.jedai.utilities.datastructures.AbstractDuplicatePropagation;
 import org.scify.jedai.utilities.datastructures.UnilateralDuplicatePropagation;
 import java.util.List;
+import org.apache.log4j.BasicConfigurator;
 
 /**
  *
@@ -32,6 +33,8 @@ import java.util.List;
 public class DirtyErDatasetStatistics {
 
     public static void main(String[] args) {
+        BasicConfigurator.configure();
+        
         String mainFolder = "data" + File.separator + "dirtyErDatasets" + File.separator;
         String[] entitiesFiles = {mainFolder + "restaurantProfiles",
             mainFolder + "censusProfiles",
