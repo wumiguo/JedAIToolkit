@@ -28,6 +28,7 @@ import gnu.trove.list.array.TIntArrayList;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -108,18 +109,23 @@ public abstract class AbstractBlockBuilding implements IBlockBuilding {
     protected void indexEntities(Map<String, TIntList> index, List<EntityProfile> entities) {
         int counter = 0;
         for (EntityProfile profile : entities) {
+            final Set<String> allKeys = new HashSet<>();
             for (Attribute attribute : profile.getAttributes()) {
                 for (String key : getBlockingKeys(attribute.getValue())) {
                     String normalizedKey = key.trim().toLowerCase();
                     if (0 < normalizedKey.length()) {
-                        TIntList entityList = index.get(normalizedKey);
-                        if (entityList == null) {
-                            entityList = new TIntArrayList();
-                            index.put(normalizedKey, entityList);
-                        }
-                        entityList.add(counter);
+                        allKeys.add(normalizedKey);
                     }
                 }
+            }
+
+            for (String key : allKeys) {
+                TIntList entityList = index.get(key);
+                if (entityList == null) {
+                    entityList = new TIntArrayList();
+                    index.put(key, entityList);
+                }
+                entityList.add(counter);
             }
             counter++;
         }
