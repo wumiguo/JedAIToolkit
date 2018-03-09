@@ -272,7 +272,7 @@ public class BlocksPerformance {
 
     public void setStatistics() {
         if (blocks.isEmpty()) {
-            Log.warn("Empty set of equivalence clusters given as input!");
+            Log.warn("Empty set of blocks was given as input!");
             return;
         }
 

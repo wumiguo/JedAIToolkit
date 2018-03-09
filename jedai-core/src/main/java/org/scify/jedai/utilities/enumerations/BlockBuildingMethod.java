@@ -40,8 +40,8 @@ public enum BlockBuildingMethod {
     EXTENDED_SUFFIX_ARRAYS,
     Q_GRAMS_BLOCKING,
     SORTED_NEIGHBORHOOD,
-    SUFFIX_ARRAYS,
-    STANDARD_BLOCKING;
+    STANDARD_BLOCKING,
+    SUFFIX_ARRAYS;
     
     public static IBlockBuilding getDefaultConfiguration(BlockBuildingMethod blbuMethod) {
         switch (blbuMethod) {

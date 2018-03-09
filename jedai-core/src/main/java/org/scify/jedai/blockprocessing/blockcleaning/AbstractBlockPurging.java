@@ -46,7 +46,7 @@ public abstract class AbstractBlockPurging extends AbstractBlockProcessing {
         final Iterator<AbstractBlock> blocksIterator = blocks.iterator();
         while (blocksIterator.hasNext()) {
             AbstractBlock aBlock = blocksIterator.next();
-            if (satisfiesThreshold(aBlock)) {
+            if (!satisfiesThreshold(aBlock)) {
                 noOfPurgedBlocks++;
                 blocksIterator.remove();
             } else {
