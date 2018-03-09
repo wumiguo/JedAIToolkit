@@ -128,4 +128,22 @@
             <url>http://premise.artifactoryonline.com/premise/public</url>
         </repository>
     </repositories>
+    
+    <build>
+        <plugins>            
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.0.2</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addClasspath>true</addClasspath>
+                            <mainClass>org.scify.jedai.workflowbuilder.Main</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>
