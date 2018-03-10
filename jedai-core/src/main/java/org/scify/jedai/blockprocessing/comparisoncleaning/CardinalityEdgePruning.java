@@ -105,7 +105,7 @@ public class CardinalityEdgePruning extends WeightedEdgePruning {
     @Override
     protected void setThreshold() {
         threshold = blockAssingments / 2;
-        Log.info("Edge Pruning Cardinality Threshold\t:\t{" + threshold);
+        Log.info("Edge Pruning Cardinality Threshold\t:\t" + threshold);
     }
 
     protected void verifyValidEntities(int entityId) {
