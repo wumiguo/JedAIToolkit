@@ -46,7 +46,7 @@ The following formats are currently supported:
  1) CSV 
  2) RDF (any format, including XML, OWL)
  3) SQL (mySQL, PostgreSQL)
- 4) SPARQL endpoints\
+ 4) SPARQL endpoints
  5) Java serialized objects
  
 The next version will add support for more formats: JSON, MongoDB, Oracle and SQL Server.
