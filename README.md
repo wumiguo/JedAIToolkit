@@ -1,3 +1,7 @@
+<p align="center"> 
+<img src="https://github.com/scify/JedAIToolkit/blob/mavenizedVersion/documentation/JedAI_logo_small.png">
+</p>
+
 # Java gEneric DAta Integration (JedAI) Toolkit
 JedAI constitutes an open source, high scalability toolkit that offers out-of-the-box solutions for any data integration task, e.g., Record Linkage, Entity Resolution and Link Discovery. At its core lies a set of *domain-independent*, *state-of-the-art* techniques that apply to both RDF and relational data. These techniques rely on an approximate, *schema-agnostic* functionality based on *(meta-)blocking* for high scalability. 
 
