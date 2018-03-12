@@ -196,7 +196,6 @@ public class GtDblpRdfAcmCsvReader extends AbstractGtReader {
                 // add a new edge for every pair of duplicate entities
                 int entityId1 = urlToEntityId1.get(nextLine[0]);
                 int entityId2 = urlToEntityId2.get(nextLine[1]);
-                System.out.println(entityId1 + "\t" + entityId2);
                 duplicatesGraph.addEdge(entityId1, entityId2);
             }
         } catch (FileNotFoundException ex) {
@@ -262,7 +261,6 @@ public class GtDblpRdfAcmCsvReader extends AbstractGtReader {
         }
         if (profilesD2 != null) {
             for (EntityProfile profile : profilesD2) {
-                System.out.println(profile.getEntityUrl());
                 urlToEntityId2.put(profile.getEntityUrl(), counter++);
             }
         }

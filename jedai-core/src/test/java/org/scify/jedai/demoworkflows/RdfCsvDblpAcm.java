@@ -50,9 +50,9 @@ public class RdfCsvDblpAcm {
     public static void main(String[] args) throws FileNotFoundException {
         BasicConfigurator.configure();
         
-        String mainDirectory = "data" + File.separator + "cleanCleanErDatasets" + File.separator;
+        String mainDirectory = "data/cleanCleanErDatasets/";
 
-        EntityRDFReader rdfEntityReader = new EntityRDFReader(mainDirectory + "DBLP2toRDFxml.xml");
+        EntityRDFReader rdfEntityReader = new EntityRDFReader(mainDirectory + "DBLP2toRdf.xml");
         List<EntityProfile> rdfDBLP = rdfEntityReader.getEntityProfiles();
         System.out.println("RDF DBLP Entity Profiles\t:\t" + rdfDBLP.size());
         
@@ -112,7 +112,7 @@ public class RdfCsvDblpAcm {
 
         ClustersPerformance clp = new ClustersPerformance(entityClusters, duplicatePropagation);
         clp.setStatistics();
-        clp.printStatistics(time4 - time3, workflowConf.toString(), workflowName.toString());
+        clp.printStatistics(time4 - time3, workflowName.toString(), workflowConf.toString());
         
         PrintToFile.toCSV(entityClusters, mainDirectory + "foundMatchesRDF.csv");
     }

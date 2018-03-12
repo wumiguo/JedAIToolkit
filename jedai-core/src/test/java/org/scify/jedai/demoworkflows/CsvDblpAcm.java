@@ -114,7 +114,7 @@ public class CsvDblpAcm {
 
         ClustersPerformance clp = new ClustersPerformance(entityClusters, duplicatePropagation);
         clp.setStatistics();
-        clp.printStatistics(time4 - time3, workflowConf.toString(), workflowName.toString());
+        clp.printStatistics(time4 - time3, workflowName.toString(), workflowConf.toString());
         
         PrintToFile.toCSV(entityClusters, mainDirectory + "foundMatches.csv");
     }

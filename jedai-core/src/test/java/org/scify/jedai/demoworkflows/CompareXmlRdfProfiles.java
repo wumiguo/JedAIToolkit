@@ -39,11 +39,13 @@ public class CompareXmlRdfProfiles {
 
         String mainDirectory = "data" + File.separator + "cleanCleanErDatasets" + File.separator + "DBLP-ACM" + File.separator;
 
-        EntityRDFReader rdfEntityReader = new EntityRDFReader("C:\\Users\\GAP2\\Documents\\NetBeansProjects\\jedai-core\\data\\cleanCleanErDatasets\\DBLP2toRDFxml.xml");
+//        EntityRDFReader rdfEntityReader = new EntityRDFReader("C:\\Users\\GAP2\\Documents\\NetBeansProjects\\jedai-core\\data\\cleanCleanErDatasets\\DBLP2toRdf.xml");
+        EntityRDFReader rdfEntityReader = new EntityRDFReader("C:\\Users\\GAP2\\Documents\\NetBeansProjects\\jedai-core\\data\\cleanCleanErDatasets\\ACMtoRdf.xml");
         List<EntityProfile> rdfDBLP = rdfEntityReader.getEntityProfiles();
         System.out.println("RDF DBLP Entity Profiles\t:\t" + rdfDBLP.size());
 
-        EntityCSVReader csvEntityReader = new EntityCSVReader(mainDirectory + "DBLP2.csv");
+//        EntityCSVReader csvEntityReader = new EntityCSVReader(mainDirectory + "DBLP2.csv");
+        EntityCSVReader csvEntityReader = new EntityCSVReader(mainDirectory + "ACM.csv");
         csvEntityReader.setAttributeNamesInFirstRow(true);
         csvEntityReader.setIdIndex(0);
         csvEntityReader.setSeparator(',');
@@ -55,12 +57,6 @@ public class CompareXmlRdfProfiles {
             int index = rdfEP.getEntityUrl().indexOf(prefix);
             String key = rdfEP.getEntityUrl().substring(index + prefix.length());
             profiles.put(key, rdfEP);
-            
-            for (Attribute a : rdfEP.getAttributes()) {
-                if (a.getName().contains("title")) {
-                    System.out.println("Title\t:\t" + a.getValue());
-                }
-            }
         }
 
         for (EntityProfile csvEP : csvDBLP) {

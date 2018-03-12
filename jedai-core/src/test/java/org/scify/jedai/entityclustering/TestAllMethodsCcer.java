@@ -126,7 +126,7 @@ public class TestAllMethodsCcer {
 
                 ClustersPerformance clp = new ClustersPerformance(entityClusters, duplicatePropagation);
                 clp.setStatistics();
-                clp.printStatistics(time6 - time5 + time4 - time3, matchingWorkflowConf.toString(), matchingWorkflowName.toString());
+                clp.printStatistics(time6 - time5 + time4 - time3, matchingWorkflowName.toString(), matchingWorkflowConf.toString());
             }
         }
     }

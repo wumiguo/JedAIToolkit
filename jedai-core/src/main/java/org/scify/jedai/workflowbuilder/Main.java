@@ -355,7 +355,7 @@ public class Main {
 
         ClustersPerformance clp = new ClustersPerformance(entityClusters, duplicatePropagation);
         clp.setStatistics();
-        clp.printStatistics(time10 - time9, workflowConf.toString(), workflowName.toString());
+        clp.printStatistics(time10 - time9, workflowName.toString(), workflowConf.toString());
 
     }
 }
