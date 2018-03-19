@@ -13,7 +13,7 @@ Note that every file that is available as a *Java Serialized Object* (**JSO**) c
 | Dataset Name | Entities | Name-Value Pairs | Duplicates | Average NVP per Entity |	Brute-force Comparisons |
 File Format | Data Origin | 
 |---|---|---|---|---|---|---|---|
-|Restaurant	|864	|4,319|	112|	5.0|	3.73E+05|JSO ([entity file](dirtyErDatasets/restaurantProfiles), [groundtruth file](dirtyERfiles/restaurantIdDuplicates)) |Real data |
+|Restaurant	|864	|4,319|	112|	5.0|	3.73E+05|JSO ([entity file](dirtyErDatasets/restaurantProfiles), [groundtruth file](dirtyErDatasets/restaurantIdDuplicates)) |Real data |
 |Census	|841	|3,913	|344|	4.7|	3.53E+05|JSO ([entity file](dirtyERfiles/censusProfiles), [groundtruth file](dirtyERfiles/censusIdDuplicates)) |Real data |
 |Cora|	1,295	|7,166|	17,184|	5.5|8.38E+05|JSO ([entity file](dirtyERfiles/coraProfiles), [groundtruth file](dirtyERfiles/coraIdDuplicates)) |Real data |
 |CdDb	|9763	|173,309	|299|	17.8	|4.77E+07|JSO ([entity file](dirtyERfiles/cddbProfiles), [groundtruth file](dirtyERfiles/cddbIdDuplicates)) |Real data |
@@ -30,7 +30,7 @@ File Format | Data Origin |
 | Dataset Name | D1 Entities| D2 Entities | D1 Name-Value Pairs	| D2 Name-Value Pairs	| Duplicates | Average NVP per Entity	|
 Brute-force Comparisons | File Format | Data Origin | 
 |---|---| ---| ---| ---| ---|---| ---| ---| ---| 
-|Abt-Buy	|1,076|	1,076|	2,568	|2,308|	1,076	|2.4|	1.16E+06|JSO ([Abt entity file](cleanCleanERfiles/abtProfiles), [Buy entity file](cleanCleanERfiles/buyProfiles), [groundtruth file](cleanCleanERfiles/abtBuyIdDuplicates))|Real data |
+|Abt-Buy	|1,076|	1,076|	2,568	|2,308|	1,076	|2.4|	1.16E+06|JSO ([Abt entity file](cleanCleanErDatasets/abtProfiles), [Buy entity file](cleanCleanERfiles/buyProfiles), [groundtruth file](cleanCleanERfiles/abtBuyIdDuplicates))|Real data |
 |DBLP-ACM|	2,616	|2,294	|10,464	|9,162|	2,224	|4.0|	6.00E+06|JSO ([DBLP entity file](cleanCleanERfiles/dblpProfiles), [ACM entity file](cleanCleanERfiles/acmProfiles), [groundtruth file](cleanCleanERfiles/dblpAcmIdDuplicates))|Real data |
 |DBLP-Scholar|	2,516	|61,353|	10,064	|198,001|	2,308|	4.0|	1.54E+08|JSO ([DBLP entity file](cleanCleanERfiles/dblpProfiles2), [Scholar entity file](cleanCleanERfiles/scholarProfiles), [groundtruth file](cleanCleanERfiles/dblpScholarIdDuplicates))|Real data |
 |Amazon-Google Products|	1,354	|3,039	|5,302	|9,110	|1,104	|3.9|	4.11E+06|JSO ([Amazon entity file](cleanCleanERfiles/amazonProfiles), [GP entity file](cleanCleanERfiles/gpProfiles), [groundtruth file](cleanCleanERfiles/amazonGpIdDuplicates))|Real data |
