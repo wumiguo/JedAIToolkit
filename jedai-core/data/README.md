@@ -13,7 +13,7 @@ Note that every file that is available as a *Java Serialized Object* (**JSO**) c
 | Dataset Name | Entities | Name-Value Pairs | Duplicates | Average NVP per Entity |	Brute-force Comparisons |
 File Format | Data Origin | 
 |---|---|---|---|---|---|---|---|
-|Restaurant	|864	|4,319|	112|	5.0|	3.73E+05|JSO ([entity file](jedai-core/data/dirtyERfiles/restaurantProfiles), [groundtruth file](dirtyERfiles/restaurantIdDuplicates)) |Real data |
+|Restaurant	|864	|4,319|	112|	5.0|	3.73E+05|JSO ([entity file](dirtyErDatasets/restaurantProfiles), [groundtruth file](dirtyERfiles/restaurantIdDuplicates)) |Real data |
 |Census	|841	|3,913	|344|	4.7|	3.53E+05|JSO ([entity file](dirtyERfiles/censusProfiles), [groundtruth file](dirtyERfiles/censusIdDuplicates)) |Real data |
 |Cora|	1,295	|7,166|	17,184|	5.5|8.38E+05|JSO ([entity file](dirtyERfiles/coraProfiles), [groundtruth file](dirtyERfiles/coraIdDuplicates)) |Real data |
 |CdDb	|9763	|173,309	|299|	17.8	|4.77E+07|JSO ([entity file](dirtyERfiles/cddbProfiles), [groundtruth file](dirtyERfiles/cddbIdDuplicates)) |Real data |
