@@ -148,18 +148,18 @@ public class GroupLinkage extends AbstractEntityMatching {
     @Override
     public JsonArray getParameterConfiguration() {
         final JsonObject obj1 = new JsonObject();
-        obj1.put("class", "Utilities.Enumerations.RepresentationModel");
+        obj1.put("class", "org.scify.jedai.utilities.enumerations.RepresentationModel");
         obj1.put("name", getParameterName(0));
-        obj1.put("defaultValue", "Utilities.Enumerations.RepresentationModel.TOKEN_UNIGRAM_GRAPHS");
+        obj1.put("defaultValue", "org.scify.jedai.utilities.enumerations.RepresentationModel.TOKEN_UNIGRAM_GRAPHS");
         obj1.put("minValue", "-");
         obj1.put("maxValue", "-");
         obj1.put("stepValue", "-");
         obj1.put("description", getParameterDescription(0));
 
         final JsonObject obj2 = new JsonObject();
-        obj2.put("class", "Utilities.Enumerations.SimilarityMetric");
+        obj2.put("class", "org.scify.jedai.utilities.enumerations.SimilarityMetric");
         obj2.put("name", getParameterName(1));
-        obj2.put("defaultValue", "Utilities.Enumerations.SimilarityMetric.GRAPH_VALUE_SIMILARITY");
+        obj2.put("defaultValue", "org.scify.jedai.utilities.enumerations.SimilarityMetric.GRAPH_VALUE_SIMILARITY");
         obj2.put("minValue", "-");
         obj2.put("maxValue", "-");
         obj2.put("stepValue", "-");
