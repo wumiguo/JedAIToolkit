@@ -122,7 +122,7 @@ public class CardinalityNodePruning extends CardinalityEdgePruning {
     protected void setThreshold() {
         threshold = Math.max(1, blockAssingments / noOfEntities);
 
-        Log.info(getMethodName() + "Threshold \t:\t" + threshold);
+        Log.info(getMethodName() + " Threshold \t:\t" + threshold);
     }
 
     @Override

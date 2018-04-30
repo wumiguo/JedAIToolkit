@@ -106,7 +106,7 @@ public class CardinalityEdgePruning extends WeightedEdgePruning {
     protected void setThreshold() {
         threshold = blockAssingments / 2;
         
-        Log.info(getMethodName() + "Threshold \t:\t" + threshold);
+        Log.info(getMethodName() + " Threshold \t:\t" + threshold);
     }
 
     protected void verifyValidEntities(int entityId) {
