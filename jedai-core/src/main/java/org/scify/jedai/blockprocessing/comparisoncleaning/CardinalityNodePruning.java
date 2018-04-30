@@ -122,7 +122,7 @@ public class CardinalityNodePruning extends CardinalityEdgePruning {
     protected void setThreshold() {
         threshold = Math.max(1, blockAssingments / noOfEntities);
 
-        Log.info("Edge Pruning Cardinality Threshold\t:\t" + threshold);
+        Log.info("Cardinality Node Pruning Threshold\t:\t" + threshold);
     }
 
     @Override
