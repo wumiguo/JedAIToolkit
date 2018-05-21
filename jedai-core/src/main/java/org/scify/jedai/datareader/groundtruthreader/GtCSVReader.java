@@ -194,7 +194,12 @@ public class GtCSVReader extends AbstractGtReader {
 
                 // add a new edge for every pair of duplicate entities
                 int entityId1 = urlToEntityId1.get(nextLine[0]);
-                int entityId2 = urlToEntityId2.get(nextLine[1]);
+                int entityId2; 
+                if (profilesD2 != null) { // Clean-Clean ER
+                  entityId2 = urlToEntityId2.get(nextLine[1]);
+                } else { // Dirty ER
+                  entityId2 = urlToEntityId1.get(nextLine[1]);
+                }
                 duplicatesGraph.addEdge(entityId1, entityId2);
             }
         } catch (FileNotFoundException ex) {
@@ -215,7 +220,7 @@ public class GtCSVReader extends AbstractGtReader {
         } else { // Dirty ER
             getUnilateralConnectedComponents(connectedComponents);
         }
-        Log.info("Total pair of duplicats\t:\t" + idDuplicates.size());
+        Log.info("Total pairs of duplicates\t:\t" + idDuplicates.size());
 
         return idDuplicates;
     }
