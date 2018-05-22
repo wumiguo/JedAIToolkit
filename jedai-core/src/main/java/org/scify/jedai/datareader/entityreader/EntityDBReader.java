@@ -119,7 +119,9 @@ public class EntityDBReader extends AbstractEntityReader {
                     }
 
                     final String value = rs.getString(columns[i]);
-                    newProfile.addAttribute(attributeName, value);
+                    if (!rs.wasNull()) {
+                      newProfile.addAttribute(attributeName, value);
+                    }
                 }
             }
             rs.close();
