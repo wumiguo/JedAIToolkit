@@ -21,6 +21,7 @@ import java.io.PrintWriter;
 import java.util.List;
 
 import org.scify.jedai.datamodel.EquivalenceCluster;
+import org.scify.jedai.datamodel.EntityProfile;
 import gnu.trove.iterator.TIntIterator;
 
 /**
@@ -29,34 +30,28 @@ import gnu.trove.iterator.TIntIterator;
  */
 public class PrintToFile {
 
-    public static void toCSV(List<EquivalenceCluster> entityClusters, String filename) throws FileNotFoundException {
+    public static void toCSV(List<EntityProfile> profiles, List<EquivalenceCluster> entityClusters, String filename) throws FileNotFoundException {
         final PrintWriter pw = new PrintWriter(new File(filename));
         final StringBuilder sb = new StringBuilder();
 
+        sb.append("cluster_id,dataset,entity_url\n");
         int counter = 0;
         for (EquivalenceCluster eqc : entityClusters) {
             if (eqc.getEntityIdsD1().isEmpty()) {
                 continue;
             }
             counter++;
-            sb.append("\nEquivalence cluster : ").append(counter).append("\n").append("Dataset 1 : ");;
             for (TIntIterator iterator = eqc.getEntityIdsD1().iterator(); iterator.hasNext();) {
-                sb.append(iterator.next());
-                sb.append(',');
+                sb.append(counter).append(",").append(1).append(",")
+                .append(profiles.get(iterator.next()).getEntityUrl()).append("\n");
             }
-            sb.deleteCharAt(sb.length() - 1);
-            sb.append('\n');
             if (eqc.getEntityIdsD2().isEmpty()) {
                 continue;
             }
-            sb.append("Dataset 2 : ");
-//            sb.deleteCharAt(sb.length() - 1);
             for (TIntIterator iterator = eqc.getEntityIdsD2().iterator(); iterator.hasNext();) {
-                sb.append(iterator.next());
-                sb.append(',');
+                sb.append(counter).append(",").append(2).append(",")
+                .append(profiles.get(iterator.next()).getEntityUrl()).append("\n");
             }
-            sb.deleteCharAt(sb.length() - 1);
-            sb.append('\n');
         }
         pw.write(sb.toString());
         pw.close();
