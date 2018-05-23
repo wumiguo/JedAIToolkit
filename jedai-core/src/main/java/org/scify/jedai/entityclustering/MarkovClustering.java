@@ -39,8 +39,11 @@ public class MarkovClustering extends AbstractEntityClustering {
         this(0.001, 0.00001, 2, 0.5);
     }
 
-    public MarkovClustering(double ct, double mst, double scl, double st) {
+    public MarkovClustering(double ct, double mst, int scl, double st) {
         super(st);
+        clusterThreshold = ct;
+        matrixSimThreshold = mst;
+        similarityChecksLimit = scl;
     }
 
     private void addSelfLoop(double[][] a) {
