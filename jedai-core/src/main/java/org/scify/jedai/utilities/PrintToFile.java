@@ -12,9 +12,10 @@
 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 * See the License for the specific language governing permissions and
 * limitations under the License.
-*/
+ */
 package org.scify.jedai.utilities;
 
+import com.esotericsoftware.minlog.Log;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
@@ -30,7 +31,7 @@ import gnu.trove.iterator.TIntIterator;
  */
 public class PrintToFile {
 
-    public static void toCSV(List<EntityProfile> profiles, List<EquivalenceCluster> entityClusters, String filename) throws FileNotFoundException {
+    public static void toCSV(List<EntityProfile> profilesD1, List<EntityProfile> profilesD2, List<EquivalenceCluster> entityClusters, String filename) throws FileNotFoundException {
         final PrintWriter pw = new PrintWriter(new File(filename));
         final StringBuilder sb = new StringBuilder();
 
@@ -43,15 +44,20 @@ public class PrintToFile {
             counter++;
             for (TIntIterator iterator = eqc.getEntityIdsD1().iterator(); iterator.hasNext();) {
                 sb.append(counter).append(",").append(1).append(",")
-                .append(profiles.get(iterator.next()).getEntityUrl()).append("\n");
+                        .append(profilesD1.get(iterator.next()).getEntityUrl()).append("\n");
             }
             if (eqc.getEntityIdsD2().isEmpty()) {
                 continue;
             }
+            if (profilesD2 == null) {
+                Log.error("The entity profiles of Dataset 2 are missing!");
+                continue;
+            }
             for (TIntIterator iterator = eqc.getEntityIdsD2().iterator(); iterator.hasNext();) {
                 sb.append(counter).append(",").append(2).append(",")
-                .append(profiles.get(iterator.next()).getEntityUrl()).append("\n");
+                        .append(profilesD2.get(iterator.next()).getEntityUrl()).append("\n");
             }
+
         }
         pw.write(sb.toString());
         pw.close();
