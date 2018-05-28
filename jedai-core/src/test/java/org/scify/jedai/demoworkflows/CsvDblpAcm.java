@@ -116,7 +116,7 @@ public class CsvDblpAcm {
         clp.setStatistics();
         clp.printStatistics(time4 - time3, workflowName.toString(), workflowConf.toString());
         
-        PrintToFile.toCSV(entityClusters, mainDirectory + "foundMatches.csv");
+        PrintToFile.toCSV(csvDBLP, csvACM, entityClusters, mainDirectory + "foundMatches.csv");
     }
 
 }

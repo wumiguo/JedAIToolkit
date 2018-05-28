@@ -114,7 +114,7 @@ public class RdfCsvDblpAcm {
         clp.setStatistics();
         clp.printStatistics(time4 - time3, workflowName.toString(), workflowConf.toString());
         
-        PrintToFile.toCSV(entityClusters, mainDirectory + "foundMatchesRDF.csv");
+        PrintToFile.toCSV(rdfDBLP, csvACM, entityClusters, mainDirectory + "foundMatchesRDF.csv");
     }
 
 }

@@ -109,6 +109,6 @@ public class SerializedDblpAcm {
         clp.setStatistics();
         clp.printStatistics(time4 - time3, workflowName.toString(), workflowConf.toString());
         
-        PrintToFile.toCSV(entityClusters, mainDirectory + "foundMatches.csv");
+        PrintToFile.toCSV(serializedDBLP, serializedACM, entityClusters, mainDirectory + "foundMatches.csv");
     }
 }
