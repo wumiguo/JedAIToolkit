@@ -39,6 +39,7 @@ public abstract class AbstractDuplicatePropagation {
         return existingDuplicates;
     }
     
+    public abstract Set<IdDuplicates> getFalseNegatives();
     public abstract int getNoOfDuplicates();
     public abstract boolean isSuperfluous(Comparison comparison);
     public abstract void resetDuplicates();

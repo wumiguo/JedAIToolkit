@@ -52,4 +52,14 @@ public class EntityProfile implements Serializable {
     public Set<Attribute> getAttributes() {
         return attributes;
     }
+    
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        for (Attribute attribute : attributes) {
+            sb.append(attribute.getName()).append(":").append(attribute.getValue()).append(",");
+        }
+        sb.setLength(sb.length()-1);
+        return sb.toString();
+    }
 }

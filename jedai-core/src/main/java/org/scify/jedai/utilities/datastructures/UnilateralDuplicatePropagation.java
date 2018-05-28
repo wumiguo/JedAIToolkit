@@ -36,6 +36,13 @@ public class UnilateralDuplicatePropagation extends AbstractDuplicatePropagation
     }
     
     @Override
+    public Set<IdDuplicates> getFalseNegatives() {
+        final Set<IdDuplicates> falseNegatives = new HashSet<>(duplicates);
+        falseNegatives.removeAll(detectedDuplicates);
+        return falseNegatives;
+    }
+    
+    @Override
     public int getNoOfDuplicates() {
         return detectedDuplicates.size();
     }

@@ -20,6 +20,7 @@ import org.scify.jedai.datamodel.Comparison;
 import org.scify.jedai.datamodel.IdDuplicates;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -36,6 +37,17 @@ public class BilateralDuplicatePropagation extends AbstractDuplicatePropagation 
         super(matches);
         entities1 = new TIntHashSet(2*existingDuplicates);
         entities2 = new TIntHashSet(2*existingDuplicates);
+    }
+    
+    @Override
+    public Set<IdDuplicates> getFalseNegatives() {
+        final Set<IdDuplicates> falseNegatives = new HashSet<>();
+        for (IdDuplicates duplicatePair : duplicates) {
+            if (!entities1.contains(duplicatePair.getEntityId1())) {
+                falseNegatives.add(duplicatePair);
+            }
+        }
+        return falseNegatives;
     }
     
     @Override

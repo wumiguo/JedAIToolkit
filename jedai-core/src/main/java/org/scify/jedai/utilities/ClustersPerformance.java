@@ -22,7 +22,12 @@ import org.scify.jedai.datamodel.EquivalenceCluster;
 
 import com.esotericsoftware.minlog.Log;
 import gnu.trove.iterator.TIntIterator;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.util.List;
+import org.scify.jedai.datamodel.EntityProfile;
+import org.scify.jedai.datamodel.IdDuplicates;
 
 /**
  *
@@ -85,6 +90,118 @@ public class ClustersPerformance {
         System.out.println("Recall\t:\t" + recall);
         System.out.println("F-Measure\t:\t" + fMeasure);
         System.out.println("Overhead time\t:\t" + overheadTime);
+    }
+
+    public void printDetailedResults(List<EntityProfile> profilesD1, List<EntityProfile> profilesD2, String outputFile) throws FileNotFoundException {
+        if (entityClusters.isEmpty()) {
+            Log.warn("Empty set of equivalence clusters given as input!");
+            return;
+        }
+
+        totalMatches = 0;
+        final PrintWriter pw = new PrintWriter(new File(outputFile));
+        final StringBuilder sb = new StringBuilder();
+
+        if (abstractDP instanceof BilateralDuplicatePropagation) { // Clean-Clean ER
+            for (EquivalenceCluster cluster : entityClusters) {
+                for (TIntIterator outIterator = cluster.getEntityIdsD1().iterator(); outIterator.hasNext();) {
+                    if (cluster.getEntityIdsD2().isEmpty()) {
+                        continue;
+                    }
+                    
+                    final int entityId1 = outIterator.next();
+                    final EntityProfile profile1 = profilesD1.get(entityId1);
+
+                    for (TIntIterator inIterator = cluster.getEntityIdsD2().iterator(); inIterator.hasNext();) {
+                        totalMatches++;
+
+                        final int entityId2 = inIterator.next();
+                        final EntityProfile profile2 = profilesD2.get(entityId2);
+
+                        final int originalDuplicates = abstractDP.getNoOfDuplicates();
+                        abstractDP.isSuperfluous(new Comparison(true, entityId1, entityId2));
+                        final int newDuplicates = abstractDP.getNoOfDuplicates();
+
+                        sb.append(profile1.getEntityUrl()).append(",");
+                        sb.append(profile2.getEntityUrl()).append(",");
+                        if (originalDuplicates == newDuplicates) {
+                            sb.append("FP,"); //false positive
+                        } else { // originalDuplicates < newDuplicates
+                            sb.append("TP,"); // true positive
+                        }
+                        sb.append("Profile 1:[").append(profile1).append("]");
+                        sb.append("Profile 2:[").append(profile2).append("]").append("\n");
+                    }
+                }
+
+                for (IdDuplicates duplicatesPair : abstractDP.getFalseNegatives()) {
+                    final EntityProfile profile1 = profilesD1.get(duplicatesPair.getEntityId1());
+                    final EntityProfile profile2 = profilesD2.get(duplicatesPair.getEntityId2());
+
+                    sb.append(profile1.getEntityUrl()).append(",");
+                    sb.append(profile2.getEntityUrl()).append(",");
+                    sb.append("FN,"); // false negative
+                    sb.append("Profile 1:[").append(profile1).append("]");
+                    sb.append("Profile 2:[").append(profile2).append("]").append("\n");
+                }
+            }
+        } else { // Dirty ER
+            for (EquivalenceCluster cluster : entityClusters) {
+                final int[] duplicatesArray = cluster.getEntityIdsD1().toArray();
+
+                for (int i = 0; i < duplicatesArray.length; i++) {
+                    for (int j = i + 1; j < duplicatesArray.length; j++) {
+                        totalMatches++;
+
+                        final EntityProfile profile1 = profilesD1.get(duplicatesArray[i]);
+                        final EntityProfile profile2 = profilesD1.get(duplicatesArray[j]);
+
+                        final int originalDuplicates = abstractDP.getNoOfDuplicates();
+                        abstractDP.isSuperfluous(new Comparison(false, duplicatesArray[i], duplicatesArray[j]));
+                        final int newDuplicates = abstractDP.getNoOfDuplicates();
+
+                        sb.append(profile1.getEntityUrl()).append(",");
+                        sb.append(profile2.getEntityUrl()).append(",");
+                        if (originalDuplicates == newDuplicates) {
+                            sb.append("FP,"); //false positive
+                        } else { // originalDuplicates < newDuplicates
+                            sb.append("TP,"); // true positive
+                        }
+                        sb.append("Profile 1:[").append(profile1).append("]");
+                        sb.append("Profile 2:[").append(profile2).append("]").append("\n");
+                    }
+                }
+            }
+
+            for (IdDuplicates duplicatesPair : abstractDP.getFalseNegatives()) {
+                final EntityProfile profile1 = profilesD1.get(duplicatesPair.getEntityId1());
+                final EntityProfile profile2 = profilesD1.get(duplicatesPair.getEntityId2());
+
+                sb.append(profile1.getEntityUrl()).append(",");
+                sb.append(profile2.getEntityUrl()).append(",");
+                sb.append("FN,"); // false negative
+                sb.append("Profile 1:[").append(profile1).append("]");
+                sb.append("Profile 2:[").append(profile2).append("]").append("\n");
+            }
+        }
+
+        if (0 < totalMatches) {
+            precision = abstractDP.getNoOfDuplicates() / totalMatches;
+        } else {
+            precision = 0;
+        }
+        recall = ((double) abstractDP.getNoOfDuplicates()) / abstractDP.getExistingDuplicates();
+        if (0 < precision && 0 < recall) {
+            fMeasure = 2 * precision * recall / (precision + recall);
+        } else {
+            fMeasure = 0;
+        }
+
+        pw.write("Precision\t:\t" + precision + "\n");
+        pw.write("Recall\t:\t" + recall + "\n");
+        pw.write("F-Measure\t:\t" + fMeasure + "\n");
+        pw.write(sb.toString());
+        pw.close();
     }
 
     public void setStatistics() {

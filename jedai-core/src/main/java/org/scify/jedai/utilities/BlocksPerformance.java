@@ -29,8 +29,13 @@ import com.esotericsoftware.minlog.Log;
 
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 
 import java.util.List;
+import org.scify.jedai.blockprocessing.comparisoncleaning.ComparisonPropagation;
+import org.scify.jedai.datamodel.EntityProfile;
 
 /**
  *
@@ -170,8 +175,8 @@ public class BlocksPerformance {
         detectedDuplicates = abstractDP.getNoOfDuplicates();
         pc = ((double) abstractDP.getNoOfDuplicates()) / abstractDP.getExistingDuplicates();
         pq = abstractDP.getNoOfDuplicates() / aggregateCardinality;
-        if (0 < pc && 0 < pq ) {
-            fMeasure =  2 * pc * pq / (pc + pq);
+        if (0 < pc && 0 < pq) {
+            fMeasure = 2 * pc * pq / (pc + pq);
         } else {
             fMeasure = 0;
         }
@@ -189,7 +194,7 @@ public class BlocksPerformance {
         detectedDuplicates = (int) noOfDuplicates;
         pc = noOfDuplicates / abstractDP.getExistingDuplicates();
         pq = noOfDuplicates / aggregateCardinality;
-        fMeasure =  2 * pc * pq / (pc + pq);
+        fMeasure = 2 * pc * pq / (pc + pq);
     }
 
     private void getEntities() {
@@ -219,11 +224,73 @@ public class BlocksPerformance {
         }
     }
 
+    public void printDetailedResults(List<EntityProfile> profilesD1, List<EntityProfile> profilesD2) {
+        if (blocks.isEmpty()) {
+            Log.warn("Empty set of blocks was given as input!");
+            return;
+        }
+
+        setType();
+
+        List<AbstractBlock> blocksToUse = blocks;
+        if (!(blocks.get(0) instanceof DecomposedBlock)) {
+            final ComparisonPropagation cp = new ComparisonPropagation();
+            blocksToUse = cp.refineBlocks(blocks);
+        }
+
+        for (AbstractBlock block : blocksToUse) {
+            ComparisonIterator iterator = block.getComparisonIterator();
+            while (iterator.hasNext()) {
+                final Comparison currentComparison = iterator.next();
+                final EntityProfile profile1 = profilesD1.get(currentComparison.getEntityId1());
+                final EntityProfile profile2 = isCleanCleanER ? profilesD2.get(currentComparison.getEntityId2()) : profilesD1.get(currentComparison.getEntityId2());
+
+                final int originalDuplicates = abstractDP.getNoOfDuplicates();
+                abstractDP.isSuperfluous(currentComparison);
+                final int newDuplicates = abstractDP.getNoOfDuplicates();
+
+                System.out.print(profile1.getEntityUrl() + ",");
+                System.out.print(profile2.getEntityUrl() + ",");
+                if (originalDuplicates == newDuplicates) {
+                    System.out.print("FP,"); //false positive
+                } else { // originalDuplicates < newDuplicates
+                    System.out.print("TP,"); // true positive
+                }
+                System.out.print("Profile 1:[" + profilesD1 + "]");
+                System.out.println("Profile 2:[" + profilesD2 + "]");
+            }
+        }
+
+        for (IdDuplicates duplicatesPair : abstractDP.getFalseNegatives()) {
+            final EntityProfile profile1 = profilesD1.get(duplicatesPair.getEntityId1());
+            final EntityProfile profile2 = isCleanCleanER ? profilesD2.get(duplicatesPair.getEntityId2()) : profilesD1.get(duplicatesPair.getEntityId2());
+
+            System.out.print(profile1.getEntityUrl() + ",");
+            System.out.print(profile2.getEntityUrl() + ",");
+            System.out.print("FN,"); // false negative
+            System.out.print("Profile 1:[" + profile1 + "]");
+            System.out.println("Profile 2:[" + profile2 + "]");
+        }
+
+        detectedDuplicates = abstractDP.getNoOfDuplicates();
+        pc = ((double) abstractDP.getNoOfDuplicates()) / abstractDP.getExistingDuplicates();
+        pq = abstractDP.getNoOfDuplicates() / aggregateCardinality;
+        if (0 < pc && 0 < pq) {
+            fMeasure = 2 * pc * pq / (pc + pq);
+        } else {
+            fMeasure = 0;
+        }
+
+        System.out.println("Pairs Quality (Precision)\t:\t" + pq);
+        System.out.println("Pairs Completentess (Recall)\t:\t" + pc);
+        System.out.println("F-Measure\t:\t" + fMeasure);
+    }
+
     public void printStatistics(double overheadTime, String methodConfiguration, String methodName) {
         if (blocks.isEmpty()) {
             return;
         }
-        
+
         System.out.println("\n\n\n**************************************************");
         System.out.println("Performance of : " + methodName);
         System.out.println("Configuration : " + methodConfiguration);
