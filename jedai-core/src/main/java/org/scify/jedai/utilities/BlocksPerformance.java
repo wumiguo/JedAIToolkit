@@ -238,6 +238,7 @@ public class BlocksPerformance {
             blocksToUse = cp.refineBlocks(blocks);
         }
 
+        abstractDP.resetDuplicates();
         for (AbstractBlock block : blocksToUse) {
             ComparisonIterator iterator = block.getComparisonIterator();
             while (iterator.hasNext()) {

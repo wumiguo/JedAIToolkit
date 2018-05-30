@@ -100,50 +100,48 @@ public class ClustersPerformance {
 
         totalMatches = 0;
         final PrintWriter pw = new PrintWriter(new File(outputFile));
-        final StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder();
 
+        abstractDP.resetDuplicates();
         if (abstractDP instanceof BilateralDuplicatePropagation) { // Clean-Clean ER
-            for (EquivalenceCluster cluster : entityClusters) {
-                for (TIntIterator outIterator = cluster.getEntityIdsD1().iterator(); outIterator.hasNext();) {
-                    if (cluster.getEntityIdsD2().isEmpty()) {
-                        continue;
-                    }
-                    
-                    final int entityId1 = outIterator.next();
-                    final EntityProfile profile1 = profilesD1.get(entityId1);
-
-                    for (TIntIterator inIterator = cluster.getEntityIdsD2().iterator(); inIterator.hasNext();) {
-                        totalMatches++;
-
-                        final int entityId2 = inIterator.next();
-                        final EntityProfile profile2 = profilesD2.get(entityId2);
-
-                        final int originalDuplicates = abstractDP.getNoOfDuplicates();
-                        abstractDP.isSuperfluous(new Comparison(true, entityId1, entityId2));
-                        final int newDuplicates = abstractDP.getNoOfDuplicates();
-
-                        sb.append(profile1.getEntityUrl()).append(",");
-                        sb.append(profile2.getEntityUrl()).append(",");
-                        if (originalDuplicates == newDuplicates) {
-                            sb.append("FP,"); //false positive
-                        } else { // originalDuplicates < newDuplicates
-                            sb.append("TP,"); // true positive
-                        }
-                        sb.append("Profile 1:[").append(profile1).append("]");
-                        sb.append("Profile 2:[").append(profile2).append("]").append("\n");
-                    }
+            for (EquivalenceCluster cluster : entityClusters) {                
+                if (cluster.getEntityIdsD1().size() != 1
+                        || cluster.getEntityIdsD2().size() != 1) {
+                    continue;
                 }
 
-                for (IdDuplicates duplicatesPair : abstractDP.getFalseNegatives()) {
-                    final EntityProfile profile1 = profilesD1.get(duplicatesPair.getEntityId1());
-                    final EntityProfile profile2 = profilesD2.get(duplicatesPair.getEntityId2());
+                totalMatches++;
 
-                    sb.append(profile1.getEntityUrl()).append(",");
-                    sb.append(profile2.getEntityUrl()).append(",");
-                    sb.append("FN,"); // false negative
-                    sb.append("Profile 1:[").append(profile1).append("]");
-                    sb.append("Profile 2:[").append(profile2).append("]").append("\n");
+                final int entityId1 = cluster.getEntityIdsD1().get(0);
+                final EntityProfile profile1 = profilesD1.get(entityId1);
+
+                final int entityId2 = cluster.getEntityIdsD2().get(0);
+                final EntityProfile profile2 = profilesD2.get(entityId2);
+
+                final int originalDuplicates = abstractDP.getNoOfDuplicates();
+                abstractDP.isSuperfluous(new Comparison(true, entityId1, entityId2));
+                final int newDuplicates = abstractDP.getNoOfDuplicates();
+                
+                sb.append(profile1.getEntityUrl()).append(",");
+                sb.append(profile2.getEntityUrl()).append(",");
+                if (originalDuplicates == newDuplicates) {
+                    sb.append("FP,"); //false positive
+                } else { // originalDuplicates < newDuplicates
+                    sb.append("TP,"); // true positive
                 }
+                sb.append("Profile 1:[").append(profile1).append("]");
+                sb.append("Profile 2:[").append(profile2).append("]").append("\n");
+            }
+
+            for (IdDuplicates duplicatesPair : abstractDP.getFalseNegatives()) {
+                final EntityProfile profile1 = profilesD1.get(duplicatesPair.getEntityId1());
+                final EntityProfile profile2 = profilesD2.get(duplicatesPair.getEntityId2());
+
+                sb.append(profile1.getEntityUrl()).append(",");
+                sb.append(profile2.getEntityUrl()).append(",");
+                sb.append("FN,"); // false negative
+                sb.append("Profile 1:[").append(profile1).append("]");
+                sb.append("Profile 2:[").append(profile2).append("]").append("\n");
             }
         } else { // Dirty ER
             for (EquivalenceCluster cluster : entityClusters) {
