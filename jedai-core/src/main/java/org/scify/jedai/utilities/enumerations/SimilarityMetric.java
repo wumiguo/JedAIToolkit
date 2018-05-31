@@ -49,6 +49,9 @@ public enum SimilarityMetric {
                 simMetrics.add(GENERALIZED_JACCARD_SIMILARITY);
                 simMetrics.add(JACCARD_SIMILARITY);
                 break;
+            case CHARACTER_BIGRAMS_TF_IDF:
+            case CHARACTER_FOURGRAMS_TF_IDF:
+            case CHARACTER_TRIGRAMS_TF_IDF:
             case TOKEN_BIGRAMS_TF_IDF:
             case TOKEN_TRIGRAMS_TF_IDF:
             case TOKEN_UNIGRAMS_TF_IDF:
