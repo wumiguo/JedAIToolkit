@@ -223,7 +223,7 @@ public class BlocksPerformance {
             noOfD2Entities = distinctEntitiesD2.size();
         }
     }
-
+    
     public void printDetailedResults(List<EntityProfile> profilesD1, List<EntityProfile> profilesD2) {
         if (blocks.isEmpty()) {
             Log.warn("Empty set of blocks was given as input!");
@@ -240,7 +240,7 @@ public class BlocksPerformance {
 
         abstractDP.resetDuplicates();
         for (AbstractBlock block : blocksToUse) {
-            ComparisonIterator iterator = block.getComparisonIterator();
+            final ComparisonIterator iterator = block.getComparisonIterator();
             while (iterator.hasNext()) {
                 final Comparison currentComparison = iterator.next();
                 final EntityProfile profile1 = profilesD1.get(currentComparison.getEntityId1());
@@ -287,6 +287,45 @@ public class BlocksPerformance {
         System.out.println("F-Measure\t:\t" + fMeasure);
     }
 
+    public void printFalseNegatives(List<EntityProfile> profilesD1, List<EntityProfile> profilesD2, String outputFile) throws FileNotFoundException {
+        if (blocks.isEmpty()) {
+            Log.warn("Empty set of blocks was given as input!");
+            return;
+        }
+
+        setType(); // Clean-Clean or Dirty ER?
+        final PrintWriter pw = new PrintWriter(new File(outputFile));
+        StringBuilder sb = new StringBuilder();
+        
+        List<AbstractBlock> blocksToUse = blocks;
+        if (!(blocks.get(0) instanceof DecomposedBlock)) {
+            final ComparisonPropagation cp = new ComparisonPropagation();
+            blocksToUse = cp.refineBlocks(blocks);
+        }
+        
+        abstractDP.resetDuplicates();
+        for (AbstractBlock block : blocksToUse) {
+            final ComparisonIterator iterator = block.getComparisonIterator();
+            while (iterator.hasNext()) {
+                abstractDP.isSuperfluous(iterator.next());
+            }
+        }
+                
+        for (IdDuplicates duplicatesPair : abstractDP.getFalseNegatives()) {
+            final EntityProfile profile1 = profilesD1.get(duplicatesPair.getEntityId1());
+            final EntityProfile profile2 = isCleanCleanER ? profilesD2.get(duplicatesPair.getEntityId2()) : profilesD1.get(duplicatesPair.getEntityId2());
+
+            sb.append(profile1.getEntityUrl()).append(",");
+            sb.append(profile2.getEntityUrl()).append(",");
+            sb.append("FN,"); // false negative
+            sb.append("Profile 1:[").append(profile1).append("]");
+            sb.append("Profile 2:[").append(profile2).append("]");
+        }
+        
+        pw.write(sb.toString());
+        pw.close();
+    }
+    
     public void printStatistics(double overheadTime, String methodConfiguration, String methodName) {
         if (blocks.isEmpty()) {
             return;
