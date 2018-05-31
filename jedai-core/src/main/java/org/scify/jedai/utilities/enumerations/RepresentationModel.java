@@ -12,13 +12,13 @@
 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 * See the License for the specific language governing permissions and
 * limitations under the License.
-*/
-
+ */
 package org.scify.jedai.utilities.enumerations;
 
 import org.scify.jedai.textmodels.AbstractModel;
 import org.scify.jedai.textmodels.CharacterNGramGraphs;
 import org.scify.jedai.textmodels.CharacterNGrams;
+import org.scify.jedai.textmodels.CharacterNGramsWithGlobalWeights;
 import org.scify.jedai.textmodels.TokenNGramGraphs;
 import org.scify.jedai.textmodels.TokenNGrams;
 import org.scify.jedai.textmodels.TokenNGramsWithGlobalWeights;
@@ -27,36 +27,44 @@ import org.scify.jedai.textmodels.TokenNGramsWithGlobalWeights;
  *
  * @author G.A.P. II
  */
-
 public enum RepresentationModel {
     CHARACTER_BIGRAMS,
+    CHARACTER_BIGRAMS_TF_IDF,
     CHARACTER_BIGRAM_GRAPHS,
     CHARACTER_TRIGRAMS,
+    CHARACTER_TRIGRAMS_TF_IDF,
     CHARACTER_TRIGRAM_GRAPHS,
     CHARACTER_FOURGRAMS,
+    CHARACTER_FOURGRAMS_TF_IDF,
     CHARACTER_FOURGRAM_GRAPHS,
-    TOKEN_UNIGRAMS, 
-    TOKEN_UNIGRAMS_TF_IDF, 
-    TOKEN_UNIGRAM_GRAPHS, 
+    TOKEN_UNIGRAMS,
+    TOKEN_UNIGRAMS_TF_IDF,
+    TOKEN_UNIGRAM_GRAPHS,
     TOKEN_BIGRAMS,
-    TOKEN_BIGRAMS_TF_IDF, 
-    TOKEN_BIGRAM_GRAPHS, 
+    TOKEN_BIGRAMS_TF_IDF,
+    TOKEN_BIGRAM_GRAPHS,
     TOKEN_TRIGRAMS,
-    TOKEN_TRIGRAMS_TF_IDF, 
+    TOKEN_TRIGRAMS_TF_IDF,
     TOKEN_TRIGRAM_GRAPHS;
-    
-    public static AbstractModel getModel (int dId, RepresentationModel model, SimilarityMetric simMetric, String instanceName) {
+
+    public static AbstractModel getModel(int dId, RepresentationModel model, SimilarityMetric simMetric, String instanceName) {
         switch (model) {
             case CHARACTER_BIGRAMS:
                 return new CharacterNGrams(dId, 2, model, simMetric, instanceName);
+            case CHARACTER_BIGRAMS_TF_IDF:
+                return new CharacterNGramsWithGlobalWeights(dId, 2, model, simMetric, instanceName);
             case CHARACTER_BIGRAM_GRAPHS:
                 return new CharacterNGramGraphs(dId, 2, model, simMetric, instanceName);
             case CHARACTER_FOURGRAMS:
                 return new CharacterNGrams(dId, 4, model, simMetric, instanceName);
+            case CHARACTER_FOURGRAMS_TF_IDF:
+                return new CharacterNGramsWithGlobalWeights(dId, 4, model, simMetric, instanceName);
             case CHARACTER_FOURGRAM_GRAPHS:
                 return new CharacterNGramGraphs(dId, 4, model, simMetric, instanceName);
             case CHARACTER_TRIGRAMS:
                 return new CharacterNGrams(dId, 3, model, simMetric, instanceName);
+            case CHARACTER_TRIGRAMS_TF_IDF:
+                return new CharacterNGramsWithGlobalWeights(dId, 3, model, simMetric, instanceName);
             case CHARACTER_TRIGRAM_GRAPHS:
                 return new CharacterNGramGraphs(dId, 3, model, simMetric, instanceName);
             case TOKEN_BIGRAMS:
@@ -78,7 +86,7 @@ public enum RepresentationModel {
             case TOKEN_UNIGRAM_GRAPHS:
                 return new TokenNGramGraphs(dId, 1, model, simMetric, instanceName);
             default:
-                return null;    
+                return null;
         }
     }
 }
