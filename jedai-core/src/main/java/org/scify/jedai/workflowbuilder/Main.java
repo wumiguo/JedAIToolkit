@@ -232,43 +232,43 @@ public class Main {
         int erType = getErType();
 
         // Data Reading
-        AbstractDuplicatePropagation duplicatePropagation;
-        List<EntityProfile> profilesD1, profilesD2;
+        final AbstractDuplicatePropagation duplicatePropagation;
+        final List<EntityProfile> profilesD1, profilesD2;
         if (erType == 1) {
             int datasetId = getCleanCleanErDataset();
 
-            IEntityReader eReader1 = new EntitySerializationReader(MAIN_DIR_CCER_DATASETS + CCER_ENTITY_FILEPATHS[datasetId * 2]);
+            final IEntityReader eReader1 = new EntitySerializationReader(MAIN_DIR_CCER_DATASETS + CCER_ENTITY_FILEPATHS[datasetId * 2]);
             profilesD1 = eReader1.getEntityProfiles();
             System.out.println("Input Entity Profiles D1\t:\t" + profilesD1.size());
 
-            IEntityReader eReader2 = new EntitySerializationReader(MAIN_DIR_CCER_DATASETS + CCER_ENTITY_FILEPATHS[datasetId * 2 + 1]);
+            final IEntityReader eReader2 = new EntitySerializationReader(MAIN_DIR_CCER_DATASETS + CCER_ENTITY_FILEPATHS[datasetId * 2 + 1]);
             profilesD2 = eReader2.getEntityProfiles();
             System.out.println("Input Entity Profiles D2\t:\t" + profilesD2.size());
 
-            IGroundTruthReader gtReader = new GtSerializationReader(MAIN_DIR_CCER_DATASETS + CCER_GROUNDTRUTH_FILEPATHS[datasetId]);
+            final IGroundTruthReader gtReader = new GtSerializationReader(MAIN_DIR_CCER_DATASETS + CCER_GROUNDTRUTH_FILEPATHS[datasetId]);
             duplicatePropagation = new BilateralDuplicatePropagation(gtReader.getDuplicatePairs(null));
             System.out.println("Existing Duplicates\t:\t" + duplicatePropagation.getDuplicates().size());
         } else {
             profilesD2 = null;
             int datasetId = getDirtyErDataset();
 
-            IEntityReader eReader = new EntitySerializationReader(MAIN_DIR_DER_DATASETS + DER_FILEPATHS[datasetId] + "Profiles");
+            final IEntityReader eReader = new EntitySerializationReader(MAIN_DIR_DER_DATASETS + DER_FILEPATHS[datasetId] + "Profiles");
             profilesD1 = eReader.getEntityProfiles();
             System.out.println("Input Entity Profiles\t:\t" + profilesD1.size());
 
-            IGroundTruthReader gtReader = new GtSerializationReader(MAIN_DIR_DER_DATASETS + DER_FILEPATHS[datasetId] + "IdDuplicates");
+            final IGroundTruthReader gtReader = new GtSerializationReader(MAIN_DIR_DER_DATASETS + DER_FILEPATHS[datasetId] + "IdDuplicates");
             duplicatePropagation = new UnilateralDuplicatePropagation(gtReader.getDuplicatePairs(eReader.getEntityProfiles()));
             System.out.println("Existing Duplicates\t:\t" + duplicatePropagation.getDuplicates().size());
         }
 
-        StringBuilder workflowConf = new StringBuilder();
-        StringBuilder workflowName = new StringBuilder();
+        final StringBuilder workflowConf = new StringBuilder();
+        final StringBuilder workflowName = new StringBuilder();
 
         // Block Building
         int bbMethodId = getBlockBuildingMethod();
         double time1 = System.currentTimeMillis();
 
-        IBlockBuilding blockBuildingMethod = BlockBuildingMethod.getDefaultConfiguration(BlockBuildingMethod.values()[bbMethodId - 1]);
+        final IBlockBuilding blockBuildingMethod = BlockBuildingMethod.getDefaultConfiguration(BlockBuildingMethod.values()[bbMethodId - 1]);
         List<AbstractBlock> blocks = blockBuildingMethod.getBlocks(profilesD1, profilesD2);
 
         double time2 = System.currentTimeMillis();
@@ -289,7 +289,7 @@ public class Main {
             while (iterator.hasNext()) {
                 double time3 = System.currentTimeMillis();
 
-                IBlockProcessing blockCleaningMethod = BlockCleaningMethod.getDefaultConfiguration(BlockCleaningMethod.values()[iterator.next() - 1]);
+                final IBlockProcessing blockCleaningMethod = BlockCleaningMethod.getDefaultConfiguration(BlockCleaningMethod.values()[iterator.next() - 1]);
                 blocks = blockCleaningMethod.refineBlocks(blocks);
 
                 double time4 = System.currentTimeMillis();
@@ -325,8 +325,8 @@ public class Main {
         int emMethodId = getEntityMatchingMethod();
         double time7 = System.currentTimeMillis();
 
-        IEntityMatching entityMatchingMethod = EntityMatchingMethod.getDefaultConfiguration(EntityMatchingMethod.values()[emMethodId - 1]);
-        SimilarityPairs simPairs = entityMatchingMethod.executeComparisons(blocks, profilesD1, profilesD2);
+        final IEntityMatching entityMatchingMethod = EntityMatchingMethod.getDefaultConfiguration(EntityMatchingMethod.values()[emMethodId - 1]);
+        final SimilarityPairs simPairs = entityMatchingMethod.executeComparisons(blocks, profilesD1, profilesD2);
 
         double time8 = System.currentTimeMillis();
 
@@ -335,7 +335,7 @@ public class Main {
         System.out.println("Entity Matching overhead time\t:\t" + (time8 - time7));
 
         // Entity Clustering
-        IEntityClustering entityClusteringMethod;
+        final IEntityClustering entityClusteringMethod;
         if (erType == 1) { // Clean-Clean ER
             System.out.println("\n\nUnique Mapping Clustering is the only Entity Clustering method compatible with Clean-Clean ER");
             entityClusteringMethod = EntityClusteringCcerMethod.getDefaultConfiguration(EntityClusteringCcerMethod.UNIQUE_MAPPING_CLUSTERING);
@@ -346,7 +346,7 @@ public class Main {
 
         long time9 = System.currentTimeMillis();
 
-        List<EquivalenceCluster> entityClusters = entityClusteringMethod.getDuplicates(simPairs);
+        final EquivalenceCluster[] entityClusters = entityClusteringMethod.getDuplicates(simPairs);
 
         long time10 = System.currentTimeMillis();
 

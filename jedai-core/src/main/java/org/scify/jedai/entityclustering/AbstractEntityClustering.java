@@ -19,18 +19,12 @@ import org.scify.jedai.datamodel.EquivalenceCluster;
 import org.scify.jedai.datamodel.SimilarityPairs;
 
 import com.esotericsoftware.minlog.Log;
-import gnu.trove.set.hash.TIntHashSet;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
 
 import org.apache.jena.atlas.json.JsonArray;
 import org.apache.jena.atlas.json.JsonObject;
+import org.scify.jedai.utilities.graph.ConnectedComponents;
 
-import org.jgrapht.alg.ConnectivityInspector;
-import org.jgrapht.graph.DefaultEdge;
-import org.jgrapht.graph.SimpleGraph;
+import org.scify.jedai.utilities.graph.UndirectedGraph;
 
 /**
  *
@@ -45,38 +39,36 @@ public abstract class AbstractEntityClustering implements IEntityClustering {
     protected int noOfEntities;
     protected int datasetLimit;
 
-    protected SimpleGraph similarityGraph;
+    protected UndirectedGraph similarityGraph;
 
     public AbstractEntityClustering(double simTh) {
         threshold = simTh;
     }
 
-    protected List<EquivalenceCluster> getConnectedComponents() {
-        // get connected components
-        final ConnectivityInspector ci = new ConnectivityInspector(similarityGraph);
-        final List<Set<Integer>> connectedComponents = ci.connectedSets();
-
-        // prepare output
-        final List<EquivalenceCluster> equivalenceClusters = new ArrayList<>();
-        for (Set<Integer> componentIds : connectedComponents) {
-            final EquivalenceCluster newCluster = new EquivalenceCluster();
-            equivalenceClusters.add(newCluster);
-
-            if (!isCleanCleanER) {
-                newCluster.loadBulkEntityIdsD1(new TIntHashSet(componentIds));
-                continue;
+    protected EquivalenceCluster[] getConnectedComponents() {
+        final ConnectedComponents cc = new ConnectedComponents(similarityGraph);
+        final EquivalenceCluster[] connectedComponents = new EquivalenceCluster[cc.count()];
+        for (int i = 0; i < cc.count(); i++) {
+            connectedComponents[i] = new EquivalenceCluster();
+        }
+        
+        if (isCleanCleanER) {
+            for (int i = 0; i < datasetLimit; i++) {
+                int ccId = cc.id(i);
+                connectedComponents[ccId].addEntityIdD1(i);
             }
-
-            componentIds.forEach((entityId) -> {
-                if (entityId < datasetLimit) {
-                    newCluster.addEntityIdD1(entityId);
-                } else {
-                    newCluster.addEntityIdD2(entityId - datasetLimit);
-                }
-            });
+            for (int i = datasetLimit; i < noOfEntities; i++) {
+                int ccId = cc.id(i);
+                connectedComponents[ccId].addEntityIdD2(i-datasetLimit);
+            }
+        } else {
+            for (int i = 0; i < noOfEntities; i++) {
+                int ccId = cc.id(i);
+                connectedComponents[ccId].addEntityIdD1(i);
+            }
         }
 
-        return equivalenceClusters;
+        return connectedComponents;
     }
 
     protected int getMaxEntityId(int[] entityIds) {
@@ -97,7 +89,7 @@ public abstract class AbstractEntityClustering implements IEntityClustering {
     @Override
     public String getMethodParameters() {
         return getMethodName() + " involves a single parameter:\n"
-               + "1)" + getParameterDescription(0) + ".\n";
+                + "1)" + getParameterDescription(0) + ".\n";
     }
 
     @Override
@@ -138,7 +130,7 @@ public abstract class AbstractEntityClustering implements IEntityClustering {
 
     protected void initializeData(SimilarityPairs simPairs) {
         Log.info("Applying " + getMethodName() + " with the following configuration : " + getMethodConfiguration());
-        
+
         isCleanCleanER = simPairs.isCleanCleanER();
 
         int maxEntity1 = getMaxEntityId(simPairs.getEntityIds1());
@@ -150,15 +142,8 @@ public abstract class AbstractEntityClustering implements IEntityClustering {
             datasetLimit = 0;
             noOfEntities = Math.max(maxEntity1, maxEntity2) + 1;
         }
-    }
 
-    protected void initializeGraph() {
-        similarityGraph = new SimpleGraph(DefaultEdge.class);
-        for (int i = 0; i < noOfEntities; i++) {
-            similarityGraph.addVertex(i);
-        }
-        
-        Log.info("Added " + noOfEntities + " nodes in the graph");
+        similarityGraph = new UndirectedGraph(noOfEntities);
     }
 
     @Override

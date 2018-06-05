@@ -31,7 +31,7 @@ import gnu.trove.iterator.TIntIterator;
  */
 public class PrintToFile {
 
-    public static void toCSV(List<EntityProfile> profilesD1, List<EntityProfile> profilesD2, List<EquivalenceCluster> entityClusters, String filename) throws FileNotFoundException {
+    public static void toCSV(List<EntityProfile> profilesD1, List<EntityProfile> profilesD2, EquivalenceCluster[] entityClusters, String filename) throws FileNotFoundException {
         final PrintWriter pw = new PrintWriter(new File(filename));
         final StringBuilder sb = new StringBuilder();
 

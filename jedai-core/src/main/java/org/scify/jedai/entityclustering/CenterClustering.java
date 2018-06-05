@@ -44,9 +44,8 @@ public class CenterClustering extends AbstractEntityClustering {
     }
 
     @Override
-    public List<EquivalenceCluster> getDuplicates(SimilarityPairs simPairs) {
+    public EquivalenceCluster[] getDuplicates(SimilarityPairs simPairs) {
         initializeData(simPairs);
-        initializeGraph();
         
         final double[] edgesWeight = new double[noOfEntities];
         final double[] edgesAttached = new double[noOfEntities];

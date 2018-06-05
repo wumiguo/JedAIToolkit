@@ -21,13 +21,17 @@ import org.scify.jedai.datamodel.GomoryHuTree;
 import org.scify.jedai.datamodel.SimilarityPairs;
 
 import com.esotericsoftware.minlog.Log;
+import gnu.trove.set.hash.TIntHashSet;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import org.apache.jena.atlas.json.JsonArray;
 import org.apache.jena.atlas.json.JsonObject;
+import org.jgrapht.alg.ConnectivityInspector;
 
 import org.jgrapht.graph.DefaultWeightedEdge;
+import org.jgrapht.graph.SimpleGraph;
 import org.jgrapht.graph.SimpleWeightedGraph;
 
 /**
@@ -37,20 +41,50 @@ import org.jgrapht.graph.SimpleWeightedGraph;
 public class CutClustering extends AbstractEntityClustering {
 
     protected double Acap;
+    protected SimpleGraph duplicatesGraph;
     protected SimpleWeightedGraph weightedGraph;
 
     public CutClustering() {
         this(0.3, 0.5);
     }
-    
+
     public CutClustering(double ac, double simTh) {
         super(simTh);
         Acap = ac;
     }
 
     @Override
-    public List<EquivalenceCluster> getDuplicates(SimilarityPairs simPairs) {
+    protected EquivalenceCluster[] getConnectedComponents() {
+        // get connected components
+        final ConnectivityInspector ci = new ConnectivityInspector(duplicatesGraph);
+        final List<Set<Integer>> connectedComponents = ci.connectedSets();
+
+        // prepare output
+        int counter = 0;
+        final EquivalenceCluster[] equivalenceClusters = new EquivalenceCluster[connectedComponents.size()];
+        for (Set<Integer> componentIds : connectedComponents) {
+            final EquivalenceCluster newCluster = new EquivalenceCluster();
+            if (!isCleanCleanER) {
+                newCluster.loadBulkEntityIdsD1(new TIntHashSet(componentIds));
+            } else {
+                componentIds.forEach((entityId) -> {
+                    if (entityId < datasetLimit) {
+                        newCluster.addEntityIdD1(entityId);
+                    } else {
+                        newCluster.addEntityIdD2(entityId - datasetLimit);
+                    }
+                });
+            }
+            equivalenceClusters[counter++] = newCluster;
+        }
+
+        return equivalenceClusters;
+    }
+
+    @Override
+    public EquivalenceCluster[] getDuplicates(SimilarityPairs simPairs) {
         initializeData(simPairs);
+        similarityGraph = null;
         initializeGraph();
 
         final Iterator<Comparison> iterator = simPairs.getPairIterator();
@@ -63,8 +97,8 @@ public class CutClustering extends AbstractEntityClustering {
         }
 
         GomoryHuTree ght = new GomoryHuTree(weightedGraph); //take the minimum cut (Gomory-Hu) tree from the similarity graph
-        similarityGraph = ght.MinCutTree();
-        similarityGraph.removeVertex(noOfEntities); //remove the artificial sink
+        duplicatesGraph = ght.MinCutTree();
+        duplicatesGraph.removeVertex(noOfEntities); //remove the artificial sink
 
         return getConnectedComponents();
     }
@@ -74,7 +108,7 @@ public class CutClustering extends AbstractEntityClustering {
         return getParameterName(0) + "=" + threshold + "\t"
                 + getParameterName(1) + "=" + Acap;
     }
-    
+
     @Override
     public String getMethodInfo() {
         return getMethodName() + ": it partitions the similarity graph into equivalence clusters based on its minimum cut.";
@@ -102,7 +136,7 @@ public class CutClustering extends AbstractEntityClustering {
         obj1.put("maxValue", "0.95");
         obj1.put("stepValue", "0.05");
         obj1.put("description", getParameterDescription(0));
-        
+
         JsonObject obj2 = new JsonObject();
         obj2.put("class", "java.lang.Double");
         obj2.put("name", getParameterName(1));
@@ -142,7 +176,6 @@ public class CutClustering extends AbstractEntityClustering {
         }
     }
 
-    @Override
     protected void initializeGraph() {
         weightedGraph = new SimpleWeightedGraph<>(DefaultWeightedEdge.class);
 

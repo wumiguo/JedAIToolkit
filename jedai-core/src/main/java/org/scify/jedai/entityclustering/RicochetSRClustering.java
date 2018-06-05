@@ -48,8 +48,9 @@ public class RicochetSRClustering extends AbstractEntityClustering {
     }
 
     @Override
-    public List<EquivalenceCluster> getDuplicates(SimilarityPairs simPairs) {
+    public EquivalenceCluster[] getDuplicates(SimilarityPairs simPairs) {
         initializeData(simPairs);
+        similarityGraph = null;
 
         final Queue<VertexWeight> VWqueue = new PriorityQueue<>(noOfEntities, new VertexWeightComparator());
         final double[] edgesWeight = new double[noOfEntities];
@@ -82,7 +83,7 @@ public class RicochetSRClustering extends AbstractEntityClustering {
         }
 
         if (VWqueue.isEmpty()) {
-            return new ArrayList<>();
+            return new EquivalenceCluster[0];
         }
 
         final TIntSet Center = new TIntHashSet();
@@ -200,23 +201,23 @@ public class RicochetSRClustering extends AbstractEntityClustering {
         }
 
         // get connected components
-        final List<EquivalenceCluster> equivalenceClusters = new ArrayList<>();
+        int counter = 0;
+        final EquivalenceCluster[] equivalenceClusters = new EquivalenceCluster[Clusters.size()];
         for (TIntSet componentIds : Clusters.valueCollection()) {
-            final EquivalenceCluster newCluster = new EquivalenceCluster();
-            equivalenceClusters.add(newCluster);
+            equivalenceClusters[counter] = new EquivalenceCluster();
             if (!simPairs.isCleanCleanER()) {
-                newCluster.loadBulkEntityIdsD1(componentIds);
-                continue;
-            }
-
-            for (TIntIterator oIterator = componentIds.iterator(); oIterator.hasNext();) {
-                int entityId = oIterator.next();
-                if (entityId < datasetLimit) {
-                    newCluster.addEntityIdD1(entityId);
-                } else {
-                    newCluster.addEntityIdD2(entityId - datasetLimit);
+                equivalenceClusters[counter].loadBulkEntityIdsD1(componentIds);
+            } else {
+                for (TIntIterator oIterator = componentIds.iterator(); oIterator.hasNext();) {
+                    int entityId = oIterator.next();
+                    if (entityId < datasetLimit) {
+                        equivalenceClusters[counter].addEntityIdD1(entityId);
+                    } else {
+                        equivalenceClusters[counter].addEntityIdD2(entityId - datasetLimit);
+                    }
                 }
             }
+            counter++;
         }
         return equivalenceClusters;
     }

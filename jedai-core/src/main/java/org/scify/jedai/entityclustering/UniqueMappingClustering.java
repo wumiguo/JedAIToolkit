@@ -24,9 +24,7 @@ import org.scify.jedai.utilities.comparators.SimilarityEdgeComparator;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
 
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Queue;
 
@@ -49,9 +47,9 @@ public class UniqueMappingClustering extends AbstractEntityClustering {
     }
 
     @Override
-    public List<EquivalenceCluster> getDuplicates(SimilarityPairs simPairs) {
+    public EquivalenceCluster[] getDuplicates(SimilarityPairs simPairs) {
         if (simPairs.getNoOfComparisons() == 0) {
-            return new ArrayList<>();
+            return new EquivalenceCluster[0];
         }
         
         initializeData(simPairs);
@@ -59,7 +57,6 @@ public class UniqueMappingClustering extends AbstractEntityClustering {
             return null; //the method is only applicable to Clean-Clean ER
         }
         
-        initializeGraph();
         final Queue<SimilarityEdge> SEqueue = new PriorityQueue<>(simPairs.getNoOfComparisons(), new SimilarityEdgeComparator());
 
         final Iterator<Comparison> iterator = simPairs.getPairIterator();

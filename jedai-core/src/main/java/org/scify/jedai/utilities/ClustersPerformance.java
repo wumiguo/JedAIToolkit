@@ -41,9 +41,9 @@ public class ClustersPerformance {
     private double totalMatches;
 
     private final AbstractDuplicatePropagation abstractDP;
-    private final List<EquivalenceCluster> entityClusters;
+    private final EquivalenceCluster[] entityClusters;
 
-    public ClustersPerformance(List<EquivalenceCluster> clusters, AbstractDuplicatePropagation adp) {
+    public ClustersPerformance(EquivalenceCluster[] clusters, AbstractDuplicatePropagation adp) {
         abstractDP = adp;
         abstractDP.resetDuplicates();
         entityClusters = clusters;
@@ -54,7 +54,7 @@ public class ClustersPerformance {
     }
 
     public int getEntityClusters() {
-        return entityClusters.size();
+        return entityClusters.length;
     }
 
     public int getExistingDuplicates() {
@@ -82,7 +82,7 @@ public class ClustersPerformance {
         System.out.println("Performance of : " + methodName);
         System.out.println("Configuration : " + methodConfiguration);
         System.out.println("**************************************************");
-        System.out.println("No of clusters\t:\t" + entityClusters.size());
+        System.out.println("No of clusters\t:\t" + entityClusters.length);
         System.out.println("Detected duplicates\t:\t" + abstractDP.getNoOfDuplicates());
         System.out.println("Existing duplicates\t:\t" + abstractDP.getExistingDuplicates());
         System.out.println("Total matches\t:\t" + totalMatches);
@@ -93,7 +93,7 @@ public class ClustersPerformance {
     }
 
     public void printDetailedResults(List<EntityProfile> profilesD1, List<EntityProfile> profilesD2, String outputFile) throws FileNotFoundException {
-        if (entityClusters.isEmpty()) {
+        if (entityClusters.length == 0) {
             Log.warn("Empty set of equivalence clusters given as input!");
             return;
         }
@@ -203,7 +203,7 @@ public class ClustersPerformance {
     }
 
     public void setStatistics() {
-        if (entityClusters.isEmpty()) {
+        if (entityClusters.length == 0) {
             Log.warn("Empty set of equivalence clusters given as input!");
             return;
         }

@@ -20,8 +20,6 @@ import org.scify.jedai.datamodel.EquivalenceCluster;
 import org.scify.jedai.datamodel.SimilarityPairs;
 import org.scify.jedai.utilities.IDocumentation;
 
-import java.util.List;
-
 /**
  *
  * @author G.A.P. II
@@ -29,7 +27,7 @@ import java.util.List;
 
 public interface IEntityClustering extends IDocumentation {
  
-    public List<EquivalenceCluster> getDuplicates(SimilarityPairs simPairs);
+    public EquivalenceCluster[] getDuplicates(SimilarityPairs simPairs);
     
     public void setSimilarityThreshold(double th);
 }
