@@ -16,6 +16,7 @@
 package org.scify.jedai.entityclustering;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import org.scify.jedai.blockbuilding.IBlockBuilding;
 import org.scify.jedai.utilities.datastructures.AbstractDuplicatePropagation;
 import org.scify.jedai.blockprocessing.IBlockProcessing;
@@ -43,7 +44,7 @@ import org.apache.log4j.BasicConfigurator;
  */
 public class TestAllMethodsCcer {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws FileNotFoundException {
         BasicConfigurator.configure();
         
         String mainDirectory = "data" + File.separator + "cleanCleanErDatasets" + File.separator;
@@ -91,6 +92,7 @@ public class TestAllMethodsCcer {
         double time2 = System.currentTimeMillis();
 
         BlocksPerformance blp = new BlocksPerformance(blocks, duplicatePropagation);
+//        blp.printFalseNegatives(profilesD1, profilesD2, "data" + File.separator + "falseNegatives.csv");
         blp.setStatistics();
         blp.printStatistics(time2 - time1, blockingWorkflowConf.toString(), blockingWorkflowName.toString());
 
@@ -107,7 +109,7 @@ public class TestAllMethodsCcer {
                 double time5 = System.currentTimeMillis();
 
                 IEntityClustering ec = EntityClusteringCcerMethod.getDefaultConfiguration(ecMethod);
-                List<EquivalenceCluster> entityClusters = ec.getDuplicates(simPairs);
+                EquivalenceCluster[] entityClusters = ec.getDuplicates(simPairs);
 
                 double time6 = System.currentTimeMillis();
 
@@ -125,6 +127,7 @@ public class TestAllMethodsCcer {
 //                }
 
                 ClustersPerformance clp = new ClustersPerformance(entityClusters, duplicatePropagation);
+//                clp.printDetailedResults(profilesD1, profilesD2, "D:\\tempCcer.csv");
                 clp.setStatistics();
                 clp.printStatistics(time6 - time5 + time4 - time3, matchingWorkflowName.toString(), matchingWorkflowConf.toString());
             }

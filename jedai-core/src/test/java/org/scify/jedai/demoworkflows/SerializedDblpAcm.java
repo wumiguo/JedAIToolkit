@@ -99,7 +99,7 @@ public class SerializedDblpAcm {
         workflowName.append("->").append(entityMatching.getMethodName());
 
         IEntityClustering entityClusttering = new ConnectedComponentsClustering();
-        List<EquivalenceCluster> entityClusters = entityClusttering.getDuplicates(simPairs);
+        EquivalenceCluster[] entityClusters = entityClusttering.getDuplicates(simPairs);
         workflowConf.append("\n").append(entityClusttering.getMethodConfiguration());
         workflowName.append("->").append(entityClusttering.getMethodName());
 

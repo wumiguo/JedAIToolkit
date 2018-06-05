@@ -16,6 +16,7 @@
 package org.scify.jedai.entityclustering;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import org.scify.jedai.blockbuilding.IBlockBuilding;
 import org.scify.jedai.utilities.datastructures.AbstractDuplicatePropagation;
 import org.scify.jedai.blockprocessing.IBlockProcessing;
@@ -43,11 +44,11 @@ import org.apache.log4j.BasicConfigurator;
  */
 public class TestAllMethods {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws FileNotFoundException {
         BasicConfigurator.configure();
         
-        String entitiesFilePath = "data" + File.separator + "dirtyErDatasets" + File.separator + "coraProfiles";
-        String groundTruthFilePath = "data" + File.separator + "dirtyErDatasets" + File.separator + "coraIdDuplicates";
+        String entitiesFilePath = "data" + File.separator + "dirtyErDatasets" + File.separator + "cddbProfiles";
+        String groundTruthFilePath = "data" + File.separator + "dirtyErDatasets" + File.separator + "cddbIdDuplicates";
 
         IEntityReader eReader = new EntitySerializationReader(entitiesFilePath);
         List<EntityProfile> profiles = eReader.getEntityProfiles();
@@ -85,6 +86,8 @@ public class TestAllMethods {
         double time2 = System.currentTimeMillis();
 
         BlocksPerformance blp = new BlocksPerformance(blocks, duplicatePropagation);
+//        blp.printFalseNegatives(profiles, null, "data" + File.separator + "falseNegatives.csv");
+//        blp.printDetailedResults(profiles, null);
         blp.setStatistics();
         blp.printStatistics(time2 - time1, blockingWorkflowConf.toString(), blockingWorkflowName.toString());
 
@@ -98,10 +101,16 @@ public class TestAllMethods {
             double time4 = System.currentTimeMillis();
 
             for (EntityClusteringDerMethod ecMethod : EntityClusteringDerMethod.values()) {
+                if (ecMethod.equals(EntityClusteringDerMethod.CUT_CLUSTERING) || 
+                        ecMethod.equals(EntityClusteringDerMethod.RICOCHET_SR_CLUSTERING)||
+                        ecMethod.equals(EntityClusteringDerMethod.MARKOV_CLUSTERING)) {
+                    continue;
+                }
+                
                 double time5 = System.currentTimeMillis();
 
                 IEntityClustering ec = EntityClusteringDerMethod.getDefaultConfiguration(ecMethod);
-                List<EquivalenceCluster> entityClusters = ec.getDuplicates(simPairs);
+                EquivalenceCluster[] entityClusters = ec.getDuplicates(simPairs);
 
                 double time6 = System.currentTimeMillis();
 
@@ -119,6 +128,7 @@ public class TestAllMethods {
 //                }
 
                 ClustersPerformance clp = new ClustersPerformance(entityClusters, duplicatePropagation);
+//                clp.printDetailedResults(profiles, null, "D:\\temp.csv");
                 clp.setStatistics();
                 clp.printStatistics(time6 - time5 + time4 - time3, matchingWorkflowName.toString(), matchingWorkflowConf.toString());
             }
