@@ -63,19 +63,8 @@ public class CutClustering extends AbstractEntityClustering {
         int counter = 0;
         final EquivalenceCluster[] equivalenceClusters = new EquivalenceCluster[connectedComponents.size()];
         for (Set<Integer> componentIds : connectedComponents) {
-            final EquivalenceCluster newCluster = new EquivalenceCluster();
-            if (!isCleanCleanER) {
-                newCluster.loadBulkEntityIdsD1(new TIntHashSet(componentIds));
-            } else {
-                componentIds.forEach((entityId) -> {
-                    if (entityId < datasetLimit) {
-                        newCluster.addEntityIdD1(entityId);
-                    } else {
-                        newCluster.addEntityIdD2(entityId - datasetLimit);
-                    }
-                });
-            }
-            equivalenceClusters[counter++] = newCluster;
+            equivalenceClusters[counter] = new EquivalenceCluster();
+            equivalenceClusters[counter++].loadBulkEntityIdsD1(new TIntHashSet(componentIds));
         }
 
         return equivalenceClusters;
