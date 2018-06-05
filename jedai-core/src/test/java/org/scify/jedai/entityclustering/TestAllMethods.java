@@ -47,8 +47,8 @@ public class TestAllMethods {
     public static void main(String[] args) throws FileNotFoundException {
         BasicConfigurator.configure();
         
-        String entitiesFilePath = "data" + File.separator + "dirtyErDatasets" + File.separator + "cddbProfiles";
-        String groundTruthFilePath = "data" + File.separator + "dirtyErDatasets" + File.separator + "cddbIdDuplicates";
+        String entitiesFilePath = "data" + File.separator + "dirtyErDatasets" + File.separator + "coraProfiles";
+        String groundTruthFilePath = "data" + File.separator + "dirtyErDatasets" + File.separator + "coraIdDuplicates";
 
         IEntityReader eReader = new EntitySerializationReader(entitiesFilePath);
         List<EntityProfile> profiles = eReader.getEntityProfiles();
@@ -101,12 +101,6 @@ public class TestAllMethods {
             double time4 = System.currentTimeMillis();
 
             for (EntityClusteringDerMethod ecMethod : EntityClusteringDerMethod.values()) {
-                if (ecMethod.equals(EntityClusteringDerMethod.CUT_CLUSTERING) || 
-                        ecMethod.equals(EntityClusteringDerMethod.RICOCHET_SR_CLUSTERING)||
-                        ecMethod.equals(EntityClusteringDerMethod.MARKOV_CLUSTERING)) {
-                    continue;
-                }
-                
                 double time5 = System.currentTimeMillis();
 
                 IEntityClustering ec = EntityClusteringDerMethod.getDefaultConfiguration(ecMethod);
