@@ -25,7 +25,6 @@ import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
 
 import java.util.Iterator;
-import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Queue;
 
@@ -56,7 +55,8 @@ public class MergeCenterClustering extends AbstractEntityClustering {
                 SEqueue.add(new SimilarityEdge(comparison.getEntityId1(), (comparison.getEntityId2() + datasetLimit), comparison.getUtilityMeasure()));
             }
         }
-
+        simPairs = null;
+        
         final TIntSet Center = new TIntHashSet();
         final TIntSet NonCenter = new TIntHashSet();
         while (!SEqueue.isEmpty()) {

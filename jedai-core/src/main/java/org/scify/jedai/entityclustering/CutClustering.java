@@ -95,6 +95,7 @@ public class CutClustering extends AbstractEntityClustering {
                 weightedGraph.setEdgeWeight(e, comparison.getUtilityMeasure());
             }
         }
+        simPairs = null;
 
         GomoryHuTree ght = new GomoryHuTree(weightedGraph); //take the minimum cut (Gomory-Hu) tree from the similarity graph
         duplicatesGraph = ght.MinCutTree();

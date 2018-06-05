@@ -75,7 +75,8 @@ public class RicochetSRClustering extends AbstractEntityClustering {
                 connections.get(entityId2).put(comparison.getEntityId1(), comparison.getUtilityMeasure());
             }
         }
-
+        simPairs = null;
+        
         for (int i = 0; i < noOfEntities; i++) {
             if (0 < edgesAttached[i]) {
                 VWqueue.add(new VertexWeight(i, edgesWeight[i], edgesAttached[i], connections.get(i)));
@@ -205,7 +206,7 @@ public class RicochetSRClustering extends AbstractEntityClustering {
         final EquivalenceCluster[] equivalenceClusters = new EquivalenceCluster[Clusters.size()];
         for (TIntSet componentIds : Clusters.valueCollection()) {
             equivalenceClusters[counter] = new EquivalenceCluster();
-            if (!simPairs.isCleanCleanER()) {
+            if (!isCleanCleanER) {
                 equivalenceClusters[counter].loadBulkEntityIdsD1(componentIds);
             } else {
                 for (TIntIterator oIterator = componentIds.iterator(); oIterator.hasNext();) {

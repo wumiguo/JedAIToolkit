@@ -47,7 +47,8 @@ public class ConnectedComponentsClustering extends AbstractEntityClustering {
                 similarityGraph.addEdge(comparison.getEntityId1(), comparison.getEntityId2() + datasetLimit);
             }
         }
-
+        simPairs = null;
+        
         return getConnectedComponents();
     }
 
