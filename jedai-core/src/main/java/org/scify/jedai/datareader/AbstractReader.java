@@ -102,7 +102,7 @@ public abstract class AbstractReader implements IDataReader {
                 output.writeObject(object);
             }
         } catch (IOException ioex) {
-            Log.error("Error in data reading", ioex);
+            Log.error("Error in storing serialized object", ioex);
         }
     }
 }

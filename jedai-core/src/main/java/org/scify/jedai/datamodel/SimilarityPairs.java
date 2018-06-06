@@ -16,6 +16,7 @@
 package org.scify.jedai.datamodel;
 
 import com.esotericsoftware.minlog.Log;
+import java.io.Serializable;
 
 import java.util.List;
 
@@ -23,7 +24,7 @@ import java.util.List;
  *
  * @author G.A.P. II
  */
-public class SimilarityPairs {
+public class SimilarityPairs implements Serializable {
 
     private final static int MAX_COMPARISONS = Integer.MAX_VALUE - 2;
 
