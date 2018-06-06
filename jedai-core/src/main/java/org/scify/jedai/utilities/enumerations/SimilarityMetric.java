@@ -83,14 +83,20 @@ public enum SimilarityMetric {
                 return JACCARD_SIMILARITY;
             case CHARACTER_BIGRAM_GRAPHS:
                 return GRAPH_VALUE_SIMILARITY;
+            case CHARACTER_BIGRAMS_TF_IDF:
+                return COSINE_SIMILARITY;
             case CHARACTER_FOURGRAMS:
                 return JACCARD_SIMILARITY;
             case CHARACTER_FOURGRAM_GRAPHS:
                 return GRAPH_VALUE_SIMILARITY;
+            case CHARACTER_FOURGRAMS_TF_IDF:
+                return COSINE_SIMILARITY;
             case CHARACTER_TRIGRAMS:
                 return JACCARD_SIMILARITY;
             case CHARACTER_TRIGRAM_GRAPHS:
                 return GRAPH_VALUE_SIMILARITY;
+            case CHARACTER_TRIGRAMS_TF_IDF:
+                return COSINE_SIMILARITY;
             case TOKEN_BIGRAMS:
                 return COSINE_SIMILARITY;
             case TOKEN_BIGRAMS_TF_IDF:
