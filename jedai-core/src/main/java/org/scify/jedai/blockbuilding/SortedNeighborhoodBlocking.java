@@ -31,6 +31,7 @@ import java.util.Set;
 
 import org.apache.jena.atlas.json.JsonArray;
 import org.apache.jena.atlas.json.JsonObject;
+import org.scify.jedai.datamodel.ConfigurationSetting;
 
 /**
  *
@@ -41,13 +42,9 @@ public class SortedNeighborhoodBlocking extends StandardBlocking {
     protected final int windowSize;
     protected final Random random;
     
-    public SortedNeighborhoodBlocking() {
-        this(4);
-    }
-
-    public SortedNeighborhoodBlocking(int w) {
-        super();
-        windowSize = w;
+    public SortedNeighborhoodBlocking(ConfigurationSetting cs) {
+        super(cs);
+        windowSize = cs.getIntegerParameter(0);
         random = new Random();
     }
 
@@ -119,7 +116,7 @@ public class SortedNeighborhoodBlocking extends StandardBlocking {
     public String getParameterDescription(int parameterId) {
         switch (parameterId) {
             case 0:
-                return "The " + getParameterName(0) + " determines the fixed size of the window that slides over the sorted list of blocking keys.";
+                return "The " + getParameterName(0) + " determines the fixed size of the window that slides over the sorted list of entities.";
             default:
                 return "invalid parameter id";
         }

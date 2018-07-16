@@ -22,6 +22,7 @@ import java.util.Set;
 
 import org.apache.jena.atlas.json.JsonArray;
 import org.apache.jena.atlas.json.JsonObject;
+import org.scify.jedai.datamodel.ConfigurationSetting;
 
 /**
  *
@@ -33,13 +34,9 @@ public class ExtendedQGramsBlocking extends QGramsBlocking {
 
     private final double threshold;
 
-    public ExtendedQGramsBlocking() {
-        this(0.95, 6);
-    }
-
-    public ExtendedQGramsBlocking(double t, int n) {
-        super(n);
-        threshold = t;
+    public ExtendedQGramsBlocking(ConfigurationSetting cs) {
+        super(cs);
+        threshold = cs.getDoubleParameter(0);
     }
 
     @Override

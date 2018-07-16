@@ -12,8 +12,7 @@
 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 * See the License for the specific language governing permissions and
 * limitations under the License.
-*/
-
+ */
 package org.scify.jedai.blockbuilding;
 
 import java.util.Arrays;
@@ -21,31 +20,28 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.jena.atlas.json.JsonArray;
+import org.scify.jedai.datamodel.ConfigurationSetting;
 
 /**
  *
  * @author gap2
  */
 public class StandardBlocking extends AbstractBlockBuilding {
-    
-    public StandardBlocking() {
+
+    public StandardBlocking(ConfigurationSetting cs) {
         super();
     }
-    
+
     @Override
     protected Set<String> getBlockingKeys(String attributeValue) {
         return new HashSet<>(Arrays.asList(getTokens(attributeValue)));
-    }
-    
-    protected String[] getTokens (String attributeValue) {
-        return attributeValue.split("[\\W_]");
     }
 
     @Override
     public String getMethodConfiguration() {
         return PARAMETER_FREE;
     }
-    
+
     @Override
     public String getMethodInfo() {
         return getMethodName() + ": it creates one block for every token in the attribute values of at least two entities.";
@@ -55,7 +51,7 @@ public class StandardBlocking extends AbstractBlockBuilding {
     public String getMethodName() {
         return "Standard Blocking";
     }
-    
+
     @Override
     public String getMethodParameters() {
         return getMethodName() + " is a " + PARAMETER_FREE + ", as it uses unsupervised, schema-agnostic blocking keys:\n"
@@ -75,5 +71,9 @@ public class StandardBlocking extends AbstractBlockBuilding {
     @Override
     public String getParameterName(int parameterId) {
         return PARAMETER_FREE;
+    }
+
+    protected String[] getTokens(String attributeValue) {
+        return attributeValue.split("[\\W_]");
     }
 }

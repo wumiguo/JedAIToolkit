@@ -25,6 +25,7 @@ import java.util.Set;
 
 import org.apache.jena.atlas.json.JsonArray;
 import org.apache.jena.atlas.json.JsonObject;
+import org.scify.jedai.datamodel.ConfigurationSetting;
 
 /**
  *
@@ -35,15 +36,10 @@ public class SuffixArraysBlocking extends StandardBlocking {
     protected final int maximumBlockSize;
     protected final int minimumSuffixLength;
 
-    public SuffixArraysBlocking() {
-        this(53, 6);
-
-    }
-
-    public SuffixArraysBlocking(int maxSize, int minLength) {
-        super();
-        maximumBlockSize = maxSize;
-        minimumSuffixLength = minLength;
+    public SuffixArraysBlocking(ConfigurationSetting cs) {
+        super(cs);
+        maximumBlockSize = cs.getIntegerParameter(0);
+        minimumSuffixLength = cs.getIntegerParameter(1);
     }
 
     @Override

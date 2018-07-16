@@ -47,7 +47,7 @@ public abstract class AbstractBlockBuilding implements IBlockBuilding {
     protected List<EntityProfile> entityProfilesD2;
     protected Map<String, TIntList> invertedIndexD1;
     protected Map<String, TIntList> invertedIndexD2;
-
+            
     public AbstractBlockBuilding() {
         blocks = new ArrayList<>();
         entityProfilesD1 = null;

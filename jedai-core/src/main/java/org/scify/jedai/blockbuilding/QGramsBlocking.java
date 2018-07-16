@@ -22,6 +22,7 @@ import java.util.Set;
 
 import org.apache.jena.atlas.json.JsonArray;
 import org.apache.jena.atlas.json.JsonObject;
+import org.scify.jedai.datamodel.ConfigurationSetting;
 
 /**
  *
@@ -31,13 +32,9 @@ public class QGramsBlocking extends StandardBlocking {
 
     protected final int nGramSize;
 
-    public QGramsBlocking() {
-        this(6);
-    }
-
-    public QGramsBlocking(int n) {
-        super();
-        nGramSize = n;
+    public QGramsBlocking(ConfigurationSetting cs) {
+        super(cs);
+        nGramSize = cs.getIntegerParameter(0);
     }
 
     @Override
@@ -49,7 +46,7 @@ public class QGramsBlocking extends StandardBlocking {
 
         return nGrams;
     }
-
+    
     @Override
     public String getMethodConfiguration() {
         return getParameterName(0) + "=" + nGramSize;
@@ -121,5 +118,9 @@ public class QGramsBlocking extends StandardBlocking {
             default:
                 return "invalid parameter id";
         }
+    }
+    
+    protected int setConfiguration(ConfigurationSetting cs) {
+        return 1;
     }
 }
