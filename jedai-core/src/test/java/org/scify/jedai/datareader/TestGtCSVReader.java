@@ -16,10 +16,12 @@
 
 package org.scify.jedai.datareader;
 
+import java.util.List;
 import org.scify.jedai.datamodel.IdDuplicates;
 import org.scify.jedai.datareader.entityreader.EntitySerializationReader;
 import org.scify.jedai.datareader.groundtruthreader.GtCSVReader;
 import java.util.Set;
+import org.scify.jedai.datamodel.EntityProfile;
 
 /**
  *
@@ -28,19 +30,23 @@ import java.util.Set;
 
 public class TestGtCSVReader {
     public static void main(String[] args) {
-        String entityFilePath = "C:\\Users\\G.A.P. II\\Downloads\\cddbProfiles";
-        String gtFilePath = "C:\\Users\\G.A.P. II\\Downloads\\cd_gold.csv";
+        String entityFilePath = "C:\\Users\\GAP2\\Downloads\\cddbProfiles";
+        String gtFilePath = "C:\\Users\\GAP2\\Downloads\\cd_gold.csv";
         EntitySerializationReader esr = new EntitySerializationReader(entityFilePath);
+        List<EntityProfile> profiles = esr.getEntityProfiles();
+        System.out.println("Loaded profiles\t:\t" + profiles.size());
+        
         GtCSVReader csvReader = new GtCSVReader(gtFilePath);
         csvReader.setIgnoreFirstRow(true);
         csvReader.setSeparator(';');
-        Set<IdDuplicates> duplicates = csvReader.getDuplicatePairs(esr.getEntityProfiles());
+        Set<IdDuplicates> duplicates = csvReader.getDuplicatePairs(profiles);
+        System.out.println("No of duplicates\t:\t" + duplicates.size());
 //        for (EntityProfile profile : profiles) {
 //            System.out.println("\n\n" + profile.getEntityUrl());
 //            for (Attribute attribute : profile.getAttributes()) {
 //                System.out.println(attribute.toString());
 //            }
 //        }
-        csvReader.storeSerializedObject(duplicates, "C:\\Users\\G.A.P. II\\Downloads\\cddbDuplicates");
+        csvReader.storeSerializedObject(duplicates, "C:\\Users\\GAP2\\Downloads\\cddbDuplicates");
     }
 }

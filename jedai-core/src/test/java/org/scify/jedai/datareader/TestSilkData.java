@@ -93,7 +93,7 @@ public class TestSilkData {
 
                 IEntityMatching pm = new ProfileMatcher(model, SimilarityMetric.getModelDefaultSimMetric(model));
                 SimilarityPairs simPairs = pm.executeComparisons(blocks, profilesD1, profilesD2);
-
+                
                 double time4 = System.currentTimeMillis();
 
                 for (double simThreshold = 0.1; simThreshold < 1.0; simThreshold += 0.1) {
