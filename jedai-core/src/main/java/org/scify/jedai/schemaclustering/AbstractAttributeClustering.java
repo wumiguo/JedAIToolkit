@@ -120,7 +120,7 @@ public abstract class AbstractAttributeClustering implements ISchemaClustering {
                 coOccurringAttrs.addAll(attrIds);
             }
 
-            if (0 < attributesDelimiter) {
+            if (0 < attributesDelimiter) { // Clean-Clean ER
                 executeCleanCleanErComparisons(i, coOccurringAttrs);
             } else {
                 executeDirtyErComparisons(i, coOccurringAttrs);
@@ -155,7 +155,7 @@ public abstract class AbstractAttributeClustering implements ISchemaClustering {
         final TIntIterator sigIterator = coOccurringAttrs.iterator();
         while (sigIterator.hasNext()) {
             int neighborId = sigIterator.next();
-            if (neighborId < attributeId) { // avoid repeated comparisons
+            if (neighborId <= attributeId) { // avoid repeated comparisons & comparison with attributeId
                 continue;
             }
 
@@ -234,7 +234,7 @@ public abstract class AbstractAttributeClustering implements ISchemaClustering {
     }
 
     protected TObjectIntMap<String>[] clusterDirtyAttributes(ConnectedComponents cc) {        
-        final TObjectIntMap<String>[] clusters = new TObjectIntHashMap[2];
+        final TObjectIntMap<String>[] clusters = new TObjectIntHashMap[1];
         clusters[DATASET_1] = new TObjectIntHashMap<>();
         for (int i = 0; i < noOfAttributes; i++) {
                 int ccId = cc.id(i);
