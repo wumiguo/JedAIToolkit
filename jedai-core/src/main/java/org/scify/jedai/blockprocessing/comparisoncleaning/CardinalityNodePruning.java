@@ -23,12 +23,12 @@ import org.scify.jedai.utilities.enumerations.WeightingScheme;
 import com.esotericsoftware.minlog.Log;
 
 import gnu.trove.iterator.TIntIterator;
+import gnu.trove.list.TIntList;
+import gnu.trove.list.array.TIntArrayList;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.PriorityQueue;
-import java.util.Set;
 
 /**
  *
@@ -38,7 +38,7 @@ public class CardinalityNodePruning extends CardinalityEdgePruning {
 
     protected int firstId;
     protected int lastId;
-    protected Set<Comparison>[] nearestEntities;
+    protected TIntList[] nearestEntities;
 
     public CardinalityNodePruning() {
         this(WeightingScheme.ARCS);
@@ -46,6 +46,7 @@ public class CardinalityNodePruning extends CardinalityEdgePruning {
 
     public CardinalityNodePruning(WeightingScheme scheme) {
         super(scheme);
+        threshold = -1;
         nodeCentric = true;
     }
 
@@ -60,17 +61,12 @@ public class CardinalityNodePruning extends CardinalityEdgePruning {
         return "Cardinality Node Pruning";
     }
 
-    protected boolean isValidComparison(int entityId, Comparison comparison) {
-        int neighborId = comparison.getEntityId1() == entityId ? comparison.getEntityId2() : comparison.getEntityId1();
-        if (cleanCleanER && entityId < datasetLimit) {
-            neighborId += datasetLimit;
-        }
-
+    protected boolean isValidComparison(int entityId, int neighborId) {
         if (nearestEntities[neighborId] == null) {
             return true;
         }
 
-        if (nearestEntities[neighborId].contains(comparison)) {
+        if (nearestEntities[neighborId].contains(entityId)) {
             return entityId < neighborId;
         }
 
@@ -79,7 +75,7 @@ public class CardinalityNodePruning extends CardinalityEdgePruning {
 
     @Override
     protected List<AbstractBlock> pruneEdges() {
-        nearestEntities = new Set[noOfEntities];
+        nearestEntities = new TIntList[noOfEntities];
         topKEdges = new PriorityQueue<>((int) (2 * threshold), new IncComparisonWeightComparator());
         if (weightingScheme.equals(WeightingScheme.ARCS)) {
             for (int i = 0; i < noOfEntities; i++) {
@@ -103,9 +99,11 @@ public class CardinalityNodePruning extends CardinalityEdgePruning {
         for (int i = 0; i < noOfEntities; i++) {
             if (nearestEntities[i] != null) {
                 retainedComparisons.clear();
-                for (Comparison comparison : nearestEntities[i]) {
-                    if (isValidComparison(i, comparison)) {
-                        retainedComparisons.add(comparison);
+                TIntIterator intIterator = nearestEntities[i].iterator();
+                while (intIterator.hasNext()) {
+                    int neighborId = intIterator.next();
+                    if (isValidComparison(i, neighborId)) {
+                        retainedComparisons.add(getComparison(i, neighborId));
                     }
                 }
                 addDecomposedBlock(retainedComparisons, newBlocks);
@@ -121,7 +119,6 @@ public class CardinalityNodePruning extends CardinalityEdgePruning {
     @Override
     protected void setThreshold() {
         threshold = Math.max(1, blockAssingments / noOfEntities);
-
         Log.info(getMethodName() + " Threshold \t:\t" + threshold);
     }
 
@@ -137,7 +134,7 @@ public class CardinalityNodePruning extends CardinalityEdgePruning {
             int neighborId = iterator.next();
             double weight = getWeight(entityId, neighborId);
             if (!(weight < minimumWeight)) {
-                final Comparison comparison = getComparison(entityId, neighborId);
+                final Comparison comparison = new Comparison(cleanCleanER, -1, neighborId);
                 comparison.setUtilityMeasure(weight);
                 topKEdges.add(comparison);
                 if (threshold < topKEdges.size()) {
@@ -146,6 +143,10 @@ public class CardinalityNodePruning extends CardinalityEdgePruning {
                 }
             }
         }
-        nearestEntities[entityId] = new HashSet<>(topKEdges);
+
+        nearestEntities[entityId] = new TIntArrayList();
+        for (Comparison comparison : topKEdges) {
+            nearestEntities[entityId].add(comparison.getEntityId2());
+        }
     }
 }

@@ -45,17 +45,12 @@ public class ReciprocalCardinalityNodePruning extends CardinalityNodePruning {
     }
 
     @Override
-    protected boolean isValidComparison(int entityId, Comparison comparison) {
-        int neighborId = comparison.getEntityId1() == entityId ? comparison.getEntityId2() : comparison.getEntityId1();
-        if (cleanCleanER && entityId < datasetLimit) {
-            neighborId += datasetLimit;
-        }
-
+    protected boolean isValidComparison(int entityId, int neighborId) {
         if (nearestEntities[neighborId] == null) {
             return false;
         }
 
-        if (nearestEntities[neighborId].contains(comparison)) {
+        if (nearestEntities[neighborId].contains(entityId)) {
             return entityId < neighborId;
         }
 
