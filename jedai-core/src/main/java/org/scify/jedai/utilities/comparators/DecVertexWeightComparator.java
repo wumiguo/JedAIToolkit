@@ -15,17 +15,25 @@
  */
 package org.scify.jedai.utilities.comparators;
 
+import gnu.trove.map.hash.TIntDoubleHashMap;
+import java.util.ArrayList;
+import java.util.Collections;
 import org.scify.jedai.datamodel.VertexWeight;
 
 import java.util.Comparator;
+import java.util.List;
 
 /**
  *
  * @author G.A.P. II
  */
-public class VertexWeightComparator implements Comparator<VertexWeight> {
+public class DecVertexWeightComparator implements Comparator<VertexWeight> {
 
-    // sorts vertices from largerst average weight per edge to the smallest one
+   /* 
+    * This comparator sorts vertices in decreasing average weight per edge
+    * i.e., from the largerst av. weight to the smallest one.
+    * It is used by Ricochet SR Clustering.
+    */
     
     @Override
     public int compare(VertexWeight vw1, VertexWeight vw2) {
@@ -40,5 +48,18 @@ public class VertexWeightComparator implements Comparator<VertexWeight> {
             return 1;
         }
         return 0;
+    }
+    
+    public static void main (String[] args) {
+        List<VertexWeight> vertices = new ArrayList<>();
+        vertices.add(new VertexWeight(0, 1.0, 5, new TIntDoubleHashMap()));
+        vertices.add(new VertexWeight(1, 1.0, 2, new TIntDoubleHashMap()));
+        vertices.add(new VertexWeight(2, 1.0, 4, new TIntDoubleHashMap()));
+        
+        Collections.sort(vertices, new DecVertexWeightComparator());
+        
+        for (VertexWeight vw : vertices) {
+            System.out.println(vw.toString());
+        }
     }
 }

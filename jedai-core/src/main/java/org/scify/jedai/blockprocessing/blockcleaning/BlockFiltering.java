@@ -19,7 +19,7 @@ import org.scify.jedai.blockprocessing.AbstractBlockProcessing;
 import org.scify.jedai.datamodel.AbstractBlock;
 import org.scify.jedai.datamodel.BilateralBlock;
 import org.scify.jedai.datamodel.UnilateralBlock;
-import org.scify.jedai.utilities.comparators.BlockCardinalityComparator;
+import org.scify.jedai.utilities.comparators.IncBlockCardinalityComparator;
 import com.esotericsoftware.minlog.Log;
 import gnu.trove.iterator.TIntIterator;
 import gnu.trove.list.TIntList;
@@ -271,6 +271,6 @@ public class BlockFiltering extends AbstractBlockProcessing {
     }
 
     protected void sortBlocks(List<AbstractBlock> blocks) {
-        Collections.sort(blocks, new BlockCardinalityComparator());
+        Collections.sort(blocks, new IncBlockCardinalityComparator());
     }
 }

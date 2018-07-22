@@ -16,6 +16,7 @@
 
 package org.scify.jedai.datareader.groundtruthreader;
 
+import gnu.trove.map.TObjectIntMap;
 import org.scify.jedai.datamodel.EntityProfile;
 import org.scify.jedai.datamodel.IdDuplicates;
 import org.scify.jedai.datareader.AbstractReader;
@@ -40,8 +41,8 @@ public abstract class AbstractGtReader extends AbstractReader implements IGround
     protected int noOfEntities;
 
     protected final Set<IdDuplicates> idDuplicates;
-    protected final TObjectIntHashMap<String> urlToEntityId1;
-    protected final TObjectIntHashMap<String> urlToEntityId2;
+    protected final TObjectIntMap<String> urlToEntityId1;
+    protected final TObjectIntMap<String> urlToEntityId2;
     protected final SimpleGraph duplicatesGraph;
     
     public AbstractGtReader (String filePath) {

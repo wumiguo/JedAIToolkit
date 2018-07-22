@@ -16,18 +16,25 @@
 
 package org.scify.jedai.utilities.comparators;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import org.scify.jedai.datamodel.SimilarityEdge;
 import java.util.Comparator;
+import java.util.List;
 
 /**
  *
  * @author G.A.P. II
  */
 
-public class SimilarityEdgeComparator implements Comparator<SimilarityEdge> {
+public class DecSimilarityEdgeComparator implements Comparator<SimilarityEdge> {
     
+   /* 
+    * This comparator orders edges of the similarity graph in decreasing order,
+    * of weight, i.e., from the largest weight to the smallest one.
+    * It is used by the clustering algorithms.
+    */
     @Override
-    // orders edges from the highest weight/similarity to the lowest one
     public int compare(SimilarityEdge se1,SimilarityEdge se2) {
         double test = se1.getSimilarity()-se2.getSimilarity(); 
         if (test > 0) {
@@ -39,5 +46,18 @@ public class SimilarityEdgeComparator implements Comparator<SimilarityEdge> {
         }
 
         return 0;
+    }
+    
+    public static void main (String[] args) {
+        List<SimilarityEdge> edges = new ArrayList<>();
+        edges.add(new SimilarityEdge(0, 1, 0.50));
+        edges.add(new SimilarityEdge(0, 1, 0.25));
+        edges.add(new SimilarityEdge(0, 1, 0.75));
+        
+        Collections.sort(edges, new DecSimilarityEdgeComparator());
+        
+        for (SimilarityEdge e : edges) {
+            System.out.println(e.toString());
+        }
     }
 }

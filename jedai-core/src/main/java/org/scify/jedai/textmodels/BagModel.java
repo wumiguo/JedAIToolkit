@@ -80,6 +80,11 @@ public abstract class BagModel extends AbstractModel {
     }
 
     @Override
+    public Set<String> getSignatures() {
+        return itemsFrequency.keySet();
+    }
+    
+    @Override
     public double getSimilarity(ITextModel oModel) {
         switch (simMetric) {
             case COSINE_SIMILARITY:

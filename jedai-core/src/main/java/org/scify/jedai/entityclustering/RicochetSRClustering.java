@@ -19,9 +19,10 @@ import org.scify.jedai.datamodel.Comparison;
 import org.scify.jedai.datamodel.EquivalenceCluster;
 import org.scify.jedai.datamodel.SimilarityPairs;
 import org.scify.jedai.datamodel.VertexWeight;
-import org.scify.jedai.utilities.comparators.VertexWeightComparator;
+import org.scify.jedai.utilities.comparators.DecVertexWeightComparator;
 
 import gnu.trove.iterator.TIntIterator;
+import gnu.trove.map.TIntDoubleMap;
 import gnu.trove.map.hash.TIntDoubleHashMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
 import gnu.trove.set.TIntSet;
@@ -52,10 +53,10 @@ public class RicochetSRClustering extends AbstractEntityClustering {
         initializeData(simPairs);
         similarityGraph = null;
 
-        final Queue<VertexWeight> VWqueue = new PriorityQueue<>(noOfEntities, new VertexWeightComparator());
+        final Queue<VertexWeight> VWqueue = new PriorityQueue<>(noOfEntities, new DecVertexWeightComparator());
         final double[] edgesWeight = new double[noOfEntities];
         final int[] edgesAttached = new int[noOfEntities];
-        final List<TIntDoubleHashMap> connections = new ArrayList<>();
+        final List<TIntDoubleMap> connections = new ArrayList<>();
         for (int i = 0; i < noOfEntities; i++) {
             connections.add(i, new TIntDoubleHashMap());
         }
@@ -100,7 +101,7 @@ public class RicochetSRClustering extends AbstractEntityClustering {
         clusterCenter[v1] = v1;
         Clusters.put(v1, new TIntHashSet(v1));//initialize v1 Cluster with its own value
         simWithCenter[v1] = 1.0;
-        TIntDoubleHashMap connect = vw.Connections();
+        TIntDoubleMap connect = vw.Connections();
         for (int v2 : connect.keys()) {
             NonCenter.add(v2);
             clusterCenter[v2] = v1;
@@ -175,7 +176,7 @@ public class RicochetSRClustering extends AbstractEntityClustering {
                 int newCenter = v1;//in case there is no close similarity
                 for (TIntIterator eIterator = Center.iterator(); eIterator.hasNext();) {
                     int center = eIterator.next();
-                    final TIntDoubleHashMap currentConnections = connections.get(center);
+                    final TIntDoubleMap currentConnections = connections.get(center);
                     double newSim = currentConnections.get(ctr);
                     if (0 < newSim) {
                         if (newSim > max) {

@@ -71,4 +71,11 @@ public class UnilateralBlock extends AbstractBlock implements Serializable {
     public void setUtilityMeasure() {
         utilityMeasure = 1.0/entities.length;
     }
+    
+    @Override
+    public String toString() {
+        return "block index : " + blockIndex + ", utility measure : " + 
+                utilityMeasure + ", #comparisons : " + getNoOfComparisons() + 
+                ", entities : " + Arrays.toString(entities);
+    }
 }

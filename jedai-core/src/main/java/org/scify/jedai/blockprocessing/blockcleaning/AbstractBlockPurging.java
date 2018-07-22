@@ -20,6 +20,7 @@ import org.scify.jedai.blockprocessing.AbstractBlockProcessing;
 import org.scify.jedai.datamodel.AbstractBlock;
 
 import com.esotericsoftware.minlog.Log;
+import java.util.ArrayList;
 
 import java.util.Iterator;
 import java.util.List;
@@ -38,12 +39,13 @@ public abstract class AbstractBlockPurging extends AbstractBlockProcessing {
     public List<AbstractBlock> refineBlocks(List<AbstractBlock> blocks) {
         Log.info("Applying " + getMethodName() + " with the following configuration : " + getMethodConfiguration());
         
-        printOriginalStatistics(blocks);
-        setThreshold(blocks);
+        List<AbstractBlock> newBlocks = new ArrayList<>(blocks);
+        printOriginalStatistics(newBlocks);
+        setThreshold(newBlocks);
 
         int noOfPurgedBlocks = 0;
         double totalComparisons = 0;
-        final Iterator<AbstractBlock> blocksIterator = blocks.iterator();
+        final Iterator<AbstractBlock> blocksIterator = newBlocks.iterator();
         while (blocksIterator.hasNext()) {
             AbstractBlock aBlock = blocksIterator.next();
             if (!satisfiesThreshold(aBlock)) {
@@ -58,7 +60,7 @@ public abstract class AbstractBlockPurging extends AbstractBlockProcessing {
         Log.info("Retained blocks\t:\t" + blocks.size());
         Log.info("Retained comparisons\t:\t" + totalComparisons);
 
-        return blocks;
+        return newBlocks;
     }
     
     protected abstract boolean satisfiesThreshold(AbstractBlock block);

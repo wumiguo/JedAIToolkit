@@ -16,7 +16,7 @@
 package org.scify.jedai.blockprocessing.blockcleaning;
 
 import org.scify.jedai.datamodel.AbstractBlock;
-import org.scify.jedai.utilities.comparators.BlockCardinalityComparator;
+import org.scify.jedai.utilities.comparators.IncBlockCardinalityComparator;
 
 import com.esotericsoftware.minlog.Log;
 
@@ -112,7 +112,7 @@ public class ComparisonsBasedBlockPurging extends AbstractBlockPurging {
 
     @Override
     protected void setThreshold(List<AbstractBlock> blocks) {
-        Collections.sort(blocks, new BlockCardinalityComparator());
+        Collections.sort(blocks, new IncBlockCardinalityComparator());
         final TDoubleSet distinctComparisonsLevel = new TDoubleHashSet();
         blocks.forEach((block) -> {
             distinctComparisonsLevel.add(block.getNoOfComparisons());

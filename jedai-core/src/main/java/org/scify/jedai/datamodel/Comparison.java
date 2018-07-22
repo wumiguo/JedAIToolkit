@@ -84,4 +84,9 @@ public class Comparison implements Serializable {
     public void setUtilityMeasure(double utilityMeasure) {
         this.utilityMeasure = utilityMeasure;
     }
+    
+    @Override
+    public String toString() {
+        return "E1 : " + entityId1 + ", E2 : " + entityId2 + ", weight : " + utilityMeasure;
+    }
 }
