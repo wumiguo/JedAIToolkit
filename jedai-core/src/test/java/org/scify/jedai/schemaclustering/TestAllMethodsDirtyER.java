@@ -28,28 +28,22 @@ import org.scify.jedai.utilities.enumerations.SimilarityMetric;
  *
  * @author GAP2
  */
-public class TestAllMethodsCleanCleanER {
+public class TestAllMethodsDirtyER {
 
     public static void main(String[] args) {
         BasicConfigurator.configure();
 
-        String mainDir = "D:\\Data\\JedAIdata\\datasets\\cleanCleanErDatasets\\";
-        final String[] datasetName = {"abtBuy", "amazonGp", "dblpAcm", "dblpScholar", "movies", "restaurants"};
-        final String[] datasetsD1 = {"abt", "amazon", "dblp", "dblp2", "imdb", "restaurant1"};
-        final String[] datasetsD2 = {"buy", "gp", "acm", "scholar", "dbpedia", "restaurant2"};
+        String mainDir = "D:\\Data\\JedAIdata\\datasets\\dirtyErDatasets\\";
+        final String[] datasets = {"census", "cddb", "cora"};
 
-        for (int i = 0; i < datasetsD1.length; i++) {
-            System.out.println("\n\n\n\n\nCurrent dataset\t:\t" + datasetName[i]);
-            final EntitySerializationReader inReaderD1 = new EntitySerializationReader(mainDir + datasetsD1[i] + "Profiles");
-            final List<EntityProfile> profilesD1 = inReaderD1.getEntityProfiles();
-            System.out.println("Profiles D1\t:\t" + profilesD1.size());
-
-            final EntitySerializationReader inReaderD2 = new EntitySerializationReader(mainDir + datasetsD2[i] + "Profiles");
-            final List<EntityProfile> profilesD2 = inReaderD2.getEntityProfiles();
-            System.out.println("Profiles D2\t:\t" + profilesD2.size());
+        for (int i = 0; i < datasets.length; i++) {
+            System.out.println("\n\n\n\n\nCurrent dataset\t:\t" + datasets[i]);
+            final EntitySerializationReader inReaderD1 = new EntitySerializationReader(mainDir + datasets[i] + "Profiles");
+            final List<EntityProfile> profiles = inReaderD1.getEntityProfiles();
+            System.out.println("Profiles D1\t:\t" + profiles.size());
 
             final AttributeValueClustering avc = new AttributeValueClustering(RepresentationModel.CHARACTER_TRIGRAMS, SimilarityMetric.ENHANCED_JACCARD_SIMILARITY);
-            final TObjectIntMap<String>[] clusters = avc.getClusters(profilesD1, profilesD2);
+            final TObjectIntMap<String>[] clusters = avc.getClusters(profiles);
             for (int j = 0; j < clusters.length; j++) {
                 System.out.println("\nDataset\t:\t" + (j + 1));
                 final TObjectIntIterator<String> it = clusters[j].iterator();
