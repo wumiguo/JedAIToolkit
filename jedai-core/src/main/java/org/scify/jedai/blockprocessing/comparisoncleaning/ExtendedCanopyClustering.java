@@ -15,77 +15,84 @@
  */
 package org.scify.jedai.blockprocessing.comparisoncleaning;
 
+import com.esotericsoftware.minlog.Log;
 import org.scify.jedai.datamodel.AbstractBlock;
 import org.scify.jedai.datamodel.Comparison;
 import org.scify.jedai.utilities.comparators.IncComparisonWeightComparator;
 import org.scify.jedai.utilities.enumerations.WeightingScheme;
 
-import com.esotericsoftware.minlog.Log;
 
 import gnu.trove.iterator.TIntIterator;
+import gnu.trove.list.TIntList;
+import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.PriorityQueue;
+import java.util.Random;
 
 /**
  *
  * @author gap2
  */
-public class CardinalityNodePruning extends CardinalityEdgePruning {
+public class ExtendedCanopyClustering extends CardinalityNodePruning {
 
-    protected int firstId;
-    protected int lastId;
-    protected TIntSet[] nearestEntities;
-
-    public CardinalityNodePruning() {
-        this(WeightingScheme.ARCS);
+    protected int inclusiveThreshold;
+    protected int exclusiveThreshold;
+    protected TIntSet excludedEntities;
+    
+    public ExtendedCanopyClustering(int inThr, int outThr) {
+        this(inThr, outThr, WeightingScheme.ARCS);
     }
 
-    public CardinalityNodePruning(WeightingScheme scheme) {
+    public ExtendedCanopyClustering(int inThr, int outThr, WeightingScheme scheme) {
         super(scheme);
-        threshold = -1;
         nodeCentric = true;
+        exclusiveThreshold = outThr;
+        inclusiveThreshold = inThr;
+        if (inclusiveThreshold < exclusiveThreshold) {
+            Log.error(getMethodName(), "The Exclusive Threshold cannot be larger than the Inclusive one.");
+            System.exit(-1);
+        }
     }
 
     @Override
     public String getMethodInfo() {
         return getMethodName() + ": a Meta-blocking method that retains for every entity, "
-                + "the comparisons that correspond to its top-k weighted edges in the blocking graph.";
+                + "the comparisons that correspond to its top-InclusiveThreshold weighted edges in the blocking graph. "
+                + "Also, the ExclusiveThreshold-most similar entities of each entity are not associated with any other entity. ";
     }
 
     @Override
     public String getMethodName() {
-        return "Cardinality Node Pruning";
-    }
-
-    protected boolean isValidComparison(int entityId, int neighborId) {
-        if (nearestEntities[neighborId] == null) {
-            return true;
-        }
-
-        if (nearestEntities[neighborId].contains(entityId)) {
-            return entityId < neighborId;
-        }
-
-        return true;
+        return "Extended Canopy Clustering";
     }
 
     @Override
     protected List<AbstractBlock> pruneEdges() {
+        final TIntList entityIds = new TIntArrayList();
+        for (int i = 0; i < noOfEntities; i++) {
+            entityIds.add(i);
+        }
+        entityIds.shuffle(new Random());
+        final TIntIterator iterator = entityIds.iterator();
+        
+        excludedEntities = new TIntHashSet();
         nearestEntities = new TIntSet[noOfEntities];
         topKEdges = new PriorityQueue<>((int) (2 * threshold), new IncComparisonWeightComparator());
         if (weightingScheme.equals(WeightingScheme.ARCS)) {
-            for (int i = 0; i < noOfEntities; i++) {
-                processArcsEntity(i);
-                verifyValidEntities(i);
+            while (iterator.hasNext()) {
+                int currentId = iterator.next();
+                processArcsEntity(currentId);
+                verifyValidEntities(currentId);
             }
         } else {
-            for (int i = 0; i < noOfEntities; i++) {
-                processEntity(i);
-                verifyValidEntities(i);
+            while (iterator.hasNext()) {
+                int currentId = iterator.next();
+                processEntity(currentId);
+                verifyValidEntities(currentId);
             }
         }
 
@@ -94,32 +101,8 @@ public class CardinalityNodePruning extends CardinalityEdgePruning {
         return newBlocks;
     }
 
-    protected void retainValidComparisons(List<AbstractBlock> newBlocks) {
-        final List<Comparison> retainedComparisons = new ArrayList<>();
-        for (int i = 0; i < noOfEntities; i++) {
-            if (nearestEntities[i] != null) {
-                retainedComparisons.clear();
-                TIntIterator intIterator = nearestEntities[i].iterator();
-                while (intIterator.hasNext()) {
-                    int neighborId = intIterator.next();
-                    if (isValidComparison(i, neighborId)) {
-                        retainedComparisons.add(getComparison(i, neighborId));
-                    }
-                }
-                addDecomposedBlock(retainedComparisons, newBlocks);
-            }
-        }
-    }
-
-    protected void setLimits() {
-        firstId = 0;
-        lastId = noOfEntities;
-    }
-
     @Override
-    protected void setThreshold() {
-        threshold = Math.max(1, blockAssingments / noOfEntities);
-        Log.info(getMethodName() + " Threshold \t:\t" + threshold);
+    protected void setThreshold() { // not needed for this method
     }
 
     @Override
@@ -132,20 +115,30 @@ public class CardinalityNodePruning extends CardinalityEdgePruning {
         minimumWeight = Double.MIN_VALUE;
         for (TIntIterator iterator = validEntities.iterator(); iterator.hasNext();) {
             int neighborId = iterator.next();
+            if (excludedEntities.contains(neighborId)) {
+                continue;
+            }
+            
             double weight = getWeight(entityId, neighborId);
             if (!(weight < minimumWeight)) {
                 final Comparison comparison = new Comparison(cleanCleanER, -1, neighborId);
                 comparison.setUtilityMeasure(weight);
                 topKEdges.add(comparison);
-                if (threshold < topKEdges.size()) {
+                if (inclusiveThreshold < topKEdges.size()) {
                     Comparison lastComparison = topKEdges.poll();
                     minimumWeight = lastComparison.getUtilityMeasure();
                 }
             }
         }
 
+        int counter = 0;
+        int freedEntities = inclusiveThreshold - exclusiveThreshold;
         nearestEntities[entityId] = new TIntHashSet();
         for (Comparison comparison : topKEdges) {
+            counter++;
+            if (freedEntities < counter) {
+                excludedEntities.add(comparison.getEntityId2());
+            }
             nearestEntities[entityId].add(comparison.getEntityId2());
         }
     }
