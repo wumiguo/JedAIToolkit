@@ -15,10 +15,10 @@
  */
 package org.scify.jedai.utilities.enumerations;
 
-import org.scify.jedai.textmodels.AbstractModel;
 import org.scify.jedai.textmodels.CharacterNGramGraphs;
 import org.scify.jedai.textmodels.CharacterNGrams;
 import org.scify.jedai.textmodels.CharacterNGramsWithGlobalWeights;
+import org.scify.jedai.textmodels.ITextModel;
 import org.scify.jedai.textmodels.TokenNGramGraphs;
 import org.scify.jedai.textmodels.TokenNGrams;
 import org.scify.jedai.textmodels.TokenNGramsWithGlobalWeights;
@@ -47,7 +47,7 @@ public enum RepresentationModel {
     TOKEN_TRIGRAMS_TF_IDF,
     TOKEN_TRIGRAM_GRAPHS;
 
-    public static AbstractModel getModel(int dId, RepresentationModel model, SimilarityMetric simMetric, String instanceName) {
+    public static ITextModel getModel(int dId, RepresentationModel model, SimilarityMetric simMetric, String instanceName) {
         switch (model) {
             case CHARACTER_BIGRAMS:
                 return new CharacterNGrams(dId, 2, model, simMetric, instanceName);
