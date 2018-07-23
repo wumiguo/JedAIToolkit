@@ -122,7 +122,7 @@ public abstract class AbstractAttributeClustering implements ISchemaClustering {
 
             if (0 < attributesDelimiter) { // Clean-Clean ER
                 executeCleanCleanErComparisons(i, coOccurringAttrs);
-            } else {
+            } else { // Dirty ER
                 executeDirtyErComparisons(i, coOccurringAttrs);
             }
         }
@@ -133,15 +133,15 @@ public abstract class AbstractAttributeClustering implements ISchemaClustering {
         while (sigIterator.hasNext()) {
             int neighborId = sigIterator.next();
 
+            int normalizedNeighborId = neighborId + attributesDelimiter;
             double similarity = attributeModels[DATASET_1][attributeId].getSimilarity(attributeModels[DATASET_2][neighborId]);
             if (globalMaxSimilarities[attributeId] < similarity) {
                 globalMaxSimilarities[attributeId] = similarity;
-                globalMostSimilarIds[attributeId] = neighborId;
+                globalMostSimilarIds[attributeId] = normalizedNeighborId;
             } else if (globalMaxSimilarities[attributeId] == similarity) {
-                globalMostSimilarIds[attributeId] = (int) Math.min(neighborId, globalMostSimilarIds[attributeId]);
+                globalMostSimilarIds[attributeId] = (int) Math.min(normalizedNeighborId, globalMostSimilarIds[attributeId]);
             }
 
-            int normalizedNeighborId = neighborId + attributesDelimiter;
             if (globalMaxSimilarities[normalizedNeighborId] < similarity) {
                 globalMaxSimilarities[normalizedNeighborId] = similarity;
                 globalMostSimilarIds[normalizedNeighborId] = attributeId;
@@ -150,7 +150,7 @@ public abstract class AbstractAttributeClustering implements ISchemaClustering {
             }
         }
     }
-    
+
     private void executeDirtyErComparisons(int attributeId, TIntSet coOccurringAttrs) {
         final TIntIterator sigIterator = coOccurringAttrs.iterator();
         while (sigIterator.hasNext()) {
@@ -211,34 +211,45 @@ public abstract class AbstractAttributeClustering implements ISchemaClustering {
         }
 
         final ConnectedComponents cc = new ConnectedComponents(similarityGraph);
-        if (attributesDelimiter < 0) {
+        if (attributesDelimiter < 0) { // Dirty ER
             return clusterDirtyAttributes(cc);
-        } 
-          
-        return clusterCleanCleanAttributes(cc);
+        }
+
+        return clusterCleanCleanAttributes(cc); // Clean-Clean ER
     }
 
     protected TObjectIntMap<String>[] clusterCleanCleanAttributes(ConnectedComponents cc) {
+        int glueClusterId = cc.count() + 1;
         final TObjectIntMap<String>[] clusters = new TObjectIntHashMap[2];
         clusters[DATASET_1] = new TObjectIntHashMap<>();
         for (int i = 0; i < attributesDelimiter; i++) {
-                int ccId = cc.id(i);
-                clusters[DATASET_1].put(attributeModels[DATASET_1][i].getInstanceName(), ccId);
+            int ccId = cc.id(i);
+            if (cc.size(ccId) == 1) { // singleton attribute
+                ccId = glueClusterId;
+            }
+            clusters[DATASET_1].put(attributeModels[DATASET_1][i].getInstanceName(), ccId);
         }
         clusters[DATASET_2] = new TObjectIntHashMap<>();
         for (int i = attributesDelimiter; i < noOfAttributes; i++) {
-                int ccId = cc.id(i);
-                clusters[DATASET_2].put(attributeModels[DATASET_2][i-attributesDelimiter].getInstanceName(), ccId);
+            int ccId = cc.id(i);
+            if (cc.size(ccId) == 1) { // singleton attribute
+                ccId = glueClusterId;
+            }
+            clusters[DATASET_2].put(attributeModels[DATASET_2][i - attributesDelimiter].getInstanceName(), ccId);
         }
         return clusters;
     }
 
-    protected TObjectIntMap<String>[] clusterDirtyAttributes(ConnectedComponents cc) {        
+    protected TObjectIntMap<String>[] clusterDirtyAttributes(ConnectedComponents cc) {
+        int glueClusterId = cc.count() + 1;
         final TObjectIntMap<String>[] clusters = new TObjectIntHashMap[1];
         clusters[DATASET_1] = new TObjectIntHashMap<>();
         for (int i = 0; i < noOfAttributes; i++) {
-                int ccId = cc.id(i);
-                clusters[DATASET_1].put(attributeModels[DATASET_1][i].getInstanceName(), ccId);
+            int ccId = cc.id(i);
+            if (cc.size(ccId) == 1) { // singleton attribute
+                ccId = glueClusterId;
+            }
+            clusters[DATASET_1].put(attributeModels[DATASET_1][i].getInstanceName(), ccId);
         }
         return clusters;
     }
