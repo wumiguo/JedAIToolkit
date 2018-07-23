@@ -39,8 +39,8 @@ import java.util.Random;
  */
 public class ExtendedCanopyClustering extends CardinalityNodePruning {
 
-    protected int inclusiveThreshold;
-    protected int exclusiveThreshold;
+    protected final int inclusiveThreshold;
+    protected final int exclusiveThreshold;
     protected TIntSet excludedEntities;
     
     public ExtendedCanopyClustering(int inThr, int outThr) {
