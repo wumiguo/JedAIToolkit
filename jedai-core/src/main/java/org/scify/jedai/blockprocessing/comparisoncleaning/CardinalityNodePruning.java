@@ -89,17 +89,16 @@ public class CardinalityNodePruning extends CardinalityEdgePruning {
             }
         }
 
-        final List<AbstractBlock> newBlocks = new ArrayList<>();
-        retainValidComparisons(newBlocks);
-        return newBlocks;
+        return retainValidComparisons();
     }
 
-    protected void retainValidComparisons(List<AbstractBlock> newBlocks) {
+    protected List<AbstractBlock> retainValidComparisons() {
+        final List<AbstractBlock> newBlocks = new ArrayList<>();
         final List<Comparison> retainedComparisons = new ArrayList<>();
         for (int i = 0; i < noOfEntities; i++) {
             if (nearestEntities[i] != null) {
                 retainedComparisons.clear();
-                TIntIterator intIterator = nearestEntities[i].iterator();
+                final TIntIterator intIterator = nearestEntities[i].iterator();
                 while (intIterator.hasNext()) {
                     int neighborId = intIterator.next();
                     if (isValidComparison(i, neighborId)) {
@@ -109,6 +108,7 @@ public class CardinalityNodePruning extends CardinalityEdgePruning {
                 addDecomposedBlock(retainedComparisons, newBlocks);
             }
         }
+        return newBlocks;
     }
 
     protected void setLimits() {

@@ -18,7 +18,6 @@ package org.scify.jedai.blockprocessing.comparisoncleaning;
 import com.esotericsoftware.minlog.Log;
 import org.scify.jedai.datamodel.AbstractBlock;
 import org.scify.jedai.datamodel.Comparison;
-import org.scify.jedai.utilities.comparators.IncComparisonWeightComparator;
 import org.scify.jedai.utilities.enumerations.WeightingScheme;
 
 
@@ -28,10 +27,10 @@ import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Random;
+import org.scify.jedai.utilities.comparators.IncComparisonWeightComparator;
 
 /**
  *
@@ -81,7 +80,7 @@ public class ExtendedCanopyClustering extends CardinalityNodePruning {
         
         excludedEntities = new TIntHashSet();
         nearestEntities = new TIntSet[noOfEntities];
-        topKEdges = new PriorityQueue<>((int) (2 * threshold), new IncComparisonWeightComparator());
+        topKEdges = new PriorityQueue<>((int) (2 * inclusiveThreshold), new IncComparisonWeightComparator());
         if (weightingScheme.equals(WeightingScheme.ARCS)) {
             while (iterator.hasNext()) {
                 int currentId = iterator.next();
@@ -96,9 +95,7 @@ public class ExtendedCanopyClustering extends CardinalityNodePruning {
             }
         }
 
-        final List<AbstractBlock> newBlocks = new ArrayList<>();
-        retainValidComparisons(newBlocks);
-        return newBlocks;
+        return retainValidComparisons();
     }
 
     @Override

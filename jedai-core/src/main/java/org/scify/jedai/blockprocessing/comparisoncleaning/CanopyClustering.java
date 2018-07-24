@@ -24,7 +24,6 @@ import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -32,12 +31,12 @@ import java.util.Random;
  *
  * @author gap2
  */
-public class CanopyClustering extends WeightedNodePruning {
+public class CanopyClustering extends CardinalityNodePruning {
 
     protected final double inclusiveThreshold;
     protected final double exclusiveThreshold;
     protected TIntSet excludedEntities;
-
+    
     public CanopyClustering(double inThr, double outThr) {
         this(inThr, outThr, WeightingScheme.ARCS);
     }
@@ -75,65 +74,45 @@ public class CanopyClustering extends WeightedNodePruning {
         final TIntIterator iterator = entityIds.iterator();
 
         excludedEntities = new TIntHashSet();
-        final List<AbstractBlock> newBlocks = new ArrayList<>();
+        nearestEntities = new TIntSet[noOfEntities];
         if (weightingScheme.equals(WeightingScheme.ARCS)) {
             while (iterator.hasNext()) {
                 int currentId = iterator.next();
                 processArcsEntity(currentId);
-                verifyValidEntities(currentId, newBlocks);
+                verifyValidEntities(currentId);
             }
         } else {
             while (iterator.hasNext()) {
                 int currentId = iterator.next();
                 processEntity(currentId);
-                verifyValidEntities(currentId, newBlocks);
+                verifyValidEntities(currentId);
             }
         }
-        return newBlocks;
+        
+        return retainValidComparisons();
     }
-
-    protected void processIndividualPair(boolean normalizeId, int entityId, int neighborId) {
-        if (excludedEntities.contains(neighborId)) {
-            return;
-        }
-
-        double weight = getWeight(entityId, neighborId);
-        if (inclusiveThreshold < weight) {
-            if (exclusiveThreshold < weight) {
-                excludedEntities.add(neighborId);
-            }
-            
-            if (normalizeId) {
-                retainedNeighbors.add(neighborId - datasetLimit);
-            } else {
-                retainedNeighbors.add(neighborId);
-            }
-        }
-    }
-
+    
     @Override
     protected void setThreshold() {
     }
 
     @Override
-    protected void verifyValidEntities(int entityId, List<AbstractBlock> newBlocks) {
-        retainedNeighbors.clear();
-        if (!cleanCleanER) { // Dirty ER
-            for (TIntIterator tIterator = validEntities.iterator(); tIterator.hasNext();) {
-                processIndividualPair(false, entityId, tIterator.next());
+    protected void verifyValidEntities(int entityId) {
+        nearestEntities[entityId] = new TIntHashSet();
+        for (TIntIterator tIterator = validEntities.iterator(); tIterator.hasNext();) {
+            int neighborId = tIterator.next();
+            if (excludedEntities.contains(neighborId)) {
+                System.out.println("Excluded!!!");
+                continue;
             }
-            addDecomposedBlock(entityId, retainedNeighbors, newBlocks);
-        } else { // Clean-Clean ER
-            if (entityId < datasetLimit) { // Dataset 1
-                for (TIntIterator tIterator = validEntities.iterator(); tIterator.hasNext();) {
-                    processIndividualPair(true, entityId, tIterator.next());
+
+            double weight = getWeight(entityId, neighborId);
+            if (inclusiveThreshold < weight) {
+                if (exclusiveThreshold < weight) {
+                    System.out.println(weight);
+                    excludedEntities.add(neighborId);
                 }
-                addDecomposedBlock(entityId, retainedNeighbors, newBlocks);
-            } else { // Dataset 2
-                for (TIntIterator tIterator = validEntities.iterator(); tIterator.hasNext();) {
-                    processIndividualPair(false, entityId, tIterator.next());
-                }
-                addReversedDecomposedBlock(entityId - datasetLimit, retainedNeighbors, newBlocks);
+                nearestEntities[entityId].add(neighborId);
             }
         }
     }
