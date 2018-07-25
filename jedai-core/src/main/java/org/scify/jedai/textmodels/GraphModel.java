@@ -43,8 +43,9 @@ public abstract class GraphModel extends AbstractModel {
         return graphModel;
     }
     
+    @Override
     public Set<String> getSignatures() {
-        return null;
+        return graphModel.getGraphLevel(0).UniqueVertices.keySet();
     }
 
     @Override

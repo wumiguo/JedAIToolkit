@@ -34,11 +34,12 @@ public class CharacterNGrams extends BagModel {
     
     @Override
     public void updateModel(String text) {
+        String lowerCasedText = text.toLowerCase();
         int currentPosition = 0;
-        final int length = text.length() - (nSize-1);
+        final int length = lowerCasedText.length() - (nSize-1);
         while (currentPosition < length) {
             noOfTotalTerms++;
-            final String term = text.substring(currentPosition, currentPosition + nSize);
+            final String term = lowerCasedText.substring(currentPosition, currentPosition + nSize);
             IncrementalCounter frequency = itemsFrequency.get(term);
             if (frequency == null) {
                 frequency = new IncrementalCounter();

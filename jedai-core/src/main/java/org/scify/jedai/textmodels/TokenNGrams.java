@@ -33,7 +33,7 @@ public class TokenNGrams extends BagModel {
     
     @Override
     public void updateModel(String text) {
-        final String[] tokens = gr.demokritos.iit.jinsect.utils.splitToWords(text);
+        final String[] tokens = gr.demokritos.iit.jinsect.utils.splitToWords(text.toLowerCase());
         
         int noOfTokens = tokens.length;
         noOfTotalTerms += noOfTokens;
