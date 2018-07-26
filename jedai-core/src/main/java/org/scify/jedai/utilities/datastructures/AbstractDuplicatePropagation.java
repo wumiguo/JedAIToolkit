@@ -12,37 +12,42 @@
 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 * See the License for the specific language governing permissions and
 * limitations under the License.
-*/
-
+ */
 package org.scify.jedai.utilities.datastructures;
 
-import org.scify.jedai.datamodel.Comparison;
 import org.scify.jedai.datamodel.IdDuplicates;
 import java.util.Set;
+import org.scify.jedai.datamodel.EquivalenceCluster;
 
 /**
  *
  * @author gap2
  */
-
 public abstract class AbstractDuplicatePropagation {
-    
+
     protected final int existingDuplicates;
     protected final Set<IdDuplicates> duplicates;
-    
+
     public AbstractDuplicatePropagation(Set<IdDuplicates> matches) {
         duplicates = matches;
         existingDuplicates = duplicates.size();
     }
-    
+
     public int getExistingDuplicates() {
         return existingDuplicates;
     }
-    
+
     public abstract Set<IdDuplicates> getFalseNegatives();
+
     public abstract int getNoOfDuplicates();
-    public abstract boolean isSuperfluous(Comparison comparison);
+
+    public abstract boolean isSuperfluous(int entityId1, int entityId2);
+
     public abstract void resetDuplicates();
+
+    public abstract EquivalenceCluster[] getDetectedEquivalenceClusters();
+
+    public abstract EquivalenceCluster[] getRealEquivalenceClusters();
 
     public Set<IdDuplicates> getDuplicates() {
         return duplicates;

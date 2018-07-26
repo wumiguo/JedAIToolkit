@@ -168,7 +168,8 @@ public class BlocksPerformance {
         for (AbstractBlock block : blocks) {
             ComparisonIterator iterator = block.getComparisonIterator();
             while (iterator.hasNext()) {
-                abstractDP.isSuperfluous(iterator.next());
+                final Comparison comp = iterator.next();
+                abstractDP.isSuperfluous(comp.getEntityId1(), comp.getEntityId2());
             }
         }
 
@@ -247,7 +248,7 @@ public class BlocksPerformance {
                 final EntityProfile profile2 = isCleanCleanER ? profilesD2.get(currentComparison.getEntityId2()) : profilesD1.get(currentComparison.getEntityId2());
 
                 final int originalDuplicates = abstractDP.getNoOfDuplicates();
-                abstractDP.isSuperfluous(currentComparison);
+                abstractDP.isSuperfluous(currentComparison.getEntityId1(), currentComparison.getEntityId2());
                 final int newDuplicates = abstractDP.getNoOfDuplicates();
 
                 System.out.print(profile1.getEntityUrl() + ",");
@@ -307,7 +308,8 @@ public class BlocksPerformance {
         for (AbstractBlock block : blocksToUse) {
             final ComparisonIterator iterator = block.getComparisonIterator();
             while (iterator.hasNext()) {
-                abstractDP.isSuperfluous(iterator.next());
+                final Comparison comp = iterator.next();
+                abstractDP.isSuperfluous(comp.getEntityId1(), comp.getEntityId2());
             }
         }
                 
