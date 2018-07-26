@@ -15,8 +15,10 @@
  */
 package org.scify.jedai.utilities.datastructures;
 
+import java.util.ArrayList;
 import org.scify.jedai.datamodel.IdDuplicates;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import org.scify.jedai.datamodel.EquivalenceCluster;
 import org.scify.jedai.utilities.graph.ConnectedComponents;
@@ -35,27 +37,44 @@ public class UnilateralDuplicatePropagation extends AbstractDuplicatePropagation
         detectedDuplicates = new HashSet<>(2 * matches.size());
     }
 
+    private List<EquivalenceCluster> getClusters(UndirectedGraph similarityGraph) {
+        final ConnectedComponents cc = new ConnectedComponents(similarityGraph);
+        final EquivalenceCluster[] clustersArray = new EquivalenceCluster[cc.count()];
+        for (int i = 0; i < similarityGraph.V(); i++) {
+            if (cc.size(i) < 2) { // sigleton entity
+                continue;
+            }
+
+            int clusterId = cc.id(i);
+            if (clustersArray[clusterId] == null) {
+                clustersArray[clusterId] = new EquivalenceCluster();
+            }
+            clustersArray[clusterId].addEntityIdD1(i);
+        }
+
+        final List<EquivalenceCluster> clustersList = new ArrayList<>();
+        for (int i = 0; i < clustersArray.length; i++) {
+            if (clustersArray[i] != null) {
+                clustersList.add(clustersArray[i]);
+            }
+        }
+        return clustersList;
+    }
+    
     @Override
-    public EquivalenceCluster[] getDetectedEquivalenceClusters() {
+    public List<EquivalenceCluster> getDetectedEquivalenceClusters() {
         int noOfEntities = 0;
         for (IdDuplicates duplicatePair : detectedDuplicates) {
             noOfEntities = Math.max(noOfEntities, duplicatePair.getEntityId1());
             noOfEntities = Math.max(noOfEntities, duplicatePair.getEntityId2());
         }
 
-        final UndirectedGraph similarityGraph = new UndirectedGraph(noOfEntities);
+        final UndirectedGraph similarityGraph = new UndirectedGraph(noOfEntities + 1);
         for (IdDuplicates duplicatePair : detectedDuplicates) {
             similarityGraph.addEdge(duplicatePair.getEntityId1(), duplicatePair.getEntityId2());
         }
 
-        final ConnectedComponents cc = new ConnectedComponents(similarityGraph);
-        EquivalenceCluster[] clusters = new EquivalenceCluster[cc.count()];
-        for (int i = 0; i < noOfEntities; i++) {
-            clusters[cc.id(i)].addEntityIdD1(i);
-        }
-        
-        return clusters;
-        
+        return getClusters(similarityGraph);
     }
 
     @Override
@@ -71,41 +90,35 @@ public class UnilateralDuplicatePropagation extends AbstractDuplicatePropagation
     }
 
     @Override
-    public EquivalenceCluster[] getRealEquivalenceClusters() {
+    public List<EquivalenceCluster> getRealEquivalenceClusters() {
         int noOfEntities = 0;
         for (IdDuplicates duplicatePair : duplicates) {
             noOfEntities = Math.max(noOfEntities, duplicatePair.getEntityId1());
             noOfEntities = Math.max(noOfEntities, duplicatePair.getEntityId2());
         }
 
-        final UndirectedGraph similarityGraph = new UndirectedGraph(noOfEntities);
+        final UndirectedGraph similarityGraph = new UndirectedGraph(noOfEntities + 1);
         for (IdDuplicates duplicatePair : duplicates) {
             similarityGraph.addEdge(duplicatePair.getEntityId1(), duplicatePair.getEntityId2());
         }
 
-        final ConnectedComponents cc = new ConnectedComponents(similarityGraph);
-        EquivalenceCluster[] clusters = new EquivalenceCluster[cc.count()];
-        for (int i = 0; i < noOfEntities; i++) {
-            clusters[cc.id(i)].addEntityIdD1(i);
-        }
-        
-        return clusters;
+        return getClusters(similarityGraph);
     }
 
     @Override
 
     public boolean isSuperfluous(int entityId1, int entityId2) {
         final IdDuplicates duplicatePair1 = new IdDuplicates(entityId1, entityId2);
-        final IdDuplicates duplicatePair2 = new IdDuplicates(entityId2, entityId1);                
-        if (duplicates.contains(duplicatePair1) || 
-                duplicates.contains(duplicatePair2)) {
+        final IdDuplicates duplicatePair2 = new IdDuplicates(entityId2, entityId1);
+        if (duplicates.contains(duplicatePair1)
+                || duplicates.contains(duplicatePair2)) {
             if (entityId1 < entityId2) {
                 detectedDuplicates.add(duplicatePair1);
             } else {
                 detectedDuplicates.add(duplicatePair2);
             }
         }
-                    
+
         return false;
     }
 

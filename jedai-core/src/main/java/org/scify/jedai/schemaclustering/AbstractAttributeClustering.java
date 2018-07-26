@@ -224,7 +224,7 @@ public abstract class AbstractAttributeClustering implements ISchemaClustering {
         clusters[DATASET_1] = new TObjectIntHashMap<>();
         for (int i = 0; i < attributesDelimiter; i++) {
             int ccId = cc.id(i);
-            if (cc.size(ccId) == 1) { // singleton attribute
+            if (cc.size(i) == 1) { // singleton attribute
                 ccId = glueClusterId;
             }
             clusters[DATASET_1].put(attributeModels[DATASET_1][i].getInstanceName(), ccId);
@@ -232,7 +232,7 @@ public abstract class AbstractAttributeClustering implements ISchemaClustering {
         clusters[DATASET_2] = new TObjectIntHashMap<>();
         for (int i = attributesDelimiter; i < noOfAttributes; i++) {
             int ccId = cc.id(i);
-            if (cc.size(ccId) == 1) { // singleton attribute
+            if (cc.size(i) == 1) { // singleton attribute
                 ccId = glueClusterId;
             }
             clusters[DATASET_2].put(attributeModels[DATASET_2][i - attributesDelimiter].getInstanceName(), ccId);
@@ -246,7 +246,7 @@ public abstract class AbstractAttributeClustering implements ISchemaClustering {
         clusters[DATASET_1] = new TObjectIntHashMap<>();
         for (int i = 0; i < noOfAttributes; i++) {
             int ccId = cc.id(i);
-            if (cc.size(ccId) == 1) { // singleton attribute
+            if (cc.size(i) == 1) { // singleton attribute
                 ccId = glueClusterId;
             }
             clusters[DATASET_1].put(attributeModels[DATASET_1][i].getInstanceName(), ccId);

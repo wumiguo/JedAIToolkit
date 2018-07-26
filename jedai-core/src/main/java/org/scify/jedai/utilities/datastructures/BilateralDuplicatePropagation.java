@@ -18,7 +18,9 @@ package org.scify.jedai.utilities.datastructures;
 import org.scify.jedai.datamodel.IdDuplicates;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import org.scify.jedai.datamodel.EquivalenceCluster;
 
@@ -38,15 +40,14 @@ public class BilateralDuplicatePropagation extends AbstractDuplicatePropagation 
     }
 
     @Override
-    public EquivalenceCluster[] getDetectedEquivalenceClusters() {
-        int counter = 0;
-        final EquivalenceCluster[] eClusters = new EquivalenceCluster[entities1.size()];
+    public List<EquivalenceCluster> getDetectedEquivalenceClusters() {
+        final List<EquivalenceCluster> eClusters = new ArrayList<>();
         for (IdDuplicates duplicatePair : duplicates) {
             if (entities1.contains(duplicatePair.getEntityId1())) {
-                eClusters[counter] = new EquivalenceCluster();
-                eClusters[counter].getEntityIdsD1().add(duplicatePair.getEntityId1());
-                eClusters[counter].getEntityIdsD2().add(duplicatePair.getEntityId2());
-                counter++;
+                final EquivalenceCluster cluster = new EquivalenceCluster();
+                cluster.getEntityIdsD1().add(duplicatePair.getEntityId1());
+                cluster.getEntityIdsD2().add(duplicatePair.getEntityId2());
+                eClusters.add(cluster);
             }
         }
         return eClusters;
@@ -69,14 +70,13 @@ public class BilateralDuplicatePropagation extends AbstractDuplicatePropagation 
     }
 
     @Override
-    public EquivalenceCluster[] getRealEquivalenceClusters() {
-        int counter = 0;
-        final EquivalenceCluster[] eClusters = new EquivalenceCluster[duplicates.size()];
+    public List<EquivalenceCluster> getRealEquivalenceClusters() {
+        final List<EquivalenceCluster> eClusters = new ArrayList<>();
         for (IdDuplicates duplicatePair : duplicates) {
-            eClusters[counter] = new EquivalenceCluster();
-            eClusters[counter].getEntityIdsD1().add(duplicatePair.getEntityId1());
-            eClusters[counter].getEntityIdsD2().add(duplicatePair.getEntityId2());
-            counter++;
+            final EquivalenceCluster cluster = new EquivalenceCluster();
+            cluster.getEntityIdsD1().add(duplicatePair.getEntityId1());
+            cluster.getEntityIdsD2().add(duplicatePair.getEntityId2());
+            eClusters.add(cluster);
         }
         return eClusters;
     }
@@ -86,7 +86,7 @@ public class BilateralDuplicatePropagation extends AbstractDuplicatePropagation 
         if (entities1.contains(entityId1) || entities2.contains(entityId2)) {
             return true;
         }
-        
+
         final IdDuplicates tempDuplicates = new IdDuplicates(entityId1, entityId2);
         if (duplicates.contains(tempDuplicates)) {
             entities1.add(entityId1);

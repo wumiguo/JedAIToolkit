@@ -15,6 +15,7 @@
  */
 package org.scify.jedai.utilities.datastructures;
 
+import java.util.List;
 import org.scify.jedai.datamodel.IdDuplicates;
 import java.util.Set;
 import org.scify.jedai.datamodel.EquivalenceCluster;
@@ -45,9 +46,9 @@ public abstract class AbstractDuplicatePropagation {
 
     public abstract void resetDuplicates();
 
-    public abstract EquivalenceCluster[] getDetectedEquivalenceClusters();
+    public abstract List<EquivalenceCluster> getDetectedEquivalenceClusters();
 
-    public abstract EquivalenceCluster[] getRealEquivalenceClusters();
+    public abstract List<EquivalenceCluster> getRealEquivalenceClusters();
 
     public Set<IdDuplicates> getDuplicates() {
         return duplicates;
