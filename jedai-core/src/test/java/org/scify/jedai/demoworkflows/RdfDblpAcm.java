@@ -71,7 +71,7 @@ public class RdfDblpAcm {
 
         double time1 = System.currentTimeMillis();
 
-        IBlockBuilding tokenBlocking = new StandardBlocking(null);
+        IBlockBuilding tokenBlocking = new StandardBlocking();
         List<AbstractBlock> blocks = tokenBlocking.getBlocks(rdfDBLP, rdfACM);
         workflowConf.append(tokenBlocking.getMethodConfiguration());
         workflowName.append(tokenBlocking.getMethodName());

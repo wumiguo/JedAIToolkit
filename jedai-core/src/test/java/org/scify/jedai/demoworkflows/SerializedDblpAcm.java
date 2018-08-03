@@ -70,7 +70,7 @@ public class SerializedDblpAcm {
 
         double time1 = System.currentTimeMillis();
 
-        IBlockBuilding tokenBlocking = new StandardBlocking(null);
+        IBlockBuilding tokenBlocking = new StandardBlocking();
         List<AbstractBlock> blocks = tokenBlocking.getBlocks(serializedDBLP, serializedACM);
         workflowConf.append(tokenBlocking.getMethodConfiguration());
         workflowName.append(tokenBlocking.getMethodName());

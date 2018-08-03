@@ -77,7 +77,7 @@ public class CsvDblpAcm {
 
         double time1 = System.currentTimeMillis();
 
-        IBlockBuilding tokenBlocking = new StandardBlocking(null);
+        IBlockBuilding tokenBlocking = new StandardBlocking();
         List<AbstractBlock> blocks = tokenBlocking.getBlocks(csvDBLP, csvACM);
         workflowConf.append(tokenBlocking.getMethodConfiguration());
         workflowName.append(tokenBlocking.getMethodName());

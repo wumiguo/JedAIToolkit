@@ -21,6 +21,7 @@ import org.scify.jedai.datamodel.IdDuplicates;
 import org.scify.jedai.datareader.entityreader.EntitySerializationReader;
 import org.scify.jedai.datareader.groundtruthreader.GtCSVReader;
 import java.util.Set;
+import org.apache.log4j.BasicConfigurator;
 import org.scify.jedai.datamodel.EntityProfile;
 
 /**
@@ -30,6 +31,8 @@ import org.scify.jedai.datamodel.EntityProfile;
 
 public class TestGtCSVReader {
     public static void main(String[] args) {
+        BasicConfigurator.configure();
+        
         String entityFilePath = "C:\\Users\\GAP2\\Downloads\\cddbProfiles";
         String gtFilePath = "C:\\Users\\GAP2\\Downloads\\cd_gold.csv";
         EntitySerializationReader esr = new EntitySerializationReader(entityFilePath);
@@ -47,6 +50,6 @@ public class TestGtCSVReader {
 //                System.out.println(attribute.toString());
 //            }
 //        }
-        csvReader.storeSerializedObject(duplicates, "C:\\Users\\GAP2\\Downloads\\cddbDuplicates");
+        csvReader.storeSerializedObject(duplicates, "E:\\Users\\GAP2\\Downloads\\cddbDuplicates");
     }
 }
