@@ -27,7 +27,8 @@ import java.util.HashSet;
 import java.util.Set;
 import org.apache.jena.atlas.json.JsonArray;
 import org.apache.jena.atlas.json.JsonObject;
-import org.scify.jedai.datamodel.ConfigurationSetting;
+import org.scify.jedai.configuration.gridsearch.IntGridSearchConfiguration;
+import org.scify.jedai.configuration.randomsearch.IntRandomSearchConfiguration;
 
 /**
  *
@@ -35,10 +36,17 @@ import org.scify.jedai.datamodel.ConfigurationSetting;
  */
 public class ExtendedSortedNeighborhoodBlocking extends SortedNeighborhoodBlocking {
 
-    public ExtendedSortedNeighborhoodBlocking(ConfigurationSetting cs) {
-        super(cs);
+    public ExtendedSortedNeighborhoodBlocking() {
+        this(2);
     }
 
+     public ExtendedSortedNeighborhoodBlocking(int w) {
+        super(w);
+        
+        gridWindow = new IntGridSearchConfiguration(10, 1, 1);
+        randomWindow = new IntRandomSearchConfiguration(10, 1);
+    }
+     
     @Override
     public String getMethodInfo() {
         return getMethodName() + ": it improves " + super.getMethodName() + " by sliding the window over the sorted list of blocking keys.";

@@ -31,4 +31,8 @@ public interface ISchemaClustering {
     public TObjectIntMap<String>[] getClusters(List<EntityProfile> profiles);
     
     public TObjectIntMap<String>[] getClusters(List<EntityProfile> profilesD1, List<EntityProfile> profilesD2);
+    
+    public void setNextRandomConfiguration();
+    
+    public void setNumberedRandomConfiguration(int iterationNumber);
 }

@@ -12,26 +12,28 @@
 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 * See the License for the specific language governing permissions and
 * limitations under the License.
-*/
-
-package org.scify.jedai.entityclustering;
-
-import org.scify.jedai.datamodel.EquivalenceCluster;
-import org.scify.jedai.datamodel.SimilarityPairs;
-import org.scify.jedai.utilities.IDocumentation;
+ */
+package org.scify.jedai.configuration.randomsearch;
 
 /**
  *
- * @author G.A.P. II
+ * @author GAP2
  */
+public class DblRandomSearchConfiguration extends AbstractRandomSearchConfiguration {
 
-public interface IEntityClustering extends IDocumentation {
- 
-    public EquivalenceCluster[] getDuplicates(SimilarityPairs simPairs);
+    private final double interval;
+    private final double maximumValue;
+    private final double minimumValue;
+
+    public DblRandomSearchConfiguration(double max, double min) {
+        super();
+        maximumValue = max;
+        minimumValue = min;
+        interval = maximumValue - minimumValue;
+    }
     
-    public void setSimilarityThreshold(double th);
-    
-    public void setNextRandomConfiguration();
-    
-    public void setNumberedRandomConfiguration(int iterationNumber);
+    @Override
+    protected Object randomValueGeneration() {
+        return minimumValue + RANDOM_GEN.nextDouble() * interval;
+    }
 }

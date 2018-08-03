@@ -30,4 +30,8 @@ public interface IBlockProcessing extends IDocumentation {
     int DATASET_2 = 1;
 
     public List<AbstractBlock> refineBlocks(List<AbstractBlock> blocks);
+    
+    public void setNextRandomConfiguration();
+    
+    public void setNumberedRandomConfiguration(int iterationNumber);
 }

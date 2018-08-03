@@ -22,7 +22,8 @@ import java.util.Set;
 
 import org.apache.jena.atlas.json.JsonArray;
 import org.apache.jena.atlas.json.JsonObject;
-import org.scify.jedai.datamodel.ConfigurationSetting;
+import org.scify.jedai.configuration.gridsearch.DblGridSearchConfiguration;
+import org.scify.jedai.configuration.randomsearch.DblRandomSearchConfiguration;
 
 /**
  *
@@ -32,11 +33,20 @@ public class ExtendedQGramsBlocking extends QGramsBlocking {
 
     private final static int MAX_Q_GRAMS = 15;
 
-    private final double threshold;
+    private double threshold;
 
-    public ExtendedQGramsBlocking(ConfigurationSetting cs) {
-        super(cs);
-        threshold = cs.getDoubleParameter(0);
+    private final DblGridSearchConfiguration gridThreshold;
+    private final DblRandomSearchConfiguration randomThreshold;
+    
+    public ExtendedQGramsBlocking() {
+        this(0.95, 6);
+    }
+     public ExtendedQGramsBlocking(double t, int n) {
+        super(n);
+        threshold = t;
+        
+        randomThreshold = new DblRandomSearchConfiguration(0.99, 0.8);
+        gridThreshold = new DblGridSearchConfiguration(0.95, 0.8, 0.05);
     }
 
     @Override
@@ -106,6 +116,11 @@ public class ExtendedQGramsBlocking extends QGramsBlocking {
                 + "1)" + getParameterDescription(0) + ".\n"
                 + "2)" + getParameterDescription(1) + ".";
     }
+    
+    @Override
+    public int getNumberOfGridConfigurations() {
+        return gridNGSize.getNumberOfConfigurations() * gridThreshold.getNumberOfConfigurations();
+    }
 
     @Override
     public JsonArray getParameterConfiguration() {
@@ -157,5 +172,26 @@ public class ExtendedQGramsBlocking extends QGramsBlocking {
             default:
                 return "invalid parameter id";
         }
+    }
+    
+    @Override
+    public void setNextRandomConfiguration() {
+        super.setNextRandomConfiguration();
+        threshold = (Double) randomThreshold.getNextRandomValue();
+    }
+    
+    @Override
+    public void setNumberedGridConfiguration(int iterationNumber) {
+        int ngSizeIteration = iterationNumber / gridThreshold.getNumberOfConfigurations();
+        nGramSize = (Integer) gridNGSize.getNumberedValue(ngSizeIteration);
+        
+        int thrIteration = iterationNumber - ngSizeIteration * gridThreshold.getNumberOfConfigurations();
+        threshold = (Double) gridThreshold.getNumberedValue(thrIteration);
+    }
+
+    @Override
+    public void setNumberedRandomConfiguration(int iterationNumber) {
+        super.setNumberedRandomConfiguration(iterationNumber);
+        threshold = (Double) randomThreshold.getNumberedRandom(iterationNumber);
     }
 }

@@ -188,4 +188,11 @@ public class CharacterNGramsWithGlobalWeights extends CharacterNGrams {
 
         return Math.sqrt(magnitude);
     }
+    
+    public static void resetGlobalValues(int datasetId) {
+        NO_OF_DOCUMENTS[datasetId] = 0;
+        if (DOC_FREQ[datasetId] != null) {
+            DOC_FREQ[datasetId].clear();
+        }
+    }
 }

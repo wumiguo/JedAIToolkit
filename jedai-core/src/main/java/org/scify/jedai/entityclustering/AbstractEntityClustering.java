@@ -22,6 +22,7 @@ import com.esotericsoftware.minlog.Log;
 
 import org.apache.jena.atlas.json.JsonArray;
 import org.apache.jena.atlas.json.JsonObject;
+import org.scify.jedai.configuration.randomsearch.DblRandomSearchConfiguration;
 import org.scify.jedai.utilities.graph.ConnectedComponents;
 
 import org.scify.jedai.utilities.graph.UndirectedGraph;
@@ -39,10 +40,12 @@ public abstract class AbstractEntityClustering implements IEntityClustering {
     protected int noOfEntities;
     protected int datasetLimit;
 
+    protected final DblRandomSearchConfiguration randomThreshold;
     protected UndirectedGraph similarityGraph;
 
     public AbstractEntityClustering(double simTh) {
         threshold = simTh;
+        randomThreshold = new DblRandomSearchConfiguration(0.99, 0.01);
     }
 
     protected EquivalenceCluster[] getConnectedComponents() {
@@ -146,6 +149,16 @@ public abstract class AbstractEntityClustering implements IEntityClustering {
         similarityGraph = new UndirectedGraph(noOfEntities);
     }
 
+    @Override
+    public void setNextRandomConfiguration() {
+        threshold = (Double) randomThreshold.getNextRandomValue();
+    }
+
+    @Override
+    public void setNumberedRandomConfiguration(int iterationNumber) {
+        threshold = (Double) randomThreshold.getNumberedRandom(iterationNumber);
+    }
+    
     @Override
     public void setSimilarityThreshold(double th) {
         threshold = th;

@@ -20,7 +20,6 @@ import java.util.Set;
 
 import org.apache.jena.atlas.json.JsonArray;
 import org.apache.jena.atlas.json.JsonObject;
-import org.scify.jedai.datamodel.ConfigurationSetting;
 
 /**
  *
@@ -28,8 +27,11 @@ import org.scify.jedai.datamodel.ConfigurationSetting;
  */
 public class ExtendedSuffixArraysBlocking extends SuffixArraysBlocking {
 
-    public ExtendedSuffixArraysBlocking(ConfigurationSetting cs) {
-        super(cs);
+    public ExtendedSuffixArraysBlocking() {
+        this(39, 6);
+    }
+     public ExtendedSuffixArraysBlocking(int maxSize, int minLength) {
+        super(maxSize, minLength);
     }
 
     @Override

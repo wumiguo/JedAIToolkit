@@ -12,8 +12,7 @@
 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 * See the License for the specific language governing permissions and
 * limitations under the License.
-*/
-
+ */
 package org.scify.jedai.blockbuilding;
 
 import org.scify.jedai.datamodel.AbstractBlock;
@@ -21,18 +20,26 @@ import org.scify.jedai.datamodel.EntityProfile;
 import org.scify.jedai.utilities.IDocumentation;
 
 import java.util.List;
+import org.scify.jedai.utilities.datastructures.AbstractDuplicatePropagation;
 
 /**
  *
  * @author G.A.P. II
  */
-
 public interface IBlockBuilding extends IDocumentation {
-    
+
     int DATASET_1 = 0;
     int DATASET_2 = 1;
-    
+
     public List<AbstractBlock> getBlocks(List<EntityProfile> profiles);
-    
+
     public List<AbstractBlock> getBlocks(List<EntityProfile> profilesD1, List<EntityProfile> profilesD2);
+
+    public int getNumberOfGridConfigurations();
+
+    public void setNextRandomConfiguration();
+
+    public void setNumberedGridConfiguration(int iterationNumber);
+
+    public void setNumberedRandomConfiguration(int iterationNumber);
 }

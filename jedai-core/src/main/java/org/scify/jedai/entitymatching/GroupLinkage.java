@@ -74,7 +74,7 @@ public class GroupLinkage extends AbstractEntityMatching {
             isCleanCleanER = true;
             entityModelsD2 = getModels(DATASET_2, profilesD2);
         }
-
+        
         final SimilarityPairs simPairs = new SimilarityPairs(isCleanCleanER, blocks);
         blocks.stream().map((block) -> block.getComparisonIterator()).forEachOrdered((iterator) -> {
             while (iterator.hasNext()) {
@@ -125,6 +125,7 @@ public class GroupLinkage extends AbstractEntityMatching {
     private ITextModel[][] getModels(int datasetId, List<EntityProfile> profiles) {
         int entityCounter = 0;
         final ITextModel[][] ModelsList = new ITextModel[profiles.size()][];
+        RepresentationModel.resetGlobalValues(datasetId, representationModel);
         for (EntityProfile profile : profiles) {
             int validAttributes = 0;
             validAttributes = profile.getAttributes().stream().filter((attribute) -> (!attribute.getValue().isEmpty())).map((_item) -> 1).reduce(validAttributes, Integer::sum);

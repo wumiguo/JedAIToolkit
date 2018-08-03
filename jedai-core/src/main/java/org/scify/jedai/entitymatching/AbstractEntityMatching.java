@@ -22,6 +22,8 @@ import org.scify.jedai.utilities.enumerations.RepresentationModel;
 import org.scify.jedai.utilities.enumerations.SimilarityMetric;
 
 import java.util.List;
+import org.scify.jedai.datamodel.RepModelSimMetricCombo;
+import org.scify.jedai.configuration.randomsearch.IntRandomSearchConfiguration;
 
 /**
  *
@@ -31,16 +33,37 @@ public abstract class AbstractEntityMatching implements IEntityMatching {
 
     protected boolean isCleanCleanER;
 
+    protected final IntRandomSearchConfiguration randomCombo;
+    protected final List<RepModelSimMetricCombo> modelMetricCombinations;
     protected RepresentationModel representationModel;
     protected SimilarityMetric simMetric;
-
+    
     public AbstractEntityMatching(RepresentationModel model, SimilarityMetric sMetric) {
         representationModel = model;
         simMetric = sMetric;
+        
+        modelMetricCombinations = RepModelSimMetricCombo.getAllValidCombos();
+        randomCombo = new IntRandomSearchConfiguration(modelMetricCombinations.size(), 0);
     }
 
     @Override
     public SimilarityPairs executeComparisons(List<AbstractBlock> blocks, List<EntityProfile> profiles) {
         return this.executeComparisons(blocks, profiles, null);
+    }
+    
+    @Override
+    public void setNextRandomConfiguration() {
+        int comboId = (Integer) randomCombo.getNextRandomValue();
+        final RepModelSimMetricCombo selectedCombo = modelMetricCombinations.get(comboId);
+        representationModel = selectedCombo.getRepModel();
+        simMetric = selectedCombo.getSimMetric();
+    }
+
+    @Override
+    public void setNumberedRandomConfiguration(int iterationNumber) {
+        int comboId = (Integer) randomCombo.getNumberedRandom(iterationNumber);
+        final RepModelSimMetricCombo selectedCombo = modelMetricCombinations.get(comboId);
+        representationModel = selectedCombo.getRepModel();
+        simMetric = selectedCombo.getSimMetric();
     }
 }

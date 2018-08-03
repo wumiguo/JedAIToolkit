@@ -23,6 +23,8 @@ import java.util.Iterator;
 
 import org.apache.jena.atlas.json.JsonArray;
 import org.apache.jena.atlas.json.JsonObject;
+import org.scify.jedai.configuration.randomsearch.DblRandomSearchConfiguration;
+import org.scify.jedai.configuration.randomsearch.IntRandomSearchConfiguration;
 
 /**
  *
@@ -34,6 +36,10 @@ public class MarkovClustering extends AbstractEntityClustering {
     protected double matrixSimThreshold;//define similarity threshold for matrix comparison
     protected int similarityChecksLimit;//define check repetitions limit for the expansion-inflation process
 
+    protected final DblRandomSearchConfiguration randomCThreshold;
+    protected final DblRandomSearchConfiguration randomMSThreshold;
+    protected final IntRandomSearchConfiguration randomSCLimit;
+
     public MarkovClustering() {
         this(0.001, 0.00001, 2, 0.5);
     }
@@ -43,6 +49,10 @@ public class MarkovClustering extends AbstractEntityClustering {
         clusterThreshold = ct;
         matrixSimThreshold = mst;
         similarityChecksLimit = scl;
+
+        randomCThreshold = new DblRandomSearchConfiguration(0.100, 0.001);
+        randomMSThreshold = new DblRandomSearchConfiguration(0.00100, 0.00001);
+        randomSCLimit = new IntRandomSearchConfiguration(10, 1);
     }
 
     private void addSelfLoop(double[][] a) {
@@ -179,7 +189,7 @@ public class MarkovClustering extends AbstractEntityClustering {
         obj2.put("maxValue", "0.100");
         obj2.put("stepValue", "0.001");
         obj2.put("description", getParameterDescription(1));
-        
+
         final JsonObject obj3 = new JsonObject();
         obj3.put("class", "java.lang.Double");
         obj3.put("name", getParameterName(2));
@@ -304,6 +314,24 @@ public class MarkovClustering extends AbstractEntityClustering {
 
     public void setMatrixSimThreshold(double matrixSimThreshold) {
         this.matrixSimThreshold = matrixSimThreshold;
+    }
+
+    @Override
+    public void setNextRandomConfiguration() {
+        super.setNextRandomConfiguration();
+
+        clusterThreshold = (Double) randomCThreshold.getNextRandomValue();
+        matrixSimThreshold = (Double) randomMSThreshold.getNextRandomValue();
+        similarityChecksLimit = (Integer) randomSCLimit.getNextRandomValue();
+    }
+
+    @Override
+    public void setNumberedRandomConfiguration(int iterationNumber) {
+        super.setNumberedRandomConfiguration(iterationNumber);
+        
+        clusterThreshold = (Double) randomCThreshold.getNumberedRandom(iterationNumber);
+        matrixSimThreshold = (Double) randomMSThreshold.getNumberedRandom(iterationNumber);
+        similarityChecksLimit = (Integer) randomSCLimit.getNumberedRandom(iterationNumber);
     }
 
     public void setSimilarityChecksLimit(int similarityChecksLimit) {

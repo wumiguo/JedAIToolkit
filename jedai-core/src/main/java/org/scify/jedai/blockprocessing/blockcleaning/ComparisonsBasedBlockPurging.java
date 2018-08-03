@@ -28,6 +28,7 @@ import java.util.List;
 
 import org.apache.jena.atlas.json.JsonArray;
 import org.apache.jena.atlas.json.JsonObject;
+import org.scify.jedai.configuration.randomsearch.DblRandomSearchConfiguration;
 
 /**
  *
@@ -38,12 +39,16 @@ public class ComparisonsBasedBlockPurging extends AbstractBlockPurging {
     private double smoothingFactor;
     private double maxComparisonsPerBlock;
 
+    protected final DblRandomSearchConfiguration randomSFactor;
+    
     public ComparisonsBasedBlockPurging() {
         this(1.025);
     }
 
     public ComparisonsBasedBlockPurging(double sf) {
         smoothingFactor = sf;
+        
+        randomSFactor = new DblRandomSearchConfiguration(2.0, 1.0);
     }
 
     @Override
@@ -108,6 +113,16 @@ public class ComparisonsBasedBlockPurging extends AbstractBlockPurging {
     @Override
     protected boolean satisfiesThreshold(AbstractBlock block) {
         return block.getNoOfComparisons() <= maxComparisonsPerBlock;
+    }
+    
+    @Override
+    public void setNextRandomConfiguration() {
+        smoothingFactor = (Double) randomSFactor.getNextRandomValue();
+    }
+
+    @Override
+    public void setNumberedRandomConfiguration(int iterationNumber) {
+        smoothingFactor = (Double) randomSFactor.getNumberedRandom(iterationNumber);
     }
 
     @Override

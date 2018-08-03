@@ -12,26 +12,17 @@
 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 * See the License for the specific language governing permissions and
 * limitations under the License.
-*/
-
-package org.scify.jedai.entityclustering;
-
-import org.scify.jedai.datamodel.EquivalenceCluster;
-import org.scify.jedai.datamodel.SimilarityPairs;
-import org.scify.jedai.utilities.IDocumentation;
+ */
+package org.scify.jedai.configuration.randomsearch;
 
 /**
  *
- * @author G.A.P. II
+ * @author GAP2
  */
-
-public interface IEntityClustering extends IDocumentation {
- 
-    public EquivalenceCluster[] getDuplicates(SimilarityPairs simPairs);
+public interface IRandomSearchConfiguration {
     
-    public void setSimilarityThreshold(double th);
+    public Object getNextRandomValue();
     
-    public void setNextRandomConfiguration();
+    public Object getNumberedRandom(int iterationNumber);
     
-    public void setNumberedRandomConfiguration(int iterationNumber);
 }

@@ -22,7 +22,8 @@ import java.util.Set;
 
 import org.apache.jena.atlas.json.JsonArray;
 import org.apache.jena.atlas.json.JsonObject;
-import org.scify.jedai.datamodel.ConfigurationSetting;
+import org.scify.jedai.configuration.gridsearch.IntGridSearchConfiguration;
+import org.scify.jedai.configuration.randomsearch.IntRandomSearchConfiguration;
 
 /**
  *
@@ -30,11 +31,20 @@ import org.scify.jedai.datamodel.ConfigurationSetting;
  */
 public class QGramsBlocking extends StandardBlocking {
 
-    protected final int nGramSize;
+    protected int nGramSize;
+    
+    protected final IntGridSearchConfiguration gridNGSize;
+    protected final IntRandomSearchConfiguration randomNGSize;
 
-    public QGramsBlocking(ConfigurationSetting cs) {
-        super(cs);
-        nGramSize = cs.getIntegerParameter(0);
+    public QGramsBlocking() {
+        this(6);
+    }
+     public QGramsBlocking(int n) {
+        super();
+        nGramSize = n;
+        
+        gridNGSize = new IntGridSearchConfiguration(6, 2, 1);
+        randomNGSize = new IntRandomSearchConfiguration(6, 2);
     }
 
     @Override
@@ -46,7 +56,7 @@ public class QGramsBlocking extends StandardBlocking {
 
         return nGrams;
     }
-    
+
     @Override
     public String getMethodConfiguration() {
         return getParameterName(0) + "=" + nGramSize;
@@ -82,6 +92,11 @@ public class QGramsBlocking extends StandardBlocking {
             }
         }
         return nGrams;
+    }
+    
+    @Override
+    public int getNumberOfGridConfigurations() {
+        return gridNGSize.getNumberOfConfigurations();
     }
 
     @Override
@@ -120,7 +135,18 @@ public class QGramsBlocking extends StandardBlocking {
         }
     }
     
-    protected int setConfiguration(ConfigurationSetting cs) {
-        return 1;
+    @Override
+    public void setNextRandomConfiguration() {
+        nGramSize = (Integer) randomNGSize.getNextRandomValue();
+    }
+    
+    @Override
+    public void setNumberedGridConfiguration(int iterationNumber) {
+        nGramSize = (Integer) gridNGSize.getNumberedValue(iterationNumber);
+    }
+
+    @Override
+    public void setNumberedRandomConfiguration(int iterationNumber) {
+        nGramSize = (Integer) randomNGSize.getNumberedRandom(iterationNumber);
     }
 }

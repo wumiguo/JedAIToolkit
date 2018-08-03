@@ -15,7 +15,6 @@
  */
 package org.scify.jedai.blockprocessing.comparisoncleaning;
 
-import org.scify.jedai.datamodel.Comparison;
 import org.scify.jedai.utilities.enumerations.WeightingScheme;
 
 /**

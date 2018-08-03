@@ -33,6 +33,7 @@ import org.jgrapht.alg.ConnectivityInspector;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.SimpleGraph;
 import org.jgrapht.graph.SimpleWeightedGraph;
+import org.scify.jedai.configuration.randomsearch.DblRandomSearchConfiguration;
 
 /**
  *
@@ -41,6 +42,8 @@ import org.jgrapht.graph.SimpleWeightedGraph;
 public class CutClustering extends AbstractEntityClustering {
 
     protected double Acap;
+    
+    protected final DblRandomSearchConfiguration randomAcap;
     protected SimpleGraph duplicatesGraph;
     protected SimpleWeightedGraph weightedGraph;
 
@@ -51,6 +54,7 @@ public class CutClustering extends AbstractEntityClustering {
     public CutClustering(double ac, double simTh) {
         super(simTh);
         Acap = ac;
+        randomAcap = new DblRandomSearchConfiguration(0.99, 0.01);
     }
 
     @Override
@@ -183,5 +187,17 @@ public class CutClustering extends AbstractEntityClustering {
 
     public void setA(double Acap) {
         this.Acap = Acap;
+    }
+    
+    @Override
+    public void setNextRandomConfiguration() {
+        super.setNextRandomConfiguration();
+        Acap = (Double) randomAcap.getNextRandomValue();
+    }
+
+    @Override
+    public void setNumberedRandomConfiguration(int iterationNumber) {
+        super.setNumberedRandomConfiguration(iterationNumber);
+        Acap = (Double) randomAcap.getNumberedRandom(iterationNumber);
     }
 }

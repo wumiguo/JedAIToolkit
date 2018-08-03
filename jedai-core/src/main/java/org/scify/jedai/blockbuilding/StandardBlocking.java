@@ -15,12 +15,12 @@
  */
 package org.scify.jedai.blockbuilding;
 
+import com.esotericsoftware.minlog.Log;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.jena.atlas.json.JsonArray;
-import org.scify.jedai.datamodel.ConfigurationSetting;
 
 /**
  *
@@ -28,7 +28,7 @@ import org.scify.jedai.datamodel.ConfigurationSetting;
  */
 public class StandardBlocking extends AbstractBlockBuilding {
 
-    public StandardBlocking(ConfigurationSetting cs) {
+    public StandardBlocking() {
         super();
     }
 
@@ -59,6 +59,11 @@ public class StandardBlocking extends AbstractBlockBuilding {
     }
 
     @Override
+    public int getNumberOfGridConfigurations() {
+        return 1; // the default (parameter-free) one
+    }
+    
+    @Override
     public JsonArray getParameterConfiguration() {
         return new JsonArray();
     }
@@ -75,5 +80,20 @@ public class StandardBlocking extends AbstractBlockBuilding {
 
     protected String[] getTokens(String attributeValue) {
         return attributeValue.split("[\\W_]");
+    }
+    
+    @Override
+    public void setNextRandomConfiguration() {
+        Log.warn("Random search is inapplicable! " + getMethodName() + " is a parameter-free method!");
+    }
+
+    @Override
+    public void setNumberedGridConfiguration(int iterationNumber) {
+        Log.warn("Grid search is inapplicable! " + getMethodName() + " is a parameter-free method!");
+    }
+    
+    @Override
+    public void setNumberedRandomConfiguration(int iterationNumber) {
+        Log.warn("Random search is inapplicable! " + getMethodName() + " is a parameter-free method!");
     }
 }

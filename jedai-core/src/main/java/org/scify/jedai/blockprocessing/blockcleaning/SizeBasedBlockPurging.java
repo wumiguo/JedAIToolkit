@@ -29,6 +29,7 @@ import java.util.List;
 
 import org.apache.jena.atlas.json.JsonArray;
 import org.apache.jena.atlas.json.JsonObject;
+import org.scify.jedai.configuration.randomsearch.DblRandomSearchConfiguration;
 
 /**
  *
@@ -41,12 +42,16 @@ public class SizeBasedBlockPurging extends AbstractBlockPurging {
     private double purgingFactor;
     private double maxEntities;
     
+    protected final DblRandomSearchConfiguration randomPFactor;
+    
     public SizeBasedBlockPurging() {
         this(0.005);
     }
 
     public SizeBasedBlockPurging(double pf) {
         purgingFactor = pf;
+        
+        randomPFactor = new DblRandomSearchConfiguration(1.0, 0.001);
     }
     
     private int getMaxBlockSize(List<AbstractBlock> blocks) {
@@ -99,8 +104,8 @@ public class SizeBasedBlockPurging extends AbstractBlockPurging {
         obj.put("name", getParameterName(0));
         obj.put("defaultValue", "0.005");
         obj.put("minValue", "0.001");
-        obj.put("maxValue", "0.100");
-        obj.put("stepValue", "0.001");
+        obj.put("maxValue", "1.000");
+        obj.put("stepValue", "0.005");
         obj.put("description", getParameterDescription(0));
         
         final JsonArray array = new JsonArray();
@@ -138,6 +143,16 @@ public class SizeBasedBlockPurging extends AbstractBlockPurging {
         return block.getTotalBlockAssignments() <= maxEntities;
     }
 
+    @Override
+    public void setNextRandomConfiguration() {
+        purgingFactor = (Double) randomPFactor.getNextRandomValue();
+    }
+
+    @Override
+    public void setNumberedRandomConfiguration(int iterationNumber) {
+        purgingFactor = (Double) randomPFactor.getNumberedRandom(iterationNumber);
+    }
+    
     @Override
     protected void setThreshold(List<AbstractBlock> blocks) {
         if (blocks.get(0) instanceof UnilateralBlock) {

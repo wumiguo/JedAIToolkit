@@ -31,6 +31,7 @@ import java.util.List;
 
 import org.apache.jena.atlas.json.JsonArray;
 import org.apache.jena.atlas.json.JsonObject;
+import org.scify.jedai.configuration.randomsearch.DblRandomSearchConfiguration;
 
 /**
  *
@@ -38,7 +39,7 @@ import org.apache.jena.atlas.json.JsonObject;
  */
 public class BlockFiltering extends AbstractBlockProcessing {
 
-    protected final double ratio;
+    protected double ratio;
 
     protected int entitiesD1;
     protected int entitiesD2;
@@ -47,12 +48,16 @@ public class BlockFiltering extends AbstractBlockProcessing {
     protected int[] limitsD1;
     protected int[] limitsD2;
 
+    protected final DblRandomSearchConfiguration randomRatio;
+    
     public BlockFiltering() {
         this(0.8);
     }
 
     public BlockFiltering(double r) {
         ratio = r;
+        
+        randomRatio = new DblRandomSearchConfiguration(1.0, 0.01);
     }
 
     protected void countEntities(List<AbstractBlock> blocks) {
@@ -270,6 +275,16 @@ public class BlockFiltering extends AbstractBlockProcessing {
         return newBlocks;
     }
 
+    @Override
+    public void setNextRandomConfiguration() {
+        ratio = (Double) randomRatio.getNextRandomValue();
+    }
+
+    @Override
+    public void setNumberedRandomConfiguration(int iterationNumber) {
+        ratio = (Double) randomRatio.getNumberedRandom(iterationNumber);
+    }
+    
     protected void sortBlocks(List<AbstractBlock> blocks) {
         Collections.sort(blocks, new IncBlockCardinalityComparator());
     }

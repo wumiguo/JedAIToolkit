@@ -95,4 +95,16 @@ public class UniqueMappingClustering extends AbstractEntityClustering {
     public String getMethodName() {
         return "Unique Mapping Clustering";
     }
+
+@Override
+    public void setNextRandomConfiguration() {
+        matchedIds.clear();
+        super.setNextRandomConfiguration();
+    }
+
+    @Override
+    public void setNumberedRandomConfiguration(int iterationNumber) {
+        matchedIds.clear();
+        super.setNumberedRandomConfiguration(iterationNumber);
+    }
 }

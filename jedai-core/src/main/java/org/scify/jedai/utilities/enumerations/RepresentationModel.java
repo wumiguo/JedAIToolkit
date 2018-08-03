@@ -89,4 +89,41 @@ public enum RepresentationModel {
                 return null;
         }
     }
+
+    public static void resetGlobalValues(int datasetId, RepresentationModel model) {
+        switch (model) {
+            case CHARACTER_BIGRAMS_TF_IDF:
+            case CHARACTER_FOURGRAMS_TF_IDF:
+            case CHARACTER_TRIGRAMS_TF_IDF:
+                CharacterNGramsWithGlobalWeights.resetGlobalValues(datasetId);
+                break;
+            case TOKEN_BIGRAMS_TF_IDF:
+            case TOKEN_TRIGRAMS_TF_IDF:
+            case TOKEN_UNIGRAMS_TF_IDF:
+                TokenNGramsWithGlobalWeights.resetGlobalValues(datasetId);
+                break;
+            case CHARACTER_BIGRAMS:
+            case CHARACTER_TRIGRAMS:
+            case CHARACTER_FOURGRAMS:
+                CharacterNGrams.resetGlobalValues(datasetId);
+                break;
+            case CHARACTER_BIGRAM_GRAPHS:
+            case CHARACTER_TRIGRAM_GRAPHS:
+            case CHARACTER_FOURGRAM_GRAPHS:
+                CharacterNGramGraphs.resetGlobalValues(datasetId);
+                break;
+            case TOKEN_BIGRAMS:
+            case TOKEN_TRIGRAMS:
+            case TOKEN_UNIGRAMS:
+                TokenNGrams.resetGlobalValues(datasetId);
+                break;
+            case TOKEN_BIGRAM_GRAPHS:
+            case TOKEN_TRIGRAM_GRAPHS:
+            case TOKEN_UNIGRAM_GRAPHS:
+                TokenNGramGraphs.resetGlobalValues(datasetId);
+                break;
+            default:
+                ;
+        }
+    }
 }

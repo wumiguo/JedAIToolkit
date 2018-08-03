@@ -16,7 +16,6 @@
 
 package org.scify.jedai.utilities.enumerations;
 
-import org.scify.jedai.blockbuilding.ConfigurationFactory;
 import org.scify.jedai.blockbuilding.ExtendedQGramsBlocking;
 import org.scify.jedai.blockbuilding.ExtendedSortedNeighborhoodBlocking;
 import org.scify.jedai.blockbuilding.ExtendedSuffixArraysBlocking;
@@ -29,7 +28,6 @@ import org.scify.jedai.blockprocessing.blockcleaning.BlockFiltering;
 import org.scify.jedai.blockprocessing.comparisoncleaning.ComparisonPropagation;
 import org.scify.jedai.blockprocessing.comparisoncleaning.WeightedEdgePruning;
 import org.scify.jedai.blockprocessing.IBlockProcessing;
-import org.scify.jedai.datamodel.ConfigurationSetting;
 
 /**
  *
@@ -46,23 +44,22 @@ public enum BlockBuildingMethod {
     SUFFIX_ARRAYS;
     
     public static IBlockBuilding getDefaultConfiguration(BlockBuildingMethod blbuMethod) {
-        final ConfigurationSetting defaultConf = ConfigurationFactory.getDefaultConfiguration(blbuMethod);;
         switch (blbuMethod) {
             case EXTENDED_Q_GRAMS_BLOCKING:
-                return new ExtendedQGramsBlocking(defaultConf);
+                return new ExtendedQGramsBlocking();
             case EXTENDED_SORTED_NEIGHBORHOOD:
-                return new ExtendedSortedNeighborhoodBlocking(defaultConf);
+                return new ExtendedSortedNeighborhoodBlocking();
             case EXTENDED_SUFFIX_ARRAYS:
-                return new ExtendedSuffixArraysBlocking(defaultConf);
+                return new ExtendedSuffixArraysBlocking();
             case Q_GRAMS_BLOCKING:
-                return new QGramsBlocking(defaultConf);
+                return new QGramsBlocking();
             case SORTED_NEIGHBORHOOD:
-                return new SortedNeighborhoodBlocking(defaultConf);
+                return new SortedNeighborhoodBlocking();
             case SUFFIX_ARRAYS:
-                return new SuffixArraysBlocking(defaultConf);
+                return new SuffixArraysBlocking();
             case STANDARD_BLOCKING:
             default:
-                return new StandardBlocking(defaultConf);
+                return new StandardBlocking();
         }
     }
     
