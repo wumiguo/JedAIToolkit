@@ -22,6 +22,7 @@ import com.esotericsoftware.minlog.Log;
 
 import org.apache.jena.atlas.json.JsonArray;
 import org.apache.jena.atlas.json.JsonObject;
+import org.scify.jedai.configuration.gridsearch.DblGridSearchConfiguration;
 import org.scify.jedai.configuration.randomsearch.DblRandomSearchConfiguration;
 import org.scify.jedai.utilities.graph.ConnectedComponents;
 
@@ -40,11 +41,14 @@ public abstract class AbstractEntityClustering implements IEntityClustering {
     protected int noOfEntities;
     protected int datasetLimit;
 
+    protected final DblGridSearchConfiguration gridThreshold;
     protected final DblRandomSearchConfiguration randomThreshold;
     protected UndirectedGraph similarityGraph;
 
     public AbstractEntityClustering(double simTh) {
         threshold = simTh;
+        
+        gridThreshold = new DblGridSearchConfiguration(0.95, 0.05, 0.05);
         randomThreshold = new DblRandomSearchConfiguration(0.99, 0.01);
     }
 
@@ -95,6 +99,11 @@ public abstract class AbstractEntityClustering implements IEntityClustering {
                 + "1)" + getParameterDescription(0) + ".\n";
     }
 
+    @Override
+    public int getNumberOfGridConfigurations() {
+        return gridThreshold.getNumberOfConfigurations();
+    }
+    
     @Override
     public JsonArray getParameterConfiguration() {
         final JsonObject obj1 = new JsonObject();
@@ -154,6 +163,11 @@ public abstract class AbstractEntityClustering implements IEntityClustering {
         threshold = (Double) randomThreshold.getNextRandomValue();
     }
 
+    @Override
+    public void setNumberedGridConfiguration(int iterationNumber) {
+        threshold = (Double) gridThreshold.getNumberedValue(iterationNumber);
+    }
+    
     @Override
     public void setNumberedRandomConfiguration(int iterationNumber) {
         threshold = (Double) randomThreshold.getNumberedRandom(iterationNumber);

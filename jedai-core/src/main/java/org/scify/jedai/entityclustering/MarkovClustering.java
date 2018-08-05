@@ -23,6 +23,8 @@ import java.util.Iterator;
 
 import org.apache.jena.atlas.json.JsonArray;
 import org.apache.jena.atlas.json.JsonObject;
+import org.scify.jedai.configuration.gridsearch.DblGridSearchConfiguration;
+import org.scify.jedai.configuration.gridsearch.IntGridSearchConfiguration;
 import org.scify.jedai.configuration.randomsearch.DblRandomSearchConfiguration;
 import org.scify.jedai.configuration.randomsearch.IntRandomSearchConfiguration;
 
@@ -36,8 +38,11 @@ public class MarkovClustering extends AbstractEntityClustering {
     protected double matrixSimThreshold;//define similarity threshold for matrix comparison
     protected int similarityChecksLimit;//define check repetitions limit for the expansion-inflation process
 
+    protected final DblGridSearchConfiguration gridCThreshold;
+    protected final DblGridSearchConfiguration gridMSThreshold;
     protected final DblRandomSearchConfiguration randomCThreshold;
     protected final DblRandomSearchConfiguration randomMSThreshold;
+    protected final IntGridSearchConfiguration gridSCLimit;
     protected final IntRandomSearchConfiguration randomSCLimit;
 
     public MarkovClustering() {
@@ -49,7 +54,10 @@ public class MarkovClustering extends AbstractEntityClustering {
         clusterThreshold = ct;
         matrixSimThreshold = mst;
         similarityChecksLimit = scl;
-
+        
+        gridCThreshold = new DblGridSearchConfiguration(0.100, 0.002, 0.002);
+        gridMSThreshold = new DblGridSearchConfiguration(0.00100, 0.00001, 0.00001);
+        gridSCLimit = new IntGridSearchConfiguration(10, 1, 1);
         randomCThreshold = new DblRandomSearchConfiguration(0.100, 0.001);
         randomMSThreshold = new DblRandomSearchConfiguration(0.00100, 0.00001);
         randomSCLimit = new IntRandomSearchConfiguration(10, 1);
@@ -168,6 +176,12 @@ public class MarkovClustering extends AbstractEntityClustering {
                 + "2)" + getParameterDescription(1) + ".\n"
                 + "3)" + getParameterDescription(2) + ".\n"
                 + "4)" + getParameterDescription(3) + ".";
+    }
+    
+    @Override
+    public int getNumberOfGridConfigurations() {
+        return super.getNumberOfGridConfigurations() * gridCThreshold.getNumberOfConfigurations() *
+               gridMSThreshold.getNumberOfConfigurations() * gridSCLimit.getNumberOfConfigurations();
     }
 
     @Override
@@ -324,11 +338,20 @@ public class MarkovClustering extends AbstractEntityClustering {
         matrixSimThreshold = (Double) randomMSThreshold.getNextRandomValue();
         similarityChecksLimit = (Integer) randomSCLimit.getNextRandomValue();
     }
+    
+    @Override
+    public void setNumberedGridConfiguration(int iterationNumber) {
+        super.setNumberedGridConfiguration(iterationNumber);
+
+        clusterThreshold = (Double) gridCThreshold.getNumberedValue(iterationNumber);
+        matrixSimThreshold = (Double) gridMSThreshold.getNumberedValue(iterationNumber);
+        similarityChecksLimit = (Integer) gridSCLimit.getNumberedValue(iterationNumber);
+    }
 
     @Override
     public void setNumberedRandomConfiguration(int iterationNumber) {
         super.setNumberedRandomConfiguration(iterationNumber);
-        
+
         clusterThreshold = (Double) randomCThreshold.getNumberedRandom(iterationNumber);
         matrixSimThreshold = (Double) randomMSThreshold.getNumberedRandom(iterationNumber);
         similarityChecksLimit = (Integer) randomSCLimit.getNumberedRandom(iterationNumber);

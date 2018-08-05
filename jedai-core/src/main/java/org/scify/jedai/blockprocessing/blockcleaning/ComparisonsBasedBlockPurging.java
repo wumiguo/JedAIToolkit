@@ -28,6 +28,7 @@ import java.util.List;
 
 import org.apache.jena.atlas.json.JsonArray;
 import org.apache.jena.atlas.json.JsonObject;
+import org.scify.jedai.configuration.gridsearch.DblGridSearchConfiguration;
 import org.scify.jedai.configuration.randomsearch.DblRandomSearchConfiguration;
 
 /**
@@ -39,6 +40,7 @@ public class ComparisonsBasedBlockPurging extends AbstractBlockPurging {
     private double smoothingFactor;
     private double maxComparisonsPerBlock;
 
+    protected final DblGridSearchConfiguration gridSFactor;
     protected final DblRandomSearchConfiguration randomSFactor;
     
     public ComparisonsBasedBlockPurging() {
@@ -48,6 +50,7 @@ public class ComparisonsBasedBlockPurging extends AbstractBlockPurging {
     public ComparisonsBasedBlockPurging(double sf) {
         smoothingFactor = sf;
         
+        gridSFactor = new DblGridSearchConfiguration(2.0, 1.0, 0.02);
         randomSFactor = new DblRandomSearchConfiguration(2.0, 1.0);
     }
 
@@ -72,6 +75,11 @@ public class ComparisonsBasedBlockPurging extends AbstractBlockPurging {
                 + "1)" + getParameterDescription(0) + ".\n";
     }
 
+    @Override
+    public int getNumberOfGridConfigurations() {
+        return gridSFactor.getNumberOfConfigurations();
+    }
+    
     @Override
     public JsonArray getParameterConfiguration() {
         final JsonObject obj = new JsonObject();
@@ -120,6 +128,11 @@ public class ComparisonsBasedBlockPurging extends AbstractBlockPurging {
         smoothingFactor = (Double) randomSFactor.getNextRandomValue();
     }
 
+    @Override
+    public void setNumberedGridConfiguration(int iterationNumber) {
+        smoothingFactor = (Double) gridSFactor.getNumberedValue(iterationNumber);
+    }
+    
     @Override
     public void setNumberedRandomConfiguration(int iterationNumber) {
         smoothingFactor = (Double) randomSFactor.getNumberedRandom(iterationNumber);
@@ -177,5 +190,5 @@ public class ComparisonsBasedBlockPurging extends AbstractBlockPurging {
 
         maxComparisonsPerBlock = previousSize;
         Log.info("Maximum comparisons per block\t:\t" + maxComparisonsPerBlock);
-    }
+    } 
 }

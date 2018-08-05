@@ -31,7 +31,11 @@ public interface IBlockProcessing extends IDocumentation {
 
     public List<AbstractBlock> refineBlocks(List<AbstractBlock> blocks);
     
+    public int getNumberOfGridConfigurations();
+    
     public void setNextRandomConfiguration();
+    
+    public void setNumberedGridConfiguration(int iterationNumber);
     
     public void setNumberedRandomConfiguration(int iterationNumber);
 }

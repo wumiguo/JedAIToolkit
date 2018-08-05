@@ -20,7 +20,6 @@ import org.scify.jedai.datamodel.EntityProfile;
 import org.scify.jedai.utilities.IDocumentation;
 
 import java.util.List;
-import org.scify.jedai.utilities.datastructures.AbstractDuplicatePropagation;
 
 /**
  *

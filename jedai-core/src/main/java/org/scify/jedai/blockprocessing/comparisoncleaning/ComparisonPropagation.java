@@ -65,6 +65,11 @@ public class ComparisonPropagation extends AbstractComparisonCleaning {
     }
 
     @Override
+    public int getNumberOfGridConfigurations() {
+        return 1; // parameter-free
+    }
+    
+    @Override
     public JsonArray getParameterConfiguration() {
         return new JsonArray();
     }
@@ -116,6 +121,11 @@ public class ComparisonPropagation extends AbstractComparisonCleaning {
         Log.warn("Random search is inapplicable! " + getMethodName() + " is a parameter-free method!");
     }
 
+    @Override
+    public void setNumberedGridConfiguration(int iterationNumber) {
+        Log.warn("Grid search is inapplicable! " + getMethodName() + " is a parameter-free method!");
+    }
+    
     @Override
     public void setNumberedRandomConfiguration(int iterationNumber) {
         Log.warn("Random search is inapplicable! " + getMethodName() + " is a parameter-free method!");

@@ -32,7 +32,11 @@ public interface ISchemaClustering {
     
     public TObjectIntMap<String>[] getClusters(List<EntityProfile> profilesD1, List<EntityProfile> profilesD2);
     
+    public int getNumberOfGridConfigurations();
+    
     public void setNextRandomConfiguration();
+    
+    public void setNumberedGridConfiguration(int iterationNumber);
     
     public void setNumberedRandomConfiguration(int iterationNumber);
 }

@@ -29,6 +29,7 @@ import java.util.List;
 
 import org.apache.jena.atlas.json.JsonArray;
 import org.apache.jena.atlas.json.JsonObject;
+import org.scify.jedai.configuration.gridsearch.DblGridSearchConfiguration;
 import org.scify.jedai.configuration.randomsearch.DblRandomSearchConfiguration;
 
 /**
@@ -42,6 +43,7 @@ public class SizeBasedBlockPurging extends AbstractBlockPurging {
     private double purgingFactor;
     private double maxEntities;
     
+    protected final DblGridSearchConfiguration gridPFactor;
     protected final DblRandomSearchConfiguration randomPFactor;
     
     public SizeBasedBlockPurging() {
@@ -51,6 +53,7 @@ public class SizeBasedBlockPurging extends AbstractBlockPurging {
     public SizeBasedBlockPurging(double pf) {
         purgingFactor = pf;
         
+        gridPFactor = new DblGridSearchConfiguration(1.0, 0.001, 0.005);
         randomPFactor = new DblRandomSearchConfiguration(1.0, 0.001);
     }
     
@@ -95,6 +98,11 @@ public class SizeBasedBlockPurging extends AbstractBlockPurging {
     public String getMethodParameters() {
         return  getMethodName() + " involves a single parameter:\n"
                 + "1)" + getParameterDescription(0) + ".\n";
+    }
+    
+    @Override
+    public int getNumberOfGridConfigurations() {
+        return gridPFactor.getNumberOfConfigurations();
     }
 
     @Override
@@ -148,6 +156,11 @@ public class SizeBasedBlockPurging extends AbstractBlockPurging {
         purgingFactor = (Double) randomPFactor.getNextRandomValue();
     }
 
+    @Override
+    public void setNumberedGridConfiguration(int iterationNumber) {
+        purgingFactor = (Double) gridPFactor.getNumberedValue(iterationNumber);
+    }
+    
     @Override
     public void setNumberedRandomConfiguration(int iterationNumber) {
         purgingFactor = (Double) randomPFactor.getNumberedRandom(iterationNumber);

@@ -34,7 +34,11 @@ public interface IEntityMatching extends IDocumentation {
 
     public SimilarityPairs executeComparisons(List<AbstractBlock> blocks, List<EntityProfile> profilesD1, List<EntityProfile> profilesD2);
     
+    public int getNumberOfGridConfigurations();
+    
     public void setNextRandomConfiguration();
+    
+    public void setNumberedGridConfiguration(int iterationNumber);
     
     public void setNumberedRandomConfiguration(int iterationNumber);
 }

@@ -29,9 +29,13 @@ public interface IEntityClustering extends IDocumentation {
  
     public EquivalenceCluster[] getDuplicates(SimilarityPairs simPairs);
     
+    public int getNumberOfGridConfigurations();
+    
     public void setSimilarityThreshold(double th);
     
     public void setNextRandomConfiguration();
+    
+    public void setNumberedGridConfiguration(int iterationNumber);
     
     public void setNumberedRandomConfiguration(int iterationNumber);
 }

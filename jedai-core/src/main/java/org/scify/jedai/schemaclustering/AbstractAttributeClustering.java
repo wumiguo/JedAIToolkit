@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import org.scify.jedai.configuration.gridsearch.IntGridSearchConfiguration;
 import org.scify.jedai.datamodel.Attribute;
 import org.scify.jedai.datamodel.EntityProfile;
 import org.scify.jedai.datamodel.RepModelSimMetricCombo;
@@ -49,6 +50,7 @@ public abstract class AbstractAttributeClustering implements ISchemaClustering {
     protected int[] globalMostSimilarIds;
     protected double[] globalMaxSimilarities;
 
+    protected final IntGridSearchConfiguration gridCombo;
     protected final IntRandomSearchConfiguration randomCombo;
     protected ITextModel[][] attributeModels;
     protected final List<RepModelSimMetricCombo> modelMetricCombinations;
@@ -63,6 +65,7 @@ public abstract class AbstractAttributeClustering implements ISchemaClustering {
         attributeModels = new ITextModel[2][];
 
         modelMetricCombinations = RepModelSimMetricCombo.getAllValidCombos();
+        gridCombo = new IntGridSearchConfiguration(modelMetricCombinations.size() - 1, 0, 1);
         randomCombo = new IntRandomSearchConfiguration(modelMetricCombinations.size(), 0);
     }
 
@@ -260,8 +263,21 @@ public abstract class AbstractAttributeClustering implements ISchemaClustering {
     }
 
     @Override
+    public int getNumberOfGridConfigurations() {
+        return gridCombo.getNumberOfConfigurations();
+    }
+
+    @Override
     public void setNextRandomConfiguration() {
         int comboId = (Integer) randomCombo.getNextRandomValue();
+        final RepModelSimMetricCombo selectedCombo = modelMetricCombinations.get(comboId);
+        repModel = selectedCombo.getRepModel();
+        simMetric = selectedCombo.getSimMetric();
+    }
+
+    @Override
+    public void setNumberedGridConfiguration(int iterationNumber) {
+        int comboId = (Integer) gridCombo.getNumberedValue(iterationNumber);
         final RepModelSimMetricCombo selectedCombo = modelMetricCombinations.get(comboId);
         repModel = selectedCombo.getRepModel();
         simMetric = selectedCombo.getSimMetric();
