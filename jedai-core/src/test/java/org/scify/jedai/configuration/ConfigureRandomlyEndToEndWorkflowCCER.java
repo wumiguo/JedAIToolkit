@@ -44,7 +44,7 @@ import org.scify.jedai.utilities.datastructures.BilateralDuplicatePropagation;
  *
  * @author GAP2
  */
-public class ConfigureEndToEndWorkflowCCER {
+public class ConfigureRandomlyEndToEndWorkflowCCER {
 
     private final static int NO_OF_TRIALS = 60;
 

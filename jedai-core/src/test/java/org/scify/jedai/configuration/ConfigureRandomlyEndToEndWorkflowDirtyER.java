@@ -43,7 +43,7 @@ import org.scify.jedai.utilities.datastructures.UnilateralDuplicatePropagation;
  *
  * @author GAP2
  */
-public class ConfigureEndToEndWorkflowDirtyER {
+public class ConfigureRandomlyEndToEndWorkflowDirtyER {
 
     private final static int NO_OF_TRIALS = 60;
 
