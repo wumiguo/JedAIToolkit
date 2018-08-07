@@ -100,7 +100,7 @@ public class HolisticGridConfigurationCCER {
             int bestLoop4 = 0;
             int bestLoop5 = 0;
             double bestFMeasure = 0;
-            for (int loop0 = 0; loop0 < bp1.getNumberOfGridConfigurations(); loop0++) {
+            for (int loop0 = 0; loop0 < bb.getNumberOfGridConfigurations(); loop0++) {
                 bb.setNumberedGridConfiguration(loop0);
                 final List<AbstractBlock> originalBlocks = bb.getBlocks(profiles1, profiles2);
                 if (originalBlocks.isEmpty()) {
@@ -155,7 +155,8 @@ public class HolisticGridConfigurationCCER {
                     }
                 }
             }
-
+            
+            System.out.println("\nBest Loop 0\t:\t" + bestLoop0);
             System.out.println("\nBest Loop 1\t:\t" + bestLoop1);
             System.out.println("\nBest Loop 2\t:\t" + bestLoop2);
             System.out.println("\nBest Loop 3\t:\t" + bestLoop3);
