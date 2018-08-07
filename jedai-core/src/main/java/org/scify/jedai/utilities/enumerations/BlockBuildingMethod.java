@@ -12,14 +12,14 @@
 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 * See the License for the specific language governing permissions and
 * limitations under the License.
-*/
-
+ */
 package org.scify.jedai.utilities.enumerations;
 
 import org.scify.jedai.blockbuilding.ExtendedQGramsBlocking;
 import org.scify.jedai.blockbuilding.ExtendedSortedNeighborhoodBlocking;
 import org.scify.jedai.blockbuilding.ExtendedSuffixArraysBlocking;
 import org.scify.jedai.blockbuilding.IBlockBuilding;
+import org.scify.jedai.blockbuilding.LSHBlocking;
 import org.scify.jedai.blockbuilding.QGramsBlocking;
 import org.scify.jedai.blockbuilding.SortedNeighborhoodBlocking;
 import org.scify.jedai.blockbuilding.StandardBlocking;
@@ -38,11 +38,12 @@ public enum BlockBuildingMethod {
     EXTENDED_Q_GRAMS_BLOCKING,
     EXTENDED_SORTED_NEIGHBORHOOD,
     EXTENDED_SUFFIX_ARRAYS,
+    LSH_BLOCKING,
     Q_GRAMS_BLOCKING,
     SORTED_NEIGHBORHOOD,
     STANDARD_BLOCKING,
     SUFFIX_ARRAYS;
-    
+
     public static IBlockBuilding getDefaultConfiguration(BlockBuildingMethod blbuMethod) {
         switch (blbuMethod) {
             case EXTENDED_Q_GRAMS_BLOCKING:
@@ -51,6 +52,8 @@ public enum BlockBuildingMethod {
                 return new ExtendedSortedNeighborhoodBlocking();
             case EXTENDED_SUFFIX_ARRAYS:
                 return new ExtendedSuffixArraysBlocking();
+            case LSH_BLOCKING:
+                return new LSHBlocking();
             case Q_GRAMS_BLOCKING:
                 return new QGramsBlocking();
             case SORTED_NEIGHBORHOOD:
@@ -62,7 +65,7 @@ public enum BlockBuildingMethod {
                 return new StandardBlocking();
         }
     }
-    
+
     public static IBlockProcessing getDefaultBlockCleaning(BlockBuildingMethod blbuMethod) {
         switch (blbuMethod) {
             case EXTENDED_Q_GRAMS_BLOCKING:
@@ -82,7 +85,7 @@ public enum BlockBuildingMethod {
                 return new BlockFiltering(0.55);
         }
     }
-    
+
     public static IBlockProcessing getDefaultComparisonCleaning(BlockBuildingMethod blbuMethod) {
         switch (blbuMethod) {
             case EXTENDED_Q_GRAMS_BLOCKING:

@@ -54,7 +54,7 @@ public class MarkovClustering extends AbstractEntityClustering {
         clusterThreshold = ct;
         matrixSimThreshold = mst;
         similarityChecksLimit = scl;
-        
+
         gridCThreshold = new DblGridSearchConfiguration(0.100, 0.002, 0.002);
         gridMSThreshold = new DblGridSearchConfiguration(0.00100, 0.00001, 0.00001);
         gridSCLimit = new IntGridSearchConfiguration(10, 1, 1);
@@ -153,10 +153,10 @@ public class MarkovClustering extends AbstractEntityClustering {
 
     @Override
     public String getMethodConfiguration() {
-        return super.getMethodConfiguration()
-                + "\nCluster threshold=" + clusterThreshold
-                + "\nMatrix Similarity Threshold=" + matrixSimThreshold
-                + "\nSimilarity Checks Limit=" + similarityChecksLimit;
+        return super.getMethodConfiguration() + ",\t"
+                + getParameterName(1) + "=" + clusterThreshold + ",\t"
+                + getParameterName(2) + "=" + matrixSimThreshold + ",\t"
+                + getParameterName(3) + "=" + similarityChecksLimit;
     }
 
     @Override
@@ -177,11 +177,11 @@ public class MarkovClustering extends AbstractEntityClustering {
                 + "3)" + getParameterDescription(2) + ".\n"
                 + "4)" + getParameterDescription(3) + ".";
     }
-    
+
     @Override
     public int getNumberOfGridConfigurations() {
-        return super.getNumberOfGridConfigurations() * gridCThreshold.getNumberOfConfigurations() *
-               gridMSThreshold.getNumberOfConfigurations() * gridSCLimit.getNumberOfConfigurations();
+        return super.getNumberOfGridConfigurations() * gridCThreshold.getNumberOfConfigurations()
+                * gridMSThreshold.getNumberOfConfigurations() * gridSCLimit.getNumberOfConfigurations();
     }
 
     @Override
@@ -338,14 +338,24 @@ public class MarkovClustering extends AbstractEntityClustering {
         matrixSimThreshold = (Double) randomMSThreshold.getNextRandomValue();
         similarityChecksLimit = (Integer) randomSCLimit.getNextRandomValue();
     }
-    
+
     @Override
     public void setNumberedGridConfiguration(int iterationNumber) {
-        super.setNumberedGridConfiguration(iterationNumber);
+        int secondStepConfs = gridCThreshold.getNumberOfConfigurations() * gridMSThreshold.getNumberOfConfigurations() * gridSCLimit.getNumberOfConfigurations();
+        int thrIteration = iterationNumber / secondStepConfs;
+        super.setNumberedGridConfiguration(thrIteration);
 
-        clusterThreshold = (Double) gridCThreshold.getNumberedValue(iterationNumber);
-        matrixSimThreshold = (Double) gridMSThreshold.getNumberedValue(iterationNumber);
-        similarityChecksLimit = (Integer) gridSCLimit.getNumberedValue(iterationNumber);
+        int remainingIterations = iterationNumber - thrIteration * secondStepConfs;
+        int thirdStepConfs = gridCThreshold.getNumberOfConfigurations() * gridSCLimit.getNumberOfConfigurations();
+        int mstIteration = remainingIterations / thirdStepConfs;
+        matrixSimThreshold = (Double) gridMSThreshold.getNumberedValue(mstIteration);
+
+        remainingIterations = remainingIterations - mstIteration * thirdStepConfs;
+        int cthrIteration = remainingIterations / gridSCLimit.getNumberOfConfigurations();
+        clusterThreshold = (Double) gridCThreshold.getNumberedValue(cthrIteration);
+
+        int scIteration = remainingIterations - cthrIteration * gridSCLimit.getNumberOfConfigurations();
+        similarityChecksLimit = (Integer) gridSCLimit.getNumberedValue(scIteration);
     }
 
     @Override

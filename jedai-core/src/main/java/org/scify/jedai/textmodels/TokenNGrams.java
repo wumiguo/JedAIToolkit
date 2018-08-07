@@ -33,11 +33,11 @@ public class TokenNGrams extends BagModel {
     
     @Override
     public void updateModel(String text) {
-        final String[] tokens = gr.demokritos.iit.jinsect.utils.splitToWords(text.toLowerCase());
+        final String[] tokens = text.toLowerCase().split("[\\W_]");
         
         int noOfTokens = tokens.length;
         noOfTotalTerms += noOfTokens;
-        for (int j = 0; j <= noOfTokens-nSize; j++) { //this missed the last token without "<="
+        for (int j = 0; j <= noOfTokens-nSize; j++) { // misses the last token without "="
             final StringBuilder sb = new StringBuilder();
             for (int k = 0; k < nSize; k++) {
                 sb.append(tokens[j+k]).append(" ");

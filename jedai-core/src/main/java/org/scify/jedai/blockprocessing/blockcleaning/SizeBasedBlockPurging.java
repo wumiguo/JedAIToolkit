@@ -53,8 +53,8 @@ public class SizeBasedBlockPurging extends AbstractBlockPurging {
     public SizeBasedBlockPurging(double pf) {
         purgingFactor = pf;
         
-        gridPFactor = new DblGridSearchConfiguration(1.0, 0.001, 0.005);
-        randomPFactor = new DblRandomSearchConfiguration(1.0, 0.001);
+        gridPFactor = new DblGridSearchConfiguration(0.20, 0.001, 0.005);
+        randomPFactor = new DblRandomSearchConfiguration(0.20, 0.001);
     }
     
     private int getMaxBlockSize(List<AbstractBlock> blocks) {
@@ -112,7 +112,7 @@ public class SizeBasedBlockPurging extends AbstractBlockPurging {
         obj.put("name", getParameterName(0));
         obj.put("defaultValue", "0.005");
         obj.put("minValue", "0.001");
-        obj.put("maxValue", "1.000");
+        obj.put("maxValue", "0.200");
         obj.put("stepValue", "0.005");
         obj.put("description", getParameterDescription(0));
         
