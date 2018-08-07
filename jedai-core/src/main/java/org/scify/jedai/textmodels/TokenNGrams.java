@@ -44,12 +44,9 @@ public class TokenNGrams extends BagModel {
             }
             String feature = sb.toString().trim();
             
-            IncrementalCounter frequency = itemsFrequency.get(feature);
-            if (frequency == null) {
-                frequency = new IncrementalCounter();
-                itemsFrequency.put(feature, frequency);
+            if (!itemsFrequency.increment(feature)) {
+                itemsFrequency.put(feature, 1);
             }
-            frequency.incrementCounter();
         }
     }
 }
