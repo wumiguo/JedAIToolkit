@@ -50,20 +50,24 @@ public class RdfCsvDblpAcm {
     public static void main(String[] args) throws FileNotFoundException {
         BasicConfigurator.configure();
         
-        String mainDirectory = "data/cleanCleanErDatasets/";
+        String mainDirectory = "data/cleanCleanErDatasets/DBLP-ACM/";
 
         EntityRDFReader rdfEntityReader = new EntityRDFReader(mainDirectory + "DBLP2toRdf.xml");
         List<EntityProfile> rdfDBLP = rdfEntityReader.getEntityProfiles();
         System.out.println("RDF DBLP Entity Profiles\t:\t" + rdfDBLP.size());
         
-        EntityCSVReader csvEntityReader = new EntityCSVReader(mainDirectory + "DBLP-ACM" + File.separator + "ACM.csv");
+        for (EntityProfile profile : rdfDBLP) {
+            System.out.println(profile.getEntityUrl());
+        }
+        
+        EntityCSVReader csvEntityReader = new EntityCSVReader(mainDirectory + "ACM.csv");
         csvEntityReader.setAttributeNamesInFirstRow(true);
         csvEntityReader.setIdIndex(0);
         csvEntityReader.setSeparator(',');
         List<EntityProfile> csvACM = csvEntityReader.getEntityProfiles();
         System.out.println("RDF ACM Entity Profiles\t:\t" + csvACM.size());
 
-        GtDblpRdfAcmCsvReader csvGtReader = new GtDblpRdfAcmCsvReader(mainDirectory + "DBLP-ACM" + File.separator + "DBLP-ACM_perfectMapping.csv");
+        GtDblpRdfAcmCsvReader csvGtReader = new GtDblpRdfAcmCsvReader(mainDirectory + "DBLP-ACM_perfectMapping.csv");
         csvGtReader.setIgnoreFirstRow(true);
         csvGtReader.setSeparator(',');
         csvGtReader.getDuplicatePairs(rdfDBLP, csvACM);
