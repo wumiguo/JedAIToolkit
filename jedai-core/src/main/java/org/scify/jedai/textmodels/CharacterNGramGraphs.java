@@ -40,7 +40,7 @@ public class CharacterNGramGraphs extends GraphModel {
     @Override
     public void updateModel(String text) {
         final DocumentNGramGraph tempGraph = new DocumentNGramGraph(nSize, nSize, nSize);
-        tempGraph.setDataString(text);
+        tempGraph.setDataString(text.toLowerCase());
         
         graphModel.merge(tempGraph, 1 - (NO_OF_DOCUMENTS[datasetId]-1)/NO_OF_DOCUMENTS[datasetId]);
     }

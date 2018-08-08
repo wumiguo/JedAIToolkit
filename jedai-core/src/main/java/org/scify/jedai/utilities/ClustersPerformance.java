@@ -17,7 +17,6 @@ package org.scify.jedai.utilities;
 
 import org.scify.jedai.utilities.datastructures.BilateralDuplicatePropagation;
 import org.scify.jedai.utilities.datastructures.AbstractDuplicatePropagation;
-import org.scify.jedai.datamodel.Comparison;
 import org.scify.jedai.datamodel.EquivalenceCluster;
 
 import com.esotericsoftware.minlog.Log;
@@ -119,7 +118,7 @@ public class ClustersPerformance {
                 final EntityProfile profile2 = profilesD2.get(entityId2);
 
                 final int originalDuplicates = abstractDP.getNoOfDuplicates();
-                abstractDP.isSuperfluous(new Comparison(true, entityId1, entityId2));
+                abstractDP.isSuperfluous(entityId1, entityId2);
                 final int newDuplicates = abstractDP.getNoOfDuplicates();
                 
                 sb.append(profile1.getEntityUrl()).append(",");
@@ -155,7 +154,7 @@ public class ClustersPerformance {
                         final EntityProfile profile2 = profilesD1.get(duplicatesArray[j]);
 
                         final int originalDuplicates = abstractDP.getNoOfDuplicates();
-                        abstractDP.isSuperfluous(new Comparison(false, duplicatesArray[i], duplicatesArray[j]));
+                        abstractDP.isSuperfluous(duplicatesArray[i], duplicatesArray[j]);
                         final int newDuplicates = abstractDP.getNoOfDuplicates();
 
                         sb.append(profile1.getEntityUrl()).append(",");
@@ -215,8 +214,7 @@ public class ClustersPerformance {
                     int entityId1 = outIterator.next();
                     for (TIntIterator inIterator = cluster.getEntityIdsD2().iterator(); inIterator.hasNext();) {
                         totalMatches++;
-                        Comparison comparison = new Comparison(true, entityId1, inIterator.next());
-                        abstractDP.isSuperfluous(comparison);
+                        abstractDP.isSuperfluous(entityId1, inIterator.next());
                     }
                 }
             }
@@ -227,8 +225,7 @@ public class ClustersPerformance {
                 for (int i = 0; i < duplicatesArray.length; i++) {
                     for (int j = i + 1; j < duplicatesArray.length; j++) {
                         totalMatches++;
-                        Comparison comparison = new Comparison(false, duplicatesArray[i], duplicatesArray[j]);
-                        abstractDP.isSuperfluous(comparison);
+                        abstractDP.isSuperfluous(duplicatesArray[i], duplicatesArray[j]);
                     }
                 }
             }

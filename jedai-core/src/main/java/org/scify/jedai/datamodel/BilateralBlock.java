@@ -81,4 +81,12 @@ public class BilateralBlock extends AbstractBlock implements Serializable {
     public void setUtilityMeasure() {
         utilityMeasure = 1.0/Math.max(index1Entities.length, index2Entities.length);
     }
+    
+    @Override
+    public String toString() {
+        return "block index : " + blockIndex + ", utility measure : " + 
+                utilityMeasure + ", #comparisons : " + getNoOfComparisons() + 
+                ", entities D1 : " + Arrays.toString(index1Entities) +
+                ", entities D2 : " + Arrays.toString(index2Entities);
+    }
 }

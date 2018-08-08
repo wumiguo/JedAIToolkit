@@ -19,7 +19,7 @@ import org.scify.jedai.blockprocessing.AbstractBlockProcessing;
 import org.scify.jedai.datamodel.AbstractBlock;
 import org.scify.jedai.datamodel.BilateralBlock;
 import org.scify.jedai.datamodel.UnilateralBlock;
-import org.scify.jedai.utilities.comparators.BlockCardinalityComparator;
+import org.scify.jedai.utilities.comparators.IncBlockCardinalityComparator;
 import com.esotericsoftware.minlog.Log;
 import gnu.trove.iterator.TIntIterator;
 import gnu.trove.list.TIntList;
@@ -31,6 +31,8 @@ import java.util.List;
 
 import org.apache.jena.atlas.json.JsonArray;
 import org.apache.jena.atlas.json.JsonObject;
+import org.scify.jedai.configuration.gridsearch.DblGridSearchConfiguration;
+import org.scify.jedai.configuration.randomsearch.DblRandomSearchConfiguration;
 
 /**
  *
@@ -38,7 +40,7 @@ import org.apache.jena.atlas.json.JsonObject;
  */
 public class BlockFiltering extends AbstractBlockProcessing {
 
-    protected final double ratio;
+    protected double ratio;
 
     protected int entitiesD1;
     protected int entitiesD2;
@@ -47,12 +49,18 @@ public class BlockFiltering extends AbstractBlockProcessing {
     protected int[] limitsD1;
     protected int[] limitsD2;
 
+    protected final DblGridSearchConfiguration gridRatio;
+    protected final DblRandomSearchConfiguration randomRatio;
+
     public BlockFiltering() {
         this(0.8);
     }
 
     public BlockFiltering(double r) {
         ratio = r;
+
+        gridRatio = new DblGridSearchConfiguration(1.0, 0.025, 0.025);
+        randomRatio = new DblRandomSearchConfiguration(1.0, 0.01);
     }
 
     protected void countEntities(List<AbstractBlock> blocks) {
@@ -106,6 +114,14 @@ public class BlockFiltering extends AbstractBlockProcessing {
         }
     }
 
+    protected void getLimits(List<AbstractBlock> blocks) {
+        if (blocks.get(0) instanceof BilateralBlock) {
+            getBilateralLimits(blocks);
+        } else if (blocks.get(0) instanceof UnilateralBlock) {
+            getUnilateralLimits(blocks);
+        }
+    }
+
     @Override
     public String getMethodConfiguration() {
         return getParameterName(0) + "=" + ratio;
@@ -127,27 +143,9 @@ public class BlockFiltering extends AbstractBlockProcessing {
                 + "1)" + getParameterDescription(0) + ".\n";
     }
 
-    protected void getLimits(List<AbstractBlock> blocks) {
-        if (blocks.get(0) instanceof BilateralBlock) {
-            getBilateralLimits(blocks);
-        } else if (blocks.get(0) instanceof UnilateralBlock) {
-            getUnilateralLimits(blocks);
-        }
-    }
-
-    protected void getUnilateralLimits(List<AbstractBlock> blocks) {
-        limitsD1 = new int[entitiesD1];
-        limitsD2 = null;
-        for (AbstractBlock block : blocks) {
-            final UnilateralBlock uniBlock = (UnilateralBlock) block;
-            for (int id : uniBlock.getEntities()) {
-                limitsD1[id]++;
-            }
-        }
-
-        for (int i = 0; i < limitsD1.length; i++) {
-            limitsD1[i] = (int) Math.round(ratio * limitsD1[i]);
-        }
+    @Override
+    public int getNumberOfGridConfigurations() {
+        return gridRatio.getNumberOfConfigurations();
     }
 
     @Override
@@ -156,9 +154,9 @@ public class BlockFiltering extends AbstractBlockProcessing {
         obj.put("class", "java.lang.Double");
         obj.put("name", getParameterName(0));
         obj.put("defaultValue", "0.8");
-        obj.put("minValue", "0.05");
+        obj.put("minValue", "0.025");
         obj.put("maxValue", "1.0");
-        obj.put("stepValue", "0.05");
+        obj.put("stepValue", "0.025");
         obj.put("description", getParameterDescription(0));
 
         final JsonArray array = new JsonArray();
@@ -184,6 +182,21 @@ public class BlockFiltering extends AbstractBlockProcessing {
                 return "Filtering Ratio";
             default:
                 return "invalid parameter id";
+        }
+    }
+
+    protected void getUnilateralLimits(List<AbstractBlock> blocks) {
+        limitsD1 = new int[entitiesD1];
+        limitsD2 = null;
+        for (AbstractBlock block : blocks) {
+            final UnilateralBlock uniBlock = (UnilateralBlock) block;
+            for (int id : uniBlock.getEntities()) {
+                limitsD1[id]++;
+            }
+        }
+
+        for (int i = 0; i < limitsD1.length; i++) {
+            limitsD1[i] = (int) Math.round(ratio * limitsD1[i]);
         }
     }
 
@@ -266,11 +279,26 @@ public class BlockFiltering extends AbstractBlockProcessing {
                 newBlocks.add(new UnilateralBlock(retainedEntities.toArray()));
             }
         }
-        
+
         return newBlocks;
     }
 
+    @Override
+    public void setNextRandomConfiguration() {
+        ratio = (Double) randomRatio.getNextRandomValue();
+    }
+
+    @Override
+    public void setNumberedGridConfiguration(int iterationNumber) {
+        ratio = (Double) gridRatio.getNumberedValue(iterationNumber);
+    }
+
+    @Override
+    public void setNumberedRandomConfiguration(int iterationNumber) {
+        ratio = (Double) randomRatio.getNumberedRandom(iterationNumber);
+    }
+
     protected void sortBlocks(List<AbstractBlock> blocks) {
-        Collections.sort(blocks, new BlockCardinalityComparator());
+        Collections.sort(blocks, new IncBlockCardinalityComparator());
     }
 }

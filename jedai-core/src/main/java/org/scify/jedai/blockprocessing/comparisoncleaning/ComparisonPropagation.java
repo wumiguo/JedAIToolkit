@@ -15,6 +15,7 @@
  */
 package org.scify.jedai.blockprocessing.comparisoncleaning;
 
+import com.esotericsoftware.minlog.Log;
 import org.scify.jedai.datamodel.AbstractBlock;
 
 import java.util.ArrayList;
@@ -64,6 +65,11 @@ public class ComparisonPropagation extends AbstractComparisonCleaning {
     }
 
     @Override
+    public int getNumberOfGridConfigurations() {
+        return 1; // parameter-free
+    }
+    
+    @Override
     public JsonArray getParameterConfiguration() {
         return new JsonArray();
     }
@@ -108,5 +114,20 @@ public class ComparisonPropagation extends AbstractComparisonCleaning {
                 addDecomposedBlock(i, validEntities, newBlocks);
             }
         }
+    }
+
+    @Override
+    public void setNextRandomConfiguration() {
+        Log.warn("Random search is inapplicable! " + getMethodName() + " is a parameter-free method!");
+    }
+
+    @Override
+    public void setNumberedGridConfiguration(int iterationNumber) {
+        Log.warn("Grid search is inapplicable! " + getMethodName() + " is a parameter-free method!");
+    }
+    
+    @Override
+    public void setNumberedRandomConfiguration(int iterationNumber) {
+        Log.warn("Random search is inapplicable! " + getMethodName() + " is a parameter-free method!");
     }
 }

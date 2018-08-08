@@ -25,6 +25,8 @@ import java.util.Set;
 
 import org.apache.jena.atlas.json.JsonArray;
 import org.apache.jena.atlas.json.JsonObject;
+import org.scify.jedai.configuration.gridsearch.IntGridSearchConfiguration;
+import org.scify.jedai.configuration.randomsearch.IntRandomSearchConfiguration;
 
 /**
  *
@@ -32,18 +34,27 @@ import org.apache.jena.atlas.json.JsonObject;
  */
 public class SuffixArraysBlocking extends StandardBlocking {
 
-    protected final int maximumBlockSize;
-    protected final int minimumSuffixLength;
+    protected int maximumBlockSize;
+    protected int minimumSuffixLength;
 
-    public SuffixArraysBlocking() {
+    protected final IntGridSearchConfiguration gridMBSize;
+    protected final IntGridSearchConfiguration gridMSLength;
+    protected final IntRandomSearchConfiguration randomMBSize;
+    protected final IntRandomSearchConfiguration randomMSLength;
+    
+     public SuffixArraysBlocking() {
         this(53, 6);
-
-    }
-
-    public SuffixArraysBlocking(int maxSize, int minLength) {
+     }
+     
+     public SuffixArraysBlocking(int maxSize, int minLength) {
         super();
         maximumBlockSize = maxSize;
         minimumSuffixLength = minLength;
+        
+        gridMBSize = new IntGridSearchConfiguration(100, 1,  1);
+        gridMSLength = new IntGridSearchConfiguration(6, 2, 1);
+        randomMBSize = new IntRandomSearchConfiguration(100, 1);
+        randomMSLength = new IntRandomSearchConfiguration(6, 2);
     }
 
     @Override
@@ -91,6 +102,11 @@ public class SuffixArraysBlocking extends StandardBlocking {
                 + "2)" + getParameterDescription(1) + ".";
     }
 
+    @Override
+    public int getNumberOfGridConfigurations() {
+        return gridMBSize.getNumberOfConfigurations() * gridMSLength.getNumberOfConfigurations();
+    }
+    
     @Override
     public JsonArray getParameterConfiguration() {
         final JsonObject obj1 = new JsonObject();
@@ -152,5 +168,26 @@ public class SuffixArraysBlocking extends StandardBlocking {
             }
         }
         return suffixes;
+    }
+    
+    @Override
+    public void setNextRandomConfiguration() {
+        maximumBlockSize = (Integer) randomMBSize.getNextRandomValue();
+        minimumSuffixLength = (Integer) randomMSLength.getNextRandomValue();
+    }
+    
+    @Override
+    public void setNumberedGridConfiguration(int iterationNumber) {
+        int mgSizeIteration = iterationNumber / gridMSLength.getNumberOfConfigurations();
+        maximumBlockSize = (Integer) gridMBSize.getNumberedValue(mgSizeIteration);
+        
+        int msLengthIteration = iterationNumber - mgSizeIteration * gridMSLength.getNumberOfConfigurations();
+        minimumSuffixLength = (Integer) gridMSLength.getNumberedValue(msLengthIteration);
+    }
+
+    @Override
+    public void setNumberedRandomConfiguration(int iterationNumber) {
+        maximumBlockSize = (Integer) randomMBSize.getNumberedRandom(iterationNumber);
+        minimumSuffixLength = (Integer) randomMSLength.getNumberedRandom(iterationNumber);
     }
 }

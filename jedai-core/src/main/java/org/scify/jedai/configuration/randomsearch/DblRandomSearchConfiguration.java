@@ -12,27 +12,28 @@
 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 * See the License for the specific language governing permissions and
 * limitations under the License.
-*/
-package org.scify.jedai.textmodels;
+ */
+package org.scify.jedai.configuration.randomsearch;
 
 /**
  *
- * @author G.A.P. II
+ * @author GAP2
  */
+public class DblRandomSearchConfiguration extends AbstractRandomSearchConfiguration {
 
-class IncrementalCounter {
-    
-    private int counter;
-    
-    IncrementalCounter() {
-        counter = 0;
+    private final double interval;
+    private final double maximumValue;
+    private final double minimumValue;
+
+    public DblRandomSearchConfiguration(double max, double min) {
+        super();
+        maximumValue = max;
+        minimumValue = min;
+        interval = maximumValue - minimumValue;
     }
     
-    void incrementCounter() {
-        counter++;
-    }
-    
-    int getCounter() {
-        return counter;
+    @Override
+    protected Object randomValueGeneration() {
+        return minimumValue + RANDOM_GEN.nextDouble() * interval;
     }
 }

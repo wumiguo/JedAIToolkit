@@ -37,7 +37,7 @@ public class TokenNGramGraphs extends GraphModel {
     @Override
     public void updateModel(String text) {
         final DocumentWordGraph tempGraph = new DocumentWordGraph(nSize, nSize, nSize);
-        tempGraph.setDataString(text);
+        tempGraph.setDataString(text.toLowerCase());
         
         getGraphModel().merge(tempGraph, 1 - (NO_OF_DOCUMENTS[datasetId]-1)/NO_OF_DOCUMENTS[datasetId]);
     }

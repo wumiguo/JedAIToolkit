@@ -33,6 +33,8 @@ import org.jgrapht.alg.ConnectivityInspector;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.SimpleGraph;
 import org.jgrapht.graph.SimpleWeightedGraph;
+import org.scify.jedai.configuration.gridsearch.DblGridSearchConfiguration;
+import org.scify.jedai.configuration.randomsearch.DblRandomSearchConfiguration;
 
 /**
  *
@@ -41,6 +43,9 @@ import org.jgrapht.graph.SimpleWeightedGraph;
 public class CutClustering extends AbstractEntityClustering {
 
     protected double Acap;
+    
+    protected final DblGridSearchConfiguration gridAcap;
+    protected final DblRandomSearchConfiguration randomAcap;
     protected SimpleGraph duplicatesGraph;
     protected SimpleWeightedGraph weightedGraph;
 
@@ -51,6 +56,9 @@ public class CutClustering extends AbstractEntityClustering {
     public CutClustering(double ac, double simTh) {
         super(simTh);
         Acap = ac;
+        
+        gridAcap = new DblGridSearchConfiguration(0.95, 0.1, 0.05);
+        randomAcap = new DblRandomSearchConfiguration(0.99, 0.01);
     }
 
     @Override
@@ -116,6 +124,11 @@ public class CutClustering extends AbstractEntityClustering {
                 + "2)" + getParameterDescription(1) + ".";
     }
 
+    @Override
+    public int getNumberOfGridConfigurations() {
+        return super.getNumberOfGridConfigurations() * gridAcap.getNumberOfConfigurations();
+    }
+    
     @Override
     public JsonArray getParameterConfiguration() {
         JsonObject obj1 = new JsonObject();
@@ -183,5 +196,26 @@ public class CutClustering extends AbstractEntityClustering {
 
     public void setA(double Acap) {
         this.Acap = Acap;
+    }
+    
+    @Override
+    public void setNextRandomConfiguration() {
+        super.setNextRandomConfiguration();
+        Acap = (Double) randomAcap.getNextRandomValue();
+    }
+
+    @Override
+    public void setNumberedGridConfiguration(int iterationNumber) {
+        int thrIteration = iterationNumber / gridAcap.getNumberOfConfigurations();
+        super.setNumberedGridConfiguration(thrIteration);
+        
+        int acapIteration = iterationNumber - thrIteration * gridAcap.getNumberOfConfigurations();
+        Acap = (Double) gridAcap.getNumberedValue(acapIteration);
+    }
+    
+    @Override
+    public void setNumberedRandomConfiguration(int iterationNumber) {
+        super.setNumberedRandomConfiguration(iterationNumber);
+        Acap = (Double) randomAcap.getNumberedRandom(iterationNumber);
     }
 }

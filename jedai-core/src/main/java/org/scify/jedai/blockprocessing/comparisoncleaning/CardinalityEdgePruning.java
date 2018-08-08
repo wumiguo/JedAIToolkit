@@ -18,7 +18,7 @@ package org.scify.jedai.blockprocessing.comparisoncleaning;
 import org.scify.jedai.datamodel.AbstractBlock;
 import org.scify.jedai.datamodel.Comparison;
 import org.scify.jedai.datamodel.DecomposedBlock;
-import org.scify.jedai.utilities.comparators.ComparisonWeightComparator;
+import org.scify.jedai.utilities.comparators.IncComparisonWeightComparator;
 import org.scify.jedai.utilities.enumerations.WeightingScheme;
 import com.esotericsoftware.minlog.Log;
 import gnu.trove.iterator.TIntIterator;
@@ -82,7 +82,7 @@ public class CardinalityEdgePruning extends WeightedEdgePruning {
     @Override
     protected List<AbstractBlock> pruneEdges() {
         minimumWeight = Double.MIN_VALUE;
-        topKEdges = new PriorityQueue<>((int) (2 * threshold), new ComparisonWeightComparator());
+        topKEdges = new PriorityQueue<>((int) (2 * threshold), new IncComparisonWeightComparator());
 
         int limit = cleanCleanER ? datasetLimit : noOfEntities;
         if (weightingScheme.equals(WeightingScheme.ARCS)) {

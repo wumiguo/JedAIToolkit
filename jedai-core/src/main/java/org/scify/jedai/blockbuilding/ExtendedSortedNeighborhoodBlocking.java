@@ -25,6 +25,10 @@ import gnu.trove.set.hash.TIntHashSet;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+import org.apache.jena.atlas.json.JsonArray;
+import org.apache.jena.atlas.json.JsonObject;
+import org.scify.jedai.configuration.gridsearch.IntGridSearchConfiguration;
+import org.scify.jedai.configuration.randomsearch.IntRandomSearchConfiguration;
 
 /**
  *
@@ -36,10 +40,13 @@ public class ExtendedSortedNeighborhoodBlocking extends SortedNeighborhoodBlocki
         this(2);
     }
 
-    public ExtendedSortedNeighborhoodBlocking(int w) {
+     public ExtendedSortedNeighborhoodBlocking(int w) {
         super(w);
+        
+        gridWindow = new IntGridSearchConfiguration(10, 1, 1);
+        randomWindow = new IntRandomSearchConfiguration(10, 1);
     }
-
+     
     @Override
     public String getMethodInfo() {
         return getMethodName() + ": it improves " + super.getMethodName() + " by sliding the window over the sorted list of blocking keys.";
@@ -50,6 +57,32 @@ public class ExtendedSortedNeighborhoodBlocking extends SortedNeighborhoodBlocki
         return "Extended Sorted Neighborhood Blocking";
     }
 
+    @Override
+    public JsonArray getParameterConfiguration() {
+        final JsonObject obj1 = new JsonObject();
+        obj1.put("class", "java.lang.Integer");
+        obj1.put("name", getParameterName(0));
+        obj1.put("defaultValue", "2");
+        obj1.put("minValue", "2");
+        obj1.put("maxValue", "10");
+        obj1.put("stepValue", "1");
+        obj1.put("description", getParameterDescription(0));
+
+        final JsonArray array = new JsonArray();
+        array.add(obj1);
+        return array;
+    }
+
+    @Override
+    public String getParameterDescription(int parameterId) {
+        switch (parameterId) {
+            case 0:
+                return "The " + getParameterName(0) + " determines the fixed size of the window that slides over the sorted list of blocking keys.";
+            default:
+                return "invalid parameter id";
+        }
+    }
+    
     @Override
     protected void parseIndex() {
         final Set<String> blockingKeysSet = invertedIndexD1.keySet();

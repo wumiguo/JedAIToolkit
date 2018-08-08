@@ -19,13 +19,12 @@ import org.scify.jedai.datamodel.Comparison;
 import org.scify.jedai.datamodel.EquivalenceCluster;
 import org.scify.jedai.datamodel.SimilarityEdge;
 import org.scify.jedai.datamodel.SimilarityPairs;
-import org.scify.jedai.utilities.comparators.SimilarityEdgeComparator;
+import org.scify.jedai.utilities.comparators.DecSimilarityEdgeComparator;
 
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
 
 import java.util.Iterator;
-import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Queue;
 
@@ -49,10 +48,11 @@ public class CenterClustering extends AbstractEntityClustering {
         
         final double[] edgesWeight = new double[noOfEntities];
         final double[] edgesAttached = new double[noOfEntities];
-        final Queue<SimilarityEdge> SEqueue = new PriorityQueue<>(simPairs.getNoOfComparisons(), new SimilarityEdgeComparator());
+        final Queue<SimilarityEdge> SEqueue = new PriorityQueue<>(simPairs.getNoOfComparisons(), new DecSimilarityEdgeComparator());
 
         final Iterator<Comparison> iterator = simPairs.getPairIterator();
-        while (iterator.hasNext()) { // add a similarity edge to the queue, not the for every pair of entities with a weight higher than the threshold
+        // add a similarity edge to the queue for every pair of entities with a weight higher than the threshold
+        while (iterator.hasNext()) { 
             final Comparison comparison = iterator.next();
             if (threshold < comparison.getUtilityMeasure()) {
                 SEqueue.add(new SimilarityEdge(comparison.getEntityId1(), comparison.getEntityId2() + datasetLimit, comparison.getUtilityMeasure()));

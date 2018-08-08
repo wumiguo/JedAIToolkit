@@ -48,8 +48,8 @@ public class TestAllMethodsCcer {
         BasicConfigurator.configure();
         
         String mainDirectory = "data" + File.separator + "cleanCleanErDatasets" + File.separator;
-        String[] entitiesFilePaths = { mainDirectory + "amazonProfiles", mainDirectory +  "gpProfiles" };
-        String groundTruthFilePath = mainDirectory + "amazonGpIdDuplicates";
+        String[] entitiesFilePaths = { mainDirectory + "abtProfiles", mainDirectory +  "buyProfiles" };
+        String groundTruthFilePath = mainDirectory + "abtBuyIdDuplicates";
 
         IEntityReader eReader = new EntitySerializationReader(entitiesFilePaths[0]);
         List<EntityProfile> profilesD1 = eReader.getEntityProfiles();
@@ -109,6 +109,7 @@ public class TestAllMethodsCcer {
                 double time5 = System.currentTimeMillis();
 
                 IEntityClustering ec = EntityClusteringCcerMethod.getDefaultConfiguration(ecMethod);
+                ec.setSimilarityThreshold(0.25);
                 EquivalenceCluster[] entityClusters = ec.getDuplicates(simPairs);
 
                 double time6 = System.currentTimeMillis();
@@ -130,6 +131,9 @@ public class TestAllMethodsCcer {
 //                clp.printDetailedResults(profilesD1, profilesD2, "D:\\tempCcer.csv");
                 clp.setStatistics();
                 clp.printStatistics(time6 - time5 + time4 - time3, matchingWorkflowName.toString(), matchingWorkflowConf.toString());
+                clp.printDetailedResults(profilesD1, profilesD2, "data" + File.separator + "test.csv");
+                
+                System.exit(-1);
             }
         }
     }

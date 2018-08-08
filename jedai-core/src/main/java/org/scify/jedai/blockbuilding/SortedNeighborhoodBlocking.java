@@ -31,6 +31,8 @@ import java.util.Set;
 
 import org.apache.jena.atlas.json.JsonArray;
 import org.apache.jena.atlas.json.JsonObject;
+import org.scify.jedai.configuration.gridsearch.IntGridSearchConfiguration;
+import org.scify.jedai.configuration.randomsearch.IntRandomSearchConfiguration;
 
 /**
  *
@@ -38,17 +40,22 @@ import org.apache.jena.atlas.json.JsonObject;
  */
 public class SortedNeighborhoodBlocking extends StandardBlocking {
 
-    protected final int windowSize;
+    protected int windowSize;
+    
+    protected IntGridSearchConfiguration gridWindow;
+    protected IntRandomSearchConfiguration randomWindow;
     protected final Random random;
     
     public SortedNeighborhoodBlocking() {
         this(4);
     }
-
-    public SortedNeighborhoodBlocking(int w) {
+    
+     public SortedNeighborhoodBlocking(int w) {
         super();
         windowSize = w;
+        
         random = new Random();
+        randomWindow = new IntRandomSearchConfiguration(100, 1);
     }
 
     @Override
@@ -100,11 +107,16 @@ public class SortedNeighborhoodBlocking extends StandardBlocking {
     }
 
     @Override
+    public int getNumberOfGridConfigurations() {
+        return gridWindow.getNumberOfConfigurations();
+    }
+    
+    @Override
     public JsonArray getParameterConfiguration() {
         final JsonObject obj1 = new JsonObject();
         obj1.put("class", "java.lang.Integer");
         obj1.put("name", getParameterName(0));
-        obj1.put("defaultValue", "2");
+        obj1.put("defaultValue", "4");
         obj1.put("minValue", "2");
         obj1.put("maxValue", "100");
         obj1.put("stepValue", "1");
@@ -119,7 +131,7 @@ public class SortedNeighborhoodBlocking extends StandardBlocking {
     public String getParameterDescription(int parameterId) {
         switch (parameterId) {
             case 0:
-                return "The " + getParameterName(0) + " determines the fixed size of the window that slides over the sorted list of blocking keys.";
+                return "The " + getParameterName(0) + " determines the fixed size of the window that slides over the sorted list of entities.";
             default:
                 return "invalid parameter id";
         }
@@ -198,5 +210,20 @@ public class SortedNeighborhoodBlocking extends StandardBlocking {
                 blocks.add(new BilateralBlock(entityIds1.toArray(), entityIds2.toArray()));
             }
         }
+    }
+    
+    @Override
+    public void setNextRandomConfiguration() {
+        windowSize = (Integer) randomWindow.getNextRandomValue();
+    }
+
+    @Override
+    public void setNumberedGridConfiguration(int iterationNumber) {
+        windowSize = (Integer) gridWindow.getNumberedValue(iterationNumber);
+    }
+    
+    @Override
+    public void setNumberedRandomConfiguration(int iterationNumber) {
+        windowSize = (Integer) randomWindow.getNumberedRandom(iterationNumber);
     }
 }

@@ -12,32 +12,17 @@
 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 * See the License for the specific language governing permissions and
 * limitations under the License.
-*/
-
-package org.scify.jedai.utilities.comparators;
-
-import org.scify.jedai.datamodel.Comparison;
-import java.util.Comparator;
+ */
+package org.scify.jedai.configuration.randomsearch;
 
 /**
  *
- * @author G.A.P. II
+ * @author GAP2
  */
-
-public class ComparisonWeightComparator implements Comparator<Comparison> {
-
-    @Override
-    public int compare(Comparison o1, Comparison o2) {
-        double test = o2.getUtilityMeasure()-o1.getUtilityMeasure(); 
-        if (0 < test) {
-            return -1;
-        }
-
-        if (test < 0) {
-            return 1;
-        }
-
-        return 0;
-    }
+public interface IRandomSearchConfiguration {
+    
+    public Object getNextRandomValue();
+    
+    public Object getNumberedRandom(int iterationNumber);
     
 }

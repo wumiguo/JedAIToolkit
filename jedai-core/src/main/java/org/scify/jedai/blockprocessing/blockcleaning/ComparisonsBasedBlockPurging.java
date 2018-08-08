@@ -16,7 +16,7 @@
 package org.scify.jedai.blockprocessing.blockcleaning;
 
 import org.scify.jedai.datamodel.AbstractBlock;
-import org.scify.jedai.utilities.comparators.BlockCardinalityComparator;
+import org.scify.jedai.utilities.comparators.IncBlockCardinalityComparator;
 
 import com.esotericsoftware.minlog.Log;
 
@@ -28,6 +28,8 @@ import java.util.List;
 
 import org.apache.jena.atlas.json.JsonArray;
 import org.apache.jena.atlas.json.JsonObject;
+import org.scify.jedai.configuration.gridsearch.DblGridSearchConfiguration;
+import org.scify.jedai.configuration.randomsearch.DblRandomSearchConfiguration;
 
 /**
  *
@@ -38,12 +40,18 @@ public class ComparisonsBasedBlockPurging extends AbstractBlockPurging {
     private double smoothingFactor;
     private double maxComparisonsPerBlock;
 
+    protected final DblGridSearchConfiguration gridSFactor;
+    protected final DblRandomSearchConfiguration randomSFactor;
+    
     public ComparisonsBasedBlockPurging() {
         this(1.025);
     }
 
     public ComparisonsBasedBlockPurging(double sf) {
         smoothingFactor = sf;
+        
+        gridSFactor = new DblGridSearchConfiguration(2.0, 1.0, 0.02);
+        randomSFactor = new DblRandomSearchConfiguration(2.0, 1.0);
     }
 
     @Override
@@ -67,6 +75,11 @@ public class ComparisonsBasedBlockPurging extends AbstractBlockPurging {
                 + "1)" + getParameterDescription(0) + ".\n";
     }
 
+    @Override
+    public int getNumberOfGridConfigurations() {
+        return gridSFactor.getNumberOfConfigurations();
+    }
+    
     @Override
     public JsonArray getParameterConfiguration() {
         final JsonObject obj = new JsonObject();
@@ -109,10 +122,25 @@ public class ComparisonsBasedBlockPurging extends AbstractBlockPurging {
     protected boolean satisfiesThreshold(AbstractBlock block) {
         return block.getNoOfComparisons() <= maxComparisonsPerBlock;
     }
+    
+    @Override
+    public void setNextRandomConfiguration() {
+        smoothingFactor = (Double) randomSFactor.getNextRandomValue();
+    }
+
+    @Override
+    public void setNumberedGridConfiguration(int iterationNumber) {
+        smoothingFactor = (Double) gridSFactor.getNumberedValue(iterationNumber);
+    }
+    
+    @Override
+    public void setNumberedRandomConfiguration(int iterationNumber) {
+        smoothingFactor = (Double) randomSFactor.getNumberedRandom(iterationNumber);
+    }
 
     @Override
     protected void setThreshold(List<AbstractBlock> blocks) {
-        Collections.sort(blocks, new BlockCardinalityComparator());
+        Collections.sort(blocks, new IncBlockCardinalityComparator());
         final TDoubleSet distinctComparisonsLevel = new TDoubleHashSet();
         blocks.forEach((block) -> {
             distinctComparisonsLevel.add(block.getNoOfComparisons());
@@ -162,5 +190,5 @@ public class ComparisonsBasedBlockPurging extends AbstractBlockPurging {
 
         maxComparisonsPerBlock = previousSize;
         Log.info("Maximum comparisons per block\t:\t" + maxComparisonsPerBlock);
-    }
+    } 
 }

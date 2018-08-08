@@ -47,7 +47,7 @@ public abstract class AbstractBlockBuilding implements IBlockBuilding {
     protected List<EntityProfile> entityProfilesD2;
     protected Map<String, TIntList> invertedIndexD1;
     protected Map<String, TIntList> invertedIndexD2;
-
+            
     public AbstractBlockBuilding() {
         blocks = new ArrayList<>();
         entityProfilesD1 = null;
@@ -111,8 +111,8 @@ public abstract class AbstractBlockBuilding implements IBlockBuilding {
         for (EntityProfile profile : entities) {
             final Set<String> allKeys = new HashSet<>();
             for (Attribute attribute : profile.getAttributes()) {
-                for (String key : getBlockingKeys(attribute.getValue())) {
-                    String normalizedKey = key.trim().toLowerCase();
+                for (String key : getBlockingKeys(attribute.getValue().toLowerCase())) {
+                    String normalizedKey = key.trim();
                     if (0 < normalizedKey.length()) {
                         allKeys.add(normalizedKey);
                     }

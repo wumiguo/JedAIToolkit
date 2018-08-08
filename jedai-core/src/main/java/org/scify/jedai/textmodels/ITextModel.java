@@ -15,6 +15,8 @@
 */
 package org.scify.jedai.textmodels;
 
+import java.util.Set;
+
 /**
  *
  * @author G.A.P. II
@@ -29,6 +31,8 @@ public interface ITextModel {
     public void finalizeModel();
     
     public double getSimilarity(ITextModel oModel);
+    
+    public Set<String> getSignatures();
     
     public void updateModel(String text);
 }

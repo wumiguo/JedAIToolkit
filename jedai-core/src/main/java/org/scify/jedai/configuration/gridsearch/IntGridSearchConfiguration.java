@@ -12,32 +12,32 @@
 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 * See the License for the specific language governing permissions and
 * limitations under the License.
-*/
-
-package org.scify.jedai.utilities.comparators;
-
-import org.scify.jedai.datamodel.SimilarityEdge;
-import java.util.Comparator;
+ */
+package org.scify.jedai.configuration.gridsearch;
 
 /**
  *
- * @author G.A.P. II
+ * @author GAP2
  */
+public class IntGridSearchConfiguration implements IGridSearchConfiguration {
 
-public class SimilarityEdgeComparator implements Comparator<SimilarityEdge> {
+    private final int maximumValue;
+    private final int minimumValue;
+    private final int step;
+    
+    public IntGridSearchConfiguration(int max, int min, int s) {
+        step = s;
+        maximumValue = max;
+        minimumValue = min;
+    }
     
     @Override
-    // orders edges from the highest weight/similarity to the lowest one
-    public int compare(SimilarityEdge se1,SimilarityEdge se2) {
-        double test = se1.getSimilarity()-se2.getSimilarity(); 
-        if (test > 0) {
-            return -1;
-        }
-
-        if (test < 0) {
-            return 1;
-        }
-
-        return 0;
+    public Object getNumberedValue(int iterationNumber) {
+        return minimumValue + iterationNumber * step;
+    }
+    
+    @Override
+    public int getNumberOfConfigurations() {
+        return (maximumValue - minimumValue) / step + 1;
     }
 }

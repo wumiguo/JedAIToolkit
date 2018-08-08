@@ -18,10 +18,10 @@ package org.scify.jedai.textmodels;
 import org.scify.jedai.utilities.enumerations.RepresentationModel;
 import org.scify.jedai.utilities.enumerations.SimilarityMetric;
 import com.esotericsoftware.minlog.Log;
-import java.util.HashMap;
+import gnu.trove.iterator.TObjectIntIterator;
+import gnu.trove.map.TObjectIntMap;
+import gnu.trove.map.hash.TObjectIntHashMap;
 import java.util.HashSet;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 
 /**
@@ -31,38 +31,37 @@ import java.util.Set;
 public abstract class BagModel extends AbstractModel {
 
     protected double noOfTotalTerms;
-    protected final Map<String, IncrementalCounter> itemsFrequency;
+    protected final TObjectIntMap<String> itemsFrequency;
 
     public BagModel(int dId, int n, RepresentationModel md, SimilarityMetric sMetric, String iName) {
         super(dId, n, md, sMetric, iName);
 
-        itemsFrequency = new HashMap<>();
+        itemsFrequency = new TObjectIntHashMap<>();
     }
 
     @Override
-    public void finalizeModel() {};
+    public void finalizeModel() {
+    }
     
     protected double getEnhancedJaccardSimilarity(BagModel oModel) {
-        Map<String, IncrementalCounter> itemVector1 = itemsFrequency;
-        Map<String, IncrementalCounter> itemVector2 = oModel.getItemsFrequency();
+        TObjectIntMap<String> itemVector1 = itemsFrequency;
+        TObjectIntMap<String> itemVector2 = oModel.getItemsFrequency();
         if (itemVector2.size() < itemVector1.size()) {
             itemVector1 = oModel.getItemsFrequency();
             itemVector2 = itemsFrequency;
         }
 
         double numerator = 0.0;
-        for (Entry<String, IncrementalCounter> entry : itemVector1.entrySet()) {
-            IncrementalCounter frequency2 = itemVector2.get(entry.getKey());
-            if (frequency2 != null) {
-                numerator += Math.min(entry.getValue().getCounter(), frequency2.getCounter());
-            }
+        for (TObjectIntIterator<String> iterator = itemVector1.iterator(); iterator.hasNext();) {
+            iterator.advance();
+            numerator += Math.min(iterator.value(), itemVector2.get(iterator.key()));
         }
 
         double denominator = noOfTotalTerms + oModel.getNoOfTotalTerms() - numerator;
         return numerator / denominator;
     }
 
-    protected Map<String, IncrementalCounter> getItemsFrequency() {
+    protected TObjectIntMap<String> getItemsFrequency() {
         return itemsFrequency;
     }
 
@@ -77,6 +76,11 @@ public abstract class BagModel extends AbstractModel {
 
     protected double getNoOfTotalTerms() {
         return noOfTotalTerms;
+    }
+
+    @Override
+    public Set<String> getSignatures() {
+        return itemsFrequency.keySet();
     }
 
     @Override
@@ -99,20 +103,18 @@ public abstract class BagModel extends AbstractModel {
 
     protected double getTfCosineSimilarity(BagModel oModel) {
         double totalTerms2 = oModel.getNoOfTotalTerms();
-        
-        Map<String, IncrementalCounter> itemVector1 = itemsFrequency;
-        Map<String, IncrementalCounter> itemVector2 = oModel.getItemsFrequency();
+
+        TObjectIntMap<String> itemVector1 = itemsFrequency;
+        TObjectIntMap<String> itemVector2 = oModel.getItemsFrequency();
         if (itemVector2.size() < itemVector1.size()) {
             itemVector1 = oModel.getItemsFrequency();
             itemVector2 = itemsFrequency;
         }
 
         double numerator = 0.0;
-        for (Entry<String, IncrementalCounter> entry : itemVector1.entrySet()) {
-            IncrementalCounter frequency2 = itemVector2.get(entry.getKey());
-            if (frequency2 != null) {
-                numerator += entry.getValue().getCounter() * frequency2.getCounter() / noOfTotalTerms / totalTerms2;
-            }
+        for (TObjectIntIterator<String> iterator = itemVector1.iterator(); iterator.hasNext();) {
+            iterator.advance();
+            numerator += iterator.value() * itemVector2.get(iterator.key()) / noOfTotalTerms / totalTerms2;
         }
 
         double denominator = getVectorMagnitude() * oModel.getVectorMagnitude();
@@ -122,8 +124,8 @@ public abstract class BagModel extends AbstractModel {
     protected double getTfGeneralizedJaccardSimilarity(BagModel oModel) {
         double totalTerms1 = noOfTotalTerms;
         double totalTerms2 = oModel.getNoOfTotalTerms();
-        Map<String, IncrementalCounter> itemVector1 = itemsFrequency;
-        Map<String, IncrementalCounter> itemVector2 = oModel.getItemsFrequency();
+        TObjectIntMap<String> itemVector1 = itemsFrequency;
+        TObjectIntMap<String> itemVector2 = oModel.getItemsFrequency();
         if (itemVector2.size() < itemVector1.size()) {
             itemVector1 = oModel.getItemsFrequency();
             itemVector2 = itemsFrequency;
@@ -133,31 +135,26 @@ public abstract class BagModel extends AbstractModel {
         }
 
         double numerator = 0.0;
-        for (Entry<String, IncrementalCounter> entry : itemVector1.entrySet()) {
-            IncrementalCounter frequency2 = itemVector2.get(entry.getKey());
-            if (frequency2 != null) {
-                numerator += Math.min(entry.getValue().getCounter() / totalTerms1, frequency2.getCounter() / totalTerms2);
-            }
+        for (TObjectIntIterator<String> iterator = itemVector1.iterator(); iterator.hasNext(); ) {
+            iterator.advance();
+            numerator += Math.min(iterator.value() / totalTerms1, itemVector2.get(iterator.key()) / totalTerms2);
         }
 
         final Set<String> allKeys = new HashSet<>(itemVector1.keySet());
         allKeys.addAll(itemVector2.keySet());
         double denominator = 0.0;
         for (String key : allKeys) {
-            IncrementalCounter frequency1 = itemVector1.get(key);
-            IncrementalCounter frequency2 = itemVector2.get(key);
-            double freq1 = frequency1 == null ? 0 : frequency1.getCounter() / totalTerms1;
-            double freq2 = frequency2 == null ? 0 : frequency2.getCounter() / totalTerms2;
-            denominator += Math.max(freq1, freq2);
+            denominator += Math.max(itemVector1.get(key) / totalTerms1, itemVector2.get(key) / totalTerms2);
         }
 
         return numerator / denominator;
-    }   
-    
+    }
+
     protected double getVectorMagnitude() {
         double magnitude = 0.0;
-        for (Entry<String, IncrementalCounter> entry : itemsFrequency.entrySet()) {
-            magnitude += Math.pow(entry.getValue().getCounter() / noOfTotalTerms, 2.0);
+        for (TObjectIntIterator<String> iterator = itemsFrequency.iterator(); iterator.hasNext();) {
+            iterator.advance();
+            magnitude += Math.pow(iterator.value() / noOfTotalTerms, 2.0);
         }
 
         return Math.sqrt(magnitude);

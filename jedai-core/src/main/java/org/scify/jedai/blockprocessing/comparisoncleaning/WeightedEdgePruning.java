@@ -23,6 +23,8 @@ import gnu.trove.iterator.TIntIterator;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.scify.jedai.configuration.gridsearch.IntGridSearchConfiguration;
+import org.scify.jedai.configuration.randomsearch.IntRandomSearchConfiguration;
 
 /**
  *
@@ -32,6 +34,9 @@ public class WeightedEdgePruning extends AbstractMetablocking {
 
     protected double noOfEdges;
 
+    protected final IntGridSearchConfiguration gridWScheme;
+    protected final IntRandomSearchConfiguration randomWScheme;
+    
     public WeightedEdgePruning() {
         this(WeightingScheme.CBS);
     }
@@ -39,6 +44,9 @@ public class WeightedEdgePruning extends AbstractMetablocking {
     public WeightedEdgePruning(WeightingScheme scheme) {
         super(scheme);
         nodeCentric = false;
+        
+        gridWScheme = new IntGridSearchConfiguration(weightingScheme.values().length - 1, 0, 1);
+        randomWScheme = new IntRandomSearchConfiguration(weightingScheme.values().length, 0);
     }
 
     @Override
@@ -55,6 +63,11 @@ public class WeightedEdgePruning extends AbstractMetablocking {
     @Override
     public String getMethodName() {
         return "Weighted Edge Pruning";
+    }
+    
+    @Override
+    public int getNumberOfGridConfigurations() {
+        return gridWScheme.getNumberOfConfigurations();
     }
 
     protected void processArcsEntity(int entityId) {
@@ -120,6 +133,24 @@ public class WeightedEdgePruning extends AbstractMetablocking {
         return newBlocks;
     }
 
+    @Override
+    public void setNextRandomConfiguration() {
+        int schemeId = (Integer) randomWScheme.getNextRandomValue();
+        weightingScheme = WeightingScheme.values()[schemeId];
+    }
+
+    @Override
+    public void setNumberedGridConfiguration(int iterationNumber) {
+        int schemeId = (Integer) gridWScheme.getNumberedValue(iterationNumber);
+        weightingScheme = WeightingScheme.values()[schemeId];
+    }
+    
+    @Override
+    public void setNumberedRandomConfiguration(int iterationNumber) {
+        int schemeId = (Integer) randomWScheme.getNumberedRandom(iterationNumber);
+        weightingScheme = WeightingScheme.values()[schemeId];
+    }
+    
     @Override
     protected void setThreshold() {
         noOfEdges = 0;

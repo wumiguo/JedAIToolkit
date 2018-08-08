@@ -19,7 +19,7 @@ import org.scify.jedai.datamodel.Comparison;
 import org.scify.jedai.datamodel.EquivalenceCluster;
 import org.scify.jedai.datamodel.SimilarityEdge;
 import org.scify.jedai.datamodel.SimilarityPairs;
-import org.scify.jedai.utilities.comparators.SimilarityEdgeComparator;
+import org.scify.jedai.utilities.comparators.DecSimilarityEdgeComparator;
 
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
@@ -47,7 +47,7 @@ public class MergeCenterClustering extends AbstractEntityClustering {
         initializeData(simPairs);
         
         // add an edge for every pair of entities with a weight higher than the thrshold
-        final Queue<SimilarityEdge> SEqueue = new PriorityQueue<>(simPairs.getNoOfComparisons(), new SimilarityEdgeComparator());
+        final Queue<SimilarityEdge> SEqueue = new PriorityQueue<>(simPairs.getNoOfComparisons(), new DecSimilarityEdgeComparator());
         final Iterator<Comparison> iterator = simPairs.getPairIterator();
         while (iterator.hasNext()) {
             final Comparison comparison = iterator.next();

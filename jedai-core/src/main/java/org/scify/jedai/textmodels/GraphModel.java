@@ -21,6 +21,7 @@ import com.esotericsoftware.minlog.Log;
 import gr.demokritos.iit.jinsect.documentModel.comparators.NGramCachedGraphComparator;
 import gr.demokritos.iit.jinsect.documentModel.representations.DocumentNGramGraph;
 import gr.demokritos.iit.jinsect.structs.GraphSimilarity;
+import java.util.Set;
 
 /**
  *
@@ -40,6 +41,11 @@ public abstract class GraphModel extends AbstractModel {
     
     protected DocumentNGramGraph getGraphModel() {
         return graphModel;
+    }
+    
+    @Override
+    public Set<String> getSignatures() {
+        return graphModel.getGraphLevel(0).UniqueVertices.keySet();
     }
 
     @Override

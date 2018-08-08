@@ -22,6 +22,8 @@ import java.util.Set;
 
 import org.apache.jena.atlas.json.JsonArray;
 import org.apache.jena.atlas.json.JsonObject;
+import org.scify.jedai.configuration.gridsearch.IntGridSearchConfiguration;
+import org.scify.jedai.configuration.randomsearch.IntRandomSearchConfiguration;
 
 /**
  *
@@ -29,15 +31,20 @@ import org.apache.jena.atlas.json.JsonObject;
  */
 public class QGramsBlocking extends StandardBlocking {
 
-    protected final int nGramSize;
+    protected int nGramSize;
+    
+    protected final IntGridSearchConfiguration gridNGSize;
+    protected final IntRandomSearchConfiguration randomNGSize;
 
     public QGramsBlocking() {
         this(6);
     }
-
-    public QGramsBlocking(int n) {
+     public QGramsBlocking(int n) {
         super();
         nGramSize = n;
+        
+        gridNGSize = new IntGridSearchConfiguration(6, 2, 1);
+        randomNGSize = new IntRandomSearchConfiguration(6, 2);
     }
 
     @Override
@@ -86,6 +93,11 @@ public class QGramsBlocking extends StandardBlocking {
         }
         return nGrams;
     }
+    
+    @Override
+    public int getNumberOfGridConfigurations() {
+        return gridNGSize.getNumberOfConfigurations();
+    }
 
     @Override
     public JsonArray getParameterConfiguration() {
@@ -121,5 +133,20 @@ public class QGramsBlocking extends StandardBlocking {
             default:
                 return "invalid parameter id";
         }
+    }
+    
+    @Override
+    public void setNextRandomConfiguration() {
+        nGramSize = (Integer) randomNGSize.getNextRandomValue();
+    }
+    
+    @Override
+    public void setNumberedGridConfiguration(int iterationNumber) {
+        nGramSize = (Integer) gridNGSize.getNumberedValue(iterationNumber);
+    }
+
+    @Override
+    public void setNumberedRandomConfiguration(int iterationNumber) {
+        nGramSize = (Integer) randomNGSize.getNumberedRandom(iterationNumber);
     }
 }

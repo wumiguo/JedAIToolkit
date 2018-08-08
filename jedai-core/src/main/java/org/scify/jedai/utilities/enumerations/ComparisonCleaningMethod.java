@@ -24,6 +24,8 @@ import org.scify.jedai.blockprocessing.comparisoncleaning.ReciprocalWeightedNode
 import org.scify.jedai.blockprocessing.comparisoncleaning.WeightedEdgePruning;
 import org.scify.jedai.blockprocessing.comparisoncleaning.WeightedNodePruning;
 import org.scify.jedai.blockprocessing.IBlockProcessing;
+import org.scify.jedai.blockprocessing.comparisoncleaning.CanopyClustering;
+import org.scify.jedai.blockprocessing.comparisoncleaning.ExtendedCanopyClustering;
 
 /**
  *
@@ -31,9 +33,11 @@ import org.scify.jedai.blockprocessing.IBlockProcessing;
  */
 
 public enum ComparisonCleaningMethod {
+    CANOPY_CLUSTERING,
     CARDINALITY_EDGE_PRUNING,
     CARDINALITY_NODE_PRUNING,
     COMPARISON_PROPAGATION,
+    EXTENDED_CANOPY_CLUSTERING,
     RECIPROCAL_CARDINALITY_NODE_PRUNING,
     RECIPROCAL_WEIGHTING_NODE_PRUNING,
     WEIGHTED_EDGE_PRUNING,
@@ -41,12 +45,16 @@ public enum ComparisonCleaningMethod {
 
     public static IBlockProcessing getDefaultConfiguration(ComparisonCleaningMethod coclMethod) {
         switch (coclMethod) {
+            case CANOPY_CLUSTERING:
+                return new CanopyClustering(0.7, 0.8);
             case CARDINALITY_EDGE_PRUNING:
                 return new CardinalityEdgePruning();
             case CARDINALITY_NODE_PRUNING:
                 return new CardinalityNodePruning();
             case COMPARISON_PROPAGATION:
                 return new ComparisonPropagation();
+            case EXTENDED_CANOPY_CLUSTERING:
+                return new ExtendedCanopyClustering(20, 10);
             case RECIPROCAL_CARDINALITY_NODE_PRUNING:
                 return new ReciprocalCardinalityNodePruning();
             case RECIPROCAL_WEIGHTING_NODE_PRUNING:

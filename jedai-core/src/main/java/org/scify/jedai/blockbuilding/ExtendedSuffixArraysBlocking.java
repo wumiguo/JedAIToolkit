@@ -30,8 +30,7 @@ public class ExtendedSuffixArraysBlocking extends SuffixArraysBlocking {
     public ExtendedSuffixArraysBlocking() {
         this(39, 6);
     }
-
-    public ExtendedSuffixArraysBlocking(int maxSize, int minLength) {
+     public ExtendedSuffixArraysBlocking(int maxSize, int minLength) {
         super(maxSize, minLength);
     }
 

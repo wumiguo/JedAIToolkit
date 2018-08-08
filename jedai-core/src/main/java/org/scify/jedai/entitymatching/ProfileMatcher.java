@@ -104,6 +104,7 @@ public class ProfileMatcher extends AbstractEntityMatching {
     private ITextModel[] getModels(int datasetId, List<EntityProfile> profiles) {
         int counter = 0;
         final ITextModel[] models = new ITextModel[profiles.size()];
+        RepresentationModel.resetGlobalValues(datasetId, representationModel);
         for (EntityProfile profile : profiles) {
             models[counter] = RepresentationModel.getModel(datasetId, representationModel, simMetric, profile.getEntityUrl());
             for (Attribute attribute : profile.getAttributes()) {

@@ -21,7 +21,7 @@ import org.scify.jedai.datamodel.Comparison;
 import org.scify.jedai.datamodel.EntityProfile;
 import org.scify.jedai.datamodel.SimilarityEdge;
 import org.scify.jedai.datamodel.SimilarityPairs;
-import org.scify.jedai.utilities.comparators.SimilarityEdgeComparator;
+import org.scify.jedai.utilities.comparators.DecSimilarityEdgeComparator;
 import org.scify.jedai.utilities.enumerations.RepresentationModel;
 import org.scify.jedai.utilities.enumerations.SimilarityMetric;
 import org.scify.jedai.textmodels.ITextModel;
@@ -74,7 +74,7 @@ public class GroupLinkage extends AbstractEntityMatching {
             isCleanCleanER = true;
             entityModelsD2 = getModels(DATASET_2, profilesD2);
         }
-
+        
         final SimilarityPairs simPairs = new SimilarityPairs(isCleanCleanER, blocks);
         blocks.stream().map((block) -> block.getComparisonIterator()).forEachOrdered((iterator) -> {
             while (iterator.hasNext()) {
@@ -125,6 +125,7 @@ public class GroupLinkage extends AbstractEntityMatching {
     private ITextModel[][] getModels(int datasetId, List<EntityProfile> profiles) {
         int entityCounter = 0;
         final ITextModel[][] ModelsList = new ITextModel[profiles.size()][];
+        RepresentationModel.resetGlobalValues(datasetId, representationModel);
         for (EntityProfile profile : profiles) {
             int validAttributes = 0;
             validAttributes = profile.getAttributes().stream().filter((attribute) -> (!attribute.getValue().isEmpty())).map((_item) -> 1).reduce(validAttributes, Integer::sum);
@@ -230,7 +231,7 @@ public class GroupLinkage extends AbstractEntityMatching {
         
         int s1 = model1.length;
         int s2 = model2.length;
-        final Queue<SimilarityEdge> SEqueue = new PriorityQueue<>(s1 * s2, new SimilarityEdgeComparator());
+        final Queue<SimilarityEdge> SEqueue = new PriorityQueue<>(s1 * s2, new DecSimilarityEdgeComparator());
         for (int i = 0; i < s1; i++) {
             for (int j = 0; j < s2; j++) {
                 double sim = model1[i].getSimilarity(model2[j]);

@@ -69,4 +69,8 @@ public abstract class AbstractModel implements ITextModel, Serializable {
     public SimilarityMetric getSimilarityMetric() {
         return simMetric;
     }
+    
+    public static void resetGlobalValues(int datasetId) {
+        NO_OF_DOCUMENTS[datasetId] = 0;
+    }
 }
