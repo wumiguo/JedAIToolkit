@@ -27,6 +27,9 @@ import org.scify.jedai.datamodel.EquivalenceCluster;
 import org.scify.jedai.datamodel.SimilarityPairs;
 import org.scify.jedai.datareader.entityreader.EntityCSVReader;
 import org.scify.jedai.datareader.groundtruthreader.GtCSVReader;
+import org.scify.jedai.datawriter.BlocksPerformanceWriter;
+import org.scify.jedai.datawriter.ClustersPerformanceWriter;
+import org.scify.jedai.datawriter.PrintStatsToFile;
 import org.scify.jedai.entityclustering.ConnectedComponentsClustering;
 import org.scify.jedai.entityclustering.IEntityClustering;
 import org.scify.jedai.entitymatching.IEntityMatching;
@@ -38,6 +41,8 @@ import org.scify.jedai.utilities.datastructures.BilateralDuplicatePropagation;
 import org.scify.jedai.utilities.PrintToFile;
 import java.io.FileNotFoundException;
 import java.util.List;
+
+import org.apache.jena.rdf.model.RDFWriter;
 import org.apache.log4j.BasicConfigurator;
 
 /**
@@ -97,6 +102,18 @@ public class CsvDblpAcm {
         BlocksPerformance blStats = new BlocksPerformance(ccBlocks, duplicatePropagation);
         blStats.setStatistics();
         blStats.printStatistics(time2 - time1, workflowConf.toString(), workflowName.toString());
+//        blStats.printDetailedResults(csvDBLP, csvACM);
+        
+        //////////////////////////////////////////////////////////////////////
+        BlocksPerformanceWriter blpw = new BlocksPerformanceWriter(ccBlocks, duplicatePropagation);
+        blpw.printDetailedResultsToRDF(csvDBLP, csvACM, mainDirectory + "blocksdrRDF.xml");
+        blpw.printDetailedResultsToXML(csvDBLP, csvACM, mainDirectory + "blocksdrXML.xml");
+        blpw.printDetailedResultsToCSV(csvDBLP, csvACM, mainDirectory + "blocksdrCSV.csv");
+        
+        blpw.printFalseNegativesToCSV(csvDBLP, csvACM, mainDirectory + "fnCSV.csv");
+        blpw.debugToRDF(csvDBLP, csvACM, mainDirectory + "fnRDF.xml");
+        blpw.debugToXML(csvDBLP, csvACM, mainDirectory + "fnXML.xml");
+        //////////////////////////////////////////////////////////////////////
         
         double time3 = System.currentTimeMillis();
         
@@ -113,9 +130,19 @@ public class CsvDblpAcm {
         double time4 = System.currentTimeMillis();
 
         ClustersPerformance clp = new ClustersPerformance(entityClusters, duplicatePropagation);
-        clp.setStatistics();
-        clp.printStatistics(time4 - time3, workflowName.toString(), workflowConf.toString());
-        
+//        clp.setStatistics();
+//        clp.printStatistics(time4 - time3, workflowName.toString(), workflowConf.toString());
+//        clp.printDetailedResults(csvDBLP, csvACM, mainDirectory + "detailedResults.csv");
+        ClustersPerformanceWriter clpw = new ClustersPerformanceWriter(entityClusters, duplicatePropagation);
+        clpw.printDetailedResultsToCSV(csvDBLP, csvACM, mainDirectory + "detailedResults1.csv");
+        clpw.printDetailedResultsToRDF(csvDBLP, csvACM, mainDirectory + "detailedResultsRDF.xml");
+        clpw.printDetailedResultsToXML(csvDBLP, csvACM, mainDirectory + "detailedResultsXML.xml");
+
+        PrintStatsToFile pstf = new PrintStatsToFile(csvDBLP, csvACM, entityClusters);
+        pstf.printToRDF(mainDirectory+"foundMatchesRDF.xml");
+        pstf.printToXML(mainDirectory+"foundMatchesXML.xml");
+       
+        /////////////////////////////////////////////////
         PrintToFile.toCSV(csvDBLP, csvACM, entityClusters, mainDirectory + "foundMatches.csv");
     }
 
