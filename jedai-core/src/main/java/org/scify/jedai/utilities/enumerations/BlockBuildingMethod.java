@@ -19,7 +19,8 @@ import org.scify.jedai.blockbuilding.ExtendedQGramsBlocking;
 import org.scify.jedai.blockbuilding.ExtendedSortedNeighborhoodBlocking;
 import org.scify.jedai.blockbuilding.ExtendedSuffixArraysBlocking;
 import org.scify.jedai.blockbuilding.IBlockBuilding;
-import org.scify.jedai.blockbuilding.LSHBlocking;
+import org.scify.jedai.blockbuilding.LSHMinHashBlocking;
+import org.scify.jedai.blockbuilding.LSHSuperBitBlocking;
 import org.scify.jedai.blockbuilding.QGramsBlocking;
 import org.scify.jedai.blockbuilding.SortedNeighborhoodBlocking;
 import org.scify.jedai.blockbuilding.StandardBlocking;
@@ -38,7 +39,8 @@ public enum BlockBuildingMethod {
     EXTENDED_Q_GRAMS_BLOCKING,
     EXTENDED_SORTED_NEIGHBORHOOD,
     EXTENDED_SUFFIX_ARRAYS,
-    LSH_BLOCKING,
+    LSH_MINHASH_BLOCKING,
+    LSH_SUPERBIT_BLOCKING,
     Q_GRAMS_BLOCKING,
     SORTED_NEIGHBORHOOD,
     STANDARD_BLOCKING,
@@ -52,8 +54,10 @@ public enum BlockBuildingMethod {
                 return new ExtendedSortedNeighborhoodBlocking();
             case EXTENDED_SUFFIX_ARRAYS:
                 return new ExtendedSuffixArraysBlocking();
-            case LSH_BLOCKING:
-                return new LSHBlocking();
+            case LSH_MINHASH_BLOCKING:
+                return new LSHMinHashBlocking();
+            case LSH_SUPERBIT_BLOCKING:
+                return new LSHSuperBitBlocking();
             case Q_GRAMS_BLOCKING:
                 return new QGramsBlocking();
             case SORTED_NEIGHBORHOOD:

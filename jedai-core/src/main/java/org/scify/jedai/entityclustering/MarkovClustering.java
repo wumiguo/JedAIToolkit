@@ -345,16 +345,16 @@ public class MarkovClustering extends AbstractEntityClustering {
         int thrIteration = iterationNumber / secondStepConfs;
         super.setNumberedGridConfiguration(thrIteration);
 
-        int remainingIterations = iterationNumber - thrIteration * secondStepConfs;
+        int remainingIterations = iterationNumber % secondStepConfs;
         int thirdStepConfs = gridCThreshold.getNumberOfConfigurations() * gridSCLimit.getNumberOfConfigurations();
         int mstIteration = remainingIterations / thirdStepConfs;
         matrixSimThreshold = (Double) gridMSThreshold.getNumberedValue(mstIteration);
 
-        remainingIterations = remainingIterations - mstIteration * thirdStepConfs;
+        remainingIterations = remainingIterations % thirdStepConfs;
         int cthrIteration = remainingIterations / gridSCLimit.getNumberOfConfigurations();
         clusterThreshold = (Double) gridCThreshold.getNumberedValue(cthrIteration);
 
-        int scIteration = remainingIterations - cthrIteration * gridSCLimit.getNumberOfConfigurations();
+        int scIteration = remainingIterations % gridSCLimit.getNumberOfConfigurations();
         similarityChecksLimit = (Integer) gridSCLimit.getNumberedValue(scIteration);
     }
 

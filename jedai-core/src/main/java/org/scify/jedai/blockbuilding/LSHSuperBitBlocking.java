@@ -17,9 +17,7 @@ package org.scify.jedai.blockbuilding;
 
 import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TIntArrayList;
-import gnu.trove.map.TObjectIntMap;
-import gnu.trove.map.hash.TObjectIntHashMap;
-import info.debatty.java.lsh.MinHash;
+import info.debatty.java.lsh.SuperBit;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -31,79 +29,70 @@ import org.scify.jedai.configuration.randomsearch.IntRandomSearchConfiguration;
 import org.scify.jedai.datamodel.AbstractBlock;
 import org.scify.jedai.datamodel.Attribute;
 import org.scify.jedai.datamodel.EntityProfile;
+import org.scify.jedai.textmodels.ITextModel;
+import org.scify.jedai.textmodels.MinHashUnigrams;
+import org.scify.jedai.textmodels.SuperBitUnigrams;
 
 /**
  *
  * @author GAP2
  */
-public class LSHBlocking extends AbstractBlockBuilding {
+public class LSHSuperBitBlocking extends AbstractBlockBuilding {
+
+    protected boolean d1Indexed;
 
     protected int bandSize;
-    protected int signatureSize;
+    protected int bandsNumber;
 
-    protected MinHash minhash;
+    protected final IntGridSearchConfiguration gridBndNumber;
     protected final IntGridSearchConfiguration gridBndSize;
-    protected final IntGridSearchConfiguration gridSigSize;
+    protected final IntRandomSearchConfiguration randomBndNumber;
     protected final IntRandomSearchConfiguration randomBndSize;
-    protected final IntRandomSearchConfiguration randomSigSize;
-    protected TObjectIntMap<String> vocabulary;
-    
-    public LSHBlocking() {
-        this(5, 150);
+
+    protected SuperBit superbit;
+    protected ITextModel[][] models;
+
+    public LSHSuperBitBlocking() {
+        this(5, 30);
     }
 
-    public LSHBlocking(int bSize, int sigSize) {
+    public LSHSuperBitBlocking(int bSize, int bandsNo) {
         super();
 
         bandSize = bSize;
-        signatureSize = sigSize;
-        
+        bandsNumber = bandsNo;
+
+        gridBndNumber = new IntGridSearchConfiguration(100, 10, 10);
         gridBndSize = new IntGridSearchConfiguration(10, 2, 1);
-        gridSigSize = new IntGridSearchConfiguration(1000, 50, 50);
+        randomBndNumber = new IntRandomSearchConfiguration(100, 10);
         randomBndSize = new IntRandomSearchConfiguration(10, 2);
-        randomSigSize = new IntRandomSearchConfiguration(1000, 50);
     }
 
-    protected int[][] buildSignatures(List<EntityProfile> profiles) {
-        int profileCounter = 0;
-        final int[][] signatureProfiles = new int[profiles.size()][];
-        final Set<Integer> currentSignatures = new HashSet<>();
+    protected ITextModel[] buildModels(List<EntityProfile> profiles) {
+        int counter = 0;
+        final ITextModel[] currentModels = new ITextModel[profiles.size()];
         for (EntityProfile profile : profiles) {
-            currentSignatures.clear();
+            currentModels[counter] = getModel(profile.getEntityUrl());
             for (Attribute attribute : profile.getAttributes()) {
-                final String[] tokens = attribute.getValue().toLowerCase().split("[\\W_]");
-                for (String token : tokens) {
-                    currentSignatures.add(vocabulary.get(token));
-                }
+                currentModels[counter].updateModel(attribute.getValue());
             }
-            signatureProfiles[profileCounter] = minhash.signature(currentSignatures);
-            profileCounter++;
+            currentModels[counter].finalizeModel();
+            counter++;
         }
-        return signatureProfiles;
-    }
-
-    protected void buildVocabulary(List<EntityProfile> profiles) {
-        for (EntityProfile profile : profiles) {
-            for (Attribute attribute : profile.getAttributes()) {
-                final String[] tokens = attribute.getValue().toLowerCase().split("[\\W_]");
-                for (String token : tokens) {
-                    int vocabularySize = vocabulary.size();
-                    vocabulary.putIfAbsent(token, vocabularySize);
-                }
-            }
-        }
+        return currentModels;
     }
 
     @Override
-    public List<AbstractBlock> getBlocks(List<EntityProfile> profilesD1,
-            List<EntityProfile> profilesD2) {
-        vocabulary = new TObjectIntHashMap<>();
-        buildVocabulary(profilesD1);
+    public List<AbstractBlock> getBlocks(List<EntityProfile> profilesD1, List<EntityProfile> profilesD2) {
+        resetModel();
+        models = new ITextModel[2][];
+        models[DATASET_1] = buildModels(profilesD1);
         if (profilesD2 != null) {
-            buildVocabulary(profilesD2);
+            models[DATASET_2] = buildModels(profilesD2);
         }
 
-        minhash = new MinHash(signatureSize, vocabulary.size());
+        d1Indexed = false;
+        initializeLshFunctions();
         return super.getBlocks(profilesD1, profilesD2);
     }
 
@@ -112,26 +101,42 @@ public class LSHBlocking extends AbstractBlockBuilding {
         throw new UnsupportedOperationException("Not supported by LSH, because it uses global information, not local (i.e., not a mere attribute value).");
     }
 
+    protected Set<String> getBlockingKeys(int datasetId, int profileId) {
+        final SuperBitUnigrams model = (SuperBitUnigrams) models[datasetId][profileId];
+        boolean[] signatures = superbit.signature(model.getVector());
+
+        final Set<String> allKeys = new HashSet<>();
+        for (int i = 0; i < signatures.length - bandSize; i += bandSize) {
+            final StringBuilder band = new StringBuilder(Integer.toString(i));
+            for (int j = 0; j < bandSize; j++) {
+                band.append("-");
+                if (signatures[i + j]) {
+                    band.append("T");
+                } else {
+                    band.append("F");
+                }
+            }
+            allKeys.add(band.toString());
+        }
+        return allKeys;
+    }
+    
+    protected ITextModel getModel(String instanceName) {
+        return new SuperBitUnigrams(instanceName);
+    }
+
     @Override
     public int getNumberOfGridConfigurations() {
-        return gridBndSize.getNumberOfConfigurations() * gridSigSize.getNumberOfConfigurations();
+        return gridBndSize.getNumberOfConfigurations() * gridBndNumber.getNumberOfConfigurations();
     }
 
     @Override
     protected void indexEntities(Map<String, TIntList> index, List<EntityProfile> entities) {
-        int[][] signatureProfiles = buildSignatures(entities);
+        int datasetId = d1Indexed ? DATASET_2 : DATASET_1;
+        d1Indexed = true;
 
-        for (int profileId = 0; profileId < signatureProfiles.length; profileId++) {
-            final Set<String> allKeys = new HashSet<>();
-            for (int i = 0; i < signatureSize - bandSize; i += bandSize) {
-                StringBuilder band = new StringBuilder(Integer.toString(i));
-                for (int j = 0; j < bandSize; j++) {
-                    band.append("-").append(Integer.toString(signatureProfiles[profileId][i + j]));
-                }
-                allKeys.add(band.toString());
-            }
-
-            for (String key : allKeys) {
+        for (int profileId = 0; profileId < entities.size(); profileId++) {
+            for (String key : getBlockingKeys(datasetId, profileId)) {
                 TIntList entityList = index.get(key);
                 if (entityList == null) {
                     entityList = new TIntArrayList();
@@ -141,32 +146,41 @@ public class LSHBlocking extends AbstractBlockBuilding {
             }
         }
     }
+    
+    protected void initializeLshFunctions() {
+        System.out.println("Dimensionality\t:\t" + SuperBitUnigrams.getCorpusDimensionality());
+        superbit = new SuperBit(SuperBitUnigrams.getCorpusDimensionality(), bandsNumber, bandSize);
+    }
+    
+    protected void resetModel() {
+        SuperBitUnigrams.resetGlobalValues(DATASET_1);
+    }
 
     @Override
     public void setNextRandomConfiguration() {
         bandSize = (Integer) randomBndSize.getNextRandomValue();
-        signatureSize = (Integer) randomSigSize.getNextRandomValue();
+        bandsNumber = (Integer) randomBndNumber.getNextRandomValue();
     }
 
     @Override
     public void setNumberedGridConfiguration(int iterationNumber) {
-        int bandSizeIteration = iterationNumber / gridSigSize.getNumberOfConfigurations();
+        int bandSizeIteration = iterationNumber / gridBndNumber.getNumberOfConfigurations();
         bandSize = (Integer) gridBndSize.getNumberedValue(bandSizeIteration);
-        
-        int msLengthIteration = iterationNumber - bandSizeIteration * gridSigSize.getNumberOfConfigurations();
-        signatureSize = (Integer) gridSigSize.getNumberedValue(msLengthIteration);
+
+        int msLengthIteration = iterationNumber % gridBndNumber.getNumberOfConfigurations();
+        bandsNumber = (Integer) gridBndNumber.getNumberedValue(msLengthIteration);
     }
 
     @Override
     public void setNumberedRandomConfiguration(int iterationNumber) {
         bandSize = (Integer) randomBndSize.getNumberedRandom(iterationNumber);
-        signatureSize = (Integer) randomSigSize.getNumberedRandom(iterationNumber);
+        bandsNumber = (Integer) randomBndNumber.getNumberedRandom(iterationNumber);
     }
 
     @Override
     public String getMethodConfiguration() {
         return getParameterName(0) + "=" + bandSize + ",\t"
-                + getParameterName(1) + "=" + signatureSize;
+                + getParameterName(1) + "=" + bandsNumber;
     }
 
     @Override
@@ -176,7 +190,7 @@ public class LSHBlocking extends AbstractBlockBuilding {
 
     @Override
     public String getMethodName() {
-        return "LSH Blocking";
+        return "LSH SuperBit Blocking";
     }
 
     @Override
@@ -201,9 +215,9 @@ public class LSHBlocking extends AbstractBlockBuilding {
         obj2.put("class", "java.lang.Integer");
         obj2.put("name", getParameterName(1));
         obj2.put("defaultValue", "150");
-        obj2.put("minValue", "50");
-        obj2.put("maxValue", "1000");
-        obj2.put("stepValue", "50");
+        obj2.put("minValue", "30");
+        obj2.put("maxValue", "100");
+        obj2.put("stepValue", "10");
         obj2.put("description", getParameterDescription(1));
 
         final JsonArray array = new JsonArray();
@@ -216,9 +230,9 @@ public class LSHBlocking extends AbstractBlockBuilding {
     public String getParameterDescription(int parameterId) {
         switch (parameterId) {
             case 0:
-                return "The " + getParameterName(0) + " determines the number of token ids that are used as blocking key.";
+                return "The " + getParameterName(0) + " determines the number of hash functions comprising every band.";
             case 1:
-                return "The " + getParameterName(1) + " determines the number of token ids that represent all attribute values of an entity.";
+                return "The " + getParameterName(1) + " determines the number of bands, i.e., blocking keys, per entity.";
             default:
                 return "invalid parameter id";
         }
@@ -230,7 +244,7 @@ public class LSHBlocking extends AbstractBlockBuilding {
             case 0:
                 return "Band size";
             case 1:
-                return "Signature size";
+                return "Number of bands";
             default:
                 return "invalid parameter id";
         }

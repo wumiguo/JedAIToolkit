@@ -181,7 +181,7 @@ public class SuffixArraysBlocking extends StandardBlocking {
         int mgSizeIteration = iterationNumber / gridMSLength.getNumberOfConfigurations();
         maximumBlockSize = (Integer) gridMBSize.getNumberedValue(mgSizeIteration);
         
-        int msLengthIteration = iterationNumber - mgSizeIteration * gridMSLength.getNumberOfConfigurations();
+        int msLengthIteration = iterationNumber % gridMSLength.getNumberOfConfigurations();
         minimumSuffixLength = (Integer) gridMSLength.getNumberedValue(msLengthIteration);
     }
 

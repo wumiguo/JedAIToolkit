@@ -42,14 +42,13 @@ public abstract class AbstractBlockBuilding implements IBlockBuilding {
     protected double noOfEntitiesD1;
     protected double noOfEntitiesD2;
 
-    protected final List<AbstractBlock> blocks;
+    protected List<AbstractBlock> blocks;
     protected List<EntityProfile> entityProfilesD1;
     protected List<EntityProfile> entityProfilesD2;
     protected Map<String, TIntList> invertedIndexD1;
     protected Map<String, TIntList> invertedIndexD2;
             
     public AbstractBlockBuilding() {
-        blocks = new ArrayList<>();
         entityProfilesD1 = null;
         entityProfilesD2 = null;
     }
@@ -70,8 +69,7 @@ public abstract class AbstractBlockBuilding implements IBlockBuilding {
     }
 
     @Override
-    public List<AbstractBlock> getBlocks(List<EntityProfile> profilesD1,
-            List<EntityProfile> profilesD2) {
+    public List<AbstractBlock> getBlocks(List<EntityProfile> profilesD1, List<EntityProfile> profilesD2) {
         Log.info("Applying " + getMethodName() + " with the following configuration : " + getMethodConfiguration());
 
         if (profilesD1 == null) {
@@ -79,6 +77,7 @@ public abstract class AbstractBlockBuilding implements IBlockBuilding {
             return null;
         }
 
+        blocks = new ArrayList<>();
         invertedIndexD1 = new HashMap<>();
         entityProfilesD1 = profilesD1;
         noOfEntitiesD1 = entityProfilesD1.size();

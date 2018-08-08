@@ -115,14 +115,6 @@ public class BlocksPerformance {
         return d2BlockAssignments;
     }
 
-    public double getPc() {
-        return pc;
-    }
-
-    public double getPq() {
-        return pq;
-    }
-
     private void getBilateralBlockingCardinality() {
         d1BlockAssignments = 0;
         d2BlockAssignments = 0;
@@ -223,6 +215,18 @@ public class BlocksPerformance {
             noOfD1Entities = distinctEntitiesD1.size();
             noOfD2Entities = distinctEntitiesD2.size();
         }
+    }
+    
+    public double getFMeasure() {
+        return fMeasure;
+    }
+    
+    public double getPc() {
+        return pc;
+    }
+
+    public double getPq() {
+        return pq;
     }
     
     public void printDetailedResults(List<EntityProfile> profilesD1, List<EntityProfile> profilesD2) {

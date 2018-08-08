@@ -209,7 +209,7 @@ public class CutClustering extends AbstractEntityClustering {
         int thrIteration = iterationNumber / gridAcap.getNumberOfConfigurations();
         super.setNumberedGridConfiguration(thrIteration);
         
-        int acapIteration = iterationNumber - thrIteration * gridAcap.getNumberOfConfigurations();
+        int acapIteration = iterationNumber % gridAcap.getNumberOfConfigurations();
         Acap = (Double) gridAcap.getNumberedValue(acapIteration);
     }
     
