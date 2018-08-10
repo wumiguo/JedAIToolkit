@@ -16,12 +16,10 @@
 package org.scify.jedai.blockbuilding;
 
 import info.debatty.java.lsh.MinHash;
-import info.debatty.java.lsh.SuperBit;
 import java.util.HashSet;
 import java.util.Set;
 import org.scify.jedai.textmodels.ITextModel;
 import org.scify.jedai.textmodels.MinHashUnigrams;
-import org.scify.jedai.textmodels.SuperBitUnigrams;
 
 /**
  *

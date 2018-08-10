@@ -30,7 +30,6 @@ import org.scify.jedai.datamodel.AbstractBlock;
 import org.scify.jedai.datamodel.Attribute;
 import org.scify.jedai.datamodel.EntityProfile;
 import org.scify.jedai.textmodels.ITextModel;
-import org.scify.jedai.textmodels.MinHashUnigrams;
 import org.scify.jedai.textmodels.SuperBitUnigrams;
 
 /**
