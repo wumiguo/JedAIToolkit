@@ -16,6 +16,7 @@
 package org.scify.jedai.datawriter;
 
 import org.scify.jedai.utilities.datastructures.AbstractDuplicatePropagation;
+import org.scify.jedai.utilities.datastructures.BilateralDuplicatePropagation;
 import org.scify.jedai.utilities.datastructures.GroundTruthIndex;
 import org.scify.jedai.datamodel.AbstractBlock;
 import org.scify.jedai.datamodel.BilateralBlock;
@@ -31,11 +32,21 @@ import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.PrintWriter;
-
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.Statement;
 import java.util.List;
+import java.util.Properties;
+
+import org.apache.jena.update.UpdateExecutionFactory;
+import org.apache.jena.update.UpdateFactory;
+import org.apache.jena.update.UpdateProcessor;
+import org.apache.jena.update.UpdateRequest;
 import org.scify.jedai.blockprocessing.comparisoncleaning.ComparisonPropagation;
 import org.scify.jedai.datamodel.EntityProfile;
+import org.scify.jedai.datamodel.EquivalenceCluster;
 
 /**
  *
@@ -60,11 +71,71 @@ public class BlocksPerformanceWriter {
     private final AbstractDuplicatePropagation abstractDP;
     private final List<AbstractBlock> blocks;
     private GroundTruthIndex entityIndex;
+    
+    private String dbpassword;
+	private String dbtable;
+	private String dbuser;
+	private boolean ssl;
+	private String endpointURL;
+	private String endpointGraph;
 
     public BlocksPerformanceWriter(List<AbstractBlock> bl, AbstractDuplicatePropagation adp) {
         abstractDP = adp;
         abstractDP.resetDuplicates();
         blocks = bl;
+    }
+    
+    public void setPassword(String password) {
+        this.dbpassword = password;
+    }
+
+	public void setTable(String table) {
+        this.dbtable = table;
+    }
+
+    public void setUser(String user) {
+        this.dbuser = user;
+    }
+    
+    public void setSSL(boolean ssl) {
+        this.ssl = ssl;
+    }
+    
+    public void setEndpointURL(String endpointURL) {
+        this.endpointURL = endpointURL;
+    }
+
+    public void setEndpointGraph(String endpointGraph) {
+        this.endpointGraph = endpointGraph;
+    }
+    
+    private Connection getMySQLconnection(String dbURL) throws IOException {
+        try {
+            Class.forName("com.mysql.jdbc.Driver");
+            return DriverManager.getConnection("jdbc:" + dbURL + "?user=" + dbuser + "&password=" + dbpassword);
+        } catch (Exception ex) {
+            Log.error("Error with database connection!", ex);
+            return null;
+        }
+    }
+    
+    private Connection getPostgreSQLconnection(String dbURL) throws IOException {
+        try {
+            final Properties props = new Properties();
+            if (!(dbuser == null)) {
+                props.setProperty("user", dbuser);
+            }
+            if (!(dbpassword == null)) {
+                props.setProperty("password", dbpassword);
+            }
+            if (ssl) {
+                props.setProperty("ssl", "true");
+            }
+            return DriverManager.getConnection("jdbc:" + dbURL, props);
+        } catch (Exception ex) {
+            Log.error("Error with database connection!", ex);
+            return null;
+        }
     }
 
     private boolean areCooccurring(boolean cleanCleanER, IdDuplicates pairOfDuplicates) {
@@ -617,7 +688,283 @@ public class BlocksPerformanceWriter {
 
     }
 
-    public void printFalseNegativesToCSV(List<EntityProfile> profilesD1, List<EntityProfile> profilesD2, String outputFile) throws FileNotFoundException {
+    public void printDetailedResultsToSPARQL(List<EntityProfile> profilesD1, List<EntityProfile> profilesD2, String endpointURL, String GraphName) throws FileNotFoundException {
+    	if (blocks.isEmpty()) {
+            Log.warn("Empty set of blocks was given as input!");
+            return;
+        }
+
+        setType();
+
+        List<AbstractBlock> blocksToUse = blocks;
+        if (!(blocks.get(0) instanceof DecomposedBlock)) {
+            final ComparisonPropagation cp = new ComparisonPropagation();
+            blocksToUse = cp.refineBlocks(blocks);
+        }
+        StringBuilder sb = new StringBuilder();
+
+        String sparqlQueryString1 = "INSERT DATA { "
+        		+ "GRAPH "+GraphName+" { ";
+        sb.append(sparqlQueryString1);
+	    
+        abstractDP.resetDuplicates();
+        int counter0 = 0;
+        for (AbstractBlock block : blocksToUse) {
+            final ComparisonIterator iterator = block.getComparisonIterator();
+            while (iterator.hasNext()) {
+                final Comparison currentComparison = iterator.next();
+                final EntityProfile profile1 = profilesD1.get(currentComparison.getEntityId1());
+                final EntityProfile profile2 = isCleanCleanER ? profilesD2.get(currentComparison.getEntityId2()) : profilesD1.get(currentComparison.getEntityId2());
+
+                final int originalDuplicates = abstractDP.getNoOfDuplicates();
+                abstractDP.isSuperfluous(currentComparison.getEntityId1(), currentComparison.getEntityId2());
+                final int newDuplicates = abstractDP.getNoOfDuplicates();
+
+                counter0++;
+
+                
+                sb.append("<obj/"+"record/"+block.toString()+"> ");
+            	sb.append("<url1> ");
+            	sb.append("\""+profile1.getEntityUrl().replace("&", "")+""+"\".\n");
+            	
+            	sb.append("<obj/"+"record/"+block.toString()+"> ");
+            	sb.append("<url2> ");
+            	sb.append("\""+profile2.getEntityUrl().replace("&", "")+""+"\".\n");
+            	
+            	sb.append("<obj/"+"record/"+block.toString()+"> ");
+            	sb.append("<pairType> ");
+                if (originalDuplicates == newDuplicates) {
+                	sb.append("\""+"FP"+"\".\n");//false positive
+                } else { // originalDuplicates < newDuplicates
+                	sb.append("\""+"TP"+"\".\n"); // true positive
+                }               
+            	
+                sb.append("<obj/"+"record/"+block.toString()+"> ");
+            	sb.append("<Profile1> ");
+            	sb.append("\""+(profile1+"").replace("&", "")+"\".\n");
+            	
+            	sb.append("<obj/"+"record/"+block.toString()+"> ");
+            	sb.append("<Profile2> ");
+            	sb.append("\""+(profile2+"").replace("&", "")+"\".\n");
+            	
+            	//execute query every 1000 steps
+            	if (counter0 % 1000 == 0)
+                {
+                    sb.append("}\n }");
+                    String sparqlQueryString = sb.toString();
+
+                    //System.out.println(sparqlQueryString);
+                    UpdateRequest update  = UpdateFactory.create(sparqlQueryString);
+                    UpdateProcessor qexec = UpdateExecutionFactory.createRemote(update, endpointURL);
+                    qexec.execute();
+                    sb.setLength(0);
+                    sb.append(sparqlQueryString1);
+                }
+                
+            }
+        }
+            if (counter0 % 1000 != 0)
+            {
+            	sb.append("}\n }");
+                String sparqlQueryString = sb.toString();
+
+                //System.out.println(sparqlQueryString);
+                UpdateRequest update  = UpdateFactory.create(sparqlQueryString);
+                UpdateProcessor qexec = UpdateExecutionFactory.createRemote(update, endpointURL);
+                qexec.execute();
+                sb.setLength(0);
+                sb.append(sparqlQueryString1);
+            }
+            
+            int counter1 = 0;
+            for (IdDuplicates duplicatesPair : abstractDP.getFalseNegatives()) {
+                final EntityProfile profile1 = profilesD1.get(duplicatesPair.getEntityId1());
+                final EntityProfile profile2 = isCleanCleanER ? profilesD2.get(duplicatesPair.getEntityId2()) : profilesD1.get(duplicatesPair.getEntityId2());
+
+                counter1++;
+                
+                sb.append("<obj/"+"record/"+duplicatesPair.toString()+"> ");
+            	sb.append("<url1> ");
+            	sb.append("\""+profile1.getEntityUrl().replace("&", "")+""+"\".\n");
+            	
+            	sb.append("<obj/"+"record/"+duplicatesPair.toString()+"> ");
+            	sb.append("<url2> ");
+            	sb.append("\""+profile2.getEntityUrl().replace("&", "")+""+"\".\n");
+            	
+            	sb.append("<obj/"+"record/"+duplicatesPair.toString()+"> ");
+            	sb.append("<pairType> ");    
+            	sb.append("\""+"FN"+"\".\n"); // false negative
+            	
+                sb.append("<obj/"+"record/"+duplicatesPair.toString()+"> ");
+            	sb.append("<Profile1> ");
+            	sb.append("\""+(profile1+"").replace("&", "")+"\".\n");
+            	
+            	sb.append("<obj/"+"record/"+duplicatesPair.toString()+"> ");
+            	sb.append("<Profile2> ");
+            	sb.append("\""+(profile2+"").replace("&", "")+"\".\n");
+            	
+            	//execute query every 1000 steps
+            	if (counter1 % 1000 == 0)
+                {
+                    sb.append("}\n }");
+                    String sparqlQueryString = sb.toString();
+
+                    //System.out.println(sparqlQueryString);
+                    UpdateRequest update  = UpdateFactory.create(sparqlQueryString);
+                    UpdateProcessor qexec = UpdateExecutionFactory.createRemote(update, endpointURL);
+                    qexec.execute();
+                    sb.setLength(0);
+                    sb.append(sparqlQueryString1);
+                }
+            }
+            
+            if (counter1 % 1000 != 0)
+            {
+            	sb.append("}\n }");
+                String sparqlQueryString = sb.toString();
+
+                //System.out.println(sparqlQueryString);
+                UpdateRequest update  = UpdateFactory.create(sparqlQueryString);
+                UpdateProcessor qexec = UpdateExecutionFactory.createRemote(update, endpointURL);
+                qexec.execute();
+                sb.setLength(0);
+                sb.append(sparqlQueryString1);
+            }
+        
+        
+
+            detectedDuplicates = abstractDP.getNoOfDuplicates();
+            pc = ((double) abstractDP.getNoOfDuplicates()) / abstractDP.getExistingDuplicates();
+            pq = abstractDP.getNoOfDuplicates() / aggregateCardinality;
+            if (0 < pc && 0 < pq) {
+                fMeasure = 2 * pc * pq / (pc + pq);
+            } else {
+                fMeasure = 0;
+            }
+
+
+            sb.append("<obj/"+"record/"+"STATS"+"> ");
+        	sb.append("<PairsQuality> ");
+        	sb.append("\""+pq+"\".\n");
+
+        	sb.append("<obj/"+"record/"+"STATS"+"> ");
+        	sb.append("<PairsCompletentess> ");
+        	sb.append("\""+pc+"\".\n");
+        	
+        	sb.append("<obj/"+"record/"+"STATS"+"> ");
+        	sb.append("<F-Measure> ");
+        	sb.append("\""+fMeasure+"\".\n");
+        	
+        	sb.append("}\n }");
+            String sparqlQueryString = sb.toString();
+
+            //System.out.println(sparqlQueryString);
+            UpdateRequest update  = UpdateFactory.create(sparqlQueryString);
+            UpdateProcessor qexec = UpdateExecutionFactory.createRemote(update, endpointURL);
+            qexec.execute();
+        
+    }
+    
+    public void printDetailedResultsToDB(List<EntityProfile> profilesD1, List<EntityProfile> profilesD2, String dbURL) throws FileNotFoundException {
+        if (blocks.isEmpty()) {
+            Log.warn("Empty set of blocks was given as input!");
+            return;
+        }
+
+        setType();
+
+        List<AbstractBlock> blocksToUse = blocks;
+        if (!(blocks.get(0) instanceof DecomposedBlock)) {
+            final ComparisonPropagation cp = new ComparisonPropagation();
+            blocksToUse = cp.refineBlocks(blocks);
+        }
+
+        StringBuilder sb = new StringBuilder();
+        String dbquery1 = "INSERT INTO "+ dbtable + " (url1, url2, pairtype, Profile1, Profile2) VALUES ";
+        sb.append(dbquery1);
+        abstractDP.resetDuplicates();
+        for (AbstractBlock block : blocksToUse) {
+            final ComparisonIterator iterator = block.getComparisonIterator();
+            while (iterator.hasNext()) {
+                final Comparison currentComparison = iterator.next();
+                final EntityProfile profile1 = profilesD1.get(currentComparison.getEntityId1());
+                final EntityProfile profile2 = isCleanCleanER ? profilesD2.get(currentComparison.getEntityId2()) : profilesD1.get(currentComparison.getEntityId2());
+
+                final int originalDuplicates = abstractDP.getNoOfDuplicates();
+                abstractDP.isSuperfluous(currentComparison.getEntityId1(), currentComparison.getEntityId2());
+                final int newDuplicates = abstractDP.getNoOfDuplicates();
+
+                sb.append("('"+profile1.getEntityUrl()+"', ");
+                sb.append("'"+profile2.getEntityUrl()+"', ");
+            	
+                if (originalDuplicates == newDuplicates) {
+                    sb.append("'"+"FP"+"', "); //false positive
+                } else { // originalDuplicates < newDuplicates
+                    sb.append("'"+"TP"+"', "); //true positive
+                }
+                sb.append("'"+profile1+"', ");
+            	sb.append("'"+profile2+"'), ");
+            }
+        }
+
+        for (IdDuplicates duplicatesPair : abstractDP.getFalseNegatives()) {
+            final EntityProfile profile1 = profilesD1.get(duplicatesPair.getEntityId1());
+            final EntityProfile profile2 = isCleanCleanER ? profilesD2.get(duplicatesPair.getEntityId2()) : profilesD1.get(duplicatesPair.getEntityId2());
+
+            sb.append("('"+profile1.getEntityUrl()+"', ");
+            sb.append("'"+profile2.getEntityUrl()+"', ");
+            sb.append("'"+"FN"+"', "); // false negative
+            sb.append("'"+profile1+"', ");
+        	sb.append("'"+profile2+"'), ");
+        }
+
+        detectedDuplicates = abstractDP.getNoOfDuplicates();
+        pc = ((double) abstractDP.getNoOfDuplicates()) / abstractDP.getExistingDuplicates();
+        pq = abstractDP.getNoOfDuplicates() / aggregateCardinality;
+        if (0 < pc && 0 < pq) {
+            fMeasure = 2 * pc * pq / (pc + pq);
+        } else {
+            fMeasure = 0;
+        }
+
+        sb.append("('"+pq+"', ");
+        sb.append("'"+pc+"', ");
+        sb.append("'"+fMeasure+"', ");
+        sb.append("'"+"NULL"+"', ");
+    	sb.append("'"+"NULL"+"'); ");
+
+    	String dbquery = sb.toString();
+
+    	try {
+            if (dbuser == null) {
+                Log.error("Database user has not been set!");
+            }
+            if (dbpassword == null) {
+                Log.error("Database password has not been set!");
+            }
+            if (dbtable == null) {
+                Log.error("Database table has not been set!");
+            }
+
+
+            Connection conn = null;
+            if (dbURL.startsWith("mysql")) {
+                conn = getMySQLconnection(dbURL);
+            } else if (dbURL.startsWith("postgresql")) {
+                conn = getPostgreSQLconnection(dbURL);
+            } else {
+                Log.error("Only MySQL and PostgreSQL are supported for the time being!");
+            }
+
+
+            final Statement stmt = conn.createStatement();
+            stmt.executeQuery(dbquery);//retrieve the appropriate table
+            } catch (Exception ex) {
+                Log.error("Error in db writing!", ex);
+            }
+    }
+    
+    public void debugToCSV(List<EntityProfile> profilesD1, List<EntityProfile> profilesD2, String outputFile) throws FileNotFoundException {
         if (blocks.isEmpty()) {
             Log.warn("Empty set of blocks was given as input!");
             return;
@@ -656,6 +1003,75 @@ public class BlocksPerformanceWriter {
         pw.write(sb.toString());
         pw.close();
     }
+    
+    public void debugToDB(List<EntityProfile> profilesD1, List<EntityProfile> profilesD2, String dbURL) throws FileNotFoundException {
+        if (blocks.isEmpty()) {
+            Log.warn("Empty set of blocks was given as input!");
+            return;
+        }
+
+        setType(); // Clean-Clean or Dirty ER?
+        StringBuilder sb = new StringBuilder();
+        String dbquery1 = "INSERT INTO "+ dbtable + " (url1, url2, pairtype, Profile1, Profile2) VALUES ";
+        sb.append(dbquery1);
+        
+        List<AbstractBlock> blocksToUse = blocks;
+        if (!(blocks.get(0) instanceof DecomposedBlock)) {
+            final ComparisonPropagation cp = new ComparisonPropagation();
+            blocksToUse = cp.refineBlocks(blocks);
+        }
+        
+        abstractDP.resetDuplicates();
+        for (AbstractBlock block : blocksToUse) {
+            final ComparisonIterator iterator = block.getComparisonIterator();
+            while (iterator.hasNext()) {
+            	final Comparison comp = iterator.next();
+                abstractDP.isSuperfluous(comp.getEntityId1(), comp.getEntityId2());
+            }
+        }
+                
+        for (IdDuplicates duplicatesPair : abstractDP.getFalseNegatives()) {
+            final EntityProfile profile1 = profilesD1.get(duplicatesPair.getEntityId1());
+            final EntityProfile profile2 = isCleanCleanER ? profilesD2.get(duplicatesPair.getEntityId2()) : profilesD1.get(duplicatesPair.getEntityId2());
+
+            sb.append("('"+profile1.getEntityUrl()+"', ");
+            sb.append("'"+profile2.getEntityUrl()+"', ");
+            sb.append("'"+"FN"+"', "); // false negative
+            sb.append("'"+profile1+"', ");
+        	sb.append("'"+profile2+"'), ");
+        }
+        
+        String dbquery = sb.toString();
+
+    	try {
+            if (dbuser == null) {
+                Log.error("Database user has not been set!");
+            }
+            if (dbpassword == null) {
+                Log.error("Database password has not been set!");
+            }
+            if (dbtable == null) {
+                Log.error("Database table has not been set!");
+            }
+
+
+            Connection conn = null;
+            if (dbURL.startsWith("mysql")) {
+                conn = getMySQLconnection(dbURL);
+            } else if (dbURL.startsWith("postgresql")) {
+                conn = getPostgreSQLconnection(dbURL);
+            } else {
+                Log.error("Only MySQL and PostgreSQL are supported for the time being!");
+            }
+
+
+            final Statement stmt = conn.createStatement();
+            stmt.executeQuery(dbquery);//retrieve the appropriate table
+            } catch (Exception ex) {
+                Log.error("Error in db writing!", ex);
+            }
+    }
+    
     
     public void debugToRDF(List<EntityProfile> profilesD1, List<EntityProfile> profilesD2, String outputFile) throws FileNotFoundException {
         if (blocks.isEmpty()) {
@@ -783,6 +1199,87 @@ public class BlocksPerformanceWriter {
         printWriter.println("</general>");
 
         printWriter.close();
+    }
+    
+    public void debugToSPARQL(List<EntityProfile> profilesD1, List<EntityProfile> profilesD2, String endpointURL, String GraphName) throws FileNotFoundException {
+        if (blocks.isEmpty()) {
+            Log.warn("Empty set of blocks was given as input!");
+            return;
+        }
+
+        setType(); // Clean-Clean or Dirty ER?
+        StringBuilder sb = new StringBuilder();
+
+        String sparqlQueryString1 = "INSERT DATA { "
+        		+ "GRAPH "+GraphName+" { ";
+        sb.append(sparqlQueryString1);
+
+
+        List<AbstractBlock> blocksToUse = blocks;
+        if (!(blocks.get(0) instanceof DecomposedBlock)) {
+            final ComparisonPropagation cp = new ComparisonPropagation();
+            blocksToUse = cp.refineBlocks(blocks);
+        }
+        
+        abstractDP.resetDuplicates();
+        for (AbstractBlock block : blocksToUse) {
+            final ComparisonIterator iterator = block.getComparisonIterator();
+            while (iterator.hasNext()) {
+            	final Comparison comp = iterator.next();
+                abstractDP.isSuperfluous(comp.getEntityId1(), comp.getEntityId2());
+            }
+        }
+                
+        int counter = 0;
+        for (IdDuplicates duplicatesPair : abstractDP.getFalseNegatives()) {
+            final EntityProfile profile1 = profilesD1.get(duplicatesPair.getEntityId1());
+            final EntityProfile profile2 = isCleanCleanER ? profilesD2.get(duplicatesPair.getEntityId2()) : profilesD1.get(duplicatesPair.getEntityId2());
+
+            sb.append("<obj/"+"record/"+duplicatesPair.toString()+"> ");
+        	sb.append("<url1> ");
+        	sb.append("\""+profile1.getEntityUrl().replace("&", "")+""+"\".\n");
+        	
+        	sb.append("<obj/"+"record/"+duplicatesPair.toString()+"> ");
+        	sb.append("<url2> ");
+        	sb.append("\""+profile2.getEntityUrl().replace("&", "")+""+"\".\n");
+        	
+        	sb.append("<obj/"+"record/"+duplicatesPair.toString()+"> ");
+        	sb.append("<pairType> ");    
+        	sb.append("\""+"FN"+"\".\n"); // false negative
+        	
+            sb.append("<obj/"+"record/"+duplicatesPair.toString()+"> ");
+        	sb.append("<Profile1> ");
+        	sb.append("\""+(profile1+"").replace("&", "")+"\".\n");
+        	
+        	sb.append("<obj/"+"record/"+duplicatesPair.toString()+"> ");
+        	sb.append("<Profile2> ");
+        	sb.append("\""+(profile2+"").replace("&", "")+"\".\n");
+        	
+        	//execute query every 1000 steps
+        	if (counter % 1000 == 0)
+            {
+                sb.append("}\n }");
+                String sparqlQueryString = sb.toString();
+
+                //System.out.println(sparqlQueryString);
+                UpdateRequest update  = UpdateFactory.create(sparqlQueryString);
+                UpdateProcessor qexec = UpdateExecutionFactory.createRemote(update, endpointURL);
+                qexec.execute();
+                sb.setLength(0);
+                sb.append(sparqlQueryString1);
+            }
+        }
+        
+        if (counter % 1000 != 0)
+        {
+        	sb.append("}\n }");
+            String sparqlQueryString = sb.toString();
+
+            //System.out.println(sparqlQueryString);
+            UpdateRequest update  = UpdateFactory.create(sparqlQueryString);
+            UpdateProcessor qexec = UpdateExecutionFactory.createRemote(update, endpointURL);
+            qexec.execute();
+        }
     }
     
     public void printStatistics(double overheadTime, String methodConfiguration, String methodName) {

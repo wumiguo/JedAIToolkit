@@ -17,9 +17,24 @@ package org.scify.jedai.datawriter;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.Statement;
 import java.util.List;
+import java.util.Properties;
 
+import org.apache.jena.query.Query;
+import org.apache.jena.query.QueryExecution;
+import org.apache.jena.query.QueryExecutionFactory;
+import org.apache.jena.query.QueryFactory;
+import org.apache.jena.query.QuerySolution;
+import org.apache.jena.query.ResultSet;
+import org.apache.jena.update.UpdateExecutionFactory;
+import org.apache.jena.update.UpdateFactory;
+import org.apache.jena.update.UpdateProcessor;
+import org.apache.jena.update.UpdateRequest;
 import org.scify.jedai.datamodel.EntityProfile;
 import org.scify.jedai.datamodel.EquivalenceCluster;
 
@@ -32,6 +47,13 @@ public class PrintStatsToFile {
 	private List<EntityProfile> profilesD1;
 	private List<EntityProfile> profilesD2;
 	private EquivalenceCluster[] entityClusters;
+	
+	private String dbpassword;
+	private String dbtable;
+	private String dbuser;
+	private boolean ssl;
+	private String endpointURL;
+	private String endpointGraph;
 
 	public PrintStatsToFile(List<EntityProfile> profilesD1, List<EntityProfile> profilesD2, EquivalenceCluster[] entityClusters) {
         this.profilesD1=profilesD1;
@@ -39,7 +61,59 @@ public class PrintStatsToFile {
         this.entityClusters=entityClusters;
     }
     
+	public void setPassword(String password) {
+        this.dbpassword = password;
+    }
 
+	public void setTable(String table) {
+        this.dbtable = table;
+    }
+
+    public void setUser(String user) {
+        this.dbuser = user;
+    }
+    
+    public void setSSL(boolean ssl) {
+        this.ssl = ssl;
+    }
+    
+    public void setEndpointURL(String endpointURL) {
+        this.endpointURL = endpointURL;
+    }
+
+    public void setEndpointGraph(String endpointGraph) {
+        this.endpointGraph = endpointGraph;
+    }
+    
+    private Connection getMySQLconnection(String dbURL) throws IOException {
+        try {
+            Class.forName("com.mysql.jdbc.Driver");
+            return DriverManager.getConnection("jdbc:" + dbURL + "?user=" + dbuser + "&password=" + dbpassword);
+        } catch (Exception ex) {
+            Log.error("Error with database connection!", ex);
+            return null;
+        }
+    }
+    
+    private Connection getPostgreSQLconnection(String dbURL) throws IOException {
+        try {
+            final Properties props = new Properties();
+            if (!(dbuser == null)) {
+                props.setProperty("user", dbuser);
+            }
+            if (!(dbpassword == null)) {
+                props.setProperty("password", dbpassword);
+            }
+            if (ssl) {
+                props.setProperty("ssl", "true");
+            }
+            return DriverManager.getConnection("jdbc:" + dbURL, props);
+        } catch (Exception ex) {
+            Log.error("Error with database connection!", ex);
+            return null;
+        }
+    }
+    
 	public void printToCSV(String filename) throws FileNotFoundException {
         final PrintWriter pw = new PrintWriter(new File(filename));
         final StringBuilder sb = new StringBuilder();
@@ -211,5 +285,150 @@ public class PrintStatsToFile {
         printWriter.close();
     }
 	
+	public void printToSPARQL(String endpointURL, String GraphName) throws FileNotFoundException {
+        final StringBuilder sb = new StringBuilder();
+
+        String sparqlQueryString1 = "INSERT DATA { "
+        		+ "GRAPH "+GraphName+" { ";
+        sb.append(sparqlQueryString1);
+	    
+
+        int counter = 0;
+        for (EquivalenceCluster eqc : entityClusters) {
+            if (eqc.getEntityIdsD1().isEmpty()) {
+                continue;
+            }
+            counter++;
+            for (TIntIterator iterator = eqc.getEntityIdsD1().iterator(); iterator.hasNext();) {
+            	
+            	sb.append("<obj/"+"record/"+counter+"> ");
+            	sb.append("<cluster_id> ");
+            	sb.append("\""+counter+"\".\n");
+            	
+            	sb.append("<obj/"+"record/"+counter+"> ");
+            	sb.append("<dataset> ");
+            	sb.append("\"1\".\n");
+            	
+            	sb.append("<obj/"+"record/"+counter+"> ");
+            	sb.append("<entity_url> ");
+            	sb.append("\""+profilesD1.get(iterator.next()).getEntityUrl().replace("&", "")+"\".\n");
+                
+
+            }
+            if (eqc.getEntityIdsD2().isEmpty()) {
+                continue;
+            }
+            if (profilesD2 == null) {
+                Log.error("The entity profiles of Dataset 2 are missing!");
+                continue;
+            }
+            for (TIntIterator iterator = eqc.getEntityIdsD2().iterator(); iterator.hasNext();) {
+                                
+            	sb.append("<obj/"+"record/"+counter+"> ");
+            	sb.append("<cluster_id> ");
+            	sb.append("\""+counter+"\".\n");
+            	
+            	sb.append("<obj/"+"record/"+counter+"> ");
+            	sb.append("<dataset> ");
+            	sb.append("\"2\".\n");
+            	
+            	sb.append("<obj/"+"record/"+counter+"> ");
+            	sb.append("<entity_url> ");
+            	sb.append("\""+profilesD2.get(iterator.next()).getEntityUrl().replace("&", "")+"\".\n");
+                
+            	//execute query every 1000 steps
+                if (counter % 1000 == 0)
+                {
+                    sb.append("}\n }");
+                    String sparqlQueryString = sb.toString();
+
+                    //System.out.println(sparqlQueryString);
+                    UpdateRequest update  = UpdateFactory.create(sparqlQueryString);
+                    UpdateProcessor qexec = UpdateExecutionFactory.createRemote(update, endpointURL);
+                    qexec.execute();
+                    sb.setLength(0);
+                    sb.append(sparqlQueryString1);
+                }
+            }
+        }
+        
+        if (counter % 1000 != 0)
+        {
+        	sb.append("}\n }");
+            String sparqlQueryString = sb.toString();
+
+            //System.out.println(sparqlQueryString);
+            UpdateRequest update  = UpdateFactory.create(sparqlQueryString);
+            UpdateProcessor qexec = UpdateExecutionFactory.createRemote(update, endpointURL);
+            qexec.execute();
+        }
+    }
+	
+	public void printToDB(String dbURL) throws FileNotFoundException {
+        final StringBuilder sb = new StringBuilder();
+
+        String dbquery1 = "INSERT INTO "+ dbtable + " (cluster_id, dataset, entity_url) VALUES ";
+        sb.append(dbquery1);
+
+        int counter = 0;
+        for (EquivalenceCluster eqc : entityClusters) {
+            if (eqc.getEntityIdsD1().isEmpty()) {
+                continue;
+            }
+            counter++;
+            for (TIntIterator iterator = eqc.getEntityIdsD1().iterator(); iterator.hasNext();) {
+            	
+            	sb.append("('"+counter+"', ");
+            	sb.append("'"+"1"+"', ");
+            	sb.append("'"+profilesD1.get(iterator.next()).getEntityUrl().replace("&", "")+"'), ");                
+
+            }
+            if (eqc.getEntityIdsD2().isEmpty()) {
+                continue;
+            }
+            if (profilesD2 == null) {
+                Log.error("The entity profiles of Dataset 2 are missing!");
+                continue;
+            }
+            for (TIntIterator iterator = eqc.getEntityIdsD2().iterator(); iterator.hasNext();) {
+                                
+            	sb.append("('"+counter+"', ");
+            	sb.append("'"+"2"+"', ");
+            	sb.append("'"+profilesD2.get(iterator.next()).getEntityUrl().replace("&", "")+"'), ");
+            }
+        }
+        
+        sb.setLength(sb.length() - 2);//remove last ","
+        sb.append(";");
+        String dbquery = sb.toString();
+        
+        try {
+        if (dbuser == null) {
+            Log.error("Database user has not been set!");
+        }
+        if (dbpassword == null) {
+            Log.error("Database password has not been set!");
+        }
+        if (dbtable == null) {
+            Log.error("Database table has not been set!");
+        }
+
+
+        Connection conn = null;
+        if (dbURL.startsWith("mysql")) {
+            conn = getMySQLconnection(dbURL);
+        } else if (dbURL.startsWith("postgresql")) {
+            conn = getPostgreSQLconnection(dbURL);
+        } else {
+            Log.error("Only MySQL and PostgreSQL are supported for the time being!");
+        }
+
+
+        final Statement stmt = conn.createStatement();
+        stmt.executeQuery(dbquery);//retrieve the appropriate table
+        } catch (Exception ex) {
+            Log.error("Error in db writing!", ex);
+        }
+    }
     
 }
