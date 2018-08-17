@@ -67,7 +67,7 @@ public abstract class AbstractReader implements IDataReader {
         return object;
     }
     
-    public void convertToRDFfile(List<EntityProfile> profiles, String outputPath) {
+    public void convertToRDFfile(List<EntityProfile> profiles, String outputPath, String basicURI) {
         try {
     	    FileWriter fileWriter = new FileWriter(outputPath);
     	    PrintWriter printWriter = new PrintWriter(fileWriter);
@@ -77,7 +77,7 @@ public abstract class AbstractReader implements IDataReader {
     	    printWriter.println("xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"");
     	    printWriter.println("xmlns:obj=\"https://www.w3schools.com/rdf/\">");
     	    for (EntityProfile profile : profiles) {
-          	  printWriter.println("<rdf:Description rdf:about=\""+profile.getEntityUrl().replace("&", "")+"\">");
+          	  printWriter.println("<rdf:Description rdf:about=\""+basicURI+profile.getEntityUrl().replace("&", "")+"\">");
               for (Attribute attribute : profile.getAttributes()) {
             	  printWriter.print("<obj:"+attribute.getName().replace("&", "")+">");
             	  printWriter.print(attribute.getValue().replace("&", ""));
