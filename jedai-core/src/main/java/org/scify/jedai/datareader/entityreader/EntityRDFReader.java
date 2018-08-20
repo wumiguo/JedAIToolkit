@@ -45,6 +45,7 @@ public class EntityRDFReader extends AbstractEntityReader {
 
     private final Set<String> attributesToExclude;
     private final Map<String, EntityProfile> urlToEntity;
+    private String prefix = "";
 
     public EntityRDFReader(String filePath) {
         super(filePath);
@@ -172,7 +173,11 @@ public class EntityRDFReader extends AbstractEntityReader {
             }
 
             final Resource subject = stmt.getSubject();
-            final String sub = subject.toString();
+            String sub = subject.toString();
+            if (!prefix.equals(""))
+            {
+            	sub= sub.replace(prefix, "");
+            }
 
             final RDFNode object = stmt.getObject();
             final String obj = object.toString();
@@ -193,5 +198,9 @@ public class EntityRDFReader extends AbstractEntityReader {
 
     public void setAttributesToExclude(String[] attributesNamesToExclude) {
         attributesToExclude.addAll(Arrays.asList(attributesNamesToExclude));
+    }
+    
+    public void setPrefixOmission(String prefix) {
+        this.prefix= prefix ;
     }
 }
