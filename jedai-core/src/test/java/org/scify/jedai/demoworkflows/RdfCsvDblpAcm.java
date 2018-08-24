@@ -53,6 +53,7 @@ public class RdfCsvDblpAcm {
         String mainDirectory = "data/cleanCleanErDatasets/DBLP-ACM/";
 
         EntityRDFReader rdfEntityReader = new EntityRDFReader(mainDirectory + "DBLP2toRdf.xml");
+        //rdfEntityReader.setPrefixOmission("http://w3/");
         List<EntityProfile> rdfDBLP = rdfEntityReader.getEntityProfiles();
         System.out.println("RDF DBLP Entity Profiles\t:\t" + rdfDBLP.size());
         
