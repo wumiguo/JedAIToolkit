@@ -42,7 +42,7 @@ public class TestEntityCSVReader {
             }
         }
         csvReader.storeSerializedObject(profiles, "C:/Users/Manos/workspaceMars/JedAIgitFinal/JedAIgitFinal/datasets/converter/DBLP2prof");
-        csvReader.convertToRDFfile(profiles, "C:/Users/Manos/workspaceMars/JedAIgitFinal/JedAIgitFinal/datasets/converter/DBLP2toRDFxml.xml");
+        csvReader.convertToRDFfile(profiles, "C:/Users/Manos/workspaceMars/JedAIgitFinal/JedAIgitFinal/datasets/converter/DBLP2toRDFxml.xml", "http://w3/");
 
     }
 }
