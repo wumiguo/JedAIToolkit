@@ -214,8 +214,8 @@ public class LSHSuperBitBlocking extends AbstractBlockBuilding {
         final JsonObject obj2 = new JsonObject();
         obj2.put("class", "java.lang.Integer");
         obj2.put("name", getParameterName(1));
-        obj2.put("defaultValue", "150");
-        obj2.put("minValue", "30");
+        obj2.put("defaultValue", "30");
+        obj2.put("minValue", "10");
         obj2.put("maxValue", "100");
         obj2.put("stepValue", "10");
         obj2.put("description", getParameterDescription(1));
