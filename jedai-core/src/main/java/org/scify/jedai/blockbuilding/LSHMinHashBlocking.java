@@ -53,6 +53,7 @@ public class LSHMinHashBlocking extends LSHSuperBitBlocking {
             for (int j = 0; j < bandSize; j++) {
                 band.append("-").append(signature[i + j]);
             }
+            band.append("BND").append(i);
             allKeys.add(band.toString());
         }
         return allKeys;

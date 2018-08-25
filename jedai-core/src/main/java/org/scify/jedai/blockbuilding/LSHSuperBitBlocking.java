@@ -115,6 +115,7 @@ public class LSHSuperBitBlocking extends AbstractBlockBuilding {
                     band.append("F");
                 }
             }
+            band.append("BND").append(i);
             allKeys.add(band.toString());
         }
         return allKeys;
