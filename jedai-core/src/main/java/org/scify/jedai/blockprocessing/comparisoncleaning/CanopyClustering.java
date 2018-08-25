@@ -26,6 +26,8 @@ import gnu.trove.set.hash.TIntHashSet;
 
 import java.util.List;
 import java.util.Random;
+import org.apache.jena.atlas.json.JsonArray;
+import org.apache.jena.atlas.json.JsonObject;
 
 /**
  *
@@ -36,7 +38,11 @@ public class CanopyClustering extends CardinalityNodePruning {
     protected final double inclusiveThreshold;
     protected final double exclusiveThreshold;
     protected TIntSet excludedEntities;
-    
+
+    public CanopyClustering() {
+        this(0.5, 0.75, WeightingScheme.ARCS);
+    }
+
     public CanopyClustering(double inThr, double outThr) {
         this(inThr, outThr, WeightingScheme.ARCS);
     }
@@ -47,21 +53,86 @@ public class CanopyClustering extends CardinalityNodePruning {
         exclusiveThreshold = outThr;
         inclusiveThreshold = inThr;
         if (exclusiveThreshold < inclusiveThreshold) {
-            Log.error(getMethodName(), "The Exclusive Threshold cannot be smaller than the Inclusive one.");
+            Log.error(getMethodName(), "The " + getParameterName(1) + " cannot be smaller than the " + getParameterName(0));
             System.exit(-1);
         }
     }
 
     @Override
+    public String getMethodConfiguration() {
+        return getParameterName(0) + "=" + inclusiveThreshold + ",\t"
+                + getParameterName(1) + "=" + exclusiveThreshold;
+    }
+
+    @Override
     public String getMethodInfo() {
         return getMethodName() + ": a Meta-blocking method that retains for every entity, the comparisons "
-                + "that correspond to edges in the blocking graph that are exceed the average edge weight "
-                + "in the respective node neighborhood.";
+                + "(i.e., edges in the blocking graph) that exceed the " + getParameterName(0) + "."
+                + "Comparisons exceeding the " + getParameterName(1) + " are not considered as candidate matches "
+                + "for any other node.";
     }
 
     @Override
     public String getMethodName() {
         return "Canopy Clustering";
+    }
+
+    @Override
+    public String getMethodParameters() {
+        return getMethodName() + " involves two parameters:\n"
+                + "1)" + getParameterDescription(0) + ".\n"
+                + "2)" + getParameterDescription(1) + ".";
+    }
+
+    @Override
+    public JsonArray getParameterConfiguration() {
+        final JsonObject obj1 = new JsonObject();
+        obj1.put("class", "java.lang.Double");
+        obj1.put("name", getParameterName(0));
+        obj1.put("defaultValue", "0.5");
+        obj1.put("minValue", "0.1");
+        obj1.put("maxValue", "0.9");
+        obj1.put("stepValue", "0.05");
+        obj1.put("description", getParameterDescription(0));
+
+        final JsonObject obj2 = new JsonObject();
+        obj2.put("class", "java.lang.Double");
+        obj2.put("name", getParameterName(1));
+        obj2.put("defaultValue", "0.75");
+        obj2.put("minValue", "0.2");
+        obj2.put("maxValue", "0.95");
+        obj2.put("stepValue", "0.05");
+        obj2.put("description", getParameterDescription(1));
+
+        final JsonArray array = new JsonArray();
+        array.add(obj1);
+        array.add(obj2);
+        return array;
+    }
+
+    @Override
+    public String getParameterDescription(int parameterId) {
+        switch (parameterId) {
+            case 0:
+                return "The " + getParameterName(0) + " defines the minimum similarity of a retained comparison/edge per entity/node.";
+            case 1:
+                return "The " + getParameterName(1) + " defines the similarity above which a node is removed from the "
+                        + "blocking graph so that it is not considered as a candidate match for any other node.";
+            default:
+                return "invalid parameter id";
+        }
+    }
+
+    @Override
+    public String getParameterName(int parameterId) {
+        switch (parameterId) {
+            case 0:
+                return "Inclusive Threshold";
+            case 1:
+                return "Exclusive Threshold";
+            default:
+                return "invalid parameter id";
+        }
     }
 
     @Override
@@ -88,10 +159,10 @@ public class CanopyClustering extends CardinalityNodePruning {
                 verifyValidEntities(currentId);
             }
         }
-        
+
         return retainValidComparisons();
     }
-    
+
     @Override
     protected void setThreshold() {
     }

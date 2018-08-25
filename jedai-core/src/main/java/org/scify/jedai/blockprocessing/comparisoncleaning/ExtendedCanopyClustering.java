@@ -30,6 +30,8 @@ import gnu.trove.set.hash.TIntHashSet;
 import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Random;
+import org.apache.jena.atlas.json.JsonArray;
+import org.apache.jena.atlas.json.JsonObject;
 import org.scify.jedai.utilities.comparators.IncComparisonWeightComparator;
 
 /**
@@ -41,6 +43,10 @@ public class ExtendedCanopyClustering extends CardinalityNodePruning {
     protected final int inclusiveThreshold;
     protected final int exclusiveThreshold;
     protected TIntSet excludedEntities;
+    
+    public ExtendedCanopyClustering() {
+        this(10, 1, WeightingScheme.ARCS);
+    }
     
     public ExtendedCanopyClustering(int inThr, int outThr) {
         this(inThr, outThr, WeightingScheme.ARCS);
@@ -58,6 +64,12 @@ public class ExtendedCanopyClustering extends CardinalityNodePruning {
     }
 
     @Override
+    public String getMethodConfiguration() {
+        return getParameterName(0) + "=" + inclusiveThreshold + ",\t"
+                + getParameterName(1) + "=" + exclusiveThreshold;
+    }
+    
+    @Override
     public String getMethodInfo() {
         return getMethodName() + ": a Meta-blocking method that retains for every entity, "
                 + "the comparisons that correspond to its top-InclusiveThreshold weighted edges in the blocking graph. "
@@ -67,6 +79,45 @@ public class ExtendedCanopyClustering extends CardinalityNodePruning {
     @Override
     public String getMethodName() {
         return "Extended Canopy Clustering";
+    }
+    
+    @Override
+    public JsonArray getParameterConfiguration() {
+        final JsonObject obj1 = new JsonObject();
+        obj1.put("class", "java.lang.Integer");
+        obj1.put("name", getParameterName(0));
+        obj1.put("defaultValue", "10");
+        obj1.put("minValue", "1");
+        obj1.put("maxValue", "20");
+        obj1.put("stepValue", "1");
+        obj1.put("description", getParameterDescription(0));
+
+        final JsonObject obj2 = new JsonObject();
+        obj2.put("class", "java.lang.Integer");
+        obj2.put("name", getParameterName(1));
+        obj2.put("defaultValue", "1");
+        obj2.put("minValue", "1");
+        obj2.put("maxValue", "10");
+        obj2.put("stepValue", "1");
+        obj2.put("description", getParameterDescription(1));
+
+        final JsonArray array = new JsonArray();
+        array.add(obj1);
+        array.add(obj2);
+        return array;
+    }
+    
+    @Override
+    public String getParameterDescription(int parameterId) {
+        switch (parameterId) {
+            case 0:
+                return "The " + getParameterName(0) + " defines the maximum number of retained comparisons/edges per entity/node.";
+            case 1:
+                return "The " + getParameterName(1) + " defines the maximum number of nodes/entities that are removed from the "
+                        + "blocking graph so that they are not considered as candidate matches for any other node.";
+            default:
+                return "invalid parameter id";
+        }
     }
 
     @Override
