@@ -32,17 +32,18 @@ import org.scify.jedai.configuration.randomsearch.IntRandomSearchConfiguration;
 public class QGramsBlocking extends StandardBlocking {
 
     protected int nGramSize;
-    
+
     protected final IntGridSearchConfiguration gridNGSize;
     protected final IntRandomSearchConfiguration randomNGSize;
 
     public QGramsBlocking() {
         this(6);
     }
-     public QGramsBlocking(int n) {
+
+    public QGramsBlocking(int n) {
         super();
         nGramSize = n;
-        
+
         gridNGSize = new IntGridSearchConfiguration(6, 2, 1);
         randomNGSize = new IntRandomSearchConfiguration(6, 2);
     }
@@ -93,7 +94,7 @@ public class QGramsBlocking extends StandardBlocking {
         }
         return nGrams;
     }
-    
+
     @Override
     public int getNumberOfGridConfigurations() {
         return gridNGSize.getNumberOfConfigurations();
@@ -134,12 +135,12 @@ public class QGramsBlocking extends StandardBlocking {
                 return "invalid parameter id";
         }
     }
-    
+
     @Override
     public void setNextRandomConfiguration() {
         nGramSize = (Integer) randomNGSize.getNextRandomValue();
     }
-    
+
     @Override
     public void setNumberedGridConfiguration(int iterationNumber) {
         nGramSize = (Integer) gridNGSize.getNumberedValue(iterationNumber);

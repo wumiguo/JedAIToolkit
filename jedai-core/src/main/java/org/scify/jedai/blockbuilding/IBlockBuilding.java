@@ -15,6 +15,7 @@
  */
 package org.scify.jedai.blockbuilding;
 
+import gnu.trove.map.TObjectIntMap;
 import org.scify.jedai.datamodel.AbstractBlock;
 import org.scify.jedai.datamodel.EntityProfile;
 import org.scify.jedai.utilities.IDocumentation;
@@ -30,10 +31,14 @@ public interface IBlockBuilding extends IDocumentation {
     int DATASET_1 = 0;
     int DATASET_2 = 1;
 
+    String CLUSTER_PREFIX = "#$!cl";
+    
     public List<AbstractBlock> getBlocks(List<EntityProfile> profiles);
 
     public List<AbstractBlock> getBlocks(List<EntityProfile> profilesD1, List<EntityProfile> profilesD2);
 
+    public List<AbstractBlock> getBlocks(List<EntityProfile> profilesD1, List<EntityProfile> profilesD2, TObjectIntMap<String>[] schemaClusters);
+    
     public int getNumberOfGridConfigurations();
 
     public void setNextRandomConfiguration();

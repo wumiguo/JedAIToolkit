@@ -25,6 +25,7 @@ import com.esotericsoftware.minlog.Log;
 
 import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TIntArrayList;
+import gnu.trove.map.TObjectIntMap;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -47,17 +48,24 @@ public abstract class AbstractBlockBuilding implements IBlockBuilding {
     protected List<EntityProfile> entityProfilesD2;
     protected Map<String, TIntList> invertedIndexD1;
     protected Map<String, TIntList> invertedIndexD2;
-            
+    protected TObjectIntMap<String>[] schemaClusters;
+
     public AbstractBlockBuilding() {
-        entityProfilesD1 = null;
-        entityProfilesD2 = null;
     }
 
     protected void buildBlocks() {
-        indexEntities(invertedIndexD1, entityProfilesD1);
+        if (schemaClusters == null) {
+            indexEntities(invertedIndexD1, entityProfilesD1);
+        } else {
+            indexEntities(invertedIndexD1, entityProfilesD1, schemaClusters[0]);
+        }
 
         if (invertedIndexD2 != null) {
-            indexEntities(invertedIndexD2, entityProfilesD2);
+            if (schemaClusters == null) {
+                indexEntities(invertedIndexD2, entityProfilesD2);
+            } else {
+                indexEntities(invertedIndexD2, entityProfilesD2, schemaClusters[1]);
+            }
         }
     }
 
@@ -70,6 +78,11 @@ public abstract class AbstractBlockBuilding implements IBlockBuilding {
 
     @Override
     public List<AbstractBlock> getBlocks(List<EntityProfile> profilesD1, List<EntityProfile> profilesD2) {
+        return this.getBlocks(profilesD1, profilesD2, null);
+    }
+
+    @Override
+    public List<AbstractBlock> getBlocks(List<EntityProfile> profilesD1, List<EntityProfile> profilesD2, TObjectIntMap<String>[] sClusters) {
         Log.info("Applying " + getMethodName() + " with the following configuration : " + getMethodConfiguration());
 
         if (profilesD1 == null) {
@@ -78,6 +91,7 @@ public abstract class AbstractBlockBuilding implements IBlockBuilding {
         }
 
         blocks = new ArrayList<>();
+        schemaClusters = sClusters;
         invertedIndexD1 = new HashMap<>();
         entityProfilesD1 = profilesD1;
         noOfEntitiesD1 = entityProfilesD1.size();
@@ -114,6 +128,32 @@ public abstract class AbstractBlockBuilding implements IBlockBuilding {
                     String normalizedKey = key.trim();
                     if (0 < normalizedKey.length()) {
                         allKeys.add(normalizedKey);
+                    }
+                }
+            }
+
+            for (String key : allKeys) {
+                TIntList entityList = index.get(key);
+                if (entityList == null) {
+                    entityList = new TIntArrayList();
+                    index.put(key, entityList);
+                }
+                entityList.add(counter);
+            }
+            counter++;
+        }
+    }
+
+    protected void indexEntities(Map<String, TIntList> index, List<EntityProfile> entities, TObjectIntMap<String> schemaClusters) {
+        int counter = 0;
+        for (EntityProfile profile : entities) {
+            final Set<String> allKeys = new HashSet<>();
+            for (Attribute attribute : profile.getAttributes()) {
+                int clusterId = schemaClusters.get(attribute.getName());
+                for (String key : getBlockingKeys(attribute.getValue().toLowerCase())) {
+                    String normalizedKey = key.trim();
+                    if (0 < normalizedKey.length()) {
+                        allKeys.add(normalizedKey + CLUSTER_PREFIX + clusterId);
                     }
                 }
             }
