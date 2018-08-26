@@ -36,4 +36,16 @@ public class AttributeValueClustering extends AbstractAttributeClustering {
         attributeModels[datasetId][attributeId].updateModel(attribute.getValue());
     }
     
+        @Override
+    public String getMethodInfo() {
+                return getMethodName() + ": it clusters together attributes with similar values as"
+                + " determined by the selected combination of representation model and similarity metric.";
+    }
+
+    @Override
+    public String getMethodName() {
+        return "Attribute Value Clustering";
+    }
+
+    
 }

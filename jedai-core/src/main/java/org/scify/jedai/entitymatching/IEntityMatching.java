@@ -20,12 +20,13 @@ import org.scify.jedai.datamodel.EntityProfile;
 import org.scify.jedai.datamodel.SimilarityPairs;
 import org.scify.jedai.utilities.IDocumentation;
 import java.util.List;
+import org.scify.jedai.configuration.IConfiguration;
 
 /**
  *
  * @author G.A.P. II
  */
-public interface IEntityMatching extends IDocumentation {
+public interface IEntityMatching extends IConfiguration, IDocumentation {
 
     int DATASET_1 = 0;
     int DATASET_2 = 1;
@@ -33,12 +34,5 @@ public interface IEntityMatching extends IDocumentation {
     public SimilarityPairs executeComparisons(List<AbstractBlock> blocks, List<EntityProfile> profiles);
 
     public SimilarityPairs executeComparisons(List<AbstractBlock> blocks, List<EntityProfile> profilesD1, List<EntityProfile> profilesD2);
-    
-    public int getNumberOfGridConfigurations();
-    
-    public void setNextRandomConfiguration();
-    
-    public void setNumberedGridConfiguration(int iterationNumber);
-    
-    public void setNumberedRandomConfiguration(int iterationNumber);
+
 }

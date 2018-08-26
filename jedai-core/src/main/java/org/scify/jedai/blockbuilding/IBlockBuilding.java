@@ -21,12 +21,13 @@ import org.scify.jedai.datamodel.EntityProfile;
 import org.scify.jedai.utilities.IDocumentation;
 
 import java.util.List;
+import org.scify.jedai.configuration.IConfiguration;
 
 /**
  *
  * @author G.A.P. II
  */
-public interface IBlockBuilding extends IDocumentation {
+public interface IBlockBuilding extends IConfiguration, IDocumentation {
 
     int DATASET_1 = 0;
     int DATASET_2 = 1;
@@ -39,11 +40,4 @@ public interface IBlockBuilding extends IDocumentation {
 
     public List<AbstractBlock> getBlocks(List<EntityProfile> profilesD1, List<EntityProfile> profilesD2, TObjectIntMap<String>[] schemaClusters);
     
-    public int getNumberOfGridConfigurations();
-
-    public void setNextRandomConfiguration();
-
-    public void setNumberedGridConfiguration(int iterationNumber);
-
-    public void setNumberedRandomConfiguration(int iterationNumber);
 }

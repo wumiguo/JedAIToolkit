@@ -27,6 +27,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import org.apache.jena.atlas.json.JsonArray;
+import org.apache.jena.atlas.json.JsonObject;
 import org.scify.jedai.configuration.gridsearch.IntGridSearchConfiguration;
 import org.scify.jedai.datamodel.Attribute;
 import org.scify.jedai.datamodel.EntityProfile;
@@ -261,12 +263,76 @@ public abstract class AbstractAttributeClustering implements ISchemaClustering {
 
         return clusterAttributes();
     }
+    
+
+    @Override
+    public String getMethodConfiguration() {
+        return getParameterName(0) + "=" + repModel + "\t"
+                + getParameterName(1) + "=" + simMetric;
+    }
+
+    @Override
+    public String getMethodParameters() {
+        return getMethodName() + " involves two parameters:\n"
+                + "1)" + getParameterDescription(0) + ".\n"
+                + "2)" + getParameterDescription(1) + ".";
+    }
 
     @Override
     public int getNumberOfGridConfigurations() {
         return gridCombo.getNumberOfConfigurations();
     }
 
+    @Override
+    public JsonArray getParameterConfiguration() {
+        final JsonObject obj1 = new JsonObject();
+        obj1.put("class", "org.scify.jedai.utilities.enumerations.RepresentationModel");
+        obj1.put("name", getParameterName(0));
+        obj1.put("defaultValue", "org.scify.jedai.utilities.enumerations.RepresentationModel.TOKEN_UNIGRAM_GRAPHS");
+        obj1.put("minValue", "-");
+        obj1.put("maxValue", "-");
+        obj1.put("stepValue", "-");
+        obj1.put("description", getParameterDescription(0));
+
+        final JsonObject obj2 = new JsonObject();
+        obj2.put("class", "org.scify.jedai.utilities.enumerations.SimilarityMetric");
+        obj2.put("name", getParameterName(1));
+        obj2.put("defaultValue", "org.scify.jedai.utilities.enumerations.SimilarityMetric.GRAPH_VALUE_SIMILARITY");
+        obj2.put("minValue", "-");
+        obj2.put("maxValue", "-");
+        obj2.put("stepValue", "-");
+        obj2.put("description", getParameterDescription(1));
+
+        final JsonArray array = new JsonArray();
+        array.add(obj1);
+        array.add(obj2);
+        return array;
+    }
+
+    @Override
+    public String getParameterDescription(int parameterId) {
+        switch (parameterId) {
+            case 0:
+                return "The " + getParameterName(0) + " aggregates the textual items that correspond to every attribute.";
+            case 1:
+                return "The " + getParameterName(1) + " compares the models of two attributes, returning a value between 0 (completely dissimlar) and 1 (identical).";
+            default:
+                return "invalid parameter id";
+        }
+    }
+
+    @Override
+    public String getParameterName(int parameterId) {
+        switch (parameterId) {
+            case 0:
+                return "Representation Model";
+            case 1:
+                return "Similarity Measure";
+            default:
+                return "invalid parameter id";
+        }
+    }
+    
     @Override
     public void setNextRandomConfiguration() {
         int comboId = (Integer) randomCombo.getNextRandomValue();

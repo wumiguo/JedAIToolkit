@@ -17,13 +17,15 @@ package org.scify.jedai.schemaclustering;
 
 import gnu.trove.map.TObjectIntMap;
 import java.util.List;
+import org.scify.jedai.configuration.IConfiguration;
 import org.scify.jedai.datamodel.EntityProfile;
+import org.scify.jedai.utilities.IDocumentation;
 
 /**
  *
  * @author GAP2
  */
-public interface ISchemaClustering {
+public interface ISchemaClustering extends IConfiguration, IDocumentation {
     
     int DATASET_1 = 0;
     int DATASET_2 = 1;
@@ -32,11 +34,4 @@ public interface ISchemaClustering {
     
     public TObjectIntMap<String>[] getClusters(List<EntityProfile> profilesD1, List<EntityProfile> profilesD2);
     
-    public int getNumberOfGridConfigurations();
-    
-    public void setNextRandomConfiguration();
-    
-    public void setNumberedGridConfiguration(int iterationNumber);
-    
-    public void setNumberedRandomConfiguration(int iterationNumber);
 }

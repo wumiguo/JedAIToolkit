@@ -19,23 +19,17 @@ import org.scify.jedai.datamodel.AbstractBlock;
 import org.scify.jedai.utilities.IDocumentation;
 
 import java.util.List;
+import org.scify.jedai.configuration.IConfiguration;
 
 /**
  *
  * @author G.A.P. II
  */
-public interface IBlockProcessing extends IDocumentation {
+public interface IBlockProcessing extends IConfiguration, IDocumentation {
 
     int DATASET_1 = 0;
     int DATASET_2 = 1;
 
     public List<AbstractBlock> refineBlocks(List<AbstractBlock> blocks);
     
-    public int getNumberOfGridConfigurations();
-    
-    public void setNextRandomConfiguration();
-    
-    public void setNumberedGridConfiguration(int iterationNumber);
-    
-    public void setNumberedRandomConfiguration(int iterationNumber);
 }

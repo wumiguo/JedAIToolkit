@@ -16,6 +16,7 @@
 
 package org.scify.jedai.entityclustering;
 
+import org.scify.jedai.configuration.IConfiguration;
 import org.scify.jedai.datamodel.EquivalenceCluster;
 import org.scify.jedai.datamodel.SimilarityPairs;
 import org.scify.jedai.utilities.IDocumentation;
@@ -25,17 +26,10 @@ import org.scify.jedai.utilities.IDocumentation;
  * @author G.A.P. II
  */
 
-public interface IEntityClustering extends IDocumentation {
+public interface IEntityClustering extends IConfiguration, IDocumentation {
  
     public EquivalenceCluster[] getDuplicates(SimilarityPairs simPairs);
     
-    public int getNumberOfGridConfigurations();
-    
     public void setSimilarityThreshold(double th);
-    
-    public void setNextRandomConfiguration();
-    
-    public void setNumberedGridConfiguration(int iterationNumber);
-    
-    public void setNumberedRandomConfiguration(int iterationNumber);
+   
 }

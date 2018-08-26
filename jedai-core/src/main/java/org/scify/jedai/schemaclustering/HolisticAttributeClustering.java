@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.scify.jedai.schemaclustering;
 
 import org.scify.jedai.datamodel.Attribute;
@@ -29,12 +28,23 @@ public class HolisticAttributeClustering extends AbstractAttributeClustering {
     public HolisticAttributeClustering(RepresentationModel model, SimilarityMetric metric) {
         super(model, metric);
     }
-    
+
     @Override
     protected void updateModel(int datasetId, Attribute attribute) {
         int attributeId = attrNameIndex.get(attribute.getName()) - 1;
         attributeModels[datasetId][attributeId].updateModel(attribute.getName());
         attributeModels[datasetId][attributeId].updateModel(attribute.getValue());
     }
-    
+
+    @Override
+    public String getMethodInfo() {
+                return getMethodName() + ": it clusters together attributes with similar names and values as"
+                + " determined by the selected combination of representation model and similarity metric.";
+    }
+
+    @Override
+    public String getMethodName() {
+        return "Hlistic Attribute Clustering";
+    }
+
 }
