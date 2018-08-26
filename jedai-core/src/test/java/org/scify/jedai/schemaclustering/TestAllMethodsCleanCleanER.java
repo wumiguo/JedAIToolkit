@@ -15,13 +15,22 @@
  */
 package org.scify.jedai.schemaclustering;
 
-import gnu.trove.iterator.TObjectIntIterator;
 import gnu.trove.map.TObjectIntMap;
+import java.io.File;
 import java.util.List;
 import org.apache.log4j.BasicConfigurator;
+import org.scify.jedai.blockbuilding.IBlockBuilding;
+import org.scify.jedai.datamodel.AbstractBlock;
 import org.scify.jedai.datamodel.EntityProfile;
 import org.scify.jedai.datareader.entityreader.EntitySerializationReader;
+import org.scify.jedai.datareader.groundtruthreader.GtSerializationReader;
+import org.scify.jedai.datareader.groundtruthreader.IGroundTruthReader;
+import org.scify.jedai.utilities.BlocksPerformance;
+import org.scify.jedai.utilities.datastructures.AbstractDuplicatePropagation;
+import org.scify.jedai.utilities.datastructures.BilateralDuplicatePropagation;
+import org.scify.jedai.utilities.enumerations.BlockBuildingMethod;
 import org.scify.jedai.utilities.enumerations.RepresentationModel;
+import org.scify.jedai.utilities.enumerations.SchemaClusteringMethod;
 import org.scify.jedai.utilities.enumerations.SimilarityMetric;
 
 /**
@@ -33,30 +42,58 @@ public class TestAllMethodsCleanCleanER {
     public static void main(String[] args) {
         BasicConfigurator.configure();
 
-        String mainDir = "D:\\Data\\JedAIdata\\datasets\\cleanCleanErDatasets\\";
-        final String[] datasetName = {"abtBuy", "amazonGp", "dblpAcm", "dblpScholar", "movies", "restaurants"};
-        final String[] datasetsD1 = {"abt", "amazon", "dblp", "dblp2", "imdb", "restaurant1"};
-        final String[] datasetsD2 = {"buy", "gp", "acm", "scholar", "dbpedia", "restaurant2"};
+        String[] entitiesFilePath = {"data" + File.separator + "cleanCleanErDatasets" + File.separator + "abtProfiles",
+            "data" + File.separator + "cleanCleanErDatasets" + File.separator + "buyProfiles",
+            "data" + File.separator + "cleanCleanErDatasets" + File.separator + "amazonProfiles",
+            "data" + File.separator + "cleanCleanErDatasets" + File.separator + "gpProfiles",
+            "data" + File.separator + "cleanCleanErDatasets" + File.separator + "dblpProfiles",
+            "data" + File.separator + "cleanCleanErDatasets" + File.separator + "acmProfiles",
+            "data" + File.separator + "cleanCleanErDatasets" + File.separator + "dblpProfiles2",
+            "data" + File.separator + "cleanCleanErDatasets" + File.separator + "scholarProfiles"
+        };
 
-        for (int i = 0; i < datasetsD1.length; i++) {
-            System.out.println("\n\n\n\n\nCurrent dataset\t:\t" + datasetName[i]);
-            final EntitySerializationReader inReaderD1 = new EntitySerializationReader(mainDir + datasetsD1[i] + "Profiles");
+        String[] groundTruthFilePath = {"data" + File.separator + "cleanCleanErDatasets" + File.separator + "abtBuyIdDuplicates",
+            "data" + File.separator + "cleanCleanErDatasets" + File.separator + "amazonGpIdDuplicates",
+            "data" + File.separator + "cleanCleanErDatasets" + File.separator + "dblpAcmIdDuplicates",
+            "data" + File.separator + "cleanCleanErDatasets" + File.separator + "dblpScholarIdDuplicates",
+        };
+
+        for (int i = 0; i < groundTruthFilePath.length; i++) {
+            System.out.println("\n\n\n\n\nCurrent dataset\t:\t" + groundTruthFilePath[i]);
+            final EntitySerializationReader inReaderD1 = new EntitySerializationReader(entitiesFilePath[i * 2]);
             final List<EntityProfile> profilesD1 = inReaderD1.getEntityProfiles();
             System.out.println("Profiles D1\t:\t" + profilesD1.size());
 
-            final EntitySerializationReader inReaderD2 = new EntitySerializationReader(mainDir + datasetsD2[i] + "Profiles");
+            final EntitySerializationReader inReaderD2 = new EntitySerializationReader(entitiesFilePath[i * 2 + 1]);
             final List<EntityProfile> profilesD2 = inReaderD2.getEntityProfiles();
             System.out.println("Profiles D2\t:\t" + profilesD2.size());
 
-            final AttributeValueClustering avc = new AttributeValueClustering(RepresentationModel.CHARACTER_TRIGRAMS, SimilarityMetric.ENHANCED_JACCARD_SIMILARITY);
-            final TObjectIntMap<String>[] clusters = avc.getClusters(profilesD1, profilesD2);
-            for (int j = 0; j < clusters.length; j++) {
-                System.out.println("\nDataset\t:\t" + (j + 1));
-                final TObjectIntIterator<String> it = clusters[j].iterator();
-                while (it.hasNext()) {
-                    it.advance();
-                    System.out.println(it.key() + "\t" + it.value());
-                }
+            IGroundTruthReader gtReader = new GtSerializationReader(groundTruthFilePath[i]);
+            final AbstractDuplicatePropagation duplicatePropagation = new BilateralDuplicatePropagation(gtReader.getDuplicatePairs(null));
+            System.out.println("Existing Duplicates\t:\t" + duplicatePropagation.getDuplicates().size());
+
+            for (SchemaClusteringMethod scm : SchemaClusteringMethod.values()) {
+                double time1 = System.currentTimeMillis();
+
+                final ISchemaClustering sc = SchemaClusteringMethod.getModel(RepresentationModel.CHARACTER_TRIGRAMS, SimilarityMetric.ENHANCED_JACCARD_SIMILARITY, scm);
+                final TObjectIntMap<String>[] clusters = sc.getClusters(profilesD1, profilesD2);
+
+//                for (int j = 0; j < clusters.length; j++) {
+//                    System.out.println("\nDataset\t:\t" + (j + 1));
+//                    final TObjectIntIterator<String> it = clusters[j].iterator();
+//                    while (it.hasNext()) {
+//                        it.advance();
+//                        System.out.println(it.key() + "\t" + it.value());
+//                    }
+//                }
+                final IBlockBuilding bb = BlockBuildingMethod.getDefaultConfiguration(BlockBuildingMethod.STANDARD_BLOCKING);
+                final List<AbstractBlock> blocks = bb.getBlocks(profilesD1, profilesD2, clusters);
+
+                double time2 = System.currentTimeMillis();
+
+                BlocksPerformance blStats = new BlocksPerformance(blocks, duplicatePropagation);
+                blStats.setStatistics();
+                blStats.printStatistics(time2 - time1, bb.getMethodConfiguration(), bb.getMethodName());
             }
         }
     }
