@@ -52,18 +52,18 @@ import org.scify.jedai.utilities.enumerations.EntityMatchingMethod;
  */
 public class Main {
 
-    private final static String MAIN_DIR_CCER_DATASETS = "data" + File.separator + "cleanCleanErDatasets" + File.separator;
-    private final static String MAIN_DIR_DER_DATASETS = "data" + File.separator + "dirtyErDatasets" + File.separator;
+    private final static String MAIN_DIR_CCER_DATASETS = System.getProperty("user.dir") + File.separator +"data" + File.separator + "cleanCleanErDatasets" + File.separator;
+    private final static String MAIN_DIR_DER_DATASETS = System.getProperty("user.dir") + File.separator + "data" + File.separator + "dirtyErDatasets" + File.separator;
     private final static String[] CCER_ENTITY_FILEPATHS = {"abtProfiles", "buyProfiles",
-        "amazonProfiles", "gpProfiles",
         "dblpProfiles", "acmProfiles",
         "dblpProfiles2", "scholarProfiles",
+        "amazonProfiles", "gpProfiles",
         "imdbProfiles", "dbpediaProfiles"
     };
     private final static String[] CCER_GROUNDTRUTH_FILEPATHS = {"abtBuyIdDuplicates",
-        "amazonGpIdDuplicates",
         "dblpAcmIdDuplicates",
         "dblpScholarIdDuplicates",
+        "amazonGpIdDuplicates",
         "moviesIdDuplicates"
     };
     private final static String[] DER_FILEPATHS = {"abtBuy", "amazonGp", "cddb", "census", "cora", "dblpAcm", "dblpScholar", "movies", "restaurant"};
@@ -237,11 +237,11 @@ public class Main {
         if (erType == 1) {
             int datasetId = getCleanCleanErDataset();
 
-            final IEntityReader eReader1 = new EntitySerializationReader(MAIN_DIR_CCER_DATASETS + CCER_ENTITY_FILEPATHS[datasetId * 2]);
+            final IEntityReader eReader1 = new EntitySerializationReader(MAIN_DIR_CCER_DATASETS + CCER_ENTITY_FILEPATHS[datasetId * 2 - 2]);
             profilesD1 = eReader1.getEntityProfiles();
             System.out.println("Input Entity Profiles D1\t:\t" + profilesD1.size());
 
-            final IEntityReader eReader2 = new EntitySerializationReader(MAIN_DIR_CCER_DATASETS + CCER_ENTITY_FILEPATHS[datasetId * 2 + 1]);
+            final IEntityReader eReader2 = new EntitySerializationReader(MAIN_DIR_CCER_DATASETS + CCER_ENTITY_FILEPATHS[datasetId * 2 - 1]);
             profilesD2 = eReader2.getEntityProfiles();
             System.out.println("Input Entity Profiles D2\t:\t" + profilesD2.size());
 
