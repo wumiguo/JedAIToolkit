@@ -135,7 +135,7 @@ For Clean-Clean ER, only one method is supported:
 
 For more details on its functionality, see [here](https://arxiv.org/pdf/1207.4525.pdf).
 
-### How to run
+## How to run
 Make sure you have installed git on your OS. From the CLI navigate into project's directory, then build it with:
 ```
 $ git submodule update --init
