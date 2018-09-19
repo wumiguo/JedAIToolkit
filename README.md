@@ -134,3 +134,15 @@ For Clean-Clean ER, only one method is supported:
 1) Unique Mapping Clustering
 
 For more details on its functionality, see [here](https://arxiv.org/pdf/1207.4525.pdf).
+
+## How to run
+Make sure you have installed git on your OS. From the CLI navigate into project's directory, then build it with:
+```
+$ git submodule update --init
+$ mvn clean package
+```
+You'll find the library in `jedai-core/target/jedai-core-{version}.jar` and the GUI in `jedai-ui/target/jedai-ui-{version}.jar`. 
+For example, to simply run the GUI just type:
+```
+$ java -jar jedai-ui/target/jedai-ui-{version}.jar
+```
