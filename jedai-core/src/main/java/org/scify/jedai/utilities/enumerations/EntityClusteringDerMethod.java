@@ -18,6 +18,7 @@ package org.scify.jedai.utilities.enumerations;
 
 import org.scify.jedai.entityclustering.CenterClustering;
 import org.scify.jedai.entityclustering.ConnectedComponentsClustering;
+import org.scify.jedai.entityclustering.CorrelationClustering;
 import org.scify.jedai.entityclustering.CutClustering;
 import org.scify.jedai.entityclustering.IEntityClustering;
 import org.scify.jedai.entityclustering.MarkovClustering;
@@ -34,7 +35,8 @@ public enum EntityClusteringDerMethod {
     CUT_CLUSTERING,
     MARKOV_CLUSTERING,
     MERGE_CENTER_CLUSTERING,
-    RICOCHET_SR_CLUSTERING;
+    RICOCHET_SR_CLUSTERING,
+    CORRELATION_CLUSTERING;
 
     public static IEntityClustering getDefaultConfiguration(EntityClusteringDerMethod ecMethod) {
         switch (ecMethod) {
@@ -50,6 +52,8 @@ public enum EntityClusteringDerMethod {
                 return new MergeCenterClustering();
             case RICOCHET_SR_CLUSTERING:
                 return new RicochetSRClustering();
+            case CORRELATION_CLUSTERING:
+                return new CorrelationClustering();
             default:
                 return new ConnectedComponentsClustering();
         }

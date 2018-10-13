@@ -38,11 +38,7 @@ import org.scify.jedai.utilities.enumerations.EntityMatchingMethod;
 import java.util.List;
 import org.apache.log4j.BasicConfigurator;
 
-/**
- *
- * @author G.A.P. II
- */
-public class TestCutClustering {
+public class TestCorrelationClustering {
 
     public static void main(String[] args) throws FileNotFoundException {
         BasicConfigurator.configure();
@@ -100,7 +96,7 @@ public class TestCutClustering {
 
         double time4 = System.currentTimeMillis();
 
-        EntityClusteringDerMethod ecMethod =EntityClusteringDerMethod.CUT_CLUSTERING;
+        EntityClusteringDerMethod ecMethod =EntityClusteringDerMethod.CORRELATION_CLUSTERING;
         double time5 = System.currentTimeMillis();
 
         IEntityClustering ec = EntityClusteringDerMethod.getDefaultConfiguration(ecMethod);
@@ -116,11 +112,7 @@ public class TestCutClustering {
         matchingWorkflowConf.append("\n").append(ec.getMethodConfiguration());
         matchingWorkflowName.append("->").append(ec.getMethodName());
         
-//        try {
-//            PrintToFile.toCSV(entityClusters, "/home/ethanos/workspace/JedAIToolkitNew/rest.csv");
-//        } catch (FileNotFoundException e) {
-//            e.printStackTrace();
-//        }
+
 
         ClustersPerformance clp = new ClustersPerformance(entityClusters, duplicatePropagation);
 //        clp.printDetailedResults(profiles, null, "D:\\temp.csv");
