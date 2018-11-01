@@ -21,7 +21,7 @@ You can find a short presentation of JedAI Toolkit [here](documentation/JedAIpre
 
 If you use JedAI, please cite the following paper:
 
-*George Papadakis, Leonidas Tsekouras, Emmanouil Thanos, George Giannakopoulos, Themis Palpanas and Manolis Koubarakis: "JThe return of JedAI: End-to-End Entity Resolution for Structured and Semi-Structured Data", in VLDB 2018* ([pdf](http://www.vldb.org/pvldb/vol11/p1950-papadakis.pdf)).
+*George Papadakis, Leonidas Tsekouras, Emmanouil Thanos, George Giannakopoulos, Themis Palpanas and Manolis Koubarakis: "The return of JedAI: End-to-End Entity Resolution for Structured and Semi-Structured Data", in VLDB 2018* ([pdf](http://www.vldb.org/pvldb/vol11/p1950-papadakis.pdf)).
 
 ### Consortium
 
