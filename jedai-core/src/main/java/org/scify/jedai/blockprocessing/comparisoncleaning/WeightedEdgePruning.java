@@ -72,6 +72,11 @@ public class WeightedEdgePruning extends AbstractMetablocking {
 
     protected void processArcsEntity(int entityId) {
         validEntities.clear();
+        flags = new int[noOfEntities];
+        for (int i = 0; i < noOfEntities; i++) {
+            flags[i] = -1;
+        }
+        
         final int[] associatedBlocks = entityIndex.getEntityBlocks(entityId, 0);
         if (associatedBlocks.length == 0) {
             return;
@@ -95,6 +100,11 @@ public class WeightedEdgePruning extends AbstractMetablocking {
 
     protected void processEntity(int entityId) {
         validEntities.clear();
+        flags = new int[noOfEntities];
+        for (int i = 0; i < noOfEntities; i++) {
+            flags[i] = -1;
+        }
+        
         final int[] associatedBlocks = entityIndex.getEntityBlocks(entityId, 0);
         if (associatedBlocks.length == 0) {
             return;
@@ -117,7 +127,7 @@ public class WeightedEdgePruning extends AbstractMetablocking {
 
     @Override
     protected List<AbstractBlock> pruneEdges() {
-        List<AbstractBlock> newBlocks = new ArrayList<>();
+        final List<AbstractBlock> newBlocks = new ArrayList<>();
         int limit = cleanCleanER ? datasetLimit : noOfEntities;
         if (weightingScheme.equals(WeightingScheme.ARCS)) {
             for (int i = 0; i < limit; i++) {

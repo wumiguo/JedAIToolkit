@@ -24,6 +24,7 @@ import org.scify.jedai.blockprocessing.comparisoncleaning.ReciprocalWeightedNode
 import org.scify.jedai.blockprocessing.comparisoncleaning.WeightedEdgePruning;
 import org.scify.jedai.blockprocessing.comparisoncleaning.WeightedNodePruning;
 import org.scify.jedai.blockprocessing.IBlockProcessing;
+import org.scify.jedai.blockprocessing.comparisoncleaning.BLAST;
 import org.scify.jedai.blockprocessing.comparisoncleaning.CanopyClustering;
 import org.scify.jedai.blockprocessing.comparisoncleaning.ExtendedCanopyClustering;
 
@@ -33,6 +34,7 @@ import org.scify.jedai.blockprocessing.comparisoncleaning.ExtendedCanopyClusteri
  */
 
 public enum ComparisonCleaningMethod {
+    BLAST,
     CANOPY_CLUSTERING,
     CARDINALITY_EDGE_PRUNING,
     CARDINALITY_NODE_PRUNING,
@@ -45,6 +47,8 @@ public enum ComparisonCleaningMethod {
 
     public static IBlockProcessing getDefaultConfiguration(ComparisonCleaningMethod coclMethod) {
         switch (coclMethod) {
+            case BLAST:
+                return new BLAST();
             case CANOPY_CLUSTERING:
                 return new CanopyClustering(0.7, 0.8);
             case CARDINALITY_EDGE_PRUNING:

@@ -21,5 +21,6 @@ public enum WeightingScheme {
         CBS,
         ECBS,
         JS,
-        EJS
+        EJS,
+        PEARSON_X2
 }

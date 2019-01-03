@@ -28,6 +28,7 @@ import gnu.trove.set.hash.TIntHashSet;
 
 import java.util.List;
 
+import org.apache.commons.math3.stat.inference.ChiSquareTest;
 import org.apache.jena.atlas.json.JsonArray;
 import org.apache.jena.atlas.json.JsonObject;
 
@@ -36,7 +37,7 @@ import org.apache.jena.atlas.json.JsonObject;
  * @author G.A.P. II
  */
 public abstract class AbstractMetablocking extends AbstractComparisonCleaning {
-    
+
     protected boolean nodeCentric;
 
     protected int[] flags;
@@ -65,10 +66,6 @@ public abstract class AbstractMetablocking extends AbstractComparisonCleaning {
     @Override
     protected List<AbstractBlock> applyMainProcessing() {
         counters = new double[noOfEntities];
-        flags = new int[noOfEntities];
-        for (int i = 0; i < noOfEntities; i++) {
-            flags[i] = -1;
-        }
 
         blockAssingments = 0;
         if (cleanCleanER) {
@@ -87,13 +84,6 @@ public abstract class AbstractMetablocking extends AbstractComparisonCleaning {
 
         setThreshold();
         return pruneEdges();
-    }
-
-    protected void freeMemory() {
-        bBlocks = null;
-        flags = null;
-        counters = null;
-        uBlocks = null;
     }
 
     protected Comparison getComparison(int entityId, int neighborId) {
@@ -178,6 +168,17 @@ public abstract class AbstractMetablocking extends AbstractComparisonCleaning {
             case EJS:
                 double probability = counters[neighborId] / (entityIndex.getNoOfEntityBlocks(entityId, 0) + entityIndex.getNoOfEntityBlocks(neighborId, 0) - counters[neighborId]);
                 return probability * Math.log10(distinctComparisons / comparisonsPerEntity[entityId]) * Math.log10(distinctComparisons / comparisonsPerEntity[neighborId]);
+            case PEARSON_X2:
+                long[] v = new long[2];
+                v[0] = (long) counters[neighborId];
+                v[1] = entityIndex.getNoOfEntityBlocks(entityId, 0) - v[0];
+
+                long[] v_ = new long[2];
+                v_[0] = entityIndex.getNoOfEntityBlocks(neighborId, 0) - v[0];
+                v_[1] = (int) (noOfBlocks - (v[0] + v[1] + v_[0]));
+
+                ChiSquareTest chi_squared_test = new ChiSquareTest();
+                return chi_squared_test.chiSquare(new long[][]{v, v_});
         }
         return -1;
     }
