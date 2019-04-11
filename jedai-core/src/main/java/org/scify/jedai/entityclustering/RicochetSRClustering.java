@@ -99,8 +99,9 @@ public class RicochetSRClustering extends AbstractEntityClustering {
         int v1 = vw.getPos();
         Center.add(v1);
         clusterCenter[v1] = v1;
-        Clusters.put(v1, new TIntHashSet(v1));//initialize v1 Cluster with its own value
-        simWithCenter[v1] = 1.0;
+        TIntHashSet tinths = new TIntHashSet();
+        tinths.add(v1);
+        Clusters.put(v1, tinths);//initialize v1 Cluster with its own value        simWithCenter[v1] = 1.0;
         TIntDoubleMap connect = vw.Connections();
         for (int v2 : connect.keys()) {
             NonCenter.add(v2);
