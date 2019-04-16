@@ -55,7 +55,6 @@ public class MergeCenterClustering extends AbstractEntityClustering {
                 SEqueue.add(new SimilarityEdge(comparison.getEntityId1(), (comparison.getEntityId2() + datasetLimit), comparison.getUtilityMeasure()));
             }
         }
-        simPairs = null;
         
         final TIntSet Center = new TIntHashSet();
         final TIntSet NonCenter = new TIntHashSet();

@@ -26,17 +26,15 @@ import java.util.Iterator;
 public class PairIterator implements Iterator<Comparison> {
 
     private int currentIndex;
-    private final int totalComparisons;
     private final SimilarityPairs similarityPairs;
     
     PairIterator(SimilarityPairs sPairs) {
         similarityPairs = sPairs;
-        totalComparisons = similarityPairs.getEntityIds1().length;
     }
     
     @Override
     public boolean hasNext() {
-        return currentIndex < totalComparisons;
+        return currentIndex < similarityPairs.getNoOfComparisons();
     }
 
     @Override

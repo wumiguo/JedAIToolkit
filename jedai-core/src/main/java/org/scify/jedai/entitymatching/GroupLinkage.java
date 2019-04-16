@@ -87,11 +87,16 @@ public class GroupLinkage extends AbstractEntityMatching {
                 } else {
                     verticesNum += entityModelsD1[currentComparison.getEntityId2()].length;
                 }
-                currentComparison.setUtilityMeasure(getSimilarity(similarityGraph, verticesNum));
-                simPairs.addComparison(currentComparison);
+                
+                double currentSimilarity = getSimilarity(similarityGraph, verticesNum);
+                if (0 < currentSimilarity) {
+                    currentComparison.setUtilityMeasure(currentSimilarity);
+                    simPairs.addComparison(currentComparison);
+                }
             }
         });
 
+        simPairs.normalizeSimilarities();
         return simPairs;
     }
 

@@ -17,7 +17,6 @@ package org.scify.jedai.entityclustering;
 
 import org.scify.jedai.datamodel.Comparison;
 import org.scify.jedai.datamodel.EquivalenceCluster;
-import org.scify.jedai.datamodel.SimilarityEdge;
 import org.scify.jedai.datamodel.SimilarityPairs;
 
 import java.util.ArrayList;
@@ -34,295 +33,249 @@ public class CorrelationClustering extends AbstractEntityClustering {
     public CorrelationClustering() {
         this(0.6);
     }
-    
+
     public CorrelationClustering(double simTh) {
         super(simTh);
     }
-    
+
     private int[] verticesToClusters;
     private int numClusters;
     private int maxNumClusters;
     private EquivalenceCluster[] clustersCreated;
     private boolean[][] areSimilar;
     private boolean[][] areNotSimilar;
-    private double thresholdForInitialClusters=0.5;
-    private double thresholdForSimilar=0.8;
-    private double thresholdForNotSimilar=0.2;
+    private double thresholdForInitialClusters = 0.5;
+    private double thresholdForSimilar = 0.8;
+    private double thresholdForNotSimilar = 0.2;
     private int numOfLSIterations = 10000;
-   
-    private Random rand;
 
+    private Random rand;
 
     @Override
     public EquivalenceCluster[] getDuplicates(SimilarityPairs simPairs) {
         initializeData(simPairs);
-        
+
         // add an edge for every pair of entities with a weight higher than the threshold
         final Iterator<Comparison> iterator = simPairs.getPairIterator();
         double totalSimilarity = 0.0;
-        int numComparisons=0;
+        int numComparisons = 0;
         double[][] similarities = new double[noOfEntities][noOfEntities];
         while (iterator.hasNext()) {
             final Comparison comparison = iterator.next();
-            
-            double utilityMeasure =  comparison.getUtilityMeasure();
-            int id1=comparison.getEntityId1();
-        	int id2=comparison.getEntityId2();
+
+            double utilityMeasure = comparison.getUtilityMeasure();
+            int id1 = comparison.getEntityId1();
+            int id2 = comparison.getEntityId2();
             similarities[id1][id2 + datasetLimit] = utilityMeasure;
             similarities[id2 + datasetLimit][id1] = utilityMeasure;
-            totalSimilarity+=utilityMeasure;
+            totalSimilarity += utilityMeasure;
             numComparisons++;
-            if (thresholdForInitialClusters <utilityMeasure) {
+            if (thresholdForInitialClusters < utilityMeasure) {
                 similarityGraph.addEdge(id1, id2 + datasetLimit);
             }
         }
-        
-        double averageSimilarity = totalSimilarity/(double) numComparisons;
+
+        double averageSimilarity = totalSimilarity / (double) numComparisons;
         simPairs = null;
         //start from connected components
-        
+
         EquivalenceCluster[] initialClusters = getConnectedComponents();
         numClusters = initialClusters.length;
-        maxNumClusters = 10+numClusters;
+        maxNumClusters = 10 + numClusters;
         clustersCreated = new EquivalenceCluster[maxNumClusters];
         System.arraycopy(initialClusters, 0, clustersCreated, 0, initialClusters.length);
-        
+
         //map vertices to clusters
-        verticesToClusters= new int[noOfEntities];
-        for (int clCounter=0;clCounter<numClusters;clCounter++)
-        {
-        	for (int i=0;i<noOfEntities;i++)
-            {
-        		if (clustersCreated[clCounter].getEntityIdsD1().contains(i))
-        		{
-        			if (verticesToClusters[i]>0) System.err.println("Double entrance ");
-        			verticesToClusters[i]=clCounter;
-        		}
+        verticesToClusters = new int[noOfEntities];
+        for (int clCounter = 0; clCounter < numClusters; clCounter++) {
+            for (int i = 0; i < noOfEntities; i++) {
+                if (clustersCreated[clCounter].getEntityIdsD1().contains(i)) {
+                    if (verticesToClusters[i] > 0) {
+                        System.err.println("Double entrance ");
+                    }
+                    verticesToClusters[i] = clCounter;
+                }
             }
         }
-        
+
         //initialize similarity boolean arrays
         //entities are considered similar (+1) if they have similarity above the threshold
         //and not similar when they have similarity less than 1-threshold
         areSimilar = new boolean[noOfEntities][noOfEntities];
         areNotSimilar = new boolean[noOfEntities][noOfEntities];
-        for (int i=0;i<noOfEntities;i++)
-        {
-        	for (int j=i+1;j<noOfEntities;j++)
-            {
-        		areNotSimilar[i][j]=false;
-    			areNotSimilar[j][i]=false;
-        		if (similarities[i][j]>thresholdForSimilar)
-        		{
-        			areSimilar[i][j]=true;
-        			areSimilar[j][i]=true;
-        		}
-        		else
-        		{
-        			areSimilar[i][j]=false;
-        			areSimilar[j][i]=false;
-        			if (similarities[i][j]<thresholdForNotSimilar)
-            		{
-            			areNotSimilar[i][j]=true;
-            			areNotSimilar[j][i]=true;
-            		}
-        		}
+        for (int i = 0; i < noOfEntities; i++) {
+            for (int j = i + 1; j < noOfEntities; j++) {
+                areNotSimilar[i][j] = false;
+                areNotSimilar[j][i] = false;
+                if (similarities[i][j] > thresholdForSimilar) {
+                    areSimilar[i][j] = true;
+                    areSimilar[j][i] = true;
+                } else {
+                    areSimilar[i][j] = false;
+                    areSimilar[j][i] = false;
+                    if (similarities[i][j] < thresholdForNotSimilar) {
+                        areNotSimilar[i][j] = true;
+                        areNotSimilar[j][i] = true;
+                    }
+                }
             }
         }
-        
+
         //Optimization step for maximizing Objective function
         int prevOF = getOF();
         //System.out.println("average similarity = "+averageSimilarity);
-        System.out.println("old value="+prevOF);
+        System.out.println("old value=" + prevOF);
         double time0 = System.currentTimeMillis();
         rand = new Random();
-    	int moveLimit=1;//only change-cluster moves
-        for (int t=0;t<numOfLSIterations;t++)
-        {
+        int moveLimit = 1;//only change-cluster moves
+        for (int t = 0; t < numOfLSIterations; t++) {
 
-        	int moveIndex = rand.nextInt(moveLimit);
-        	int OF = doMove(moveIndex, prevOF);
-        	/*if (prevOF <OF)
+            int moveIndex = rand.nextInt(moveLimit);
+            int OF = doMove(moveIndex, prevOF);
+            /*if (prevOF <OF)
         	{
         		System.out.println("new best = "+OF+" at iteration "+t);
         	}*/
-        	prevOF = OF;
+            prevOF = OF;
         }
         double time1 = System.currentTimeMillis();
-        System.out.println("optimization step: "+(time1-time0));
-        System.out.println("new OF value="+prevOF);
-        
+        System.out.println("optimization step: " + (time1 - time0));
+        System.out.println("new OF value=" + prevOF);
+
         //return array after removing empty clusters
         List<EquivalenceCluster> list = new ArrayList<>();
-        for (int clCounter=0;clCounter<numClusters;clCounter++)
-        {
-            if (clustersCreated[clCounter].getEntityIdsD1().isEmpty())
-            {
-            	continue;
+        for (int clCounter = 0; clCounter < numClusters; clCounter++) {
+            if (clustersCreated[clCounter].getEntityIdsD1().isEmpty()) {
+                continue;
             }
             list.add(clustersCreated[clCounter]);
         }
-        int numFinalClusters=list.size();
+        int numFinalClusters = list.size();
         EquivalenceCluster[] finalClusters = new EquivalenceCluster[numFinalClusters];
-        for (int clCounter=0;clCounter<numFinalClusters;clCounter++)
-        {
-            finalClusters[clCounter]=list.get(clCounter);
+        for (int clCounter = 0; clCounter < numFinalClusters; clCounter++) {
+            finalClusters[clCounter] = list.get(clCounter);
         }
-       
+
         return finalClusters;
         //return getConnectedComponents();
     }
 
-    private int getOF()
-    {
-    	int OFvalue = 0;
-        for (int i=0;i<noOfEntities;i++)
-        {
-        	for (int j=i+1;j<noOfEntities;j++)
-            {
-        		if (((areSimilar[i][j])&&(verticesToClusters[i]==verticesToClusters[j])) ||
-        				((areNotSimilar[i][j])&&(verticesToClusters[i]!=verticesToClusters[j])))
-        		{
-        			OFvalue++;
-        		}
+    private int getOF() {
+        int OFvalue = 0;
+        for (int i = 0; i < noOfEntities; i++) {
+            for (int j = i + 1; j < noOfEntities; j++) {
+                if (((areSimilar[i][j]) && (verticesToClusters[i] == verticesToClusters[j]))
+                        || ((areNotSimilar[i][j]) && (verticesToClusters[i] != verticesToClusters[j]))) {
+                    OFvalue++;
+                }
             }
         }
         return OFvalue;
     }
-    
-    private int doMove(int moveIndex, int prevOF)
-    {
-    	if (moveIndex==0)
-    	{
-    		int randomEntity = rand.nextInt(noOfEntities);
-        	int randomCluster = rand.nextInt(numClusters);
-        	while (clustersCreated[randomCluster].getEntityIdsD1().isEmpty())
-        	{
-        		randomCluster = rand.nextInt(numClusters);
-        	}
-        	return changeCluster(prevOF, randomEntity, randomCluster);
-    	}
-    	else if (moveIndex==1)
-    	{
-    		int prevCluster = rand.nextInt(numClusters);
-    		while (clustersCreated[prevCluster].getEntityIdsD1().isEmpty())
-        	{
-        		prevCluster = rand.nextInt(numClusters);
-        	}
-        	int newCluster = rand.nextInt(numClusters);
-        	while ((prevCluster==newCluster)||(clustersCreated[newCluster].getEntityIdsD1().isEmpty()))
-        	{
-            	newCluster = rand.nextInt(numClusters);
-        	}
-        	return unifyClusters(prevOF, prevCluster, newCluster);
-    	}
-    	else if (moveIndex==2)
-    	{
-    		int prevCluster = rand.nextInt(numClusters);
-        	while (clustersCreated[prevCluster].getEntityIdsD1().isEmpty())
-        	{
-        		prevCluster = rand.nextInt(numClusters);
-        	}
-        	return separateClusters(prevOF, prevCluster);
-    	}
-    	else
-    	{
-    		System.err.println("not valid move index");
-    		return Integer.MAX_VALUE;
-    	}
-    }
-    
-    private int changeCluster(int prevOF, int entity, int newCluster)
-    {
-    	int prevCluster = verticesToClusters[entity];
-    	verticesToClusters[entity]=newCluster;
 
-    	int newOF = getOF();
-    	if (newOF>prevOF)
-    	{
-    		clustersCreated[prevCluster].getEntityIdsD1().remove(Integer.valueOf(entity));
-    		clustersCreated[newCluster].addEntityIdD1(entity);
+    private int doMove(int moveIndex, int prevOF) {
+        if (moveIndex == 0) {
+            int randomEntity = rand.nextInt(noOfEntities);
+            int randomCluster = rand.nextInt(numClusters);
+            while (clustersCreated[randomCluster].getEntityIdsD1().isEmpty()) {
+                randomCluster = rand.nextInt(numClusters);
+            }
+            return changeCluster(prevOF, randomEntity, randomCluster);
+        } else if (moveIndex == 1) {
+            int prevCluster = rand.nextInt(numClusters);
+            while (clustersCreated[prevCluster].getEntityIdsD1().isEmpty()) {
+                prevCluster = rand.nextInt(numClusters);
+            }
+            int newCluster = rand.nextInt(numClusters);
+            while ((prevCluster == newCluster) || (clustersCreated[newCluster].getEntityIdsD1().isEmpty())) {
+                newCluster = rand.nextInt(numClusters);
+            }
+            return unifyClusters(prevOF, prevCluster, newCluster);
+        } else if (moveIndex == 2) {
+            int prevCluster = rand.nextInt(numClusters);
+            while (clustersCreated[prevCluster].getEntityIdsD1().isEmpty()) {
+                prevCluster = rand.nextInt(numClusters);
+            }
+            return separateClusters(prevOF, prevCluster);
+        } else {
+            System.err.println("not valid move index");
+            return Integer.MAX_VALUE;
+        }
+    }
+
+    private int changeCluster(int prevOF, int entity, int newCluster) {
+        int prevCluster = verticesToClusters[entity];
+        verticesToClusters[entity] = newCluster;
+
+        int newOF = getOF();
+        if (newOF > prevOF) {
+            clustersCreated[prevCluster].getEntityIdsD1().remove(Integer.valueOf(entity));
+            clustersCreated[newCluster].addEntityIdD1(entity);
             return newOF;
-    	}
-    	else
-    	{
-        	verticesToClusters[entity]=prevCluster;
-        	/*if (prevOF!=getOF())
+        } else {
+            verticesToClusters[entity] = prevCluster;
+            /*if (prevOF!=getOF())
         	{
         		System.out.println("prevOF="+prevOF);
         	}*/
 
             return prevOF;
-    	}
+        }
     }
-    
-    private int unifyClusters(int prevOF, int prevCluster, int newCluster)
-    {
-    	List<Integer> tobeRemoved=new ArrayList<>();
 
-    	for (int i=0;i<clustersCreated[prevCluster].getEntityIdsD1().size();i++)
-    	{
-    		int entity = clustersCreated[prevCluster].getEntityIdsD1().get(i);
-    		tobeRemoved.add(entity);
+    private int unifyClusters(int prevOF, int prevCluster, int newCluster) {
+        List<Integer> tobeRemoved = new ArrayList<>();
 
-        	verticesToClusters[entity]=newCluster;
-    	}
-    	int newOF = getOF();
+        for (int i = 0; i < clustersCreated[prevCluster].getEntityIdsD1().size(); i++) {
+            int entity = clustersCreated[prevCluster].getEntityIdsD1().get(i);
+            tobeRemoved.add(entity);
 
-    	if (newOF>prevOF)
-    	{
-    		//if solution is accepted update clusters
-    		for (Integer entity1:tobeRemoved)
-        	{
-        		clustersCreated[prevCluster].getEntityIdsD1().remove(entity1);
-        		clustersCreated[newCluster].addEntityIdD1(entity1);
-        	}
+            verticesToClusters[entity] = newCluster;
+        }
+        int newOF = getOF();
+
+        if (newOF > prevOF) {
+            //if solution is accepted update clusters
+            for (Integer entity1 : tobeRemoved) {
+                clustersCreated[prevCluster].getEntityIdsD1().remove(entity1);
+                clustersCreated[newCluster].addEntityIdD1(entity1);
+            }
             return newOF;
-    	}
-    	else
-    	{
-    		//else undo move
-    		for (Integer entity1:tobeRemoved)
-        	{
-        		verticesToClusters[entity1]=prevCluster;        		      		
-        	}
+        } else {
+            //else undo move
+            for (Integer entity1 : tobeRemoved) {
+                verticesToClusters[entity1] = prevCluster;
+            }
             return prevOF;
-    	}
+        }
     }
-    
-    private int separateClusters(int prevOF, int prevCluster)
-    {
-    	//create additional cluster
-    	int newCluster = numClusters;
-    	//try
-    	List<Integer> tobeRemoved=new ArrayList<>();
-    	for (int i=0;i<clustersCreated[prevCluster].getEntityIdsD1().size();i+=2)
-    	{
-    		int entity = clustersCreated[prevCluster].getEntityIdsD1().get(i);
-    		tobeRemoved.add(entity);
-        	verticesToClusters[entity]=newCluster;
-    	}
-    	int newOF = getOF();
-    	if (newOF>prevOF)
-    	{
-    		//update
-    		clustersCreated[newCluster] = new EquivalenceCluster();
-        	numClusters++;
-        	for (Integer entity1:tobeRemoved)
-        	{
-        		clustersCreated[prevCluster].getEntityIdsD1().remove(entity1);
-        		clustersCreated[newCluster].addEntityIdD1(entity1);
-        	}
+
+    private int separateClusters(int prevOF, int prevCluster) {
+        //create additional cluster
+        int newCluster = numClusters;
+        //try
+        List<Integer> tobeRemoved = new ArrayList<>();
+        for (int i = 0; i < clustersCreated[prevCluster].getEntityIdsD1().size(); i += 2) {
+            int entity = clustersCreated[prevCluster].getEntityIdsD1().get(i);
+            tobeRemoved.add(entity);
+            verticesToClusters[entity] = newCluster;
+        }
+        int newOF = getOF();
+        if (newOF > prevOF) {
+            //update
+            clustersCreated[newCluster] = new EquivalenceCluster();
+            numClusters++;
+            for (Integer entity1 : tobeRemoved) {
+                clustersCreated[prevCluster].getEntityIdsD1().remove(entity1);
+                clustersCreated[newCluster].addEntityIdD1(entity1);
+            }
             return newOF;
-    	}
-    	else
-    	{
-    		//undo
-        	for (Integer entity1:tobeRemoved)
-        	{
-        		verticesToClusters[entity1]=prevCluster;        		
-        	}
-        	/*int nowOF = getOF();
+        } else {
+            //undo
+            for (Integer entity1 : tobeRemoved) {
+                verticesToClusters[entity1] = prevCluster;
+            }
+            /*int nowOF = getOF();
         	if (prevOF!=nowOF)
         	{
         		System.out.println("prevOFinSEPARATION="+prevOF);
@@ -330,10 +283,9 @@ public class CorrelationClustering extends AbstractEntityClustering {
         		System.out.println();
         	}*/
             return prevOF;
-    	}
+        }
     }
-    
-    
+
     @Override
     public String getMethodInfo() {
         return getMethodName() + ": it gets equivalence clusters from correlation optimization step.";

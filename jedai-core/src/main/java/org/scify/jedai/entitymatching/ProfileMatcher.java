@@ -70,10 +70,15 @@ public class ProfileMatcher extends AbstractEntityMatching {
         blocks.stream().map((block) -> block.getComparisonIterator()).forEachOrdered((iterator) -> {
             while (iterator.hasNext()) {
                 Comparison currentComparison = iterator.next();
-                currentComparison.setUtilityMeasure(getSimilarity(currentComparison));
-                simPairs.addComparison(currentComparison);
+                double currentSimilarity = getSimilarity(currentComparison);
+                if (0 < currentSimilarity) {
+                    currentComparison.setUtilityMeasure(currentSimilarity);
+                    simPairs.addComparison(currentComparison);
+                }
             }
         });
+        
+        simPairs.normalizeSimilarities();
         return simPairs;
     }
 

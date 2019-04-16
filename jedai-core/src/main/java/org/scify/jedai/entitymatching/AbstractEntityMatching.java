@@ -74,7 +74,7 @@ public abstract class AbstractEntityMatching implements IEntityMatching {
         representationModel = selectedCombo.getRepModel();
         simMetric = selectedCombo.getSimMetric();
     }
-    
+
     @Override
     public void setNumberedRandomConfiguration(int iterationNumber) {
         int comboId = (Integer) randomCombo.getNumberedRandom(iterationNumber);

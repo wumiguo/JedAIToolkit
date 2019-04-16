@@ -76,7 +76,6 @@ public class RicochetSRClustering extends AbstractEntityClustering {
                 connections.get(entityId2).put(comparison.getEntityId1(), comparison.getUtilityMeasure());
             }
         }
-        simPairs = null;
 
         for (int i = 0; i < noOfEntities; i++) {
             if (0 < edgesAttached[i]) {
@@ -101,7 +100,8 @@ public class RicochetSRClustering extends AbstractEntityClustering {
         clusterCenter[v1] = v1;
         TIntHashSet tinths = new TIntHashSet();
         tinths.add(v1);
-        Clusters.put(v1, tinths);//initialize v1 Cluster with its own value        simWithCenter[v1] = 1.0;
+        Clusters.put(v1, tinths);//initialize v1 Cluster with its own value        
+        simWithCenter[v1] = 1.0;
         TIntDoubleMap connect = vw.Connections();
         for (int v2 : connect.keys()) {
             NonCenter.add(v2);

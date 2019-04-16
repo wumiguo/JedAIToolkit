@@ -34,6 +34,13 @@ public class SimilarityPairs implements Serializable {
     private final int[] entityIds1;
     private final int[] entityIds2;
 
+    public SimilarityPairs(boolean ccer, int comparisons) {
+        isCleanCleanER = ccer;
+        entityIds1 = new int[comparisons];
+        entityIds2 = new int[comparisons];
+        similarities = new double[comparisons];
+    }
+    
     public SimilarityPairs(boolean ccer, List<AbstractBlock> blocks) {
         isCleanCleanER = ccer;
         double totalComparisons = countComparisons(blocks);
@@ -84,5 +91,20 @@ public class SimilarityPairs implements Serializable {
 
     public boolean isCleanCleanER() {
         return isCleanCleanER;
+    }
+    
+    public void normalizeSimilarities() {
+        if (0 < currentIndex) {
+            double maxSimilarity = 0;
+            for (int i = 0; i < currentIndex; i++) {
+                maxSimilarity = Math.max(maxSimilarity, similarities[i]);
+            }
+            
+            if (0 < maxSimilarity) {
+                for (int i = 0; i < currentIndex; i++) {
+                    similarities[i] /= maxSimilarity;
+                }
+            }
+        }
     }
 }

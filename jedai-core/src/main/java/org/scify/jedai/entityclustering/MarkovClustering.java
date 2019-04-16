@@ -114,7 +114,6 @@ public class MarkovClustering extends AbstractEntityClustering {
                 simMatrix[comparison.getEntityId1()][comparison.getEntityId2() + datasetLimit] = comparison.getUtilityMeasure();
             }
         }
-        simPairs = null;
 
         addSelfLoop(simMatrix);
         normalizeColumns(simMatrix);

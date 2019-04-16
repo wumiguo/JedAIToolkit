@@ -64,7 +64,6 @@ public class CenterClustering extends AbstractEntityClustering {
                 edgesAttached[comparison.getEntityId2() + datasetLimit]++;
             }
         }
-        simPairs = null;
 
         final TIntSet Center = new TIntHashSet();
         final TIntSet NonCenter = new TIntHashSet();
