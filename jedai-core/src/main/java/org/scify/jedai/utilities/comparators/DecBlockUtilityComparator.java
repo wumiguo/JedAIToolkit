@@ -15,12 +15,8 @@
  */
 package org.scify.jedai.utilities.comparators;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import org.scify.jedai.datamodel.AbstractBlock;
 import java.util.Comparator;
-import java.util.List;
-import org.scify.jedai.datamodel.UnilateralBlock;
 
 /**
  *
@@ -39,21 +35,21 @@ public class DecBlockUtilityComparator implements Comparator<AbstractBlock> {
         return new Double(block2.getUtilityMeasure()).compareTo(block1.getUtilityMeasure());
     }
 
-    public static void main(String[] args) {
-        List<AbstractBlock> blocks = new ArrayList<>();
-        blocks.add(new UnilateralBlock(new int[]{1, 2, 3}));
-        blocks.add(new UnilateralBlock(new int[]{1, 2}));
-        blocks.add(new UnilateralBlock(new int[]{1, 2, 3, 4}));
-
-        int counter = 0;
-        for (AbstractBlock ab : blocks) {
-            ab.setUtilityMeasure();
-            ab.setBlockIndex(counter++);
-        }
-        Collections.sort(blocks, new DecBlockUtilityComparator());
-
-        for (AbstractBlock b : blocks) {
-            System.out.println(b.toString());
-        }
-    }
+//    public static void main(String[] args) {
+//        List<AbstractBlock> blocks = new ArrayList<>();
+//        blocks.add(new UnilateralBlock(new int[]{1, 2, 3}));
+//        blocks.add(new UnilateralBlock(new int[]{1, 2}));
+//        blocks.add(new UnilateralBlock(new int[]{1, 2, 3, 4}));
+//
+//        int counter = 0;
+//        for (AbstractBlock ab : blocks) {
+//            ab.setUtilityMeasure();
+//            ab.setBlockIndex(counter++);
+//        }
+//        Collections.sort(blocks, new DecBlockUtilityComparator());
+//
+//        for (AbstractBlock b : blocks) {
+//            System.out.println(b.toString());
+//        }
+//    }
 }

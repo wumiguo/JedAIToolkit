@@ -15,13 +15,9 @@
  */
 package org.scify.jedai.utilities.comparators;
 
-import gnu.trove.map.hash.TIntDoubleHashMap;
-import java.util.ArrayList;
-import java.util.Collections;
 import org.scify.jedai.datamodel.VertexWeight;
 
 import java.util.Comparator;
-import java.util.List;
 
 /**
  *
@@ -50,16 +46,16 @@ public class DecVertexWeightComparator implements Comparator<VertexWeight> {
         return 0;
     }
     
-    public static void main (String[] args) {
-        List<VertexWeight> vertices = new ArrayList<>();
-        vertices.add(new VertexWeight(0, 1.0, 5, new TIntDoubleHashMap()));
-        vertices.add(new VertexWeight(1, 1.0, 2, new TIntDoubleHashMap()));
-        vertices.add(new VertexWeight(2, 1.0, 4, new TIntDoubleHashMap()));
-        
-        Collections.sort(vertices, new DecVertexWeightComparator());
-        
-        for (VertexWeight vw : vertices) {
-            System.out.println(vw.toString());
-        }
-    }
+//    public static void main (String[] args) {
+//        List<VertexWeight> vertices = new ArrayList<>();
+//        vertices.add(new VertexWeight(0, 1.0, 5, new TIntDoubleHashMap()));
+//        vertices.add(new VertexWeight(1, 1.0, 2, new TIntDoubleHashMap()));
+//        vertices.add(new VertexWeight(2, 1.0, 4, new TIntDoubleHashMap()));
+//        
+//        Collections.sort(vertices, new DecVertexWeightComparator());
+//        
+//        for (VertexWeight vw : vertices) {
+//            System.out.println(vw.toString());
+//        }
+//    }
 }

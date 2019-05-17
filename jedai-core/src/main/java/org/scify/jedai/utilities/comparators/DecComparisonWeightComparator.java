@@ -16,11 +16,8 @@
 
 package org.scify.jedai.utilities.comparators;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import org.scify.jedai.datamodel.Comparison;
 import java.util.Comparator;
-import java.util.List;
 
 /**
  *
@@ -49,23 +46,23 @@ public class DecComparisonWeightComparator implements Comparator<Comparison> {
         return 0;
     }
     
-    public static void main (String[] args) {
-        Comparison c1 = new Comparison(true, 0, 1);
-        c1.setUtilityMeasure(0.5);
-        Comparison c2 = new Comparison(true, 0, 2);
-        c2.setUtilityMeasure(0.25);
-        Comparison c3 = new Comparison(true, 0, 3);
-        c3.setUtilityMeasure(0.75);
-        
-        List<Comparison> comparisons = new ArrayList<>();
-        comparisons.add(c1);
-        comparisons.add(c2);
-        comparisons.add(c3);
-        
-        Collections.sort(comparisons, new DecComparisonWeightComparator());
-        
-        comparisons.forEach((c) -> {
-            System.out.println(c.toString());
-        });
-    }
+//    public static void main (String[] args) {
+//        Comparison c1 = new Comparison(true, 0, 1);
+//        c1.setUtilityMeasure(0.5);
+//        Comparison c2 = new Comparison(true, 0, 2);
+//        c2.setUtilityMeasure(0.25);
+//        Comparison c3 = new Comparison(true, 0, 3);
+//        c3.setUtilityMeasure(0.75);
+//        
+//        List<Comparison> comparisons = new ArrayList<>();
+//        comparisons.add(c1);
+//        comparisons.add(c2);
+//        comparisons.add(c3);
+//        
+//        Collections.sort(comparisons, new DecComparisonWeightComparator());
+//        
+//        comparisons.forEach((c) -> {
+//            System.out.println(c.toString());
+//        });
+//    }
 }

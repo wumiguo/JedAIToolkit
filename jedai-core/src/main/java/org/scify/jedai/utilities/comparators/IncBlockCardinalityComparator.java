@@ -15,12 +15,8 @@
  */
 package org.scify.jedai.utilities.comparators;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import org.scify.jedai.datamodel.AbstractBlock;
 import java.util.Comparator;
-import java.util.List;
-import org.scify.jedai.datamodel.BilateralBlock;
 
 /**
  *
@@ -30,7 +26,7 @@ public class IncBlockCardinalityComparator implements Comparator<AbstractBlock> 
 
    /* 
     * This comparator orders blocks in increasing order of cardinality, i.e.,
-    * from the largest number of comparisons to the smallest one.
+    * from the smallest number of comparisons to the largest one.
     * It is useful for Block Cleaning techniques.
     */
     
@@ -39,21 +35,21 @@ public class IncBlockCardinalityComparator implements Comparator<AbstractBlock> 
         return new Double(block1.getNoOfComparisons()).compareTo(block2.getNoOfComparisons());
     }
 
-    public static void main(String[] args) {
-        List<AbstractBlock> blocks = new ArrayList<>();
-        blocks.add(new BilateralBlock(new int[]{1, 2, 3}, new int[]{10, 11}));
-        blocks.add(new BilateralBlock(new int[]{1, 2}, new int[]{10, 12}));
-        blocks.add(new BilateralBlock(new int[]{1, 2, 3, 4}, new int[]{10}));
-
-        int counter = 0;
-        for (AbstractBlock ab : blocks) {
-            ab.setUtilityMeasure();
-            ab.setBlockIndex(counter++);
-        }
-        Collections.sort(blocks, new IncBlockCardinalityComparator());
-
-        for (AbstractBlock b : blocks) {
-            System.out.println(b.toString());
-        }
-    }
+//    public static void main(String[] args) {
+//        List<AbstractBlock> blocks = new ArrayList<>();
+//        blocks.add(new BilateralBlock(new int[]{1, 2, 3}, new int[]{10, 11}));
+//        blocks.add(new BilateralBlock(new int[]{1, 2}, new int[]{10, 12}));
+//        blocks.add(new BilateralBlock(new int[]{1, 2, 3, 4}, new int[]{10}));
+//
+//        int counter = 0;
+//        for (AbstractBlock ab : blocks) {
+//            ab.setUtilityMeasure();
+//            ab.setBlockIndex(counter++);
+//        }
+//        Collections.sort(blocks, new IncBlockCardinalityComparator());
+//
+//        for (AbstractBlock b : blocks) {
+//            System.out.println(b.toString());
+//        }
+//    }
 }

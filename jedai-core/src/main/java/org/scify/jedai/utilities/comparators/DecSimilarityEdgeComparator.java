@@ -16,11 +16,8 @@
 
 package org.scify.jedai.utilities.comparators;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import org.scify.jedai.datamodel.SimilarityEdge;
 import java.util.Comparator;
-import java.util.List;
 
 /**
  *
@@ -48,16 +45,16 @@ public class DecSimilarityEdgeComparator implements Comparator<SimilarityEdge> {
         return 0;
     }
     
-    public static void main (String[] args) {
-        List<SimilarityEdge> edges = new ArrayList<>();
-        edges.add(new SimilarityEdge(0, 1, 0.50));
-        edges.add(new SimilarityEdge(0, 1, 0.25));
-        edges.add(new SimilarityEdge(0, 1, 0.75));
-        
-        Collections.sort(edges, new DecSimilarityEdgeComparator());
-        
-        for (SimilarityEdge e : edges) {
-            System.out.println(e.toString());
-        }
-    }
+//    public static void main (String[] args) {
+//        List<SimilarityEdge> edges = new ArrayList<>();
+//        edges.add(new SimilarityEdge(0, 1, 0.50));
+//        edges.add(new SimilarityEdge(0, 1, 0.25));
+//        edges.add(new SimilarityEdge(0, 1, 0.75));
+//        
+//        Collections.sort(edges, new DecSimilarityEdgeComparator());
+//        
+//        for (SimilarityEdge e : edges) {
+//            System.out.println(e.toString());
+//        }
+//    }
 }
