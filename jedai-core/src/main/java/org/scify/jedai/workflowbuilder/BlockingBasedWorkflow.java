@@ -19,6 +19,7 @@ import gnu.trove.iterator.TIntIterator;
 import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TIntArrayList;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import org.apache.log4j.BasicConfigurator;
@@ -50,9 +51,9 @@ import org.scify.jedai.utilities.enumerations.EntityMatchingMethod;
  *
  * @author GAP2
  */
-public class Main {
+public class BlockingBasedWorkflow {
 
-    private final static String MAIN_DIR_CCER_DATASETS = System.getProperty("user.dir") + File.separator +"data" + File.separator + "cleanCleanErDatasets" + File.separator;
+    private final static String MAIN_DIR_CCER_DATASETS = System.getProperty("user.dir") + File.separator + "data" + File.separator + "cleanCleanErDatasets" + File.separator;
     private final static String MAIN_DIR_DER_DATASETS = System.getProperty("user.dir") + File.separator + "data" + File.separator + "dirtyErDatasets" + File.separator;
     private final static String[] CCER_ENTITY_FILEPATHS = {"abtProfiles", "buyProfiles",
         "dblpProfiles", "acmProfiles",
@@ -72,16 +73,20 @@ public class Main {
     private final static String[] CCER_DATASETS = {"Abt-Buy", "DBLP-ACM", "DBLP-Scholar", "Amazon-Google Products", "IMDB-DBPedia Movies"};
     private final static String[] BLOCK_BUILDING_METHODS = {"Extended Q-Grams Blocking", "Extended Sorted Neighborhood", "Extended Suffix Arrays Blocking", "LSH Minhash Blocking", "LSH Superbit Blocking", "Q-Grams Blocking", "Sorted Neighborhood", "Standard/Token Blocking", "Suffix Arrays Blocking"};
     private final static String[] BLOCK_CLEANING_METHODS = {"Block Filtering", "Comparison-based Block Purging", "Size-based Block Purging"};
-    private final static String[] COMPARISON_CLEANING_METHODS = {"Canopy Clustering", "Cardinality Edge Pruning", "Cardinality Node Pruning", "Comparison Propagation", "Extended Canopy Clustering", "Reciprocal Cardinality Node Pruning", "Reciprocal Weighed Node Pruning", "Weighed Edge Pruning", "Weighed Node Pruning"};
+    private final static String[] COMPARISON_CLEANING_METHODS = {"Blast", "Canopy Clustering", "Cardinality Edge Pruning", "Cardinality Node Pruning", "Comparison Propagation", "Extended Canopy Clustering", "Reciprocal Cardinality Node Pruning", "Reciprocal Weighed Node Pruning", "Weighed Edge Pruning", "Weighed Node Pruning"};
     private final static String[] ENTITY_MATCHING_METHODS = {"Group Linkage", "Profile Matcher"};
     private final static String[] DIRTY_ER_ENTITY_CLUSTERING_METHODS = {"Center Clustering", "Connected Components Clustering", "Cut Clustering", "Markov Clustering", "Merge-Center Clustering", "Ricochet SR Clustering", "Correlation Clustering"};
 
-    private static TIntList readMultipleInt(String message, String[] array) {
+    private static TIntList readMultipleInt(boolean optional, String message, String[] array) {
         System.out.println("\n\n" + message);
         for (int i = 0; i < array.length; i++) {
             System.out.println((i + 1) + " - " + array[i]);
         }
-        System.out.println("This is an optional step. You can select none or all options. Choose -1 to terminate this step!");
+        if (optional) {
+            System.out.println("This is an optional step. You can select none or all options. Choose -1 to terminate this step!");
+        } else {
+            System.out.println("Please select one or more of the available options. Choose -1 to terminate this step!");
+        }
 
         final TIntList selectedIds = new TIntArrayList();
         while (true) {
@@ -198,14 +203,14 @@ public class Main {
         return readInt(message, DER_DATASETS);
     }
 
-    private static int getBlockBuildingMethod() {
-        String message = "Please choose one of the available Block Building methods:";
-        return readInt(message, BLOCK_BUILDING_METHODS);
+    private static TIntList getBlockBuildingMethod() {
+        String message = "Please choose one or more of the available Block Building methods:";
+        return readMultipleInt(false, message, BLOCK_BUILDING_METHODS);
     }
 
     private static TIntList getBlockCleaningMethod() {
         String message = "Please choose one, several or none of the available Block Cleaning methods:";
-        return readMultipleInt(message, BLOCK_CLEANING_METHODS);
+        return readMultipleInt(true, message, BLOCK_CLEANING_METHODS);
     }
 
     private static int getComparisonCleaningMethod() {
@@ -245,8 +250,7 @@ public class Main {
             profilesD2 = eReader2.getEntityProfiles();
             System.out.println("Input Entity Profiles D2\t:\t" + profilesD2.size());
 
-            final IGroundTruthReader gtReader = new GtSerializationReader(MAIN_DIR_CCER_DATASETS + CCER_GROUNDTRUTH_FILEPATHS[datasetId - 12
-                    ]);
+            final IGroundTruthReader gtReader = new GtSerializationReader(MAIN_DIR_CCER_DATASETS + CCER_GROUNDTRUTH_FILEPATHS[datasetId - 1]);
             duplicatePropagation = new BilateralDuplicatePropagation(gtReader.getDuplicatePairs(null));
             System.out.println("Existing Duplicates\t:\t" + duplicatePropagation.getDuplicates().size());
         } else {
@@ -266,41 +270,47 @@ public class Main {
         final StringBuilder workflowName = new StringBuilder();
 
         // Block Building
-        int bbMethodId = getBlockBuildingMethod();
-        double time1 = System.currentTimeMillis();
+        final TIntList bbMethodIds = getBlockBuildingMethod();
+        List<AbstractBlock> blocks = new ArrayList<>();
 
-        final IBlockBuilding blockBuildingMethod = BlockBuildingMethod.getDefaultConfiguration(BlockBuildingMethod.values()[bbMethodId - 1]);
-        List<AbstractBlock> blocks = blockBuildingMethod.getBlocks(profilesD1, profilesD2);
+        double totalTime = 0;
+        for (TIntIterator bbIterator = bbMethodIds.iterator(); bbIterator.hasNext();) {
+            double time1 = System.currentTimeMillis();
+            
+            final IBlockBuilding blockBuildingMethod = BlockBuildingMethod.getDefaultConfiguration(BlockBuildingMethod.values()[bbIterator.next() - 1]);
+            blocks.addAll(blockBuildingMethod.getBlocks(profilesD1, profilesD2));
 
-        double time2 = System.currentTimeMillis();
+            double time2 = System.currentTimeMillis();
 
-        workflowConf.append(blockBuildingMethod.getMethodConfiguration());
-        workflowName.append(blockBuildingMethod.getMethodName());
-
+            totalTime += time2 - time1;
+            workflowConf.append(blockBuildingMethod.getMethodConfiguration()).append("\n");
+            workflowName.append(blockBuildingMethod.getMethodName()).append("->");
+        }
+        
         BlocksPerformance blStats = new BlocksPerformance(blocks, duplicatePropagation);
         blStats.setStatistics();
-        blStats.printStatistics(time2 - time1, workflowConf.toString(), workflowName.toString());
+        blStats.printStatistics(totalTime, workflowConf.toString(), workflowName.toString());
 
         // Block Cleaning
         final TIntList bcMethodIds = getBlockCleaningMethod();
         if (!bcMethodIds.isEmpty()) {
             bcMethodIds.sort();
             bcMethodIds.reverse();
-            final TIntIterator iterator = bcMethodIds.iterator();
-            while (iterator.hasNext()) {
+            for (TIntIterator bcIterator = bcMethodIds.iterator(); bcIterator.hasNext();) {
                 double time3 = System.currentTimeMillis();
 
-                final IBlockProcessing blockCleaningMethod = BlockCleaningMethod.getDefaultConfiguration(BlockCleaningMethod.values()[iterator.next() - 1]);
+                final IBlockProcessing blockCleaningMethod = BlockCleaningMethod.getDefaultConfiguration(BlockCleaningMethod.values()[bcIterator.next() - 1]);
                 blocks = blockCleaningMethod.refineBlocks(blocks);
 
                 double time4 = System.currentTimeMillis();
 
-                workflowConf.append("\n").append(blockCleaningMethod.getMethodConfiguration());
-                workflowName.append("->").append(blockCleaningMethod.getMethodName());
+                totalTime += time4- time3;
+                workflowConf.append(blockCleaningMethod.getMethodConfiguration()).append("\n");
+                workflowName.append(blockCleaningMethod.getMethodName()).append("->");
 
                 blStats = new BlocksPerformance(blocks, duplicatePropagation);
                 blStats.setStatistics();
-                blStats.printStatistics(time4 - time3, workflowConf.toString(), workflowName.toString());
+                blStats.printStatistics(totalTime, workflowConf.toString(), workflowName.toString());
             }
         }
 
@@ -314,12 +324,13 @@ public class Main {
 
             double time6 = System.currentTimeMillis();
 
-            workflowConf.append("\n").append(comparisonCleaningMethod.getMethodConfiguration());
-            workflowName.append("->").append(comparisonCleaningMethod.getMethodName());
+            totalTime += time6 - time5;
+            workflowConf.append(comparisonCleaningMethod.getMethodConfiguration()).append("\n");
+            workflowName.append(comparisonCleaningMethod.getMethodName()).append("->");
 
             blStats = new BlocksPerformance(blocks, duplicatePropagation);
             blStats.setStatistics();
-            blStats.printStatistics(time6 - time5, blockBuildingMethod.getMethodConfiguration(), blockBuildingMethod.getMethodName());
+            blStats.printStatistics(totalTime, workflowConf.toString(), workflowName.toString());
         }
 
         // Entity Matching
@@ -331,8 +342,9 @@ public class Main {
 
         double time8 = System.currentTimeMillis();
 
-        workflowConf.append("\n").append(entityMatchingMethod.getMethodConfiguration());
-        workflowName.append("->").append(entityMatchingMethod.getMethodName());
+        totalTime += time8- time7;
+        workflowConf.append(entityMatchingMethod.getMethodConfiguration()).append("\n");
+        workflowName.append(entityMatchingMethod.getMethodName()).append("->");
         System.out.println("Entity Matching overhead time\t:\t" + (time8 - time7));
 
         // Entity Clustering
@@ -351,11 +363,12 @@ public class Main {
 
         long time10 = System.currentTimeMillis();
 
-        workflowConf.append("\n").append(entityClusteringMethod.getMethodConfiguration());
-        workflowName.append("->").append(entityClusteringMethod.getMethodName());
+        totalTime += time10 - time9;
+        workflowConf.append(entityClusteringMethod.getMethodConfiguration());
+        workflowName.append(entityClusteringMethod.getMethodName());
 
         ClustersPerformance clp = new ClustersPerformance(entityClusters, duplicatePropagation);
         clp.setStatistics();
-        clp.printStatistics(time10 - time9, workflowName.toString(), workflowConf.toString());
+        clp.printStatistics(totalTime, workflowName.toString(), workflowConf.toString());
     }
 }

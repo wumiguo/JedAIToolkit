@@ -35,7 +35,6 @@ import org.scify.jedai.blockprocessing.IBlockProcessing;
  * @author G.A.P. II
  */
 public enum BlockBuildingMethod {
-
     EXTENDED_Q_GRAMS_BLOCKING,
     EXTENDED_SORTED_NEIGHBORHOOD,
     EXTENDED_SUFFIX_ARRAYS,
