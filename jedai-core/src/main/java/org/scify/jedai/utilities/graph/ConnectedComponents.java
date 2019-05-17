@@ -168,27 +168,26 @@ public class ConnectedComponents {
         }
     }
     
-    public static void main (String[] args) {
-        UndirectedGraph ug = new UndirectedGraph(13);
-        ug.addEdge(0, 5);
-        ug.addEdge(4, 3);
-        ug.addEdge(0, 1);
-        ug.addEdge(9, 12);
-        ug.addEdge(6, 4);
-        ug.addEdge(5, 4);
-        ug.addEdge(0, 2);
-        ug.addEdge(11, 12);
-        ug.addEdge(9, 10);
-        ug.addEdge(0, 6);
-        ug.addEdge(7, 8);
-        ug.addEdge(9, 11);
-        ug.addEdge(5, 3);
-        
-        ConnectedComponents cc = new ConnectedComponents(ug);
-        System.out.println("Total ccs\t:\t" + cc.count());
-        for (int i = 0; i < 13; i++) {
-            System.out.println(cc.id(i));
-        }
-        
-    }
+//    public static void main (String[] args) {
+//        UndirectedGraph ug = new UndirectedGraph(13);
+//        ug.addEdge(0, 5);
+//        ug.addEdge(4, 3);
+//        ug.addEdge(0, 1);
+//        ug.addEdge(9, 12);
+//        ug.addEdge(6, 4);
+//        ug.addEdge(5, 4);
+//        ug.addEdge(0, 2);
+//        ug.addEdge(11, 12);
+//        ug.addEdge(9, 10);
+//        ug.addEdge(0, 6);
+//        ug.addEdge(7, 8);
+//        ug.addEdge(9, 11);
+//        ug.addEdge(5, 3);
+//        
+//        ConnectedComponents cc = new ConnectedComponents(ug);
+//        System.out.println("Total ccs\t:\t" + cc.count());
+//        for (int i = 0; i < 13; i++) {
+//            System.out.println(cc.id(i));
+//        }
+//    }
 }
