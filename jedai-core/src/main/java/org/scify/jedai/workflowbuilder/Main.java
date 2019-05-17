@@ -66,15 +66,15 @@ public class Main {
         "amazonGpIdDuplicates",
         "moviesIdDuplicates"
     };
-    private final static String[] DER_FILEPATHS = {"abtBuy", "amazonGp", "cddb", "census", "cora", "dblpAcm", "dblpScholar", "movies", "restaurant"};
+    private final static String[] DER_FILEPATHS = {"restaurant", "census", "cora", "cddb", "abtBuy", "dblpAcm", "dblpScholar", "amazonGp", "movies"};
+    private final static String[] DER_DATASETS = {"Restaurant", "Census", "Cora", "CdDb", "Abt-By", "DBLP-ACM", "DBLP-Scholar", "Amazon-Google Products", "Movies"};
     private final static String[] ER_TYPES = {"Clean-clean Entity Resolution", "Dirty Entity Resolution"};
     private final static String[] CCER_DATASETS = {"Abt-Buy", "DBLP-ACM", "DBLP-Scholar", "Amazon-Google Products", "IMDB-DBPedia Movies"};
-    private final static String[] DER_DATASETS = {"Restaurant", "Census", "Cora", "CdDb", "Abt-By", "DBLP-ACM", "DBLP-Scholar", "Amazon-Google Products", "Movies"};
-    private final static String[] BLOCK_BUILDING_METHODS = {"Extended Q-Grams Blocking", "Extended Sorted Neighborhood", "Extended Suffix Arrays Blocking", "Q-Grams Blocking", "Sorted Neighborhood", "Standard/Token Blocking", "Suffix Arrays Blocking"};
+    private final static String[] BLOCK_BUILDING_METHODS = {"Extended Q-Grams Blocking", "Extended Sorted Neighborhood", "Extended Suffix Arrays Blocking", "LSH Minhash Blocking", "LSH Superbit Blocking", "Q-Grams Blocking", "Sorted Neighborhood", "Standard/Token Blocking", "Suffix Arrays Blocking"};
     private final static String[] BLOCK_CLEANING_METHODS = {"Block Filtering", "Comparison-based Block Purging", "Size-based Block Purging"};
-    private final static String[] COMPARISON_CLEANING_METHODS = {"Cardinality Edge Pruning", "Cardinality Node Pruning", "Comparison Propagation", "Reciprocal Cardinality Node Pruning", "Reciprocal Weighed Node Pruning", "Weighed Edge Pruning", "Weighed Node Pruning"};
+    private final static String[] COMPARISON_CLEANING_METHODS = {"Canopy Clustering", "Cardinality Edge Pruning", "Cardinality Node Pruning", "Comparison Propagation", "Extended Canopy Clustering", "Reciprocal Cardinality Node Pruning", "Reciprocal Weighed Node Pruning", "Weighed Edge Pruning", "Weighed Node Pruning"};
     private final static String[] ENTITY_MATCHING_METHODS = {"Group Linkage", "Profile Matcher"};
-    private final static String[] DIRTY_ER_ENTITY_CLUSTERING_METHODS = {"Center Clustering", "Connected Components Clustering", "Cut Clustering", "Markov Clustering", "Merge-Center Clustering", "Ricochet SR Clustering"};
+    private final static String[] DIRTY_ER_ENTITY_CLUSTERING_METHODS = {"Center Clustering", "Connected Components Clustering", "Cut Clustering", "Markov Clustering", "Merge-Center Clustering", "Ricochet SR Clustering", "Correlation Clustering"};
 
     private static TIntList readMultipleInt(String message, String[] array) {
         System.out.println("\n\n" + message);
@@ -245,12 +245,13 @@ public class Main {
             profilesD2 = eReader2.getEntityProfiles();
             System.out.println("Input Entity Profiles D2\t:\t" + profilesD2.size());
 
-            final IGroundTruthReader gtReader = new GtSerializationReader(MAIN_DIR_CCER_DATASETS + CCER_GROUNDTRUTH_FILEPATHS[datasetId]);
+            final IGroundTruthReader gtReader = new GtSerializationReader(MAIN_DIR_CCER_DATASETS + CCER_GROUNDTRUTH_FILEPATHS[datasetId - 12
+                    ]);
             duplicatePropagation = new BilateralDuplicatePropagation(gtReader.getDuplicatePairs(null));
             System.out.println("Existing Duplicates\t:\t" + duplicatePropagation.getDuplicates().size());
         } else {
             profilesD2 = null;
-            int datasetId = getDirtyErDataset();
+            int datasetId = getDirtyErDataset() - 1;
 
             final IEntityReader eReader = new EntitySerializationReader(MAIN_DIR_DER_DATASETS + DER_FILEPATHS[datasetId] + "Profiles");
             profilesD1 = eReader.getEntityProfiles();
@@ -356,6 +357,5 @@ public class Main {
         ClustersPerformance clp = new ClustersPerformance(entityClusters, duplicatePropagation);
         clp.setStatistics();
         clp.printStatistics(time10 - time9, workflowName.toString(), workflowConf.toString());
-
     }
 }
