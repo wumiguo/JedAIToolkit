@@ -8,6 +8,20 @@ Every dataset includes two types of files:
 
 Note that every file that is available as a *Java Serialized Object* (**JSO**) can be read using the class DataReader.EntityReader.EntitySerializationReader for entity files or the class DataReader.GroundTruthReader.GtSerializationReader for ground-truth files. See [this class](https://github.com/scify/JedAIToolkit/blob/master/jedai-core/tests/GeneralExamples/DirtyErDatasetStatistics.java) for an example.
 
+# Clean-Clean ER datasets
+
+| Dataset Name | D1 Entities| D2 Entities | D1 Name-Value Pairs	| D2 Name-Value Pairs	| Duplicates | Average NVP per Entity	|
+Brute-force Comparisons | File Format | Data Origin | 
+|---|---| ---| ---| ---| ---|---| ---| ---| ---| 
+|Abt-Buy	|1,076|	1,076|	2,568	|2,308|	1,076	|2.4|	1.16E+06|JSO ([Abt entity file](cleanCleanErDatasets/abtProfiles), [Buy entity file](cleanCleanErDatasets/buyProfiles), [groundtruth file](cleanCleanErDatasets/abtBuyIdDuplicates))|Real data |
+|DBLP-ACM|	2,616	|2,294	|10,464	|9,162|	2,224	|4.0|	6.00E+06|JSO ([DBLP entity file](cleanCleanErDatasets/dblpProfiles), [ACM entity file](cleanCleanErDatasets/acmProfiles), [groundtruth file](cleanCleanErDatasets/dblpAcmIdDuplicates)), CSV ([DBLP entity file](cleanCleanErDatasets/DBLP-ACM/DBLP2.csv), [ACM entity file](cleanCleanErDatasets/DBLP-ACM/ACM.csv)), XML ([DBLP entity file](cleanCleanErDatasets/DBLP2toRdf.xml), [ACM entity file](cleanCleanErDatasets/ACMtoRdf.xml)) |Real data |
+|DBLP-Scholar|	2,516	|61,353|	10,064	|198,001|	2,308|	4.0|	1.54E+08|JSO ([DBLP entity file](cleanCleanErDatasets/dblpProfiles2), [Scholar entity file](cleanCleanErDatasets/scholarProfiles), [groundtruth file](cleanCleanErDatasets/dblpScholarIdDuplicates))|Real data |
+|Amazon-Google Products|	1,354	|3,039	|5,302	|9,110	|1,104	|3.9|	4.11E+06|JSO ([Amazon entity file](cleanCleanErDatasets/amazonProfiles), [GP entity file](cleanCleanErDatasets/gpProfiles), [groundtruth file](cleanCleanErDatasets/amazonGpIdDuplicates))|Real data |
+|Movies	|27,615	|23,182|	155,436	|816,009	|22,863|	5.6|	6.40E+08|JSO ([IMDB entity file](cleanCleanErDatasets/imdbProfiles), [DBPedia entity file](cleanCleanErDatasets/dbpediaProfiles.zip), [groundtruth file](cleanCleanErDatasets/moviesIdDuplicates))|Real data |
+|Amazon-Walmart|2,554| 22,074 | 14,143 | 114,315 | 853 | 5.2 | 5.64E+07 | JSO | Real data |
+| Restaurants | 339 | 2,256 | 1,130 | 7,519 | 89 | 3.3 | 7.64E+05 | JSO | Real data |
+<!---|DBPedia|	1,190,733	|2,164,040	|1.69E+07	|3.50E+07	|892,586	|14.2	|2.58E+12|JSO |Real data |-->
+
 # Dirty ER datasets
 
 | Dataset Name | Entities | Name-Value Pairs | Duplicates | Average NVP per Entity |	Brute-force Comparisons |
@@ -25,14 +39,4 @@ File Format | Data Origin |
 <!---| DBPedia	| 3,354,773	| 5.19E+07| 	892,586	| 15.5	| 5.63E+12| JSO | Real data |-->
 
 
-# Clean-Clean ER datasets
 
-| Dataset Name | D1 Entities| D2 Entities | D1 Name-Value Pairs	| D2 Name-Value Pairs	| Duplicates | Average NVP per Entity	|
-Brute-force Comparisons | File Format | Data Origin | 
-|---|---| ---| ---| ---| ---|---| ---| ---| ---| 
-|Abt-Buy	|1,076|	1,076|	2,568	|2,308|	1,076	|2.4|	1.16E+06|JSO ([Abt entity file](cleanCleanErDatasets/abtProfiles), [Buy entity file](cleanCleanErDatasets/buyProfiles), [groundtruth file](cleanCleanErDatasets/abtBuyIdDuplicates))|Real data |
-|DBLP-ACM|	2,616	|2,294	|10,464	|9,162|	2,224	|4.0|	6.00E+06|JSO ([DBLP entity file](cleanCleanErDatasets/dblpProfiles), [ACM entity file](cleanCleanErDatasets/acmProfiles), [groundtruth file](cleanCleanErDatasets/dblpAcmIdDuplicates)), CSV ([DBLP entity file](cleanCleanErDatasets/DBLP-ACM/DBLP2.csv), [ACM entity file](cleanCleanErDatasets/DBLP-ACM/ACM.csv)), XML ([DBLP entity file](cleanCleanErDatasets/DBLP2toRdf.xml), [ACM entity file](cleanCleanErDatasets/ACMtoRdf.xml)) |Real data |
-|DBLP-Scholar|	2,516	|61,353|	10,064	|198,001|	2,308|	4.0|	1.54E+08|JSO ([DBLP entity file](cleanCleanErDatasets/dblpProfiles2), [Scholar entity file](cleanCleanErDatasets/scholarProfiles), [groundtruth file](cleanCleanErDatasets/dblpScholarIdDuplicates))|Real data |
-|Amazon-Google Products|	1,354	|3,039	|5,302	|9,110	|1,104	|3.9|	4.11E+06|JSO ([Amazon entity file](cleanCleanErDatasets/amazonProfiles), [GP entity file](cleanCleanErDatasets/gpProfiles), [groundtruth file](cleanCleanErDatasets/amazonGpIdDuplicates))|Real data |
-|Movies	|27,615	|23,182|	155,436	|816,009	|22,863|	5.6|	6.40E+08|JSO ([IMDB entity file](cleanCleanErDatasets/imdbProfiles), [DBPedia entity file](cleanCleanErDatasets/dbpediaProfiles.zip), [groundtruth file](cleanCleanErDatasets/moviesIdDuplicates))|Real data |
-<!---|DBPedia|	1,190,733	|2,164,040	|1.69E+07	|3.50E+07	|892,586	|14.2	|2.58E+12|JSO |Real data |-->
