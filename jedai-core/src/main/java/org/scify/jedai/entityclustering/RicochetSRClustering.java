@@ -198,7 +198,9 @@ public class RicochetSRClustering extends AbstractEntityClustering {
             if ((!NonCenter.contains(i)) && (!Center.contains(i))) {
                 Center.add(i);
                 clusterCenter[i] = i;
-                Clusters.put(i, new TIntHashSet(i));//initialize v1 Cluster with its own value
+                TIntHashSet tinthelp = new TIntHashSet();               
+                tinthelp.add(i);
+                Clusters.put(i, tinthelp);//initialize v1 Cluster with its own value
                 simWithCenter[i] = 1.0;
             }
         }
