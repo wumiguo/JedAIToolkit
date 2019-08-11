@@ -15,8 +15,12 @@
  */
 package org.scify.jedai.datawriter;
 
+import org.rdfhdt.hdt.enums.RDFNotation;
+import org.rdfhdt.hdt.exceptions.ParserException;
+import org.rdfhdt.hdt.hdt.HDT;
+import org.rdfhdt.hdt.hdt.HDTManager;
+import org.rdfhdt.hdt.options.HDTSpecification;
 import org.scify.jedai.utilities.datastructures.AbstractDuplicatePropagation;
-import org.scify.jedai.utilities.datastructures.BilateralDuplicatePropagation;
 import org.scify.jedai.utilities.datastructures.GroundTruthIndex;
 import org.scify.jedai.datamodel.AbstractBlock;
 import org.scify.jedai.datamodel.BilateralBlock;
@@ -46,7 +50,6 @@ import org.apache.jena.update.UpdateProcessor;
 import org.apache.jena.update.UpdateRequest;
 import org.scify.jedai.blockprocessing.comparisoncleaning.ComparisonPropagation;
 import org.scify.jedai.datamodel.EntityProfile;
-import org.scify.jedai.datamodel.EquivalenceCluster;
 
 /**
  *
@@ -426,8 +429,8 @@ public class BlocksPerformanceWriter {
         printWriter.write(sb.toString());
         printWriter.close();
     }
-    
-    public void printDetailedResultsToRDF(List<EntityProfile> profilesD1, List<EntityProfile> profilesD2, String outputFile) throws FileNotFoundException {
+
+    public void printDetailedResultsToRDFXML(List<EntityProfile> profilesD1, List<EntityProfile> profilesD2, String outputFile) throws FileNotFoundException {
         if (blocks.isEmpty()) {
             Log.warn("Empty set of blocks was given as input!");
             return;
@@ -443,10 +446,10 @@ public class BlocksPerformanceWriter {
 
         final PrintWriter printWriter = new PrintWriter(new File(outputFile));
         printWriter.println("<?xml version=\"1.0\"?>");
-	    printWriter.println();
-	    printWriter.println("<rdf:RDF");
-	    printWriter.println("xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"");
-	    printWriter.println("xmlns:obj=\"https://www.w3schools.com/rdf/\">");
+        printWriter.println();
+        printWriter.println("<rdf:RDF");
+        printWriter.println("xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"");
+        printWriter.println("xmlns:obj=\"https://www.w3schools.com/rdf/\">");
 
         abstractDP.resetDuplicates();
         for (AbstractBlock block : blocksToUse) {
@@ -462,33 +465,33 @@ public class BlocksPerformanceWriter {
 
                 printWriter.println();
 
-            	printWriter.println("<rdf:Description rdf:about=\""+block.toString()+"\">");
+                printWriter.println("<rdf:Description rdf:about=\""+block.toString()+"\">");
 
-            	printWriter.print("<obj:"+"url1"+">");
-            	printWriter.print(profile1.getEntityUrl().replace("&", "")+"");
-            	printWriter.println("</obj:"+"url1>");
-            	
-            	printWriter.print("<obj:"+"url2"+">");
-            	printWriter.print(profile2.getEntityUrl().replace("&", "")+"");
-            	printWriter.println("</obj:"+"url2>");
-            	
-            	printWriter.print("<obj:"+"pairType"+">");
+                printWriter.print("<obj:"+"url1"+">");
+                printWriter.print(profile1.getEntityUrl().replace("&", "")+"");
+                printWriter.println("</obj:"+"url1>");
+
+                printWriter.print("<obj:"+"url2"+">");
+                printWriter.print(profile2.getEntityUrl().replace("&", "")+"");
+                printWriter.println("</obj:"+"url2>");
+
+                printWriter.print("<obj:"+"pairType"+">");
                 if (originalDuplicates == newDuplicates) {
-                	printWriter.print("FP"); //false positive
+                    printWriter.print("FP"); //false positive
                 } else { // originalDuplicates < newDuplicates
-                	printWriter.print("TP"); // true positive
-                }               
-            	printWriter.println("</obj:"+"pairType>");
-            	
-            	printWriter.print("<obj:"+"Profile1"+">");
-            	printWriter.print((profile1+"").replace("&", ""));
-            	printWriter.println("</obj:"+"Profile1>");
-            	
-            	printWriter.print("<obj:"+"Profile2"+">");
-            	printWriter.print((profile2+"").replace("&", ""));
-            	printWriter.println("</obj:"+"Profile2>");
-                
-            	printWriter.println("</rdf:Description>");
+                    printWriter.print("TP"); // true positive
+                }
+                printWriter.println("</obj:"+"pairType>");
+
+                printWriter.print("<obj:"+"Profile1"+">");
+                printWriter.print((profile1+"").replace("&", ""));
+                printWriter.println("</obj:"+"Profile1>");
+
+                printWriter.print("<obj:"+"Profile2"+">");
+                printWriter.print((profile2+"").replace("&", ""));
+                printWriter.println("</obj:"+"Profile2>");
+
+                printWriter.println("</rdf:Description>");
             }
         }
 
@@ -500,28 +503,28 @@ public class BlocksPerformanceWriter {
 
             printWriter.println("<rdf:Description rdf:about=\""+duplicatesPair.toString()+"\">");
 
-        	printWriter.print("<obj:"+"url1"+">");
-        	printWriter.print(profile1.getEntityUrl().replace("&", "")+"");
-        	printWriter.println("</obj:"+"url1>");
-        	
-        	printWriter.print("<obj:"+"url2"+">");
-        	printWriter.print(profile2.getEntityUrl().replace("&", "")+"");
-        	printWriter.println("</obj:"+"url2>");
-        	
-            
+            printWriter.print("<obj:"+"url1"+">");
+            printWriter.print(profile1.getEntityUrl().replace("&", "")+"");
+            printWriter.println("</obj:"+"url1>");
+
+            printWriter.print("<obj:"+"url2"+">");
+            printWriter.print(profile2.getEntityUrl().replace("&", "")+"");
+            printWriter.println("</obj:"+"url2>");
+
+
             printWriter.print("<obj:"+"pairType"+">");
-        	printWriter.print("FN"); // false negative
-        	printWriter.println("</obj:"+"pairType>");
-        	
-        	printWriter.print("<obj:"+"Profile1"+">");
-        	printWriter.print((profile1+"").replace("&", ""));
-        	printWriter.println("</obj:"+"Profile1>");
-        	
-        	printWriter.print("<obj:"+"Profile2"+">");
-        	printWriter.print((profile2+"").replace("&", ""));
-        	printWriter.println("</obj:"+"Profile2>");
-            
-        	printWriter.println("</rdf:Description>");
+            printWriter.print("FN"); // false negative
+            printWriter.println("</obj:"+"pairType>");
+
+            printWriter.print("<obj:"+"Profile1"+">");
+            printWriter.print((profile1+"").replace("&", ""));
+            printWriter.println("</obj:"+"Profile1>");
+
+            printWriter.print("<obj:"+"Profile2"+">");
+            printWriter.print((profile2+"").replace("&", ""));
+            printWriter.println("</obj:"+"Profile2>");
+
+            printWriter.println("</rdf:Description>");
         }
 
         detectedDuplicates = abstractDP.getNoOfDuplicates();
@@ -538,22 +541,317 @@ public class BlocksPerformanceWriter {
         printWriter.println("<rdf:Description rdf:about=\""+"STATS"+"\">");
 
         printWriter.print("<obj:"+"PairsQuality"+">");
-    	printWriter.print(pq+"");
-    	printWriter.println("</obj:"+"PairsQuality>");
-    	
-        printWriter.print("<obj:"+"PairsCompletentess"+">");
-    	printWriter.print(pc+"");
-    	printWriter.println("</obj:"+"PairsCompletentess>");
-    	
-        printWriter.print("<obj:"+"F-Measure"+">");
-    	printWriter.print(fMeasure+"");
-    	printWriter.println("</obj:"+"F-Measure>");
+        printWriter.print(pq+"");
+        printWriter.println("</obj:"+"PairsQuality>");
 
-    	printWriter.println("</rdf:Description>");
+        printWriter.print("<obj:"+"PairsCompletentess"+">");
+        printWriter.print(pc+"");
+        printWriter.println("</obj:"+"PairsCompletentess>");
+
+        printWriter.print("<obj:"+"F-Measure"+">");
+        printWriter.print(fMeasure+"");
+        printWriter.println("</obj:"+"F-Measure>");
+
+        printWriter.println("</rdf:Description>");
 
         printWriter.println("</rdf:RDF>");
         printWriter.close();
 
+    }
+
+    public void printDetailedResultsToJSONrdf(List<EntityProfile> profilesD1, List<EntityProfile> profilesD2, String outputFile) throws FileNotFoundException {
+        if (blocks.isEmpty()) {
+            Log.warn("Empty set of blocks was given as input!");
+            return;
+        }
+
+        setType();
+
+        List<AbstractBlock> blocksToUse = blocks;
+        if (!(blocks.get(0) instanceof DecomposedBlock)) {
+            final ComparisonPropagation cp = new ComparisonPropagation();
+            blocksToUse = cp.refineBlocks(blocks);
+        }
+
+        final PrintWriter printWriter = new PrintWriter(new File(outputFile));
+
+        printWriter.println("{\"triples\":\n");
+        printWriter.println("[");
+
+        String subString="{Subject: \"";
+        String predString="\", Predicate: \"";
+        String objString="\", Object: \"";
+
+        abstractDP.resetDuplicates();
+        for (AbstractBlock block : blocksToUse) {
+            final ComparisonIterator iterator = block.getComparisonIterator();
+            while (iterator.hasNext()) {
+                final Comparison currentComparison = iterator.next();
+                final EntityProfile profile1 = profilesD1.get(currentComparison.getEntityId1());
+                final EntityProfile profile2 = isCleanCleanER ? profilesD2.get(currentComparison.getEntityId2()) : profilesD1.get(currentComparison.getEntityId2());
+
+                final int originalDuplicates = abstractDP.getNoOfDuplicates();
+                abstractDP.isSuperfluous(currentComparison.getEntityId1(), currentComparison.getEntityId2());
+                final int newDuplicates = abstractDP.getNoOfDuplicates();
+
+
+                printWriter.print(subString+block.toString());
+                printWriter.print(predString+"url1");
+                printWriter.print(objString+profile1.getEntityUrl().replace("&", "").replace("\\", "")+"");
+                printWriter.println("\"},");
+
+                printWriter.print(subString+block.toString());
+                printWriter.print(predString+"url2");
+                printWriter.print(objString+profile2.getEntityUrl().replace("&", "").replace("\\", "")+"");
+                printWriter.println("\"},");
+
+                printWriter.print(subString+block.toString());
+                printWriter.print(predString+"pairType");
+                printWriter.print(objString);
+                if (originalDuplicates == newDuplicates) {
+                    printWriter.print("FP"); //false positive
+                } else { // originalDuplicates < newDuplicates
+                    printWriter.print("TP"); // true positive
+                }
+                printWriter.println("\"},");
+
+
+                printWriter.print(subString+block.toString());
+                printWriter.print(predString+"Profile1");
+                printWriter.print(objString);
+                printWriter.print((profile1+"").replace("&", "").replace("\\", ""));
+                printWriter.println("\"},");
+
+                printWriter.print(subString+block.toString());
+                printWriter.print(predString+"Profile2");
+                printWriter.print(objString);
+                printWriter.print((profile2+"").replace("&", "").replace("\\", ""));
+                printWriter.println("\"},");
+            }
+        }
+
+        for (IdDuplicates duplicatesPair : abstractDP.getFalseNegatives()) {
+            final EntityProfile profile1 = profilesD1.get(duplicatesPair.getEntityId1());
+            final EntityProfile profile2 = isCleanCleanER ? profilesD2.get(duplicatesPair.getEntityId2()) : profilesD1.get(duplicatesPair.getEntityId2());
+
+            printWriter.print(subString+duplicatesPair.toString());
+            printWriter.print(predString+"url1");
+            printWriter.print(objString+profile1.getEntityUrl().replace("&", "").replace("\\", "")+"");
+            printWriter.println("\"},");
+
+            printWriter.print(subString+duplicatesPair.toString());
+            printWriter.print(predString+"url2");
+            printWriter.print(objString+profile2.getEntityUrl().replace("&", "").replace("\\", "")+"");
+            printWriter.println("\"},");
+
+            printWriter.print(subString+duplicatesPair.toString());
+            printWriter.print(predString+"pairType");
+            printWriter.print(objString);
+            printWriter.print("FN"); //false negative
+            printWriter.println("\"},");
+
+
+            printWriter.print(subString+duplicatesPair.toString());
+            printWriter.print(predString+"Profile1");
+            printWriter.print(objString);
+            printWriter.print((profile1+"").replace("&", "").replace("\\", ""));
+            printWriter.println("\"},");
+
+            printWriter.print(subString+duplicatesPair.toString());
+            printWriter.print(predString+"Profile2");
+            printWriter.print(objString);
+            printWriter.print((profile2+"").replace("&", "").replace("\\", ""));
+            printWriter.println("\"},");
+        }
+
+        detectedDuplicates = abstractDP.getNoOfDuplicates();
+        pc = ((double) abstractDP.getNoOfDuplicates()) / abstractDP.getExistingDuplicates();
+        pq = abstractDP.getNoOfDuplicates() / aggregateCardinality;
+        if (0 < pc && 0 < pq) {
+            fMeasure = 2 * pc * pq / (pc + pq);
+        } else {
+            fMeasure = 0;
+        }
+
+
+        printWriter.print(subString+"STATS");
+        printWriter.print(predString+"PairsQuality");
+        printWriter.print(objString);
+        printWriter.print(pq+"");
+        printWriter.println("\"},");
+
+        printWriter.print(subString+"STATS");
+        printWriter.print(predString+"PairsCompletentess");
+        printWriter.print(objString);
+        printWriter.print(pc+"");
+        printWriter.println("\"},");
+
+        printWriter.print(subString+"STATS");
+        printWriter.print(predString+"F-Measure");
+        printWriter.print(objString);
+        printWriter.print(fMeasure+"");
+        printWriter.println("\"}");
+
+
+        printWriter.println("]");
+        printWriter.println("}");
+        printWriter.close();
+
+    }
+
+    public void printDetailedResultsToRDFNT(List<EntityProfile> profilesD1, List<EntityProfile> profilesD2, String outputFile) throws FileNotFoundException {
+        if (blocks.isEmpty()) {
+            Log.warn("Empty set of blocks was given as input!");
+            return;
+        }
+
+        setType();
+
+        List<AbstractBlock> blocksToUse = blocks;
+        if (!(blocks.get(0) instanceof DecomposedBlock)) {
+            final ComparisonPropagation cp = new ComparisonPropagation();
+            blocksToUse = cp.refineBlocks(blocks);
+        }
+
+        final PrintWriter printWriter = new PrintWriter(new File(outputFile));
+
+        String xmlnsrdf="http://www.w3.org/1999/02/22/";
+        String xmlnsobj="https://www.w3schools.com/rdf/";
+
+        abstractDP.resetDuplicates();
+        for (AbstractBlock block : blocksToUse) {
+            final ComparisonIterator iterator = block.getComparisonIterator();
+            while (iterator.hasNext()) {
+                final Comparison currentComparison = iterator.next();
+                final EntityProfile profile1 = profilesD1.get(currentComparison.getEntityId1());
+                final EntityProfile profile2 = isCleanCleanER ? profilesD2.get(currentComparison.getEntityId2()) : profilesD1.get(currentComparison.getEntityId2());
+
+                final int originalDuplicates = abstractDP.getNoOfDuplicates();
+                abstractDP.isSuperfluous(currentComparison.getEntityId1(), currentComparison.getEntityId2());
+                final int newDuplicates = abstractDP.getNoOfDuplicates();
+
+
+                printWriter.print("<"+xmlnsrdf+block.toString()+"> ");
+                printWriter.print("<"+xmlnsobj+"url1"+"> \"");
+                printWriter.print(profile1.getEntityUrl().replace("&", "").replace("\\", "")+"");
+                printWriter.println("\"^^<http://www.w3.org/2001/XMLSchema#string>");
+
+                printWriter.print("<"+xmlnsrdf+block.toString()+"> ");
+                printWriter.print("<"+xmlnsobj+"url2"+"> \"");
+                printWriter.print(profile2.getEntityUrl().replace("&", "").replace("\\", "")+"");
+                printWriter.println("\"^^<http://www.w3.org/2001/XMLSchema#string>");
+
+                printWriter.print("<"+xmlnsrdf+block.toString()+"> ");
+                printWriter.print("<"+xmlnsobj+"pairType"+"> \"");
+                if (originalDuplicates == newDuplicates) {
+                    printWriter.print("FP"); //false positive
+                } else { // originalDuplicates < newDuplicates
+                    printWriter.print("TP"); // true positive
+                }
+                printWriter.println("\"^^<http://www.w3.org/2001/XMLSchema#string>");
+
+
+                printWriter.print("<"+xmlnsrdf+block.toString()+"> ");
+                printWriter.print("<"+xmlnsobj+"Profile1"+"> \"");
+                printWriter.print((profile1+"").replace("&", "").replace("\\", ""));
+                printWriter.println("\"^^<http://www.w3.org/2001/XMLSchema#string>");
+
+                printWriter.print("<"+xmlnsrdf+block.toString()+"> ");
+                printWriter.print("<"+xmlnsobj+"Profile2"+"> \"");
+                printWriter.print((profile2+"").replace("&", "").replace("\\", ""));
+                printWriter.println("\"^^<http://www.w3.org/2001/XMLSchema#string>");
+            }
+        }
+
+        for (IdDuplicates duplicatesPair : abstractDP.getFalseNegatives()) {
+            final EntityProfile profile1 = profilesD1.get(duplicatesPair.getEntityId1());
+            final EntityProfile profile2 = isCleanCleanER ? profilesD2.get(duplicatesPair.getEntityId2()) : profilesD1.get(duplicatesPair.getEntityId2());
+
+            printWriter.print("<"+xmlnsrdf+duplicatesPair.toString()+"> ");
+            printWriter.print("<"+xmlnsobj+"url1"+"> \"");
+            printWriter.print(profile1.getEntityUrl().replace("&", "").replace("\\", "")+"");
+            printWriter.println("\"^^<http://www.w3.org/2001/XMLSchema#string>");
+
+            printWriter.print("<"+xmlnsrdf+duplicatesPair.toString()+"> ");
+            printWriter.print("<"+xmlnsobj+"url2"+"> \"");
+            printWriter.print(profile2.getEntityUrl().replace("&", "").replace("\\", "")+"");
+            printWriter.println("\"^^<http://www.w3.org/2001/XMLSchema#string>");
+
+            printWriter.print("<"+xmlnsrdf+duplicatesPair.toString()+"> ");
+            printWriter.print("<"+xmlnsobj+"pairType"+"> \"");
+            printWriter.print("FN"); //false positive
+
+            printWriter.println("\"^^<http://www.w3.org/2001/XMLSchema#string>");
+
+
+            printWriter.print("<"+xmlnsrdf+duplicatesPair.toString()+"> ");
+            printWriter.print("<"+xmlnsobj+"Profile1"+"> \"");
+            printWriter.print((profile1+"").replace("&", "").replace("\\", ""));
+            printWriter.println("\"^^<http://www.w3.org/2001/XMLSchema#string>");
+
+            printWriter.print("<"+xmlnsrdf+duplicatesPair.toString()+"> ");
+            printWriter.print("<"+xmlnsobj+"Profile2"+"> \"");
+            printWriter.print((profile2+"").replace("&", "").replace("\\", ""));
+            printWriter.println("\"^^<http://www.w3.org/2001/XMLSchema#string>");
+        }
+
+        detectedDuplicates = abstractDP.getNoOfDuplicates();
+        pc = ((double) abstractDP.getNoOfDuplicates()) / abstractDP.getExistingDuplicates();
+        pq = abstractDP.getNoOfDuplicates() / aggregateCardinality;
+        if (0 < pc && 0 < pq) {
+            fMeasure = 2 * pc * pq / (pc + pq);
+        } else {
+            fMeasure = 0;
+        }
+
+
+        printWriter.print("<"+xmlnsrdf+"STATS"+"> ");
+        printWriter.print("<"+xmlnsobj+"PairsQuality"+"> \"");
+        printWriter.print(pq+"");
+        printWriter.println("\"^^<http://www.w3.org/2001/XMLSchema#string>");
+
+        printWriter.print("<"+xmlnsrdf+"STATS"+"> ");
+        printWriter.print("<"+xmlnsobj+"PairsCompletentess"+"> \"");
+        printWriter.print(pc+"");
+        printWriter.println("\"^^<http://www.w3.org/2001/XMLSchema#string>");
+
+        printWriter.print("<"+xmlnsrdf+"STATS"+"> ");
+        printWriter.print("<"+xmlnsobj+"F-Measure"+"> \"");
+        printWriter.print(fMeasure+"");
+        printWriter.println("\"^^<http://www.w3.org/2001/XMLSchema#string>");
+
+
+        printWriter.close();
+
+    }
+
+    public void printDetailedResultsToHDTrdf(List<EntityProfile> profilesD1, List<EntityProfile> profilesD2, String outputFile) throws IOException, ParserException {
+
+        this.printDetailedResultsToRDFNT(profilesD1, profilesD2, outputFile+"help.nt");
+        String baseURI = "http://www.w3.org/";
+        //String rdfInput = "data//minExample.nt";
+        String rdfInput = outputFile+"help.nt";
+        String inputType = "ntriples";
+        String hdtOutput = outputFile;
+
+        // Create HDT from RDF file
+        HDT hdt = HDTManager.generateHDT(
+                rdfInput,         // Input RDF File
+                baseURI,          // Base URI
+                RDFNotation.parse(inputType), // Input Type
+                new HDTSpecification(),   // HDT Options
+                null              // Progress Listener
+        );
+
+        // OPTIONAL: Add additional domain-specific properties to the header:
+        //Header header = hdt.getHeader();
+        //header.insert("myResource1", "property" , "value");
+
+        // Save generated HDT to a file
+        hdt.saveToHDT(hdtOutput, null);
+
+        // IMPORTANT: Close hdt when no longer needed
+        hdt.close();
     }
 
     public void printDetailedResultsToXML(List<EntityProfile> profilesD1, List<EntityProfile> profilesD2, String outputFile) throws FileNotFoundException {
@@ -1071,9 +1369,9 @@ public class BlocksPerformanceWriter {
                 Log.error("Error in db writing!", ex);
             }
     }
-    
-    
-    public void debugToRDF(List<EntityProfile> profilesD1, List<EntityProfile> profilesD2, String outputFile) throws FileNotFoundException {
+
+
+    public void debugToRDFXML(List<EntityProfile> profilesD1, List<EntityProfile> profilesD2, String outputFile) throws FileNotFoundException {
         if (blocks.isEmpty()) {
             Log.warn("Empty set of blocks was given as input!");
             return;
@@ -1082,25 +1380,25 @@ public class BlocksPerformanceWriter {
         setType(); // Clean-Clean or Dirty ER?
         final PrintWriter printWriter = new PrintWriter(new File(outputFile));
         printWriter.println("<?xml version=\"1.0\"?>");
-	    printWriter.println();
-	    printWriter.println("<rdf:RDF");
-	    printWriter.println("xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"");
-	    printWriter.println("xmlns:obj=\"https://www.w3schools.com/rdf/\">");
+        printWriter.println();
+        printWriter.println("<rdf:RDF");
+        printWriter.println("xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"");
+        printWriter.println("xmlns:obj=\"https://www.w3schools.com/rdf/\">");
         List<AbstractBlock> blocksToUse = blocks;
         if (!(blocks.get(0) instanceof DecomposedBlock)) {
             final ComparisonPropagation cp = new ComparisonPropagation();
             blocksToUse = cp.refineBlocks(blocks);
         }
-        
+
         abstractDP.resetDuplicates();
         for (AbstractBlock block : blocksToUse) {
             final ComparisonIterator iterator = block.getComparisonIterator();
             while (iterator.hasNext()) {
-            	final Comparison comp = iterator.next();
+                final Comparison comp = iterator.next();
                 abstractDP.isSuperfluous(comp.getEntityId1(), comp.getEntityId2());
             }
         }
-                
+
         for (IdDuplicates duplicatesPair : abstractDP.getFalseNegatives()) {
             final EntityProfile profile1 = profilesD1.get(duplicatesPair.getEntityId1());
             final EntityProfile profile2 = isCleanCleanER ? profilesD2.get(duplicatesPair.getEntityId2()) : profilesD1.get(duplicatesPair.getEntityId2());
@@ -1109,34 +1407,198 @@ public class BlocksPerformanceWriter {
 
             printWriter.println("<rdf:Description rdf:about=\""+duplicatesPair.toString()+"\">");
 
-        	printWriter.print("<obj:"+"url1"+">");
-        	printWriter.print(profile1.getEntityUrl().replace("&", "")+"");
-        	printWriter.println("</obj:"+"url1>");
-        	
-        	printWriter.print("<obj:"+"url2"+">");
-        	printWriter.print(profile2.getEntityUrl().replace("&", "")+"");
-        	printWriter.println("</obj:"+"url2>");
-        	
-            
+            printWriter.print("<obj:"+"url1"+">");
+            printWriter.print(profile1.getEntityUrl().replace("&", "")+"");
+            printWriter.println("</obj:"+"url1>");
+
+            printWriter.print("<obj:"+"url2"+">");
+            printWriter.print(profile2.getEntityUrl().replace("&", "")+"");
+            printWriter.println("</obj:"+"url2>");
+
+
             printWriter.print("<obj:"+"pairType"+">");
-        	printWriter.print("FN"); // false negative
-        	printWriter.println("</obj:"+"pairType>");
-        	
-        	printWriter.print("<obj:"+"Profile1"+">");
-        	printWriter.print((profile1+"").replace("&", ""));
-        	printWriter.println("</obj:"+"Profile1>");
-        	
-        	printWriter.print("<obj:"+"Profile2"+">");
-        	printWriter.print((profile2+"").replace("&", ""));
-        	printWriter.println("</obj:"+"Profile2>");
-            
-        	printWriter.println("</rdf:Description>");
+            printWriter.print("FN"); // false negative
+            printWriter.println("</obj:"+"pairType>");
+
+            printWriter.print("<obj:"+"Profile1"+">");
+            printWriter.print((profile1+"").replace("&", ""));
+            printWriter.println("</obj:"+"Profile1>");
+
+            printWriter.print("<obj:"+"Profile2"+">");
+            printWriter.print((profile2+"").replace("&", ""));
+            printWriter.println("</obj:"+"Profile2>");
+
+            printWriter.println("</rdf:Description>");
         }
-        
+
         printWriter.println("</rdf:RDF>");
         printWriter.close();
     }
-    
+
+
+    public void debugToJSONrdf(List<EntityProfile> profilesD1, List<EntityProfile> profilesD2, String outputFile) throws FileNotFoundException {
+        if (blocks.isEmpty()) {
+            Log.warn("Empty set of blocks was given as input!");
+            return;
+        }
+
+        setType(); // Clean-Clean or Dirty ER?
+        final PrintWriter printWriter = new PrintWriter(new File(outputFile));
+
+        printWriter.println("{\"triples\":\n");
+        printWriter.println("[");
+
+        String subString="{Subject: \"";
+        String predString="\", Predicate: \"";
+        String objString="\", Object: \"";
+
+        List<AbstractBlock> blocksToUse = blocks;
+        if (!(blocks.get(0) instanceof DecomposedBlock)) {
+            final ComparisonPropagation cp = new ComparisonPropagation();
+            blocksToUse = cp.refineBlocks(blocks);
+        }
+
+        abstractDP.resetDuplicates();
+        for (AbstractBlock block : blocksToUse) {
+            final ComparisonIterator iterator = block.getComparisonIterator();
+            while (iterator.hasNext()) {
+                final Comparison comp = iterator.next();
+                abstractDP.isSuperfluous(comp.getEntityId1(), comp.getEntityId2());
+            }
+        }
+
+        int cntr=0;
+        for (IdDuplicates duplicatesPair : abstractDP.getFalseNegatives()) {
+            cntr++;
+            final EntityProfile profile1 = profilesD1.get(duplicatesPair.getEntityId1());
+            final EntityProfile profile2 = isCleanCleanER ? profilesD2.get(duplicatesPair.getEntityId2()) : profilesD1.get(duplicatesPair.getEntityId2());
+
+            printWriter.print(subString+duplicatesPair.toString());
+            printWriter.print(predString+"url1");
+            printWriter.print(objString+profile1.getEntityUrl().replace("&", "").replace("\\", "")+"");
+            printWriter.println("\"},");
+
+            printWriter.print(subString+duplicatesPair.toString());
+            printWriter.print(predString+"url2");
+            printWriter.print(objString+profile2.getEntityUrl().replace("&", "").replace("\\", "")+"");
+            printWriter.println("\"},");
+
+            printWriter.print(subString+duplicatesPair.toString());
+            printWriter.print(predString+"pairType");
+            printWriter.print(objString);
+            printWriter.print("FN"); //false negative
+            printWriter.println("\"},");
+
+
+            printWriter.print(subString+duplicatesPair.toString());
+            printWriter.print(predString+"Profile1");
+            printWriter.print(objString);
+            printWriter.print((profile1+"").replace("&", "").replace("\\", ""));
+            printWriter.println("\"},");
+
+            printWriter.print(subString+duplicatesPair.toString());
+            printWriter.print(predString+"Profile2");
+            printWriter.print(objString);
+            printWriter.print((profile2+"").replace("&", "").replace("\\", ""));
+            printWriter.println("\"}");
+            if (cntr!=abstractDP.getFalseNegatives().size()) printWriter.println(",");
+        }
+
+        printWriter.println("]");
+        printWriter.println("}");
+        printWriter.close();
+    }
+
+    public void debugToRDFNT(List<EntityProfile> profilesD1, List<EntityProfile> profilesD2, String outputFile) throws FileNotFoundException {
+        if (blocks.isEmpty()) {
+            Log.warn("Empty set of blocks was given as input!");
+            return;
+        }
+
+        setType(); // Clean-Clean or Dirty ER?
+        final PrintWriter printWriter = new PrintWriter(new File(outputFile));
+        String xmlnsrdf="http://www.w3.org/1999/02/22/";
+        String xmlnsobj="https://www.w3schools.com/rdf/";
+
+        List<AbstractBlock> blocksToUse = blocks;
+        if (!(blocks.get(0) instanceof DecomposedBlock)) {
+            final ComparisonPropagation cp = new ComparisonPropagation();
+            blocksToUse = cp.refineBlocks(blocks);
+        }
+
+        abstractDP.resetDuplicates();
+        for (AbstractBlock block : blocksToUse) {
+            final ComparisonIterator iterator = block.getComparisonIterator();
+            while (iterator.hasNext()) {
+                final Comparison comp = iterator.next();
+                abstractDP.isSuperfluous(comp.getEntityId1(), comp.getEntityId2());
+            }
+        }
+
+        for (IdDuplicates duplicatesPair : abstractDP.getFalseNegatives()) {
+            final EntityProfile profile1 = profilesD1.get(duplicatesPair.getEntityId1());
+            final EntityProfile profile2 = isCleanCleanER ? profilesD2.get(duplicatesPair.getEntityId2()) : profilesD1.get(duplicatesPair.getEntityId2());
+
+            printWriter.print("<"+xmlnsrdf+duplicatesPair.toString()+"> ");
+            printWriter.print("<"+xmlnsobj+"url1"+"> \"");
+            printWriter.print(profile1.getEntityUrl().replace("&", "").replace("\\", "")+"");
+            printWriter.println("\"^^<http://www.w3.org/2001/XMLSchema#string>");
+
+            printWriter.print("<"+xmlnsrdf+duplicatesPair.toString()+"> ");
+            printWriter.print("<"+xmlnsobj+"url2"+"> \"");
+            printWriter.print(profile2.getEntityUrl().replace("&", "").replace("\\", "")+"");
+            printWriter.println("\"^^<http://www.w3.org/2001/XMLSchema#string>");
+
+            printWriter.print("<"+xmlnsrdf+duplicatesPair.toString()+"> ");
+            printWriter.print("<"+xmlnsobj+"pairType"+"> \"");
+            printWriter.print("FN"); //false positive
+
+            printWriter.println("\"^^<http://www.w3.org/2001/XMLSchema#string>");
+
+
+            printWriter.print("<"+xmlnsrdf+duplicatesPair.toString()+"> ");
+            printWriter.print("<"+xmlnsobj+"Profile1"+"> \"");
+            printWriter.print((profile1+"").replace("&", "").replace("\\", ""));
+            printWriter.println("\"^^<http://www.w3.org/2001/XMLSchema#string>");
+
+            printWriter.print("<"+xmlnsrdf+duplicatesPair.toString()+"> ");
+            printWriter.print("<"+xmlnsobj+"Profile2"+"> \"");
+            printWriter.print((profile2+"").replace("&", "").replace("\\", ""));
+            printWriter.println("\"^^<http://www.w3.org/2001/XMLSchema#string>");
+        }
+        printWriter.close();
+    }
+
+    public void debugToHDTrdf(List<EntityProfile> profilesD1, List<EntityProfile> profilesD2, String outputFile) throws IOException, ParserException {
+
+        this.debugToRDFNT(profilesD1, profilesD2, outputFile+"help.nt");
+        String baseURI = "http://www.w3.org/";
+        //String rdfInput = "data//minExample.nt";
+        String rdfInput = outputFile+"help.nt";
+        String inputType = "ntriples";
+        String hdtOutput = outputFile;
+
+        // Create HDT from RDF file
+        HDT hdt = HDTManager.generateHDT(
+                rdfInput,         // Input RDF File
+                baseURI,          // Base URI
+                RDFNotation.parse(inputType), // Input Type
+                new HDTSpecification(),   // HDT Options
+                null              // Progress Listener
+        );
+
+        // OPTIONAL: Add additional domain-specific properties to the header:
+        //Header header = hdt.getHeader();
+        //header.insert("myResource1", "property" , "value");
+
+        // Save generated HDT to a file
+        hdt.saveToHDT(hdtOutput, null);
+
+        // IMPORTANT: Close hdt when no longer needed
+        hdt.close();
+    }
+
+
     public void debugToXML(List<EntityProfile> profilesD1, List<EntityProfile> profilesD2, String outputFile) throws FileNotFoundException {
         if (blocks.isEmpty()) {
             Log.warn("Empty set of blocks was given as input!");

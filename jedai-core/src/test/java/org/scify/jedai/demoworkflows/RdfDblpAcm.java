@@ -49,7 +49,7 @@ public class RdfDblpAcm {
     public static void main(String[] args) throws FileNotFoundException {
         BasicConfigurator.configure();
         
-        String mainDirectory = "data/cleanCleanErDatasets/";
+        String mainDirectory = "data/cleanCleanErDatasets/DBLP-ACM/";
 
         EntityRDFReader rdfEntityReader = new EntityRDFReader(mainDirectory + "DBLP2toRdf.xml");
         List<EntityProfile> rdfDBLP = rdfEntityReader.getEntityProfiles();

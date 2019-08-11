@@ -35,6 +35,11 @@ import org.apache.jena.update.UpdateExecutionFactory;
 import org.apache.jena.update.UpdateFactory;
 import org.apache.jena.update.UpdateProcessor;
 import org.apache.jena.update.UpdateRequest;
+import org.rdfhdt.hdt.enums.RDFNotation;
+import org.rdfhdt.hdt.exceptions.ParserException;
+import org.rdfhdt.hdt.hdt.HDT;
+import org.rdfhdt.hdt.hdt.HDTManager;
+import org.rdfhdt.hdt.options.HDTSpecification;
 import org.scify.jedai.datamodel.EntityProfile;
 import org.scify.jedai.datamodel.EquivalenceCluster;
 
@@ -145,16 +150,16 @@ public class PrintStatsToFile {
         pw.write(sb.toString());
         pw.close();
     }
-    
-	public void printToRDF(String filename) throws FileNotFoundException {
+
+    public void printToRDFXML(String filename) throws FileNotFoundException {
         final PrintWriter printWriter = new PrintWriter(new File(filename));
 
         printWriter.println("<?xml version=\"1.0\"?>");
-	    printWriter.println();
-	    printWriter.println("<rdf:RDF");
-	    printWriter.println("xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"");
-	    printWriter.println("xmlns:obj=\"https://www.w3schools.com/rdf/\">");
-	    
+        printWriter.println();
+        printWriter.println("<rdf:RDF");
+        printWriter.println("xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"");
+        printWriter.println("xmlns:obj=\"https://www.w3schools.com/rdf/\">");
+
         int counter = 0;
         for (EquivalenceCluster eqc : entityClusters) {
             if (eqc.getEntityIdsD1().isEmpty()) {
@@ -162,23 +167,23 @@ public class PrintStatsToFile {
             }
             counter++;
             for (TIntIterator iterator = eqc.getEntityIdsD1().iterator(); iterator.hasNext();) {
-        	    printWriter.println();
+                printWriter.println();
 
-            	printWriter.println("<rdf:Description rdf:about=\""+counter+"\">");
-            	
-            	printWriter.print("<obj:"+"cluster_id"+">");
-            	printWriter.print(counter+"");
-            	printWriter.println("</obj:"+"cluster_id>");
-            	
-            	printWriter.print("<obj:"+"dataset"+">");
-            	printWriter.print("1");
-            	printWriter.println("</obj:"+"dataset>");
-            	
-            	printWriter.print("<obj:"+"entity_url"+">");
-            	printWriter.print(profilesD1.get(iterator.next()).getEntityUrl().replace("&", "")+"");
-            	printWriter.println("</obj:"+"entity_url"+">");
-                
-          	  printWriter.println("</rdf:Description>");
+                printWriter.println("<rdf:Description rdf:about=\""+counter+"\">");
+
+                printWriter.print("<obj:"+"cluster_id"+">");
+                printWriter.print(counter+"");
+                printWriter.println("</obj:"+"cluster_id>");
+
+                printWriter.print("<obj:"+"dataset"+">");
+                printWriter.print("1");
+                printWriter.println("</obj:"+"dataset>");
+
+                printWriter.print("<obj:"+"entity_url"+">");
+                printWriter.print(profilesD1.get(iterator.next()).getEntityUrl().replace("&", "")+"");
+                printWriter.println("</obj:"+"entity_url"+">");
+
+                printWriter.println("</rdf:Description>");
 
             }
             if (eqc.getEntityIdsD2().isEmpty()) {
@@ -189,34 +194,214 @@ public class PrintStatsToFile {
                 continue;
             }
             for (TIntIterator iterator = eqc.getEntityIdsD2().iterator(); iterator.hasNext();) {
-                                
-        	    printWriter.println();
+
+                printWriter.println();
 
                 printWriter.println("<rdf:Description rdf:about=\""+counter+"\">");
-            	
+
                 printWriter.print("<obj:"+"cluster_id"+">");
-            	printWriter.print(counter+"");
-            	printWriter.println("</obj:"+"cluster_id>");
-            	
-            	printWriter.print("<obj:"+"dataset"+">");
-            	printWriter.print("2");
-            	printWriter.println("</obj:"+"dataset>");
-            	
-            	printWriter.print("<obj:"+"entity_url"+">");
-            	printWriter.print(profilesD2.get(iterator.next()).getEntityUrl().replace("&", "")+"");
-            	printWriter.println("</obj:"+"entity_url"+">");
-                
-          	  printWriter.println("</rdf:Description>");
-                
+                printWriter.print(counter+"");
+                printWriter.println("</obj:"+"cluster_id>");
+
+                printWriter.print("<obj:"+"dataset"+">");
+                printWriter.print("2");
+                printWriter.println("</obj:"+"dataset>");
+
+                printWriter.print("<obj:"+"entity_url"+">");
+                printWriter.print(profilesD2.get(iterator.next()).getEntityUrl().replace("&", "")+"");
+                printWriter.println("</obj:"+"entity_url"+">");
+
+                printWriter.println("</rdf:Description>");
+
             }
 
         }
-	    printWriter.println("</rdf:RDF>");
+        printWriter.println("</rdf:RDF>");
 
         printWriter.close();
     }
-	
-	public void printToXML(String filename) throws FileNotFoundException {
+
+    public void printToJSONrdf(String filename) throws FileNotFoundException {
+        final PrintWriter printWriter = new PrintWriter(new File(filename));
+
+        printWriter.println("{\"triples\":\n");
+        printWriter.println("[");
+
+        String subString="{Subject: \"";
+        String predString="\", Predicate: \"";
+        String objString="\", Object: \"";
+
+        int counter = 0;
+        boolean isfirst=true;
+        for (EquivalenceCluster eqc : entityClusters) {
+            if (eqc.getEntityIdsD1().isEmpty()) {
+                continue;
+            }
+            counter++;
+            for (TIntIterator iterator = eqc.getEntityIdsD1().iterator(); iterator.hasNext();) {
+                if (!isfirst)
+                {
+                    printWriter.println(",");
+
+                }
+                else
+                {
+                    isfirst=false;
+                }
+                printWriter.print(subString+counter);
+                printWriter.print(predString+"cluster_id");
+                printWriter.print(objString);
+                printWriter.print(counter+"");
+                printWriter.println("\"},");
+
+                printWriter.print(subString+counter);
+                printWriter.print(predString+"dataset");
+                printWriter.print(objString);
+                printWriter.print(1+"");
+                printWriter.println("\"},");
+
+                printWriter.print(subString+counter);
+                printWriter.print(predString+"entity_url");
+                printWriter.print(objString);
+                printWriter.print(profilesD1.get(iterator.next()).getEntityUrl().replace("&", "")+"");
+                printWriter.println("\"}");
+
+            }
+            if (eqc.getEntityIdsD2().isEmpty()) {
+                continue;
+            }
+            if (profilesD2 == null) {
+                Log.error("The entity profiles of Dataset 2 are missing!");
+                continue;
+            }
+            for (TIntIterator iterator = eqc.getEntityIdsD2().iterator(); iterator.hasNext();) {
+                if (!isfirst)
+                {
+                    printWriter.println(",");
+
+                }
+                else
+                {
+                    isfirst=false;
+                }
+                printWriter.print(subString+counter);
+                printWriter.print(predString+"cluster_id");
+                printWriter.print(objString);
+                printWriter.print(counter+"");
+                printWriter.println("\"},");
+
+                printWriter.print(subString+counter);
+                printWriter.print(predString+"dataset");
+                printWriter.print(objString);
+                printWriter.print(2+"");
+                printWriter.println("\"},");
+
+                printWriter.print(subString+counter);
+                printWriter.print(predString+"entity_url");
+                printWriter.print(objString);
+                printWriter.print(profilesD2.get(iterator.next()).getEntityUrl().replace("&", "")+"");
+                printWriter.println("\"}");
+
+            }
+
+        }
+
+        printWriter.println("]");
+        printWriter.println("}");
+        printWriter.close();
+
+    }
+
+    public void printToRDFNT(String filename) throws FileNotFoundException {
+        final PrintWriter printWriter = new PrintWriter(new File(filename));
+
+        String xmlnsrdf="http://www.w3.org/1999/02/22/";
+        String xmlnsobj="https://www.w3schools.com/rdf/";
+
+        int counter = 0;
+        for (EquivalenceCluster eqc : entityClusters) {
+            if (eqc.getEntityIdsD1().isEmpty()) {
+                continue;
+            }
+            counter++;
+            for (TIntIterator iterator = eqc.getEntityIdsD1().iterator(); iterator.hasNext();) {
+
+                printWriter.print("<"+xmlnsrdf+counter+"> ");
+                printWriter.print("<"+xmlnsobj+"cluster_id"+"> \"");
+                printWriter.print(counter+"");
+                printWriter.println("\"^^<http://www.w3.org/2001/XMLSchema#integer>");
+
+                printWriter.print("<"+xmlnsrdf+counter+"> ");
+                printWriter.print("<"+xmlnsobj+"dataset"+"> \"");
+                printWriter.print("1");
+                printWriter.println("\"^^<http://www.w3.org/2001/XMLSchema#integer>");
+
+                printWriter.print("<"+xmlnsrdf+counter+"> ");
+                printWriter.print("<"+xmlnsobj+"entity_url"+"> \"");
+                printWriter.print(profilesD1.get(iterator.next()).getEntityUrl().replace("&", "")+"");
+                printWriter.println("\"^^<http://www.w3.org/2001/XMLSchema#string>");
+
+            }
+            if (eqc.getEntityIdsD2().isEmpty()) {
+                continue;
+            }
+            if (profilesD2 == null) {
+                Log.error("The entity profiles of Dataset 2 are missing!");
+                continue;
+            }
+            for (TIntIterator iterator = eqc.getEntityIdsD2().iterator(); iterator.hasNext();) {
+
+                printWriter.print("<"+xmlnsrdf+counter+"> ");
+                printWriter.print("<"+xmlnsobj+"cluster_id"+"> \"");
+                printWriter.print(counter+"");
+                printWriter.println("\"^^<http://www.w3.org/2001/XMLSchema#integer>");
+
+                printWriter.print("<"+xmlnsrdf+counter+"> ");
+                printWriter.print("<"+xmlnsobj+"dataset"+"> \"");
+                printWriter.print("2");
+                printWriter.println("\"^^<http://www.w3.org/2001/XMLSchema#integer>");
+
+                printWriter.print("<"+xmlnsrdf+counter+"> ");
+                printWriter.print("<"+xmlnsobj+"entity_url"+"> \"");
+                printWriter.print(profilesD2.get(iterator.next()).getEntityUrl().replace("&", "")+"");
+                printWriter.println("\"^^<http://www.w3.org/2001/XMLSchema#string>");
+
+            }
+
+        }
+
+    }
+
+    public void printToHDTRDF(String outputFile) throws IOException, ParserException {
+
+        this.printToRDFNT(outputFile+"help.nt");
+        String baseURI = "http://www.w3.org/";
+        //String rdfInput = "data//minExample.nt";
+        String rdfInput = outputFile+"help.nt";
+        String inputType = "ntriples";
+        String hdtOutput = outputFile;
+
+        // Create HDT from RDF file
+        HDT hdt = HDTManager.generateHDT(
+                rdfInput,         // Input RDF File
+                baseURI,          // Base URI
+                RDFNotation.parse(inputType), // Input Type
+                new HDTSpecification(),   // HDT Options
+                null              // Progress Listener
+        );
+
+        // OPTIONAL: Add additional domain-specific properties to the header:
+        //Header header = hdt.getHeader();
+        //header.insert("myResource1", "property" , "value");
+
+        // Save generated HDT to a file
+        hdt.saveToHDT(hdtOutput, null);
+
+        // IMPORTANT: Close hdt when no longer needed
+        hdt.close();
+    }
+
+    public void printToXML(String filename) throws FileNotFoundException {
         final PrintWriter printWriter = new PrintWriter(new File(filename));
 
         printWriter.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");

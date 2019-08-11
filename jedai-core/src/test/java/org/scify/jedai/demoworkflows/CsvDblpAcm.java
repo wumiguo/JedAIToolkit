@@ -16,6 +16,8 @@
 package org.scify.jedai.demoworkflows;
 
 import java.io.File;
+
+import org.rdfhdt.hdt.exceptions.ParserException;
 import org.scify.jedai.blockbuilding.IBlockBuilding;
 import org.scify.jedai.blockbuilding.StandardBlocking;
 import org.scify.jedai.blockprocessing.blockcleaning.BlockFiltering;
@@ -27,6 +29,9 @@ import org.scify.jedai.datamodel.EquivalenceCluster;
 import org.scify.jedai.datamodel.SimilarityPairs;
 import org.scify.jedai.datareader.entityreader.EntityCSVReader;
 import org.scify.jedai.datareader.groundtruthreader.GtCSVReader;
+import org.scify.jedai.datawriter.BlocksPerformanceWriter;
+import org.scify.jedai.datawriter.ClustersPerformanceWriter;
+import org.scify.jedai.datawriter.PrintStatsToFile;
 import org.scify.jedai.entityclustering.ConnectedComponentsClustering;
 import org.scify.jedai.entityclustering.IEntityClustering;
 import org.scify.jedai.entitymatching.IEntityMatching;
@@ -37,6 +42,7 @@ import org.scify.jedai.utilities.datastructures.AbstractDuplicatePropagation;
 import org.scify.jedai.utilities.datastructures.BilateralDuplicatePropagation;
 import org.scify.jedai.utilities.PrintToFile;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.List;
 import org.apache.log4j.BasicConfigurator;
 
@@ -46,7 +52,7 @@ import org.apache.log4j.BasicConfigurator;
  */
 public class CsvDblpAcm {
 
-    public static void main(String[] args) throws FileNotFoundException {
+    public static void main(String[] args) throws IOException, ParserException {
         BasicConfigurator.configure();
         
         String mainDirectory = "data" + File.separator + "cleanCleanErDatasets" + File.separator + "DBLP-ACM" + File.separator;
@@ -97,7 +103,12 @@ public class CsvDblpAcm {
         BlocksPerformance blStats = new BlocksPerformance(ccBlocks, duplicatePropagation);
         blStats.setStatistics();
         blStats.printStatistics(time2 - time1, workflowConf.toString(), workflowName.toString());
-        
+
+
+        /*BlocksPerformanceWriter blw = new BlocksPerformanceWriter(ccBlocks, duplicatePropagation);
+        blw.printDetailedResultsToJSONrdf(csvDBLP, csvACM, mainDirectory + "foundMatchesJSON.json");
+        blw.debugToJSONrdf(csvDBLP, csvACM, mainDirectory + "debugJSON.json");*/
+
         double time3 = System.currentTimeMillis();
         
         IEntityMatching entityMatching = new ProfileMatcher();
@@ -115,8 +126,14 @@ public class CsvDblpAcm {
         ClustersPerformance clp = new ClustersPerformance(entityClusters, duplicatePropagation);
         clp.setStatistics();
         clp.printStatistics(time4 - time3, workflowName.toString(), workflowConf.toString());
-        
-        PrintToFile.toCSV(csvDBLP, csvACM, entityClusters, mainDirectory + "foundMatches.csv");
+
+        ClustersPerformanceWriter cpw = new ClustersPerformanceWriter(entityClusters, duplicatePropagation);
+        //cpw.printDetailedResultsToRDFNT(csvDBLP, csvACM, mainDirectory + "foundClusters.hdt");
+        cpw.printDetailedResultsToJSONrdf(csvDBLP, csvACM, mainDirectory + "foundClusters.json");
+
+        PrintStatsToFile pstf = new PrintStatsToFile(csvDBLP, csvACM, entityClusters);
+        pstf.printToJSONrdf(mainDirectory + "statsTofile.json");
+        //PrintToFile.toCSV(csvDBLP, csvACM, entityClusters, mainDirectory + "foundMatches.csv");
     }
 
 }

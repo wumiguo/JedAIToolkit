@@ -12,4 +12,5 @@
         <module>jedai-core</module>
         <module>jedai-ui</module>
     </modules>
+
 </project>
