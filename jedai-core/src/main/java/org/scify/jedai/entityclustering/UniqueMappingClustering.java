@@ -52,6 +52,7 @@ public class UniqueMappingClustering extends AbstractEntityClustering {
             return new EquivalenceCluster[0];
         }
 
+        matchedIds.clear();
         initializeData(simPairs);
         if (!isCleanCleanER) {
             return null; //the method is only applicable to Clean-Clean ER
