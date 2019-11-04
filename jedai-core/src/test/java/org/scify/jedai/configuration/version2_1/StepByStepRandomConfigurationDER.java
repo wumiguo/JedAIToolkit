@@ -56,7 +56,7 @@ public class StepByStepRandomConfigurationDER {
     private final static SimilarityMetric[] SIM_METRIC = {SimilarityMetric.GRAPH_NORMALIZED_VALUE_SIMILARITY, SimilarityMetric.ENHANCED_JACCARD_SIMILARITY};
     
     public static void main(String[] args) throws Exception {
-        int i = 1;//Integer.parseInt(args[0]); //datasetIndex
+        int i = Integer.parseInt(args[0]); //datasetIndex
         BasicConfigurator.configure();
 
         String mainDir = "data" + File.separator + "dirtyErDatasets" + File.separator;

@@ -56,7 +56,7 @@ public class StepByStepGridConfigurationDER {
     private final static SimilarityMetric[] SIM_METRIC = {SimilarityMetric.GRAPH_OVERALL_SIMILARITY, SimilarityMetric.GRAPH_OVERALL_SIMILARITY};
 
     public static void main(String[] args) throws Exception {
-        int i = 0;//Integer.parseInt(args[0]); //datasetIndex
+        int i = Integer.parseInt(args[0]); //datasetIndex
         BasicConfigurator.configure();
 
         String mainDir = "data" + File.separator + "dirtyErDatasets" + File.separator;
