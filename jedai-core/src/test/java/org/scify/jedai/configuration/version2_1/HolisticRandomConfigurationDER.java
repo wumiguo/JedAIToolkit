@@ -29,16 +29,15 @@ import org.scify.jedai.datamodel.EntityProfile;
 import org.scify.jedai.datamodel.EquivalenceCluster;
 import org.scify.jedai.datamodel.SimilarityPairs;
 import org.scify.jedai.datareader.entityreader.EntitySerializationReader;
-import org.scify.jedai.datareader.entityreader.IEntityReader;
 import org.scify.jedai.datareader.groundtruthreader.GtSerializationReader;
 import org.scify.jedai.datareader.groundtruthreader.IGroundTruthReader;
+import org.scify.jedai.entityclustering.ConnectedComponentsClustering;
 import org.scify.jedai.entityclustering.IEntityClustering;
-import org.scify.jedai.entityclustering.UniqueMappingClustering;
 import org.scify.jedai.entitymatching.IEntityMatching;
 import org.scify.jedai.entitymatching.ProfileMatcher;
 import org.scify.jedai.utilities.ClustersPerformance;
 import org.scify.jedai.utilities.datastructures.AbstractDuplicatePropagation;
-import org.scify.jedai.utilities.datastructures.BilateralDuplicatePropagation;
+import org.scify.jedai.utilities.datastructures.UnilateralDuplicatePropagation;
 import org.scify.jedai.utilities.enumerations.RepresentationModel;
 import org.scify.jedai.utilities.enumerations.SimilarityMetric;
 import org.scify.jedai.utilities.enumerations.WeightingScheme;
@@ -47,51 +46,30 @@ import org.scify.jedai.utilities.enumerations.WeightingScheme;
  *
  * @author GAP2
  */
-public class HolisticRandomConfigurationCCER {
+public class HolisticRandomConfigurationDER {
 
-    private final static double[] PURGING_FACTOR = {0.056, 0.078, 0.020, 0.148};
-    private final static double[] FILTERING_RATIO = {0.906, 0.674, 0.524, 0.690};
-    private final static double[] SIM_THRESHOLD = {0.487, 0.073, 0.520, 0.107};
-    private final static WeightingScheme[] WEIGHTING_SCHEME = {WeightingScheme.ECBS,
-        WeightingScheme.JS, WeightingScheme.CBS, WeightingScheme.ECBS};
-    private final static RepresentationModel[] REP_MODEL = {RepresentationModel.CHARACTER_BIGRAMS_TF_IDF,
-        RepresentationModel.CHARACTER_FOURGRAMS_TF_IDF, RepresentationModel.CHARACTER_BIGRAMS_TF_IDF,
-        RepresentationModel.CHARACTER_TRIGRAMS_TF_IDF};
-    private final static SimilarityMetric[] SIM_METRIC = {SimilarityMetric.SIGMA_SIMILARITY,
-        SimilarityMetric.COSINE_SIMILARITY, SimilarityMetric.SIGMA_SIMILARITY,
-        SimilarityMetric.COSINE_SIMILARITY};
-
+    private final static double[] PURGING_FACTOR = {0.030, 0.154};
+    private final static double[] FILTERING_RATIO = {0.355, 0.973};
+    private final static double[] SIM_THRESHOLD = {0.795, 0.459};
+    private final static WeightingScheme[] WEIGHTING_SCHEME = {WeightingScheme.ARCS, WeightingScheme.JS};
+    private final static RepresentationModel[] REP_MODEL = {RepresentationModel.CHARACTER_BIGRAM_GRAPHS, RepresentationModel.TOKEN_UNIGRAMS_TF_IDF};
+    private final static SimilarityMetric[] SIM_METRIC = {SimilarityMetric.GRAPH_CONTAINMENT_SIMILARITY, SimilarityMetric.GENERALIZED_JACCARD_SIMILARITY};
+    
     public static void main(String[] args) throws Exception {
-        int i = Integer.parseInt(args[0]); //datasetIndex
+        int i = 1;//Integer.parseInt(args[0]); //datasetIndex
         BasicConfigurator.configure();
 
-        String mainDirectory = "data";
-        String[] entitiesFilePath = {mainDirectory + File.separator + "cleanCleanErDatasets" + File.separator + "abtProfiles",
-            mainDirectory + File.separator + "cleanCleanErDatasets" + File.separator + "buyProfiles",
-            mainDirectory + File.separator + "cleanCleanErDatasets" + File.separator + "amazonProfiles",
-            mainDirectory + File.separator + "cleanCleanErDatasets" + File.separator + "gpProfiles",
-            mainDirectory + File.separator + "cleanCleanErDatasets" + File.separator + "dblpProfiles",
-            mainDirectory + File.separator + "cleanCleanErDatasets" + File.separator + "acmProfiles",
-            mainDirectory + File.separator + "cleanCleanErDatasets" + File.separator + "dblpProfiles2",
-            mainDirectory + File.separator + "cleanCleanErDatasets" + File.separator + "scholarProfiles",};
-        String[] groundTruthFilePath = {mainDirectory + File.separator + "cleanCleanErDatasets" + File.separator + "abtBuyIdDuplicates",
-            mainDirectory + File.separator + "cleanCleanErDatasets" + File.separator + "amazonGpIdDuplicates",
-            mainDirectory + File.separator + "cleanCleanErDatasets" + File.separator + "dblpAcmIdDuplicates",
-            mainDirectory + File.separator + "cleanCleanErDatasets" + File.separator + "dblpScholarIdDuplicates"
-        };
+        String mainDir = "data" + File.separator + "dirtyErDatasets" + File.separator;
+        final String[] datasets = {"cddb", "cora"};
 
-        System.out.println("\n\n\n\nCurrent dataset\t:\t" + groundTruthFilePath[i]);
+        System.out.println("\n\n\n\nCurrent dataset\t:\t" + mainDir + datasets[i] + "Profiles");
 
-        IEntityReader eReader1 = new EntitySerializationReader(entitiesFilePath[i * 2]);
-        List<EntityProfile> profiles1 = eReader1.getEntityProfiles();
-        System.out.println("Input Entity Profiles\t:\t" + profiles1.size());
+        final EntitySerializationReader inReader = new EntitySerializationReader(mainDir + datasets[i] + "Profiles");
+        final List<EntityProfile> profiles = inReader.getEntityProfiles();
+        System.out.println("\nNumber of entity profiles\t:\t" + profiles.size());
 
-        IEntityReader eReader2 = new EntitySerializationReader(entitiesFilePath[i * 2 + 1]);
-        List<EntityProfile> profiles2 = eReader2.getEntityProfiles();
-        System.out.println("Input Entity Profiles\t:\t" + profiles2.size());
-
-        IGroundTruthReader gtReader = new GtSerializationReader(groundTruthFilePath[i]);
-        final AbstractDuplicatePropagation duplicatePropagation = new BilateralDuplicatePropagation(gtReader.getDuplicatePairs(null));
+        final IGroundTruthReader gtReader = new GtSerializationReader(mainDir + datasets[i] + "IdDuplicates");
+        final AbstractDuplicatePropagation duplicatePropagation = new UnilateralDuplicatePropagation(gtReader.getDuplicatePairs(profiles));
         System.out.println("Existing Duplicates\t:\t" + duplicatePropagation.getDuplicates().size());
 
         final IBlockBuilding bb = new StandardBlocking();
@@ -99,7 +77,7 @@ public class HolisticRandomConfigurationCCER {
         final IBlockProcessing bp2 = new BlockFiltering(FILTERING_RATIO[i]);
         final IBlockProcessing cc = new CardinalityNodePruning(WEIGHTING_SCHEME[i]);
         final IEntityMatching em = new ProfileMatcher(REP_MODEL[i], SIM_METRIC[i]);
-        final IEntityClustering ec = new UniqueMappingClustering(SIM_THRESHOLD[i]);
+        final IEntityClustering ec = new ConnectedComponentsClustering(SIM_THRESHOLD[i]);
 
         final StringBuilder matchingWorkflowName = new StringBuilder();
         matchingWorkflowName.append(bb.getMethodName());
@@ -119,11 +97,11 @@ public class HolisticRandomConfigurationCCER {
 
         double time1 = System.currentTimeMillis();
 
-        final List<AbstractBlock> blocks = bb.getBlocks(profiles1, profiles2);
+        final List<AbstractBlock> blocks = bb.getBlocks(profiles);
         final List<AbstractBlock> purgedBlocks = bp1.refineBlocks(blocks);
         final List<AbstractBlock> filteredBlocks = bp2.refineBlocks(purgedBlocks);
         final List<AbstractBlock> finalBlocks = cc.refineBlocks(filteredBlocks);
-        final SimilarityPairs sims = em.executeComparisons(finalBlocks, profiles1, profiles2);
+        final SimilarityPairs sims = em.executeComparisons(finalBlocks, profiles);
         final EquivalenceCluster[] clusters = ec.getDuplicates(sims);
 
         double time2 = System.currentTimeMillis();

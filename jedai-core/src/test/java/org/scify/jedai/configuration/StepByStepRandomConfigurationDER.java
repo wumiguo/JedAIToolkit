@@ -32,11 +32,10 @@ import org.scify.jedai.datareader.entityreader.EntitySerializationReader;
 import org.scify.jedai.datareader.groundtruthreader.GtSerializationReader;
 import org.scify.jedai.datareader.groundtruthreader.IGroundTruthReader;
 import org.scify.jedai.entityclustering.CenterClustering;
-import org.scify.jedai.entityclustering.ConnectedComponentsClustering;
 import org.scify.jedai.entityclustering.IEntityClustering;
-import org.scify.jedai.entityclustering.MergeCenterClustering;
 import org.scify.jedai.entitymatching.IEntityMatching;
 import org.scify.jedai.entitymatching.ProfileMatcher;
+import org.scify.jedai.utilities.BlocksPerformance;
 import org.scify.jedai.utilities.ClustersPerformance;
 import org.scify.jedai.utilities.datastructures.AbstractDuplicatePropagation;
 import org.scify.jedai.utilities.datastructures.UnilateralDuplicatePropagation;
@@ -45,15 +44,22 @@ import org.scify.jedai.utilities.datastructures.UnilateralDuplicatePropagation;
  *
  * @author GAP2
  */
-public class ConfigureRandomlyEndToEndWorkflowDirtyER {
+public class StepByStepRandomConfigurationDER {
 
     private final static int NO_OF_TRIALS = 100;
+
+    static double getTotalComparisons(List<AbstractBlock> blocks) {
+        double originalComparisons = 0;
+        originalComparisons = blocks.stream().map((block) -> block.getNoOfComparisons()).reduce(originalComparisons, (accumulator, _item) -> accumulator + _item);
+        System.out.println("Original comparisons\t:\t" + originalComparisons);
+        return originalComparisons;
+    }
 
     public static void main(String[] args) throws Exception {
         BasicConfigurator.configure();
 
         String mainDir = "data" + File.separator + "dirtyErDatasets" + File.separator;
-        final String[] datasets = {/*"census",*/ "cddb", "cora"};
+        final String[] datasets = {"census", "cddb", "cora"};
 
         for (String dataset : datasets) {
             System.out.println("\n\nCurrent dataset\t:\t" + dataset);
@@ -71,9 +77,9 @@ public class ConfigureRandomlyEndToEndWorkflowDirtyER {
             final IBlockProcessing bp2 = new BlockFiltering();
             final IBlockProcessing cc = new CardinalityNodePruning();
             final IEntityMatching em = new ProfileMatcher();
-//            final IEntityClustering ec = new CenterClustering();
+            final IEntityClustering ec = new CenterClustering();
+//            final IEntityClustering ec = new MergeCenterClustering();
 //            final IEntityClustering ec = new ConnectedComponentsClustering();
-            final IEntityClustering ec = new MergeCenterClustering();
 
             final StringBuilder matchingWorkflowName = new StringBuilder();
             matchingWorkflowName.append(bb.getMethodName());
@@ -83,75 +89,148 @@ public class ConfigureRandomlyEndToEndWorkflowDirtyER {
             matchingWorkflowName.append("->").append(em.getMethodName());
             matchingWorkflowName.append("->").append(ec.getMethodName());
 
+            // local optimization of Block Building
+            double bestA = 0;
             int bestIteration = 0;
-            double bestFMeasure = 0;
-            for (int i = 0; i < NO_OF_TRIALS; i++) {
-                double time1 = System.currentTimeMillis();
-
+            double originalComparisons = ((double) profiles.size()) * (profiles.size() - 1.0) / 2.0;
+            for (int j = 0; j < NO_OF_TRIALS; j++) {
                 bb.setNextRandomConfiguration();
-                final List<AbstractBlock> blocks = bb.getBlocks(profiles);
+                final List<AbstractBlock> originalBlocks = bb.getBlocks(profiles);
+                if (originalBlocks.isEmpty()) {
+                    continue;
+                }
 
+                final BlocksPerformance blp = new BlocksPerformance(originalBlocks, duplicatePropagation);
+                blp.setStatistics();
+                double recall = blp.getPc();
+                double rr = 1 - blp.getAggregateCardinality() / originalComparisons;
+                double a = rr * recall;
+                if (bestA < a) {
+                    bestIteration = j;
+                    bestA = a;
+                }
+            }
+            System.out.println("\n\nBest iteration\t:\t" + bestIteration);
+            System.out.println("Best performance\t:\t" + bestA);
+
+            bb.setNumberedRandomConfiguration(bestIteration);
+            final List<AbstractBlock> blocks = bb.getBlocks(profiles);
+            BlocksPerformance blp = new BlocksPerformance(blocks, duplicatePropagation);
+            blp.setStatistics();
+            blp.printStatistics(0, bp1.getMethodConfiguration(), bp1.getMethodName());
+
+            // local optimization of Block Purging
+            bestA = 0;
+            bestIteration = 0;
+            originalComparisons = getTotalComparisons(blocks);
+            for (int j = 0; j < NO_OF_TRIALS; j++) {
                 bp1.setNextRandomConfiguration();
                 final List<AbstractBlock> purgedBlocks = bp1.refineBlocks(blocks);
                 if (purgedBlocks.isEmpty()) {
                     continue;
                 }
 
+                blp = new BlocksPerformance(purgedBlocks, duplicatePropagation);
+                blp.setStatistics();
+                double recall = blp.getPc();
+                double rr = 1 - blp.getAggregateCardinality() / originalComparisons;
+                double a = rr * recall;
+                if (bestA < a) {
+                    bestIteration = j;
+                    bestA = a;
+                }
+            }
+            System.out.println("\n\nBest iteration\t:\t" + bestIteration);
+            System.out.println("Best performance\t:\t" + bestA);
+
+            bp1.setNumberedRandomConfiguration(bestIteration);
+            final List<AbstractBlock> purgedBlocks = bp1.refineBlocks(blocks);
+            blp = new BlocksPerformance(purgedBlocks, duplicatePropagation);
+            blp.setStatistics();
+            blp.printStatistics(0, bp1.getMethodConfiguration(), bp1.getMethodName());
+
+            // local optimization of Block Filtering
+            bestA = 0;
+            bestIteration = 0;
+            originalComparisons = getTotalComparisons(purgedBlocks);
+            for (int j = 0; j < NO_OF_TRIALS; j++) {
                 bp2.setNextRandomConfiguration();
                 final List<AbstractBlock> filteredBlocks = bp2.refineBlocks(purgedBlocks);
                 if (filteredBlocks.isEmpty()) {
                     continue;
                 }
 
+                blp = new BlocksPerformance(filteredBlocks, duplicatePropagation);
+                blp.setStatistics();
+                double recall = blp.getPc();
+                double rr = 1 - blp.getAggregateCardinality() / originalComparisons;
+                double a = rr * recall;
+                if (bestA < a) {
+                    bestIteration = j;
+                    bestA = a;
+                }
+            }
+            System.out.println("\n\nBest iteration\t:\t" + bestIteration);
+            System.out.println("Best performance\t:\t" + bestA);
+
+            bp2.setNumberedRandomConfiguration(bestIteration);
+            final List<AbstractBlock> filteredBlocks = bp2.refineBlocks(purgedBlocks);
+            blp = new BlocksPerformance(filteredBlocks, duplicatePropagation);
+            blp.setStatistics();
+            blp.printStatistics(0, bp2.getMethodConfiguration(), bp2.getMethodName());
+
+            // local optimization of CNP
+            bestA = 0;
+            bestIteration = 0;
+            originalComparisons = getTotalComparisons(filteredBlocks);
+            for (int j = 0; j < NO_OF_TRIALS; j++) {
                 cc.setNextRandomConfiguration();
                 final List<AbstractBlock> finalBlocks = cc.refineBlocks(filteredBlocks);
                 if (finalBlocks.isEmpty()) {
                     continue;
                 }
-                
+
+                blp = new BlocksPerformance(finalBlocks, duplicatePropagation);
+                blp.setStatistics();
+                double recall = blp.getPc();
+                double rr = 1 - blp.getAggregateCardinality() / originalComparisons;
+                double a = rr * recall;
+                if (bestA < a) {
+                    bestIteration = j;
+                    bestA = a;
+                }
+            }
+            System.out.println("\n\nBest iteration\t:\t" + bestIteration);
+            System.out.println("Best performance\t:\t" + bestA);
+
+            cc.setNumberedRandomConfiguration(bestIteration);
+            final List<AbstractBlock> finalBlocks = cc.refineBlocks(filteredBlocks);
+            blp = new BlocksPerformance(finalBlocks, duplicatePropagation);
+            blp.setStatistics();
+            blp.printStatistics(0, cc.getMethodConfiguration(), cc.getMethodName());
+
+            // local optimization of Matching & Clustering            
+            bestIteration = 0;
+            double bestFMeasure = 0;
+            for (int j = 0; j < NO_OF_TRIALS; j++) {
                 em.setNextRandomConfiguration();
                 final SimilarityPairs sims = em.executeComparisons(finalBlocks, profiles);
 
                 ec.setNextRandomConfiguration();
                 final EquivalenceCluster[] clusters = ec.getDuplicates(sims);
 
-                double time2 = System.currentTimeMillis();
-
-                final StringBuilder matchingWorkflowConf = new StringBuilder();
-                matchingWorkflowConf.append(bb.getMethodConfiguration());
-                matchingWorkflowConf.append("\n").append(bp1.getMethodConfiguration());
-                matchingWorkflowConf.append("\n").append(bp2.getMethodConfiguration());
-                matchingWorkflowConf.append("\n").append(cc.getMethodConfiguration());
-                matchingWorkflowConf.append("\n").append(em.getMethodConfiguration());
-                matchingWorkflowConf.append("\n").append(ec.getMethodConfiguration());
-
                 final ClustersPerformance clp = new ClustersPerformance(clusters, duplicatePropagation);
                 clp.setStatistics();
-                clp.printStatistics(time2 - time1, matchingWorkflowName.toString(), matchingWorkflowConf.toString());
-
                 double fMeasure = clp.getFMeasure();
                 if (bestFMeasure < fMeasure) {
-                    bestIteration = i;
+                    bestIteration = j;
                     bestFMeasure = fMeasure;
                 }
             }
-
             System.out.println("\nBest Iteration\t:\t" + bestIteration);
             System.out.println("Best FMeasure\t:\t" + bestFMeasure);
 
             double time1 = System.currentTimeMillis();
-
-            bb.setNumberedRandomConfiguration(bestIteration);
-            final List<AbstractBlock> blocks = bb.getBlocks(profiles);
-
-            bp1.setNumberedRandomConfiguration(bestIteration);
-            final List<AbstractBlock> purgedBlocks = bp1.refineBlocks(blocks);
-
-            bp2.setNumberedRandomConfiguration(bestIteration);
-            final List<AbstractBlock> filteredBlocks = bp2.refineBlocks(purgedBlocks);
-
-            cc.setNumberedRandomConfiguration(bestIteration);
-            final List<AbstractBlock> finalBlocks = cc.refineBlocks(filteredBlocks);
 
             em.setNumberedRandomConfiguration(bestIteration);
             final SimilarityPairs sims = em.executeComparisons(finalBlocks, profiles);

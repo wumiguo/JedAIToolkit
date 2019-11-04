@@ -49,7 +49,6 @@ import org.scify.jedai.utilities.enumerations.WeightingScheme;
  */
 public class StepByStepRandomConfigurationCCER {
 
-    private final static int NO_OF_ITERATIOS = 10;
     private final static double[] PURGING_FACTOR = {0.021, 0.022, 0.005, 0.009};
     private final static double[] FILTERING_RATIO = {0.375, 0.503, 0.252, 0.429};
     private final static double[] SIM_THRESHOLD = {0.369, 0.167, 0.408, 0.440};
@@ -63,80 +62,76 @@ public class StepByStepRandomConfigurationCCER {
         SimilarityMetric.SIGMA_SIMILARITY};
 
     public static void main(String[] args) throws Exception {
+        int i = Integer.parseInt(args[0]); //datasetIndex
         BasicConfigurator.configure();
 
-        String[] entitiesFilePath = {"data" + File.separator + "cleanCleanErDatasets" + File.separator + "abtProfiles",
-            "data" + File.separator + "cleanCleanErDatasets" + File.separator + "buyProfiles",
-            "data" + File.separator + "cleanCleanErDatasets" + File.separator + "amazonProfiles",
-            "data" + File.separator + "cleanCleanErDatasets" + File.separator + "gpProfiles",
-            "data" + File.separator + "cleanCleanErDatasets" + File.separator + "dblpProfiles",
-            "data" + File.separator + "cleanCleanErDatasets" + File.separator + "acmProfiles",
-            "data" + File.separator + "cleanCleanErDatasets" + File.separator + "dblpProfiles2",
-            "data" + File.separator + "cleanCleanErDatasets" + File.separator + "scholarProfiles",};
-        String[] groundTruthFilePath = {"data" + File.separator + "cleanCleanErDatasets" + File.separator + "abtBuyIdDuplicates",
-            "data" + File.separator + "cleanCleanErDatasets" + File.separator + "amazonGpIdDuplicates",
-            "data" + File.separator + "cleanCleanErDatasets" + File.separator + "dblpAcmIdDuplicates",
-            "data" + File.separator + "cleanCleanErDatasets" + File.separator + "dblpScholarIdDuplicates"
+        String mainDirectory = "data";
+        String[] entitiesFilePath = {mainDirectory + File.separator + "cleanCleanErDatasets" + File.separator + "abtProfiles",
+            mainDirectory + File.separator + "cleanCleanErDatasets" + File.separator + "buyProfiles",
+            mainDirectory + File.separator + "cleanCleanErDatasets" + File.separator + "amazonProfiles",
+            mainDirectory + File.separator + "cleanCleanErDatasets" + File.separator + "gpProfiles",
+            mainDirectory + File.separator + "cleanCleanErDatasets" + File.separator + "dblpProfiles",
+            mainDirectory + File.separator + "cleanCleanErDatasets" + File.separator + "acmProfiles",
+            mainDirectory + File.separator + "cleanCleanErDatasets" + File.separator + "dblpProfiles2",
+            mainDirectory + File.separator + "cleanCleanErDatasets" + File.separator + "scholarProfiles",};
+        String[] groundTruthFilePath = {mainDirectory + File.separator + "cleanCleanErDatasets" + File.separator + "abtBuyIdDuplicates",
+            mainDirectory + File.separator + "cleanCleanErDatasets" + File.separator + "amazonGpIdDuplicates",
+            mainDirectory + File.separator + "cleanCleanErDatasets" + File.separator + "dblpAcmIdDuplicates",
+            mainDirectory + File.separator + "cleanCleanErDatasets" + File.separator + "dblpScholarIdDuplicates"
         };
 
-        for (int i = 0; i < groundTruthFilePath.length; i++) {
-            System.out.println("\n\n\n\nCurrent dataset\t:\t" + groundTruthFilePath[i]);
+        System.out.println("\n\n\n\nCurrent dataset\t:\t" + groundTruthFilePath[i]);
 
-            IEntityReader eReader1 = new EntitySerializationReader(entitiesFilePath[i * 2]);
-            List<EntityProfile> profiles1 = eReader1.getEntityProfiles();
-            System.out.println("Input Entity Profiles\t:\t" + profiles1.size());
+        IEntityReader eReader1 = new EntitySerializationReader(entitiesFilePath[i * 2]);
+        List<EntityProfile> profiles1 = eReader1.getEntityProfiles();
+        System.out.println("Input Entity Profiles\t:\t" + profiles1.size());
 
-            IEntityReader eReader2 = new EntitySerializationReader(entitiesFilePath[i * 2 + 1]);
-            List<EntityProfile> profiles2 = eReader2.getEntityProfiles();
-            System.out.println("Input Entity Profiles\t:\t" + profiles2.size());
+        IEntityReader eReader2 = new EntitySerializationReader(entitiesFilePath[i * 2 + 1]);
+        List<EntityProfile> profiles2 = eReader2.getEntityProfiles();
+        System.out.println("Input Entity Profiles\t:\t" + profiles2.size());
 
-            IGroundTruthReader gtReader = new GtSerializationReader(groundTruthFilePath[i]);
-            final AbstractDuplicatePropagation duplicatePropagation = new BilateralDuplicatePropagation(gtReader.getDuplicatePairs(null));
-            System.out.println("Existing Duplicates\t:\t" + duplicatePropagation.getDuplicates().size());
+        IGroundTruthReader gtReader = new GtSerializationReader(groundTruthFilePath[i]);
+        final AbstractDuplicatePropagation duplicatePropagation = new BilateralDuplicatePropagation(gtReader.getDuplicatePairs(null));
+        System.out.println("Existing Duplicates\t:\t" + duplicatePropagation.getDuplicates().size());
 
-            final IBlockBuilding bb = new StandardBlocking();
-            final IBlockProcessing bp1 = new SizeBasedBlockPurging(PURGING_FACTOR[i]);
-            final IBlockProcessing bp2 = new BlockFiltering(FILTERING_RATIO[i]);
-            final IBlockProcessing cc = new CardinalityNodePruning(WEIGHTING_SCHEME[i]);
-            final IEntityMatching em = new ProfileMatcher(REP_MODEL[i], SIM_METRIC[i]);
-            final IEntityClustering ec = new UniqueMappingClustering(SIM_THRESHOLD[i]);
+        final IBlockBuilding bb = new StandardBlocking();
+        final IBlockProcessing bp1 = new SizeBasedBlockPurging(PURGING_FACTOR[i]);
+        final IBlockProcessing bp2 = new BlockFiltering(FILTERING_RATIO[i]);
+        final IBlockProcessing cc = new CardinalityNodePruning(WEIGHTING_SCHEME[i]);
+        final IEntityMatching em = new ProfileMatcher(REP_MODEL[i], SIM_METRIC[i]);
+        final IEntityClustering ec = new UniqueMappingClustering(SIM_THRESHOLD[i]);
 
-            final StringBuilder matchingWorkflowName = new StringBuilder();
-            matchingWorkflowName.append(bb.getMethodName());
-            matchingWorkflowName.append("->").append(bp1.getMethodName());
-            matchingWorkflowName.append("->").append(bp2.getMethodName());
-            matchingWorkflowName.append("->").append(cc.getMethodName());
-            matchingWorkflowName.append("->").append(em.getMethodName());
-            matchingWorkflowName.append("->").append(ec.getMethodName());
+        final StringBuilder matchingWorkflowName = new StringBuilder();
+        matchingWorkflowName.append(bb.getMethodName());
+        matchingWorkflowName.append("->").append(bp1.getMethodName());
+        matchingWorkflowName.append("->").append(bp2.getMethodName());
+        matchingWorkflowName.append("->").append(cc.getMethodName());
+        matchingWorkflowName.append("->").append(em.getMethodName());
+        matchingWorkflowName.append("->").append(ec.getMethodName());
 
-            final StringBuilder matchingWorkflowConf = new StringBuilder();
-            matchingWorkflowConf.append(bb.getMethodConfiguration());
-            matchingWorkflowConf.append("\n").append(bp1.getMethodConfiguration());
-            matchingWorkflowConf.append("\n").append(bp2.getMethodConfiguration());
-            matchingWorkflowConf.append("\n").append(cc.getMethodConfiguration());
-            matchingWorkflowConf.append("\n").append(em.getMethodConfiguration());
-            matchingWorkflowConf.append("\n").append(ec.getMethodConfiguration());
+        final StringBuilder matchingWorkflowConf = new StringBuilder();
+        matchingWorkflowConf.append(bb.getMethodConfiguration());
+        matchingWorkflowConf.append("\n").append(bp1.getMethodConfiguration());
+        matchingWorkflowConf.append("\n").append(bp2.getMethodConfiguration());
+        matchingWorkflowConf.append("\n").append(cc.getMethodConfiguration());
+        matchingWorkflowConf.append("\n").append(em.getMethodConfiguration());
+        matchingWorkflowConf.append("\n").append(ec.getMethodConfiguration());
 
-            double meanRunTime = 0;
-            for (int j = 0; j < NO_OF_ITERATIOS; j++) {
-                double time1 = System.currentTimeMillis();
+        double time1 = System.currentTimeMillis();
 
-                final List<AbstractBlock> blocks = bb.getBlocks(profiles1, profiles2);
-                final List<AbstractBlock> purgedBlocks = bp1.refineBlocks(blocks);
-                final List<AbstractBlock> filteredBlocks = bp2.refineBlocks(purgedBlocks);
-                final List<AbstractBlock> finalBlocks = cc.refineBlocks(filteredBlocks);
-                final SimilarityPairs sims = em.executeComparisons(finalBlocks, profiles1, profiles2);
-                final EquivalenceCluster[] clusters = ec.getDuplicates(sims);
+        final List<AbstractBlock> blocks = bb.getBlocks(profiles1, profiles2);
+        final List<AbstractBlock> purgedBlocks = bp1.refineBlocks(blocks);
+        final List<AbstractBlock> filteredBlocks = bp2.refineBlocks(purgedBlocks);
+        final List<AbstractBlock> finalBlocks = cc.refineBlocks(filteredBlocks);
+        final SimilarityPairs sims = em.executeComparisons(finalBlocks, profiles1, profiles2);
+        final EquivalenceCluster[] clusters = ec.getDuplicates(sims);
 
-                double time2 = System.currentTimeMillis();
+        double time2 = System.currentTimeMillis();
 
-                final ClustersPerformance clp = new ClustersPerformance(clusters, duplicatePropagation);
-                clp.setStatistics();
-                clp.printStatistics(time2 - time1, matchingWorkflowName.toString(), matchingWorkflowConf.toString());
-                
-                meanRunTime += time2-time1;
-            }
-            System.out.println("Mean Run Time\t:\t" + meanRunTime / NO_OF_ITERATIOS);
-        }
+        final ClustersPerformance clp = new ClustersPerformance(clusters, duplicatePropagation);
+        clp.setStatistics();
+        clp.printStatistics(time2 - time1, matchingWorkflowName.toString(), matchingWorkflowConf.toString());
+
+        System.out.println("Run-time\t:\t" + (time2 - time1));
     }
 }

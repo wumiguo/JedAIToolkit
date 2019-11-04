@@ -31,10 +31,8 @@ import org.scify.jedai.datamodel.SimilarityPairs;
 import org.scify.jedai.datareader.entityreader.EntitySerializationReader;
 import org.scify.jedai.datareader.groundtruthreader.GtSerializationReader;
 import org.scify.jedai.datareader.groundtruthreader.IGroundTruthReader;
-import org.scify.jedai.entityclustering.CenterClustering;
 import org.scify.jedai.entityclustering.ConnectedComponentsClustering;
 import org.scify.jedai.entityclustering.IEntityClustering;
-import org.scify.jedai.entityclustering.MergeCenterClustering;
 import org.scify.jedai.entitymatching.IEntityMatching;
 import org.scify.jedai.entitymatching.ProfileMatcher;
 import org.scify.jedai.utilities.ClustersPerformance;
@@ -45,15 +43,15 @@ import org.scify.jedai.utilities.datastructures.UnilateralDuplicatePropagation;
  *
  * @author GAP2
  */
-public class ConfigureRandomlyEndToEndWorkflowDirtyER {
+public class HolisticRandomConfigurationDER {
 
     private final static int NO_OF_TRIALS = 100;
 
     public static void main(String[] args) throws Exception {
         BasicConfigurator.configure();
-
+        
         String mainDir = "data" + File.separator + "dirtyErDatasets" + File.separator;
-        final String[] datasets = {/*"census",*/ "cddb", "cora"};
+        final String[] datasets = {"census", "cddb", "cora"};
 
         for (String dataset : datasets) {
             System.out.println("\n\nCurrent dataset\t:\t" + dataset);
@@ -71,9 +69,7 @@ public class ConfigureRandomlyEndToEndWorkflowDirtyER {
             final IBlockProcessing bp2 = new BlockFiltering();
             final IBlockProcessing cc = new CardinalityNodePruning();
             final IEntityMatching em = new ProfileMatcher();
-//            final IEntityClustering ec = new CenterClustering();
-//            final IEntityClustering ec = new ConnectedComponentsClustering();
-            final IEntityClustering ec = new MergeCenterClustering();
+            final IEntityClustering ec = new ConnectedComponentsClustering();
 
             final StringBuilder matchingWorkflowName = new StringBuilder();
             matchingWorkflowName.append(bb.getMethodName());
@@ -85,7 +81,7 @@ public class ConfigureRandomlyEndToEndWorkflowDirtyER {
 
             int bestIteration = 0;
             double bestFMeasure = 0;
-            for (int i = 0; i < NO_OF_TRIALS; i++) {
+            for (int j = 0; j < NO_OF_TRIALS; j++) {
                 double time1 = System.currentTimeMillis();
 
                 bb.setNextRandomConfiguration();
@@ -131,7 +127,7 @@ public class ConfigureRandomlyEndToEndWorkflowDirtyER {
 
                 double fMeasure = clp.getFMeasure();
                 if (bestFMeasure < fMeasure) {
-                    bestIteration = i;
+                    bestIteration = j;
                     bestFMeasure = fMeasure;
                 }
             }
