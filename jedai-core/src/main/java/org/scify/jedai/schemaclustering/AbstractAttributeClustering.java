@@ -49,7 +49,7 @@ public abstract class AbstractAttributeClustering implements ISchemaClustering {
     protected int attributesDelimiter;
     protected int noOfAttributes;
 
-    protected int[] globalMostSimilarIds;
+    protected double a; // minimum portion of max similarity for connecting two attributes
     protected double[] globalMaxSimilarities;
 
     protected final IntGridSearchConfiguration gridCombo;
@@ -61,7 +61,8 @@ public abstract class AbstractAttributeClustering implements ISchemaClustering {
     protected SimilarityMetric simMetric;
     protected TObjectIntMap<String> attrNameIndex;
 
-    public AbstractAttributeClustering(RepresentationModel model, SimilarityMetric metric) {
+    public AbstractAttributeClustering(double a, RepresentationModel model, SimilarityMetric metric) {
+        this.a = a;
         repModel = model;
         simMetric = metric;
         attributeModels = new ITextModel[2][];
@@ -117,9 +118,25 @@ public abstract class AbstractAttributeClustering implements ISchemaClustering {
 
     protected TObjectIntMap<String>[] clusterAttributes() {
         final UndirectedGraph similarityGraph = new UndirectedGraph(noOfAttributes);
-        for (int i = 0; i < noOfAttributes; i++) {
-            if (0 < globalMaxSimilarities[i]) {
-                similarityGraph.addEdge(i, globalMostSimilarIds[i]);
+
+        final TIntSet coOccurringAttrs = new TIntHashSet();
+        int lastId = 0 < attributesDelimiter ? attributesDelimiter : noOfAttributes;
+        for (int i = 0; i < lastId; i++) {
+            coOccurringAttrs.clear();
+
+            final Set<String> signatures = attributeModels[DATASET_1][i].getSignatures();
+            for (String signature : signatures) {
+                final TIntList attrIds = invertedIndex.get(signature);
+                if (attrIds == null) {
+                    continue;
+                }
+                coOccurringAttrs.addAll(attrIds);
+            }
+
+            if (0 < attributesDelimiter) { // Clean-Clean ER
+                connectCleanCleanErComparisons(i, coOccurringAttrs, similarityGraph);
+            } else { // Dirty ER
+                connectDirtyErComparisons(i, coOccurringAttrs, similarityGraph);
             }
         }
 
@@ -168,7 +185,6 @@ public abstract class AbstractAttributeClustering implements ISchemaClustering {
     }
 
     protected void compareAttributes() {
-        globalMostSimilarIds = new int[noOfAttributes];
         globalMaxSimilarities = new double[noOfAttributes];
         final TIntSet coOccurringAttrs = new TIntHashSet();
         int lastId = 0 < attributesDelimiter ? attributesDelimiter : noOfAttributes;
@@ -192,32 +208,52 @@ public abstract class AbstractAttributeClustering implements ISchemaClustering {
         }
     }
 
+    private void connectCleanCleanErComparisons(int attributeId, TIntSet coOccurringAttrs, UndirectedGraph similarityGraph) {
+        for (TIntIterator sigIterator = coOccurringAttrs.iterator(); sigIterator.hasNext();) {
+            int neighborId = sigIterator.next();
+
+            int normalizedNeighborId = neighborId + attributesDelimiter;
+            double similarity = attributeModels[DATASET_1][attributeId].getSimilarity(attributeModels[DATASET_2][neighborId]);
+            if (a * globalMaxSimilarities[attributeId] < similarity
+                    || a * globalMaxSimilarities[normalizedNeighborId] < similarity) {
+                similarityGraph.addEdge(attributeId, normalizedNeighborId);
+            }
+        }
+    }
+
+    private void connectDirtyErComparisons(int attributeId, TIntSet coOccurringAttrs, UndirectedGraph similarityGraph) {
+        for (TIntIterator sigIterator = coOccurringAttrs.iterator(); sigIterator.hasNext();) {
+            int neighborId = sigIterator.next();
+            if (neighborId <= attributeId) { // avoid repeated comparisons & comparison with attributeId
+                continue;
+            }
+
+            double similarity = attributeModels[DATASET_1][attributeId].getSimilarity(attributeModels[DATASET_1][neighborId]);
+            if (a * globalMaxSimilarities[attributeId] < similarity
+                    || a * globalMaxSimilarities[neighborId] < similarity) {
+                similarityGraph.addEdge(attributeId, neighborId);
+            }
+        }
+    }
+
     private void executeCleanCleanErComparisons(int attributeId, TIntSet coOccurringAttrs) {
-        final TIntIterator sigIterator = coOccurringAttrs.iterator();
-        while (sigIterator.hasNext()) {
+        for (TIntIterator sigIterator = coOccurringAttrs.iterator(); sigIterator.hasNext();) {
             int neighborId = sigIterator.next();
 
             int normalizedNeighborId = neighborId + attributesDelimiter;
             double similarity = attributeModels[DATASET_1][attributeId].getSimilarity(attributeModels[DATASET_2][neighborId]);
             if (globalMaxSimilarities[attributeId] < similarity) {
                 globalMaxSimilarities[attributeId] = similarity;
-                globalMostSimilarIds[attributeId] = normalizedNeighborId;
-            } else if (globalMaxSimilarities[attributeId] == similarity) {
-                globalMostSimilarIds[attributeId] = (int) Math.min(normalizedNeighborId, globalMostSimilarIds[attributeId]);
             }
 
             if (globalMaxSimilarities[normalizedNeighborId] < similarity) {
                 globalMaxSimilarities[normalizedNeighborId] = similarity;
-                globalMostSimilarIds[normalizedNeighborId] = attributeId;
-            } else if (globalMaxSimilarities[normalizedNeighborId] == attributeId) {
-                globalMostSimilarIds[normalizedNeighborId] = (int) Math.min(attributeId, globalMostSimilarIds[normalizedNeighborId]);
             }
         }
     }
 
     private void executeDirtyErComparisons(int attributeId, TIntSet coOccurringAttrs) {
-        final TIntIterator sigIterator = coOccurringAttrs.iterator();
-        while (sigIterator.hasNext()) {
+        for (TIntIterator sigIterator = coOccurringAttrs.iterator(); sigIterator.hasNext();) {
             int neighborId = sigIterator.next();
             if (neighborId <= attributeId) { // avoid repeated comparisons & comparison with attributeId
                 continue;
@@ -226,16 +262,10 @@ public abstract class AbstractAttributeClustering implements ISchemaClustering {
             double similarity = attributeModels[DATASET_1][attributeId].getSimilarity(attributeModels[DATASET_1][neighborId]);
             if (globalMaxSimilarities[attributeId] < similarity) {
                 globalMaxSimilarities[attributeId] = similarity;
-                globalMostSimilarIds[attributeId] = neighborId;
-            } else if (globalMaxSimilarities[attributeId] == similarity) {
-                globalMostSimilarIds[attributeId] = (int) Math.min(neighborId, globalMostSimilarIds[attributeId]);
             }
 
             if (globalMaxSimilarities[neighborId] < similarity) {
                 globalMaxSimilarities[neighborId] = similarity;
-                globalMostSimilarIds[neighborId] = attributeId;
-            } else if (globalMaxSimilarities[neighborId] == attributeId) {
-                globalMostSimilarIds[neighborId] = (int) Math.min(attributeId, globalMostSimilarIds[neighborId]);
             }
         }
     }
@@ -263,7 +293,6 @@ public abstract class AbstractAttributeClustering implements ISchemaClustering {
 
         return clusterAttributes();
     }
-    
 
     @Override
     public String getMethodConfiguration() {
@@ -332,7 +361,7 @@ public abstract class AbstractAttributeClustering implements ISchemaClustering {
                 return "invalid parameter id";
         }
     }
-    
+
     @Override
     public void setNextRandomConfiguration() {
         int comboId = (Integer) randomCombo.getNextRandomValue();

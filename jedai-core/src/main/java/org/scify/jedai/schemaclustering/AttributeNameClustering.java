@@ -26,9 +26,13 @@ import org.scify.jedai.utilities.enumerations.SimilarityMetric;
 public class AttributeNameClustering extends AbstractAttributeClustering {
 
     public AttributeNameClustering(RepresentationModel model, SimilarityMetric metric) {
-        super(model, metric);
+        this(0, model, metric);
     }
 
+    public AttributeNameClustering(double a, RepresentationModel model, SimilarityMetric metric) {
+        super(a, model, metric);
+    }
+    
     @Override
     protected void updateModel(int datasetId, Attribute attribute) {
         int attributeId = attrNameIndex.get(attribute.getName()) - 1;

@@ -27,7 +27,11 @@ import org.scify.jedai.utilities.enumerations.SimilarityMetric;
 public class AttributeValueClustering extends AbstractAttributeClustering {
 
     public AttributeValueClustering(RepresentationModel model, SimilarityMetric metric) {
-        super(model, metric);
+        this(0, model, metric);
+    }
+    
+    public AttributeValueClustering(double a, RepresentationModel model, SimilarityMetric metric) {
+        super(a, model, metric);
     }
     
     @Override

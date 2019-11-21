@@ -26,7 +26,11 @@ import org.scify.jedai.utilities.enumerations.SimilarityMetric;
 public class HolisticAttributeClustering extends AbstractAttributeClustering {
 
     public HolisticAttributeClustering(RepresentationModel model, SimilarityMetric metric) {
-        super(model, metric);
+        this(0, model, metric);
+    }
+    
+    public HolisticAttributeClustering(double a, RepresentationModel model, SimilarityMetric metric) {
+        super(a, model, metric);
     }
 
     @Override
