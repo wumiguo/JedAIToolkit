@@ -128,7 +128,7 @@ The following domain-independent methods are currently supported for Dirty ER:
 5) Merge-Center Clustering
 6) Ricochet SR Clustering
 
-For more details on the functionality of these methods, see [here](http://www.vldb.org/pvldb/2/vldb09-1025.pdf). 
+For more details on the functionality of these methods, see [here](http://dblab.cs.toronto.edu/~fchiang/docs/vldb09.pdf). 
 
 For Clean-Clean ER, only one method is supported:
 1) Unique Mapping Clustering
