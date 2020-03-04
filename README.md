@@ -135,6 +135,10 @@ For Clean-Clean ER, only one method is supported:
 
 For more details on its functionality, see [here](https://arxiv.org/pdf/1207.4525.pdf).
 
+## How to add JedAI as a dependency to your project
+
+Visit https://search.maven.org/artifact/org.scify/jedai-core
+
 ## How to run
 Make sure you have installed git on your OS. From the CLI navigate into project's directory, then build it with:
 ```
