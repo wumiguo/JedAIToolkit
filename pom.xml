@@ -27,9 +27,9 @@
     </developers>
 
     <scm>
-	<connection>scm:git:git://git@bitbucket.scify.org:60010/jd/jedai-core.git</connection>
-	<developerConnection>scm:git:ssh://git@bitbucket.scify.org:60010/jd/jedai-core.git</developerConnection>
-	<url>http://bitbucket.scify.org/projects/JD/repos/jedai-core/browse</url>
+	<connection>scm:git:git://git@github.com/scify/JedAIToolkit.git</connection>
+	<developerConnection>scm:git:ssh://git@github.com/scify/JedAIToolkit.git</developerConnection>
+	<url>https://github.com/scify/JedAIToolkit</url>
     </scm>
 
     <distributionManagement>
