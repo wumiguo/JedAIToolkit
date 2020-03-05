@@ -51,7 +51,7 @@ import org.scify.jedai.utilities.enumerations.EntityMatchingMethod;
  *
  * @author GAP2
  */
-public class TerminalUI {
+public class Main {
 
     private final static String MAIN_DIR_CCER_DATASETS = System.getProperty("user.dir") + File.separator + "data" + File.separator + "cleanCleanErDatasets" + File.separator;
     private final static String MAIN_DIR_DER_DATASETS = System.getProperty("user.dir") + File.separator + "data" + File.separator + "dirtyErDatasets" + File.separator;
