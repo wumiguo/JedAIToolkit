@@ -1,2 +1,2 @@
-jedai-ui/
-jedai-core/target/
+target/
+.settings/
