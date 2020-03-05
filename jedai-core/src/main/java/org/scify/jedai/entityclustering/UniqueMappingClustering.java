@@ -1,5 +1,5 @@
 /*
-* Copyright [2016-2018] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2020] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  */
 package org.scify.jedai.entityclustering;
 
+import com.esotericsoftware.minlog.Log;
 import org.scify.jedai.datamodel.Comparison;
 import org.scify.jedai.datamodel.EquivalenceCluster;
 import org.scify.jedai.datamodel.SimilarityEdge;
@@ -48,11 +49,12 @@ public class UniqueMappingClustering extends AbstractEntityClustering {
 
     @Override
     public EquivalenceCluster[] getDuplicates(SimilarityPairs simPairs) {
+        Log.info("Input comparisons\t:\t" + simPairs.getNoOfComparisons());
+        
         if (simPairs.getNoOfComparisons() == 0) {
             return new EquivalenceCluster[0];
         }
 
-        matchedIds.clear();
         initializeData(simPairs);
         if (!isCleanCleanER) {
             return null; //the method is only applicable to Clean-Clean ER
@@ -67,6 +69,8 @@ public class UniqueMappingClustering extends AbstractEntityClustering {
                 SEqueue.add(new SimilarityEdge(comparison.getEntityId1(), comparison.getEntityId2() + datasetLimit, comparison.getUtilityMeasure()));
             }
         }
+
+        Log.info("Retained comparisons\t:\t" + SEqueue.size());
 
         while (!SEqueue.isEmpty()) {
             final SimilarityEdge se = SEqueue.remove();
@@ -107,7 +111,7 @@ public class UniqueMappingClustering extends AbstractEntityClustering {
         matchedIds.clear();
         super.setNumberedGridConfiguration(iterationNumber);
     }
-    
+
     @Override
     public void setNumberedRandomConfiguration(int iterationNumber) {
         matchedIds.clear();

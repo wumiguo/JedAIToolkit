@@ -1,5 +1,5 @@
 /*
-* Copyright [2016-2018] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2020] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -60,8 +60,25 @@ public abstract class BagModel extends AbstractModel {
         double denominator = noOfTotalTerms + oModel.getNoOfTotalTerms() - numerator;
         return numerator / denominator;
     }
+    
+    @Override
+    public double getEntropy(boolean normalized) {
+        double entropy = 0.0;
+        for (TObjectIntIterator<String> iterator = itemsFrequency.iterator(); iterator.hasNext();) {
+            iterator.advance();
+            double p_i = (iterator.value() / noOfTotalTerms);
+            entropy -= (p_i * (Math.log10(p_i) / Math.log10(2.0d)));
+        }
+        
+        if (normalized) {
+            double maxEntropy = Math.log10(noOfTotalTerms) / Math.log10(2.0d);;
+            return entropy / maxEntropy;
+        } 
+            
+        return entropy;
+    }
 
-    protected TObjectIntMap<String> getItemsFrequency() {
+    public TObjectIntMap<String> getItemsFrequency() {
         return itemsFrequency;
     }
 
@@ -146,7 +163,7 @@ public abstract class BagModel extends AbstractModel {
         for (String key : allKeys) {
             denominator += Math.max(itemVector1.get(key) / totalTerms1, itemVector2.get(key) / totalTerms2);
         }
-
+        
         return numerator / denominator;
     }
 

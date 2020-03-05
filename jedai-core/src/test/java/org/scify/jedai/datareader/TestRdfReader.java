@@ -1,5 +1,5 @@
 /*
-* Copyright [2016-2018] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2020] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ import java.util.List;
 
 public class TestRdfReader {
     public static void main(String[] args) {
-        String filePath = "C:\\Users\\Manos\\Documents\\UOA\\JedaiGitHub\\JedAIToolkit\\data/oaei2014_identity_b.owl";
+        String filePath = "/home/ethanos/Downloads/JEDAIfiles/im-identity/oaei2014_identity_b.owl";
         EntityRDFReader n3reader = new EntityRDFReader(filePath);
         n3reader.setAttributesToExclude(new String[]{"http://www.w3.org/2000/01/rdf-schema#label", "http://www.w3.org/2000/01/rdf-schema#label"});
         List<EntityProfile> profiles = n3reader.getEntityProfiles();

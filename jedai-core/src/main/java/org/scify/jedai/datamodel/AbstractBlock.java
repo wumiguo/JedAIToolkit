@@ -1,5 +1,5 @@
 /*
-* Copyright [2016-2018] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2020] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -29,12 +29,15 @@ public abstract class AbstractBlock implements Serializable {
     
     private static final long serialVersionUID = 7526443743449L;
     
-    protected double comparisons;
     protected int blockIndex;
+    
+    protected double comparisons;
+    protected double entropy;
     protected double utilityMeasure;
             
-    public AbstractBlock() {
+    public AbstractBlock(double en) {
         blockIndex = -1;
+        entropy = 1.0;
         utilityMeasure = -1;
     }
     
@@ -44,6 +47,10 @@ public abstract class AbstractBlock implements Serializable {
     
     public ComparisonIterator getComparisonIterator() {
         return new ComparisonIterator(this);
+    }
+    
+    public double getEntropy() {
+        return entropy;
     }
 
     public double getNoOfComparisons() {

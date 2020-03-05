@@ -1,5 +1,5 @@
 /*
-* Copyright [2016-2018] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2020] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -36,7 +36,7 @@ public enum BlockCleaningMethod {
             case BLOCK_FILTERING:
                 return new BlockFiltering();
             case COMPARISON_BASED_BLOCK_PURGING:
-                return new ComparisonsBasedBlockPurging();
+                return new ComparisonsBasedBlockPurging(false);
             case SIZE_BASED_BLOCK_PURGING:
                 return new SizeBasedBlockPurging();
             default:

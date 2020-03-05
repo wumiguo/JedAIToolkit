@@ -1,5 +1,5 @@
 /*
- * Copyright [2016-2018] [George Papadakis (gpapadis@yahoo.gr)]
+ * Copyright [2016-2020] [George Papadakis (gpapadis@yahoo.gr)]
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,8 +18,7 @@ package org.scify.jedai.datareader.entityreader;
 import org.scify.jedai.datamodel.EntityProfile;
 
 import com.esotericsoftware.minlog.Log;
-
-import com.opencsv.CSVReader;
+import java.io.BufferedReader;
 
 import java.io.FileReader;
 import java.io.IOException;
@@ -36,10 +35,10 @@ import org.apache.jena.atlas.json.JsonObject;
  * @author G.A.P. II
  */
 public class EntityCSVReader extends AbstractEntityReader {
-
+    
     private boolean attributeNamesInFirstRow;
-    private char separator;
     private int idIndex;
+    private String separator;
     private String[] attributeNames;
     private final Set<Integer> attributesToExclude;
 
@@ -48,7 +47,7 @@ public class EntityCSVReader extends AbstractEntityReader {
         attributeNamesInFirstRow = false;
         attributeNames = null;
         idIndex = -1;
-        separator = ',';
+        separator = ",";
         attributesToExclude = new HashSet<>();
     }
 
@@ -65,10 +64,16 @@ public class EntityCSVReader extends AbstractEntityReader {
 
         try {
             //creating reader
-            final CSVReader reader = new CSVReader(new FileReader(inputFilePath), separator);
+            final BufferedReader br = new BufferedReader(new FileReader(inputFilePath));
 
             //getting first line
-            final String[] firstLine = reader.readNext();
+            String line = br.readLine();
+            if (line == null) {
+                Log.error("Empty file given as input.");
+                return null;
+            }
+            
+            final String[] firstLine = line.split(separator);
             int noOfAttributes = firstLine.length;
             if (noOfAttributes - 1 < idIndex) {
                 Log.error("Id index does not correspond to a valid column index! Counting starts from 0.");
@@ -91,17 +96,22 @@ public class EntityCSVReader extends AbstractEntityReader {
 
             //read entity profiles
             String[] nextLine;
-            while ((nextLine = reader.readNext()) != null) {
+            while ((line = br.readLine()) != null) {
                 entityCounter++;
 
+                nextLine = line.split(separator);
                 if (nextLine.length < attributeNames.length - 1) {
-                    Log.warn("Line with missing attribute names : " + Arrays.toString(nextLine));
+                    Log.warn("Line with missing attribute names : " + line);
+                    continue;
+                }
+                if (attributeNames.length < nextLine.length ) {
+                    Log.warn("Line with missing more attributes : " + line);
                     continue;
                 }
 
                 readEntity(entityCounter, nextLine);
             }
-
+            
             return entityProfiles;
         } catch (IOException ex) {
             Log.error("Error in entities reading!", ex);
@@ -248,13 +258,12 @@ public class EntityCSVReader extends AbstractEntityReader {
         }
 
         final EntityProfile newProfile = new EntityProfile(entityId);
-        for (int i = 0; i < currentLine.length; i++) {
+        for (int i = 0; i < attributeNames.length; i++) {
             if (attributesToExclude.contains(i)) {
                 continue;
             }
-            if (!currentLine[i].isEmpty()) {
+            if (!currentLine[i].trim().isEmpty()) {
                 newProfile.addAttribute(attributeNames[i], currentLine[i]);
-
             }
         }
         entityProfiles.add(newProfile);
@@ -275,7 +284,7 @@ public class EntityCSVReader extends AbstractEntityReader {
         attributesToExclude.add(idIndex);
     }
 
-    public void setSeparator(char separator) {
+    public void setSeparator(String separator) {
         this.separator = separator;
     }
 }

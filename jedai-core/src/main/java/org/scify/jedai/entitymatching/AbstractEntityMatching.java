@@ -1,5 +1,5 @@
 /*
-* Copyright [2016-2018] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2020] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -15,9 +15,7 @@
  */
 package org.scify.jedai.entitymatching;
 
-import org.scify.jedai.datamodel.AbstractBlock;
 import org.scify.jedai.datamodel.EntityProfile;
-import org.scify.jedai.datamodel.SimilarityPairs;
 import org.scify.jedai.utilities.enumerations.RepresentationModel;
 import org.scify.jedai.utilities.enumerations.SimilarityMetric;
 
@@ -36,23 +34,24 @@ public abstract class AbstractEntityMatching implements IEntityMatching {
 
     protected final IntGridSearchConfiguration gridCombo;
     protected final IntRandomSearchConfiguration randomCombo;
+    protected final List<EntityProfile> profilesD1;
+    protected final List<EntityProfile> profilesD2;
     protected final List<RepModelSimMetricCombo> modelMetricCombinations;
     protected RepresentationModel representationModel;
     protected SimilarityMetric simMetric;
 
-    public AbstractEntityMatching(RepresentationModel model, SimilarityMetric sMetric) {
+    public AbstractEntityMatching(List<EntityProfile> profilesD1, List<EntityProfile> profilesD2, RepresentationModel model, SimilarityMetric sMetric) {
         representationModel = model;
         simMetric = sMetric;
 
+        this.profilesD1 = profilesD1;
+        this.profilesD2 = profilesD2;
         modelMetricCombinations = RepModelSimMetricCombo.getAllValidCombos();
-        gridCombo = new IntGridSearchConfiguration(modelMetricCombinations.size() - 1, 0, 1);
+        gridCombo = new IntGridSearchConfiguration(modelMetricCombinations.size()-1, 0, 1);
         randomCombo = new IntRandomSearchConfiguration(modelMetricCombinations.size(), 0);
     }
-
-    @Override
-    public SimilarityPairs executeComparisons(List<AbstractBlock> blocks, List<EntityProfile> profiles) {
-        return this.executeComparisons(blocks, profiles, null);
-    }
+    
+    protected abstract void buildModels();
 
     @Override
     public int getNumberOfGridConfigurations() {
@@ -65,6 +64,7 @@ public abstract class AbstractEntityMatching implements IEntityMatching {
         final RepModelSimMetricCombo selectedCombo = modelMetricCombinations.get(comboId);
         representationModel = selectedCombo.getRepModel();
         simMetric = selectedCombo.getSimMetric();
+        buildModels();
     }
 
     @Override
@@ -73,6 +73,7 @@ public abstract class AbstractEntityMatching implements IEntityMatching {
         final RepModelSimMetricCombo selectedCombo = modelMetricCombinations.get(comboId);
         representationModel = selectedCombo.getRepModel();
         simMetric = selectedCombo.getSimMetric();
+        buildModels();
     }
 
     @Override
@@ -81,5 +82,6 @@ public abstract class AbstractEntityMatching implements IEntityMatching {
         final RepModelSimMetricCombo selectedCombo = modelMetricCombinations.get(comboId);
         representationModel = selectedCombo.getRepModel();
         simMetric = selectedCombo.getSimMetric();
+        buildModels();
     }
 }

@@ -1,5 +1,5 @@
 /*
-* Copyright [2016-2018] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2020] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -31,12 +31,13 @@ import java.util.List;
 import org.apache.commons.math3.stat.inference.ChiSquareTest;
 import org.apache.jena.atlas.json.JsonArray;
 import org.apache.jena.atlas.json.JsonObject;
+import org.scify.jedai.utilities.IConstants;
 
 /**
  *
  * @author G.A.P. II
  */
-public abstract class AbstractMetablocking extends AbstractComparisonCleaning {
+public abstract class AbstractMetablocking extends AbstractComparisonCleaning implements IConstants {
 
     protected boolean nodeCentric;
 
@@ -48,15 +49,21 @@ public abstract class AbstractMetablocking extends AbstractComparisonCleaning {
     protected double[] comparisonsPerEntity;
     protected double[] counters;
 
+    protected ChiSquareTest chiSquaredTest;
     protected final TIntList neighbors;
     protected final TIntList retainedNeighbors;
+    protected final TIntList retainedNeighborsWeights;
     protected WeightingScheme weightingScheme;
-
+    
     public AbstractMetablocking(WeightingScheme wScheme) {
         super();
         neighbors = new TIntArrayList();
         retainedNeighbors = new TIntArrayList();
+        retainedNeighborsWeights = new TIntArrayList();
         weightingScheme = wScheme;
+        if (weightingScheme.equals(WeightingScheme.PEARSON_X2)) {
+            chiSquaredTest = new ChiSquareTest();
+        }
     }
 
     protected abstract List<AbstractBlock> pruneEdges();
@@ -86,6 +93,10 @@ public abstract class AbstractMetablocking extends AbstractComparisonCleaning {
         return pruneEdges();
     }
 
+    protected int discretizeComparisonWeight(double weight) {
+        return (int) (weight * DISCRETIZATION_FACTOR);
+    }
+    
     protected Comparison getComparison(int entityId, int neighborId) {
         if (!cleanCleanER) {
             if (entityId < neighborId) {
@@ -177,8 +188,7 @@ public abstract class AbstractMetablocking extends AbstractComparisonCleaning {
                 v_[0] = entityIndex.getNoOfEntityBlocks(neighborId, 0) - v[0];
                 v_[1] = (int) (noOfBlocks - (v[0] + v[1] + v_[0]));
 
-                ChiSquareTest chi_squared_test = new ChiSquareTest();
-                return chi_squared_test.chiSquare(new long[][]{v, v_});
+                return chiSquaredTest.chiSquare(new long[][]{v, v_});
         }
         return -1;
     }

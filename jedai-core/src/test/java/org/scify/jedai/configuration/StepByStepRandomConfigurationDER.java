@@ -1,5 +1,5 @@
 /*
-* Copyright [2016-2018] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2020] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -76,7 +76,7 @@ public class StepByStepRandomConfigurationDER {
             final IBlockProcessing bp1 = new SizeBasedBlockPurging();
             final IBlockProcessing bp2 = new BlockFiltering();
             final IBlockProcessing cc = new CardinalityNodePruning();
-            final IEntityMatching em = new ProfileMatcher();
+            final IEntityMatching em = new ProfileMatcher(profiles);
             final IEntityClustering ec = new CenterClustering();
 //            final IEntityClustering ec = new MergeCenterClustering();
 //            final IEntityClustering ec = new ConnectedComponentsClustering();
@@ -214,7 +214,7 @@ public class StepByStepRandomConfigurationDER {
             double bestFMeasure = 0;
             for (int j = 0; j < NO_OF_TRIALS; j++) {
                 em.setNextRandomConfiguration();
-                final SimilarityPairs sims = em.executeComparisons(finalBlocks, profiles);
+                final SimilarityPairs sims = em.executeComparisons(finalBlocks);
 
                 ec.setNextRandomConfiguration();
                 final EquivalenceCluster[] clusters = ec.getDuplicates(sims);
@@ -233,7 +233,7 @@ public class StepByStepRandomConfigurationDER {
             double time1 = System.currentTimeMillis();
 
             em.setNumberedRandomConfiguration(bestIteration);
-            final SimilarityPairs sims = em.executeComparisons(finalBlocks, profiles);
+            final SimilarityPairs sims = em.executeComparisons(finalBlocks);
 
             ec.setNumberedRandomConfiguration(bestIteration);
             final EquivalenceCluster[] clusters = ec.getDuplicates(sims);

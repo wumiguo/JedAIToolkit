@@ -1,5 +1,5 @@
 /*
- * Copyright [2016-2018] [George Papadakis (gpapadis@yahoo.gr)]
+ * Copyright [2016-2020] [George Papadakis (gpapadis@yahoo.gr)]
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,6 +34,7 @@ import org.scify.jedai.datamodel.Attribute;
 import org.scify.jedai.datamodel.EntityProfile;
 import org.scify.jedai.datamodel.RepModelSimMetricCombo;
 import org.scify.jedai.configuration.randomsearch.IntRandomSearchConfiguration;
+import org.scify.jedai.datamodel.AttributeClusters;
 import org.scify.jedai.textmodels.ITextModel;
 import org.scify.jedai.utilities.enumerations.RepresentationModel;
 import org.scify.jedai.utilities.enumerations.SimilarityMetric;
@@ -45,7 +46,7 @@ import org.scify.jedai.utilities.graph.UndirectedGraph;
  * @author G.A.P. II
  */
 public abstract class AbstractAttributeClustering implements ISchemaClustering {
-
+    
     protected int attributesDelimiter;
     protected int noOfAttributes;
 
@@ -116,7 +117,7 @@ public abstract class AbstractAttributeClustering implements ISchemaClustering {
         }
     }
 
-    protected TObjectIntMap<String>[] clusterAttributes() {
+    protected AttributeClusters[] clusterAttributes() {
         final UndirectedGraph similarityGraph = new UndirectedGraph(noOfAttributes);
 
         final TIntSet coOccurringAttrs = new TIntHashSet();
@@ -140,48 +141,44 @@ public abstract class AbstractAttributeClustering implements ISchemaClustering {
             }
         }
 
+        AttributeClusters[] aClusters = null;
         final ConnectedComponents cc = new ConnectedComponents(similarityGraph);
         if (attributesDelimiter < 0) { // Dirty ER
-            return clusterDirtyAttributes(cc);
+            aClusters = new AttributeClusters[1];
+            aClusters[0] = clusterAttributes(DATASET_1, cc);
+        } else { // Clean-Clean ER
+            aClusters = new AttributeClusters[2];
+            aClusters[0] = clusterAttributes(DATASET_1, cc);
+            aClusters[1] = clusterAttributes(DATASET_2, cc);
         }
 
-        return clusterCleanCleanAttributes(cc); // Clean-Clean ER
+        return aClusters; 
     }
 
-    protected TObjectIntMap<String>[] clusterCleanCleanAttributes(ConnectedComponents cc) {
-        int glueClusterId = cc.count() + 1;
-        final TObjectIntMap<String>[] clusters = new TObjectIntHashMap[2];
-        clusters[DATASET_1] = new TObjectIntHashMap<>();
-        for (int i = 0; i < attributesDelimiter; i++) {
-            int ccId = cc.id(i);
-            if (cc.size(i) == 1) { // singleton attribute
-                ccId = glueClusterId;
-            }
-            clusters[DATASET_1].put(attributeModels[DATASET_1][i].getInstanceName(), ccId);
-        }
-        clusters[DATASET_2] = new TObjectIntHashMap<>();
-        for (int i = attributesDelimiter; i < noOfAttributes; i++) {
-            int ccId = cc.id(i);
-            if (cc.size(i) == 1) { // singleton attribute
-                ccId = glueClusterId;
-            }
-            clusters[DATASET_2].put(attributeModels[DATASET_2][i - attributesDelimiter].getInstanceName(), ccId);
-        }
-        return clusters;
-    }
+    protected AttributeClusters clusterAttributes(int datasetId, ConnectedComponents cc) {
+        int firstId = datasetId == DATASET_1 ? 0 : attributesDelimiter;
+        int lastId = 0 < attributesDelimiter && datasetId == DATASET_1 ? attributesDelimiter : noOfAttributes;
 
-    protected TObjectIntMap<String>[] clusterDirtyAttributes(ConnectedComponents cc) {
         int glueClusterId = cc.count() + 1;
-        final TObjectIntMap<String>[] clusters = new TObjectIntHashMap[1];
-        clusters[DATASET_1] = new TObjectIntHashMap<>();
-        for (int i = 0; i < noOfAttributes; i++) {
+        int[] clusterFrequency = new int[glueClusterId + 1];
+        double[] clusterEntropy = new double[glueClusterId + 1];
+        final TObjectIntMap<String> clusters = new TObjectIntHashMap<>();
+        for (int i = firstId; i < lastId; i++) {
             int ccId = cc.id(i);
             if (cc.size(i) == 1) { // singleton attribute
                 ccId = glueClusterId;
             }
-            clusters[DATASET_1].put(attributeModels[DATASET_1][i].getInstanceName(), ccId);
+            
+            clusterFrequency[ccId]++;
+            clusterEntropy[ccId] += attributeModels[datasetId][i].getEntropy(true);
+            clusters.put(attributeModels[datasetId][i].getInstanceName(), ccId);
         }
-        return clusters;
+        
+        for (int i = 0; i < glueClusterId + 1; i++) {
+            clusterEntropy[i] /= clusterFrequency[i];
+        }
+        
+        return new AttributeClusters(clusterEntropy, clusters);
     }
 
     protected void compareAttributes() {
@@ -271,12 +268,12 @@ public abstract class AbstractAttributeClustering implements ISchemaClustering {
     }
 
     @Override
-    public TObjectIntMap<String>[] getClusters(List<EntityProfile> profiles) {
+    public AttributeClusters[] getClusters(List<EntityProfile> profiles) {
         return this.getClusters(profiles, null);
     }
 
     @Override
-    public TObjectIntMap<String>[] getClusters(List<EntityProfile> profilesD1, List<EntityProfile> profilesD2) {
+    public AttributeClusters[] getClusters(List<EntityProfile> profilesD1, List<EntityProfile> profilesD2) {
         buildAttributeModels(DATASET_1, profilesD1);
         attributesDelimiter = -1;
         noOfAttributes = attrNameIndex.size();

@@ -1,5 +1,5 @@
 /*
-* Copyright [2016-2018] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2020] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -12,36 +12,35 @@
 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 * See the License for the specific language governing permissions and
 * limitations under the License.
-*/
-
+ */
 package org.scify.jedai.datamodel;
 
 import com.esotericsoftware.minlog.Log;
 
 import java.util.Iterator;
+import org.scify.jedai.utilities.IConstants;
 
 /**
  *
  * @author G.A.P. II
  */
+public class ComparisonIterator implements IConstants, Iterator<Comparison> {
 
-public class ComparisonIterator implements Iterator<Comparison> {
- 
     private double executedComparisons;
     private final double totalComparisons;
-    
+
     private int innerLoop;
     private int innerLimit;
     private int outerLoop;
     private int outerLimit;
-    
-    private final AbstractBlock block;   
-    
-    ComparisonIterator (AbstractBlock block) {
+
+    private final AbstractBlock block;
+
+    ComparisonIterator(AbstractBlock block) {
         this.block = block;
         executedComparisons = 0;
         totalComparisons = block.getNoOfComparisons();
-        
+
         if (block instanceof BilateralBlock) {
             BilateralBlock bilBlock = (BilateralBlock) block;
             innerLoop = -1; // so that counting in function next() starts from 0
@@ -51,14 +50,14 @@ public class ComparisonIterator implements Iterator<Comparison> {
         } else if (block instanceof UnilateralBlock) {
             UnilateralBlock uniBlock = (UnilateralBlock) block;
             innerLoop = 0;
-            innerLimit = uniBlock.getEntities().length-1;
+            innerLimit = uniBlock.getEntities().length - 1;
             outerLoop = 0;
-            outerLimit = uniBlock.getEntities().length-1;
+            outerLimit = uniBlock.getEntities().length - 1;
         } else if (block instanceof DecomposedBlock) {
             innerLoop = -1;
             innerLimit = -1;
             outerLoop = -1; // so that counting in function next() starts from 0
-            outerLimit = -1;; 
+            outerLimit = -1;;
         }
     }
 
@@ -73,7 +72,7 @@ public class ComparisonIterator implements Iterator<Comparison> {
             Log.error("All comparisons were already executed!");
             return null;
         }
-        
+
         executedComparisons++;
         if (block instanceof BilateralBlock) {
             BilateralBlock bilBlock = (BilateralBlock) block;
@@ -86,7 +85,7 @@ public class ComparisonIterator implements Iterator<Comparison> {
                     return null;
                 }
             }
-            
+
             return new Comparison(true, bilBlock.getIndex1Entities()[outerLoop], bilBlock.getIndex2Entities()[innerLoop]);
         } else if (block instanceof UnilateralBlock) {
             UnilateralBlock uniBlock = (UnilateralBlock) block;
@@ -97,16 +96,31 @@ public class ComparisonIterator implements Iterator<Comparison> {
                     Log.error("All comparisons were already executed!");
                     return null;
                 }
-                innerLoop = outerLoop+1;
+                innerLoop = outerLoop + 1;
             }
-            
-            return new Comparison(false, uniBlock.getEntities()[outerLoop], uniBlock.getEntities()[innerLoop]);
+
+            if (uniBlock.getEntities()[outerLoop] < uniBlock.getEntities()[innerLoop]) {
+                return new Comparison(false, uniBlock.getEntities()[outerLoop], uniBlock.getEntities()[innerLoop]);
+            } else if (uniBlock.getEntities()[innerLoop] < uniBlock.getEntities()[outerLoop]) {
+                return new Comparison(false, uniBlock.getEntities()[innerLoop], uniBlock.getEntities()[outerLoop]);
+            }
         } else if (block instanceof DecomposedBlock) {
             DecomposedBlock deBlock = (DecomposedBlock) block;
             outerLoop++;
-            return new Comparison(deBlock.isCleanCleanER(), deBlock.getEntities1()[outerLoop], deBlock.getEntities2()[outerLoop]); 
+            Comparison c = null;
+            if (deBlock.isCleanCleanER()) {
+                c = new Comparison(deBlock.isCleanCleanER(), deBlock.getEntities1()[outerLoop], deBlock.getEntities2()[outerLoop]);
+            } else {
+                if (deBlock.getEntities1()[outerLoop] < deBlock.getEntities2()[outerLoop]) {
+                    c = new Comparison(deBlock.isCleanCleanER(), deBlock.getEntities1()[outerLoop], deBlock.getEntities2()[outerLoop]);
+                } else if (deBlock.getEntities2()[outerLoop] < deBlock.getEntities1()[outerLoop]) {
+                    c = new Comparison(deBlock.isCleanCleanER(), deBlock.getEntities2()[outerLoop], deBlock.getEntities1()[outerLoop]);
+                }
+            }
+            c.setUtilityMeasure(deBlock.getWeights()[outerLoop] / DISCRETIZATION_FACTOR);
+            return c;
         }
-        
+
         return null;
     }
 }

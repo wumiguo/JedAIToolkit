@@ -1,5 +1,5 @@
 /*
-* Copyright [2016-2018] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2020] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ import java.util.List;
 
 public class TestXMLreader {
     public static void main(String[] args) {
-        String filePath = "C:/Users/Manos/workspaceMars/JedAIToolkit-master/datasets/exam.xml";
+        String filePath = "/home/gap2/Downloads/dblp.xml";
         EntityXMLreader n3reader = new EntityXMLreader(filePath);
         List<EntityProfile> profiles = n3reader.getEntityProfiles();
         for (EntityProfile profile : profiles) {

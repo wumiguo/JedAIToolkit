@@ -1,5 +1,5 @@
 /*
-* Copyright [2016-2018] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2020] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -12,27 +12,27 @@
 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 * See the License for the specific language governing permissions and
 * limitations under the License.
-*/
+ */
 package org.scify.jedai.textmodels;
 
 import java.util.Set;
+import org.scify.jedai.utilities.IConstants;
 
 /**
  *
  * @author G.A.P. II
  */
-public interface ITextModel {
-    
-    int DATASET_1 = 0;
-    int DATASET_2 = 1;
-    
+public interface ITextModel extends IConstants {
+
+    public double getEntropy(boolean normalized);
+
     public String getInstanceName();
-    
-    public void finalizeModel();
-    
-    public double getSimilarity(ITextModel oModel);
-    
+
     public Set<String> getSignatures();
-    
+
+    public double getSimilarity(ITextModel oModel);
+
+    public void finalizeModel();
+
     public void updateModel(String text);
 }

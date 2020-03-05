@@ -1,5 +1,5 @@
 /*
-* Copyright [2016-2018] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2020] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -32,9 +32,7 @@ import org.scify.jedai.datareader.entityreader.EntitySerializationReader;
 import org.scify.jedai.datareader.groundtruthreader.GtSerializationReader;
 import org.scify.jedai.datareader.groundtruthreader.IGroundTruthReader;
 import org.scify.jedai.entityclustering.CenterClustering;
-import org.scify.jedai.entityclustering.ConnectedComponentsClustering;
 import org.scify.jedai.entityclustering.IEntityClustering;
-import org.scify.jedai.entityclustering.MergeCenterClustering;
 import org.scify.jedai.entitymatching.IEntityMatching;
 import org.scify.jedai.entitymatching.ProfileMatcher;
 import org.scify.jedai.utilities.ClustersPerformance;
@@ -47,13 +45,13 @@ import org.scify.jedai.utilities.datastructures.UnilateralDuplicatePropagation;
  */
 public class ConfigureRandomlyEndToEndWorkflowDirtyER {
 
-    private final static int NO_OF_TRIALS = 100;
+    private final static int NO_OF_TRIALS = 60;
 
     public static void main(String[] args) throws Exception {
         BasicConfigurator.configure();
 
         String mainDir = "data" + File.separator + "dirtyErDatasets" + File.separator;
-        final String[] datasets = {/*"census",*/ "cddb", "cora"};
+        final String[] datasets = {"census", "cddb", "cora"};
 
         for (String dataset : datasets) {
             System.out.println("\n\nCurrent dataset\t:\t" + dataset);
@@ -70,10 +68,8 @@ public class ConfigureRandomlyEndToEndWorkflowDirtyER {
             final IBlockProcessing bp1 = new SizeBasedBlockPurging();
             final IBlockProcessing bp2 = new BlockFiltering();
             final IBlockProcessing cc = new CardinalityNodePruning();
-            final IEntityMatching em = new ProfileMatcher();
-//            final IEntityClustering ec = new CenterClustering();
-//            final IEntityClustering ec = new ConnectedComponentsClustering();
-            final IEntityClustering ec = new MergeCenterClustering();
+            final IEntityMatching em = new ProfileMatcher(profiles);
+            final IEntityClustering ec = new CenterClustering();
 
             final StringBuilder matchingWorkflowName = new StringBuilder();
             matchingWorkflowName.append(bb.getMethodName());
@@ -110,7 +106,7 @@ public class ConfigureRandomlyEndToEndWorkflowDirtyER {
                 }
                 
                 em.setNextRandomConfiguration();
-                final SimilarityPairs sims = em.executeComparisons(finalBlocks, profiles);
+                final SimilarityPairs sims = em.executeComparisons(finalBlocks);
 
                 ec.setNextRandomConfiguration();
                 final EquivalenceCluster[] clusters = ec.getDuplicates(sims);
@@ -154,7 +150,7 @@ public class ConfigureRandomlyEndToEndWorkflowDirtyER {
             final List<AbstractBlock> finalBlocks = cc.refineBlocks(filteredBlocks);
 
             em.setNumberedRandomConfiguration(bestIteration);
-            final SimilarityPairs sims = em.executeComparisons(finalBlocks, profiles);
+            final SimilarityPairs sims = em.executeComparisons(finalBlocks);
 
             ec.setNumberedRandomConfiguration(bestIteration);
             final EquivalenceCluster[] clusters = ec.getDuplicates(sims);

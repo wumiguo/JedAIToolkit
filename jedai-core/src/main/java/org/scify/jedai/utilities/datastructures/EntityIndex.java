@@ -1,5 +1,5 @@
 /*
-* Copyright [2016-2018] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2020] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -12,8 +12,7 @@
 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 * See the License for the specific language governing permissions and
 * limitations under the License.
-*/
-
+ */
 package org.scify.jedai.utilities.datastructures;
 
 import org.scify.jedai.datamodel.AbstractBlock;
@@ -27,7 +26,6 @@ import java.util.List;
  *
  * @author gap2
  */
-
 public class EntityIndex implements Serializable {
 
     private static final long serialVersionUID = 13483254243447L;
@@ -36,10 +34,12 @@ public class EntityIndex implements Serializable {
     private int datasetLimit;
     private int noOfBlocks;
     private int noOfEntities;
-    
+
+    private double totalAssignments;
+    private double totalComparisons;
     private double[] entityComparisons;
     private int[][] entityBlocks;
-    
+
     private BilateralBlock[] bBlocks;
     private UnilateralBlock[] uBlocks;
 
@@ -65,6 +65,8 @@ public class EntityIndex implements Serializable {
 
     private void firstPass(List<AbstractBlock> blocks) {
         int counter = 0;
+        totalAssignments = 0;
+        totalComparisons = 0;
         noOfBlocks = blocks.size();
         cleanCleanER = blocks.get(0) instanceof BilateralBlock;
         if (cleanCleanER) {
@@ -85,6 +87,8 @@ public class EntityIndex implements Serializable {
                     }
                 }
                 counter++;
+                totalComparisons += block.getNoOfComparisons();
+                totalAssignments += block.getTotalBlockAssignments();
             }
 
             int temp = noOfEntities;
@@ -102,10 +106,12 @@ public class EntityIndex implements Serializable {
                     }
                 }
                 counter++;
+                totalComparisons += block.getNoOfComparisons();
+                totalAssignments += block.getTotalBlockAssignments();
             }
         }
     }
-    
+
     public BilateralBlock[] getBilateralBlocks() {
         return bBlocks;
     }
@@ -121,9 +127,14 @@ public class EntityIndex implements Serializable {
         }
         return entityBlocks[entityId];
     }
-    
+
     public double[] getEntityComparisons() {
         return entityComparisons;
+    }
+    
+    public double getEntityComparisons(int entityId, int useDLimit) {
+        entityId += useDLimit * datasetLimit;
+        return entityComparisons[entityId];
     }
 
     public int getNoOfEntities() {
@@ -133,7 +144,7 @@ public class EntityIndex implements Serializable {
     public int getNoOfEntityBlocks(int entityId, int useDLimit) {
         entityId += useDLimit * datasetLimit;
         if (entityBlocks[entityId] == null) {
-            return -1;
+            return 0;
         }
 
         return entityBlocks[entityId].length;
@@ -143,10 +154,18 @@ public class EntityIndex implements Serializable {
         return uBlocks;
     }
     
+    public double getTotalAssignments() {
+        return totalAssignments;
+    }
+    
+    public double getTotalComparisons() {
+        return totalComparisons;
+    }
+
     public int[][] getWholeIndex() {
         return entityBlocks;
     }
-    
+
     private void indexBilateralEntities() {
         final int[] counters = new int[noOfEntities];
         entityComparisons = new double[noOfEntities];
@@ -197,7 +216,7 @@ public class EntityIndex implements Serializable {
             int blockSize = block.getEntities().length;
             for (int id : block.getEntities()) {
                 counters[id]++;
-                entityComparisons[id] += blockSize-1;
+                entityComparisons[id] += blockSize - 1;
             }
         }
 
@@ -218,7 +237,7 @@ public class EntityIndex implements Serializable {
             counter++;
         }
     }
-    
+
     public boolean isCleanCleanER() {
         return cleanCleanER;
     }

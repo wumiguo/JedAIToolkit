@@ -1,5 +1,5 @@
 /*
-* Copyright [2016-2018] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2020] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -18,8 +18,6 @@ package org.scify.jedai.datareader.entityreader;
 import com.esotericsoftware.minlog.Log;
 import org.apache.jena.atlas.json.JsonArray;
 import org.apache.jena.atlas.json.JsonObject;
-import org.apache.jena.rdf.model.*;
-import org.apache.jena.riot.RDFDataMgr;
 import org.rdfhdt.hdt.exceptions.NotFoundException;
 import org.rdfhdt.hdt.hdt.HDT;
 import org.rdfhdt.hdt.hdt.HDTManager;
@@ -42,7 +40,7 @@ public class EntityHDTRDFReader extends AbstractEntityReader {
 
     public EntityHDTRDFReader(String filePath) {
         super(filePath);
-        
+
         urlToEntity = new HashMap<>();
         attributesToExclude = new HashSet<>();
         attributesToExclude.add("owl:sameAs");
@@ -80,7 +78,7 @@ public class EntityHDTRDFReader extends AbstractEntityReader {
             sb.append(attributeName).append(",");
         });
         sb.append("}");
-    
+
         return getParameterName(0) + "=" + inputFilePath + "\t"
                 + getParameterName(1) + "=" + sb.toString();
     }
@@ -159,13 +157,11 @@ public class EntityHDTRDFReader extends AbstractEntityReader {
         HDT hdt = HDTManager.loadHDT(inpFIle, null);
 
         // Search pattern: Empty string means "any"
-        final IteratorTripleString iter = hdt.search("","","");
+        final IteratorTripleString iter = hdt.search("", "", "");
 
         //final StmtIterator iter = ts.m.listStatements();
         while (iter.hasNext()) {
-
             TripleString stmt = iter.next();
-            System.out.println(stmt);
 
             final CharSequence predicate = stmt.getPredicate();
             final String pred = predicate.toString();
@@ -175,9 +171,8 @@ public class EntityHDTRDFReader extends AbstractEntityReader {
 
             final CharSequence subject = stmt.getSubject();
             String sub = subject.toString();
-            if (!prefix.equals(""))
-            {
-            	sub= sub.replace(prefix, "");
+            if (!prefix.equals("")) {
+                sub = sub.replace(prefix, "");
             }
 
             final CharSequence object = stmt.getObject();
@@ -196,7 +191,6 @@ public class EntityHDTRDFReader extends AbstractEntityReader {
             }
         }
 
-
         // IMPORTANT: Close hdt when no longer needed
         hdt.close();
     }
@@ -204,8 +198,8 @@ public class EntityHDTRDFReader extends AbstractEntityReader {
     public void setAttributesToExclude(String[] attributesNamesToExclude) {
         attributesToExclude.addAll(Arrays.asList(attributesNamesToExclude));
     }
-    
+
     public void setPrefixOmission(String prefix) {
-        this.prefix= prefix ;
+        this.prefix = prefix;
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright [2016-2018] [George Papadakis (gpapadis@yahoo.gr)]
+ * Copyright [2016-2020] [George Papadakis (gpapadis@yahoo.gr)]
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import org.scify.jedai.datamodel.EntityProfile;
 import org.scify.jedai.datamodel.IdDuplicates;
 
 import com.esotericsoftware.minlog.Log;
-import com.opencsv.CSVReader;
+import java.io.BufferedReader;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -40,11 +40,11 @@ import org.jgrapht.alg.ConnectivityInspector;
 public class GtRdfCsvReader extends AbstractGtReader {
 
     private boolean ignoreFirstRow;
-    private char separator;
+    private String separator;
 
     public GtRdfCsvReader(String filePath) {
         super(filePath);
-        separator = ',';
+        separator = ",";
         ignoreFirstRow = false;
     }
 
@@ -182,12 +182,17 @@ public class GtRdfCsvReader extends AbstractGtReader {
         initializeDataStructures(profilesD1, profilesD2);
         try {
             // creating reader
-            final CSVReader reader = new CSVReader(new FileReader(inputFilePath), separator);
-            String[] nextLine;
+            final BufferedReader br = new BufferedReader(new FileReader(inputFilePath));
+            
+            String line;
             if (ignoreFirstRow) {
-                reader.readNext();
+                line = br.readLine();
             }
-            while ((nextLine = reader.readNext()) != null) {
+
+            String[] nextLine;
+            while ((line = br.readLine()) != null) {
+                nextLine = line.split(separator);
+                
                 if (nextLine.length < 2) {
                     Log.warn("Line with inadequate information " + nextLine);
                     continue;
@@ -278,7 +283,7 @@ public class GtRdfCsvReader extends AbstractGtReader {
         this.ignoreFirstRow = ignoreFirstRow;
     }
 
-    public void setSeparator(char separator) {
+    public void setSeparator(String separator) {
         this.separator = separator;
     }
 }

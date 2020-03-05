@@ -1,5 +1,5 @@
 /*
-* Copyright [2016-2018] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2020] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -31,9 +31,13 @@ public class UnilateralBlock extends AbstractBlock implements Serializable {
     protected final int[] entities;
     
     public UnilateralBlock(int[] entities) {
-        super();
+        this(1.0, entities);
+    }
+    
+    public UnilateralBlock(double entropy, int[] entities) {
+        super(entropy);
         this.entities = entities;
-        comparisons = ((double)entities.length)*(entities.length-1)/2;
+        comparisons = entities.length*(entities.length-1.0)/2.0;
     }
     
     @Override

@@ -1,5 +1,5 @@
 /*
-* Copyright [2016-2018] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2020] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -20,10 +20,6 @@ import org.apache.jena.atlas.json.JSON;
 import org.apache.jena.atlas.json.JsonArray;
 import org.apache.jena.atlas.json.JsonObject;
 import org.rdfhdt.hdt.exceptions.NotFoundException;
-import org.rdfhdt.hdt.hdt.HDT;
-import org.rdfhdt.hdt.hdt.HDTManager;
-import org.rdfhdt.hdt.triples.IteratorTripleString;
-import org.rdfhdt.hdt.triples.TripleString;
 import org.scify.jedai.datamodel.EntityProfile;
 
 import java.io.IOException;
@@ -41,7 +37,7 @@ public class EntityJSONRDFReader extends AbstractEntityReader {
 
     public EntityJSONRDFReader(String filePath) {
         super(filePath);
-        
+
         urlToEntity = new HashMap<>();
         attributesToExclude = new HashSet<>();
         attributesToExclude.add("owl:sameAs");
@@ -79,7 +75,7 @@ public class EntityJSONRDFReader extends AbstractEntityReader {
             sb.append(attributeName).append(",");
         });
         sb.append("}");
-    
+
         return getParameterName(0) + "=" + inputFilePath + "\t"
                 + getParameterName(1) + "=" + sb.toString();
     }
@@ -155,8 +151,7 @@ public class EntityJSONRDFReader extends AbstractEntityReader {
         //read each ntriples
         JsonObject jsonObject = JSON.read(inpFIle);
         String key = jsonObject.keys().toArray()[0].toString();
-        //System.out.println("key "+ key);
-        JsonArray jarr =jsonObject.get(key).getAsArray();
+        JsonArray jarr = jsonObject.get(key).getAsArray();
 
         // JSON file example:
         /*{"triples":
@@ -165,9 +160,7 @@ public class EntityJSONRDFReader extends AbstractEntityReader {
             {Subject: "Sydney", Predicate: "located_in", Object: "Australia"},
             ......
          */
-        for (int i =0;i<jarr.size();i++)
-        {
-
+        for (int i = 0; i < jarr.size(); i++) {
 
             final CharSequence predicate = jarr.get(i).getAsObject().get("Predicate").toString();
             final String pred = predicate.toString();
@@ -177,9 +170,8 @@ public class EntityJSONRDFReader extends AbstractEntityReader {
 
             final CharSequence subject = jarr.get(i).getAsObject().get("Subject").toString();
             String sub = subject.toString();
-            if (!prefix.equals(""))
-            {
-                sub= sub.replace(prefix, "");
+            if (!prefix.equals("")) {
+                sub = sub.replace(prefix, "");
             }
 
             final CharSequence object = jarr.get(i).getAsObject().get("Object").toString();
@@ -198,14 +190,13 @@ public class EntityJSONRDFReader extends AbstractEntityReader {
             }
         }
 
-
     }
 
     public void setAttributesToExclude(String[] attributesNamesToExclude) {
         attributesToExclude.addAll(Arrays.asList(attributesNamesToExclude));
     }
-    
+
     public void setPrefixOmission(String prefix) {
-        this.prefix= prefix ;
+        this.prefix = prefix;
     }
 }

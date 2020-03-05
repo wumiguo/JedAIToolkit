@@ -1,5 +1,5 @@
 /*
-* Copyright [2016-2018] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2020] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -124,8 +124,8 @@ public class CorrelationClustering extends AbstractEntityClustering {
         //Optimization step for maximizing Objective function
         int prevOF = getOF();
         //System.out.println("average similarity = "+averageSimilarity);
-        System.out.println("old value=" + prevOF);
-        double time0 = System.currentTimeMillis();
+//        System.out.println("old value=" + prevOF);
+//        double time0 = System.currentTimeMillis();
         rand = new Random();
         int moveLimit = 1;//only change-cluster moves
         for (int t = 0; t < numOfLSIterations; t++) {
@@ -138,9 +138,9 @@ public class CorrelationClustering extends AbstractEntityClustering {
         	}*/
             prevOF = OF;
         }
-        double time1 = System.currentTimeMillis();
-        System.out.println("optimization step: " + (time1 - time0));
-        System.out.println("new OF value=" + prevOF);
+//        double time1 = System.currentTimeMillis();
+//        System.out.println("optimization step: " + (time1 - time0));
+//        System.out.println("new OF value=" + prevOF);
 
         //return array after removing empty clusters
         List<EquivalenceCluster> list = new ArrayList<>();
@@ -174,32 +174,33 @@ public class CorrelationClustering extends AbstractEntityClustering {
     }
 
     private int doMove(int moveIndex, int prevOF) {
-        if (moveIndex == 0) {
-            int randomEntity = rand.nextInt(noOfEntities);
-            int randomCluster = rand.nextInt(numClusters);
-            while (clustersCreated[randomCluster].getEntityIdsD1().isEmpty()) {
-                randomCluster = rand.nextInt(numClusters);
-            }
-            return changeCluster(prevOF, randomEntity, randomCluster);
-        } else if (moveIndex == 1) {
-            int prevCluster = rand.nextInt(numClusters);
-            while (clustersCreated[prevCluster].getEntityIdsD1().isEmpty()) {
+        switch (moveIndex) {
+            case 0:
+                int randomEntity = rand.nextInt(noOfEntities);
+                int randomCluster = rand.nextInt(numClusters);
+                while (clustersCreated[randomCluster].getEntityIdsD1().isEmpty()) {
+                    randomCluster = rand.nextInt(numClusters);
+                }
+                return changeCluster(prevOF, randomEntity, randomCluster);
+            case 1: 
+                int prevCluster = rand.nextInt(numClusters);
+                while (clustersCreated[prevCluster].getEntityIdsD1().isEmpty()) {
+                    prevCluster = rand.nextInt(numClusters);
+                }
+                int newCluster = rand.nextInt(numClusters);
+                while ((prevCluster == newCluster) || (clustersCreated[newCluster].getEntityIdsD1().isEmpty())) {
+                    newCluster = rand.nextInt(numClusters);
+                }
+                return unifyClusters(prevOF, prevCluster, newCluster);
+            case 2: 
                 prevCluster = rand.nextInt(numClusters);
-            }
-            int newCluster = rand.nextInt(numClusters);
-            while ((prevCluster == newCluster) || (clustersCreated[newCluster].getEntityIdsD1().isEmpty())) {
-                newCluster = rand.nextInt(numClusters);
-            }
-            return unifyClusters(prevOF, prevCluster, newCluster);
-        } else if (moveIndex == 2) {
-            int prevCluster = rand.nextInt(numClusters);
-            while (clustersCreated[prevCluster].getEntityIdsD1().isEmpty()) {
-                prevCluster = rand.nextInt(numClusters);
-            }
-            return separateClusters(prevOF, prevCluster);
-        } else {
-            System.err.println("not valid move index");
-            return Integer.MAX_VALUE;
+                while (clustersCreated[prevCluster].getEntityIdsD1().isEmpty()) {
+                    prevCluster = rand.nextInt(numClusters);
+                }
+                return separateClusters(prevOF, prevCluster);
+            default:
+                System.err.println("not valid move index");
+                return Integer.MAX_VALUE;
         }
     }
 

@@ -1,5 +1,5 @@
 /*
-* Copyright [2016-2018] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2020] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -37,6 +37,7 @@ import java.util.Queue;
 public class CardinalityEdgePruning extends WeightedEdgePruning {
 
     protected double minimumWeight;
+    
     protected Queue<Comparison> topKEdges;
 
     public CardinalityEdgePruning() {
@@ -55,17 +56,19 @@ public class CardinalityEdgePruning extends WeightedEdgePruning {
 
         final int[] entityIds1 = new int[comparisons.size()];
         final int[] entityIds2 = new int[comparisons.size()];
-
+        final int[] weights = new int[comparisons.size()];
+        
         int index = 0;
         final Iterator<Comparison> iterator = comparisons.iterator();
         while (iterator.hasNext()) {
             Comparison comparison = iterator.next();
             entityIds1[index] = comparison.getEntityId1();
             entityIds2[index] = comparison.getEntityId2();
+            weights[index] = discretizeComparisonWeight(comparison.getUtilityMeasure());
             index++;
         }
 
-        newBlocks.add(new DecomposedBlock(cleanCleanER, entityIds1, entityIds2));
+        newBlocks.add(new DecomposedBlock(cleanCleanER, entityIds1, entityIds2, weights));
     }
 
     @Override
@@ -81,6 +84,13 @@ public class CardinalityEdgePruning extends WeightedEdgePruning {
 
     @Override
     protected List<AbstractBlock> pruneEdges() {
+        setTopKEdges();
+        final List<AbstractBlock> newBlocks = new ArrayList<>();
+        addDecomposedBlock(topKEdges, newBlocks);
+        return newBlocks;
+    }
+
+    protected void setTopKEdges() {
         minimumWeight = Double.MIN_VALUE;
         topKEdges = new PriorityQueue<>((int) (2 * threshold), new IncComparisonWeightComparator());
 
@@ -96,12 +106,8 @@ public class CardinalityEdgePruning extends WeightedEdgePruning {
                 verifyValidEntities(i);
             }
         }
-
-        final List<AbstractBlock> newBlocks = new ArrayList<>();
-        addDecomposedBlock(topKEdges, newBlocks);
-        return newBlocks;
     }
-
+    
     @Override
     protected void setThreshold() {
         threshold = blockAssingments / 2;

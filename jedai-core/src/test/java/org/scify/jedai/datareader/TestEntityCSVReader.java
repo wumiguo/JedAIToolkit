@@ -1,5 +1,5 @@
 /*
-* Copyright [2016-2018] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2020] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import org.scify.jedai.datamodel.Attribute;
 import org.scify.jedai.datamodel.EntityProfile;
 import org.scify.jedai.datareader.entityreader.EntityCSVReader;
 import java.util.List;
+import org.apache.log4j.BasicConfigurator;
 
 /**
  *
@@ -28,11 +29,13 @@ import java.util.List;
 
 public class TestEntityCSVReader {
     public static void main(String[] args) {
-        String filePath = "C:/Users/Manos/workspaceMars/JedAIgitFinal/JedAIgitFinal/datasets/converter/DBLP2.csv";
+        BasicConfigurator.configure();
+        
+        String filePath = "/home/gap2/data/JedAIdata/datasets/dirtyErDatasets/dblp/articles.csv";
         EntityCSVReader csvReader = new EntityCSVReader(filePath);
         csvReader.setAttributeNamesInFirstRow(true);
-        csvReader.setSeparator(';');
-        csvReader.setAttributesToExclude(new int[]{1});
+        csvReader.setSeparator(";");
+//        csvReader.setAttributesToExclude(new int[]{1});
         csvReader.setIdIndex(0);
         List<EntityProfile> profiles = csvReader.getEntityProfiles();
         for (EntityProfile profile : profiles) {
@@ -41,8 +44,7 @@ public class TestEntityCSVReader {
                 System.out.println(attribute.toString());
             }
         }
-        csvReader.storeSerializedObject(profiles, "C:/Users/Manos/workspaceMars/JedAIgitFinal/JedAIgitFinal/datasets/converter/DBLP2prof");
-        csvReader.convertToRDFfile(profiles, "C:/Users/Manos/workspaceMars/JedAIgitFinal/JedAIgitFinal/datasets/converter/DBLP2toRDFxml.xml", "http://w3/");
-
+        csvReader.storeSerializedObject(profiles, "/home/gap2/data/JedAIdata/datasets/dirtyErDatasets/dblp/dblp");
+//        csvReader.convertToRDFfile(profiles, "C:/Users/Manos/workspaceMars/JedAIgitFinal/JedAIgitFinal/datasets/converter/DBLP2toRDFxml.xml", "http://w3/");
     }
 }

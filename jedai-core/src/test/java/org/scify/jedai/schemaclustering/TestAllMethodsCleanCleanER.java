@@ -1,5 +1,5 @@
 /*
-* Copyright [2016-2018] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2020] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -15,12 +15,12 @@
  */
 package org.scify.jedai.schemaclustering;
 
-import gnu.trove.map.TObjectIntMap;
 import java.io.File;
 import java.util.List;
 import org.apache.log4j.BasicConfigurator;
 import org.scify.jedai.blockbuilding.IBlockBuilding;
 import org.scify.jedai.datamodel.AbstractBlock;
+import org.scify.jedai.datamodel.AttributeClusters;
 import org.scify.jedai.datamodel.EntityProfile;
 import org.scify.jedai.datareader.entityreader.EntitySerializationReader;
 import org.scify.jedai.datareader.groundtruthreader.GtSerializationReader;
@@ -76,7 +76,7 @@ public class TestAllMethodsCleanCleanER {
                 double time1 = System.currentTimeMillis();
 
                 final ISchemaClustering sc = SchemaClusteringMethod.getModel(RepresentationModel.CHARACTER_TRIGRAMS, SimilarityMetric.ENHANCED_JACCARD_SIMILARITY, scm);
-                final TObjectIntMap<String>[] clusters = sc.getClusters(profilesD1, profilesD2);
+                final AttributeClusters[] clusters = sc.getClusters(profilesD1, profilesD2);
 
 //                for (int j = 0; j < clusters.length; j++) {
 //                    System.out.println("\nDataset\t:\t" + (j + 1));

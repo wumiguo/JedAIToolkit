@@ -1,5 +1,5 @@
 /*
-* Copyright [2016-2018] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2020] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -72,9 +72,9 @@ public class TestGroupLinkage {
             long start = System.nanoTime();
             for (RepresentationModel model : RepresentationModel.values()) {
                 if (model.equals(RepresentationModel.CHARACTER_BIGRAMS)) {
-                    GroupLinkage gp = new GroupLinkage(0.1, model, SimilarityMetric.getModelDefaultSimMetric(model));
+                    GroupLinkage gp = new GroupLinkage(0.1, profiles1, model, SimilarityMetric.getModelDefaultSimMetric(model));
                     gp.setSimilarityThreshold(0.1);
-                    SimilarityPairs simPairs = gp.executeComparisons(blocks, profiles1);//
+                    SimilarityPairs simPairs = gp.executeComparisons(blocks);
                     
                     for (int i = 0; i < simPairs.getNoOfComparisons(); i++) {
                         System.out.println(simPairs.getEntityIds1()[i] + "\t\t" + simPairs.getEntityIds2()[i] + "\t\t" + simPairs.getSimilarities()[i]);

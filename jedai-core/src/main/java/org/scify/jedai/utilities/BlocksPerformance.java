@@ -1,5 +1,5 @@
 /*
-* Copyright [2016-2018] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2020] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -67,13 +67,13 @@ public class BlocksPerformance {
         blocks = bl;
     }
 
-    private boolean areCooccurring(boolean cleanCleanER, IdDuplicates pairOfDuplicates) {
+    private boolean areCooccurring(IdDuplicates pairOfDuplicates) {
         final int[] blocks1 = entityIndex.getEntityBlocks(pairOfDuplicates.getEntityId1(), 0);
         if (blocks1 == null) {
             return false;
         }
 
-        final int[] blocks2 = entityIndex.getEntityBlocks(pairOfDuplicates.getEntityId2(), cleanCleanER ? 1 : 0);
+        final int[] blocks2 = entityIndex.getEntityBlocks(pairOfDuplicates.getEntityId2(), isCleanCleanER ? 1 : 0);
         if (blocks2 == null) {
             return false;
         }
@@ -157,11 +157,22 @@ public class BlocksPerformance {
     }
 
     private void getDuplicatesOfDecomposedBlocks() {
-        for (AbstractBlock block : blocks) {
-            ComparisonIterator iterator = block.getComparisonIterator();
-            while (iterator.hasNext()) {
-                final Comparison comp = iterator.next();
-                abstractDP.isSuperfluous(comp.getEntityId1(), comp.getEntityId2());
+        if (isCleanCleanER) {
+            for (AbstractBlock block : blocks) {
+                ComparisonIterator iterator = block.getComparisonIterator();
+                while (iterator.hasNext()) {
+                    final Comparison comp = iterator.next();
+                    abstractDP.isSuperfluous(comp.getEntityId1(), comp.getEntityId2());
+                }
+            }
+        } else {
+            for (AbstractBlock block : blocks) {
+                ComparisonIterator iterator = block.getComparisonIterator();
+                while (iterator.hasNext()) {
+                    final Comparison comp = iterator.next();
+                    abstractDP.isSuperfluous(comp.getEntityId1(), comp.getEntityId2());
+                    abstractDP.isSuperfluous(comp.getEntityId2(), comp.getEntityId1());
+                }
             }
         }
 
@@ -177,9 +188,8 @@ public class BlocksPerformance {
 
     private void getDuplicatesWithEntityIndex() {
         double noOfDuplicates = 0;
-        boolean cleanCleanER = blocks.get(0) instanceof BilateralBlock;
         for (IdDuplicates pairOfDuplicates : abstractDP.getDuplicates()) {
-            if (areCooccurring(cleanCleanER, pairOfDuplicates)) {
+            if (areCooccurring(pairOfDuplicates)) {
                 noOfDuplicates++;
             }
         }
@@ -216,11 +226,11 @@ public class BlocksPerformance {
             noOfD2Entities = distinctEntitiesD2.size();
         }
     }
-    
+
     public double getFMeasure() {
         return fMeasure;
     }
-    
+
     public double getPc() {
         return pc;
     }
@@ -228,7 +238,7 @@ public class BlocksPerformance {
     public double getPq() {
         return pq;
     }
-    
+
     public void printDetailedResults(List<EntityProfile> profilesD1, List<EntityProfile> profilesD2) {
         if (blocks.isEmpty()) {
             Log.warn("Empty set of blocks was given as input!");
@@ -301,13 +311,13 @@ public class BlocksPerformance {
         setType(); // Clean-Clean or Dirty ER?
         final PrintWriter pw = new PrintWriter(new File(outputFile));
         StringBuilder sb = new StringBuilder();
-        
+
         List<AbstractBlock> blocksToUse = blocks;
         if (!(blocks.get(0) instanceof DecomposedBlock)) {
             final ComparisonPropagation cp = new ComparisonPropagation();
             blocksToUse = cp.refineBlocks(blocks);
         }
-        
+
         abstractDP.resetDuplicates();
         for (AbstractBlock block : blocksToUse) {
             final ComparisonIterator iterator = block.getComparisonIterator();
@@ -316,7 +326,7 @@ public class BlocksPerformance {
                 abstractDP.isSuperfluous(comp.getEntityId1(), comp.getEntityId2());
             }
         }
-                
+
         for (IdDuplicates duplicatesPair : abstractDP.getFalseNegatives()) {
             final EntityProfile profile1 = profilesD1.get(duplicatesPair.getEntityId1());
             final EntityProfile profile2 = isCleanCleanER ? profilesD2.get(duplicatesPair.getEntityId2()) : profilesD1.get(duplicatesPair.getEntityId2());
@@ -327,11 +337,11 @@ public class BlocksPerformance {
             sb.append("Profile 1:[").append(profile1).append("]");
             sb.append("Profile 2:[").append(profile2).append("]");
         }
-        
+
         pw.write(sb.toString());
         pw.close();
     }
-    
+
     public void printStatistics(double overheadTime, String methodConfiguration, String methodName) {
         if (blocks.isEmpty()) {
             return;

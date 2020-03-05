@@ -1,5 +1,5 @@
 /*
-* Copyright [2016-2018] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2020] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import org.scify.jedai.utilities.datastructures.EntityIndex;
 import com.esotericsoftware.minlog.Log;
 
 import gnu.trove.TIntCollection;
+import gnu.trove.list.TIntList;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
 
@@ -53,24 +54,22 @@ public abstract class AbstractComparisonCleaning implements IBlockProcessing {
         validEntities = new TIntHashSet();
     }
 
-    protected void addDecomposedBlock(int entityId, TIntCollection neighbors, List<AbstractBlock> newBlocks) {
+    protected void addDecomposedBlock(int entityId, TIntList neighbors, TIntList neighborWeights, List<AbstractBlock> newBlocks) {
         if (neighbors.isEmpty()) {
             return;
         }
 
         final int[] entityIds1 = replicateId(entityId, neighbors.size());
-        final int[] entityIds2 = neighbors.toArray();
-        newBlocks.add(new DecomposedBlock(cleanCleanER, entityIds1, entityIds2));
+        newBlocks.add(new DecomposedBlock(cleanCleanER, entityIds1, neighbors.toArray(), neighborWeights.toArray()));
     }
     
-    protected void addReversedDecomposedBlock(int entityId, TIntCollection neighbors, List<AbstractBlock> newBlocks) {
+    protected void addReversedDecomposedBlock(int entityId, TIntCollection neighbors, TIntCollection neighborWeights, List<AbstractBlock> newBlocks) {
         if (neighbors.isEmpty()) {
             return;
         }
 
-        final int[] entityIds1 = neighbors.toArray();
         final int[] entityIds2 = replicateId(entityId, neighbors.size());
-        newBlocks.add(new DecomposedBlock(cleanCleanER, entityIds1, entityIds2));
+        newBlocks.add(new DecomposedBlock(cleanCleanER, neighbors.toArray(), entityIds2, neighborWeights.toArray()));
     }
     
     protected abstract List<AbstractBlock> applyMainProcessing();

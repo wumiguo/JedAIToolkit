@@ -1,5 +1,5 @@
 /*
-* Copyright [2016-2018] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2020] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -45,15 +45,17 @@ public class ReciprocalWeightedNodePruning extends WeightedNodePruning {
     }
 
     @Override
-    protected boolean isValidComparison(int entityId, int neighborId) {
+    protected double getValidWeight(int entityId, int neighborId) {
         double weight = getWeight(entityId, neighborId);
         boolean inNeighborhood1 = averageWeight[entityId] <= weight;
         boolean inNeighborhood2 = averageWeight[neighborId] <= weight;
         
         if (inNeighborhood1 && inNeighborhood2) {
-            return entityId < neighborId;
+            if (entityId < neighborId) {
+                return weight;
+            }
         }
         
-        return false;
+        return -1;
     }
 }

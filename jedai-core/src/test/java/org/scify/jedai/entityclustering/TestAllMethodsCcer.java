@@ -1,5 +1,5 @@
 /*
-* Copyright [2016-2018] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2020] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -100,12 +100,16 @@ public class TestAllMethodsCcer {
 
             double time3 = System.currentTimeMillis();
 
-            IEntityMatching em = EntityMatchingMethod.getDefaultConfiguration(emMethod);
-            SimilarityPairs simPairs = em.executeComparisons(blocks, profilesD1, profilesD2);
+            IEntityMatching em = EntityMatchingMethod.getDefaultConfiguration(profilesD1, profilesD2, emMethod);
+            SimilarityPairs simPairs = em.executeComparisons(blocks);
 
             double time4 = System.currentTimeMillis();
 
             for (EntityClusteringCcerMethod ecMethod : EntityClusteringCcerMethod.values()) {
+            	
+            	//if (ecMethod.toString().contains("UNIQUE")) continue;
+            	//System.out.println("meth "+ecMethod.toString());
+            	
                 double time5 = System.currentTimeMillis();
 
                 IEntityClustering ec = EntityClusteringCcerMethod.getDefaultConfiguration(ecMethod);
@@ -121,19 +125,13 @@ public class TestAllMethodsCcer {
                 matchingWorkflowConf.append("\n").append(ec.getMethodConfiguration());
                 matchingWorkflowName.append("->").append(ec.getMethodName());
                 
-//                try {
-//                    PrintToFile.toCSV(entityClusters, "/home/ethanos/workspace/JedAIToolkitNew/rest.csv");
-//                } catch (FileNotFoundException e) {
-//                    e.printStackTrace();
-//                }
 
                 ClustersPerformance clp = new ClustersPerformance(entityClusters, duplicatePropagation);
-//                clp.printDetailedResults(profilesD1, profilesD2, "D:\\tempCcer.csv");
                 clp.setStatistics();
                 clp.printStatistics(time6 - time5 + time4 - time3, matchingWorkflowName.toString(), matchingWorkflowConf.toString());
                 clp.printDetailedResults(profilesD1, profilesD2, "data" + File.separator + "test.csv");
                 
-                System.exit(-1);
+                //System.exit(-1);
             }
         }
     }

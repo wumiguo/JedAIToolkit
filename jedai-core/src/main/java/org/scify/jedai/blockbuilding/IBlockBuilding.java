@@ -1,5 +1,5 @@
 /*
-* Copyright [2016-2018] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2020] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -15,29 +15,28 @@
  */
 package org.scify.jedai.blockbuilding;
 
-import gnu.trove.map.TObjectIntMap;
 import org.scify.jedai.datamodel.AbstractBlock;
 import org.scify.jedai.datamodel.EntityProfile;
 import org.scify.jedai.utilities.IDocumentation;
 
 import java.util.List;
 import org.scify.jedai.configuration.IConfiguration;
+import org.scify.jedai.datamodel.AttributeClusters;
+import org.scify.jedai.utilities.IConstants;
 
 /**
  *
  * @author G.A.P. II
  */
-public interface IBlockBuilding extends IConfiguration, IDocumentation {
-
-    int DATASET_1 = 0;
-    int DATASET_2 = 1;
+public interface IBlockBuilding extends IConfiguration, IConstants, IDocumentation {
 
     String CLUSTER_PREFIX = "#$!cl";
+    String CLUSTER_SUFFIX = "#$!en";
     
     public List<AbstractBlock> getBlocks(List<EntityProfile> profiles);
 
     public List<AbstractBlock> getBlocks(List<EntityProfile> profilesD1, List<EntityProfile> profilesD2);
 
-    public List<AbstractBlock> getBlocks(List<EntityProfile> profilesD1, List<EntityProfile> profilesD2, TObjectIntMap<String>[] schemaClusters);
+    public List<AbstractBlock> getBlocks(List<EntityProfile> profilesD1, List<EntityProfile> profilesD2, AttributeClusters[] schemaClusters);
     
 }

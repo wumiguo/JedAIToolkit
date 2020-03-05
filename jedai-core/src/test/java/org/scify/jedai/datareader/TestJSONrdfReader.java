@@ -1,5 +1,5 @@
 /*
-* Copyright [2016-2018] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2020] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -12,14 +12,12 @@
 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 * See the License for the specific language governing permissions and
 * limitations under the License.
-*/
-
+ */
 package org.scify.jedai.datareader;
 
 import org.rdfhdt.hdt.exceptions.ParserException;
 import org.scify.jedai.datamodel.Attribute;
 import org.scify.jedai.datamodel.EntityProfile;
-import org.scify.jedai.datareader.entityreader.EntityHDTRDFReader;
 import org.scify.jedai.datareader.entityreader.EntityJSONRDFReader;
 
 import java.io.IOException;
@@ -29,8 +27,8 @@ import java.util.List;
  *
  * @author G.A.P. II
  */
-
 public class TestJSONrdfReader {
+
     public static void main(String[] args) throws IOException, ParserException {
 
         String filePath = "data/statsToFile.json";

@@ -1,5 +1,5 @@
 /*
-* Copyright [2016-2018] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2020] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -57,36 +57,36 @@ public class ClustersPerformanceWriter {
 
     private final AbstractDuplicatePropagation abstractDP;
     private final EquivalenceCluster[] entityClusters;
-    
+
     private String dbpassword;
-	private String dbtable;
-	private String dbuser;
-	private boolean ssl;
-	private String endpointURL;
-	private String endpointGraph;
+    private String dbtable;
+    private String dbuser;
+    private boolean ssl;
+    private String endpointURL;
+    private String endpointGraph;
 
     public ClustersPerformanceWriter(EquivalenceCluster[] clusters, AbstractDuplicatePropagation adp) {
         abstractDP = adp;
         abstractDP.resetDuplicates();
         entityClusters = clusters;
     }
-    
+
     public void setPassword(String password) {
         this.dbpassword = password;
     }
 
-	public void setTable(String table) {
+    public void setTable(String table) {
         this.dbtable = table;
     }
 
     public void setUser(String user) {
         this.dbuser = user;
     }
-    
+
     public void setSSL(boolean ssl) {
         this.ssl = ssl;
     }
-    
+
     public void setEndpointURL(String endpointURL) {
         this.endpointURL = endpointURL;
     }
@@ -94,7 +94,7 @@ public class ClustersPerformanceWriter {
     public void setEndpointGraph(String endpointGraph) {
         this.endpointGraph = endpointGraph;
     }
-    
+
     private Connection getMySQLconnection(String dbURL) throws IOException {
         try {
             Class.forName("com.mysql.jdbc.Driver");
@@ -104,7 +104,7 @@ public class ClustersPerformanceWriter {
             return null;
         }
     }
-    
+
     private Connection getPostgreSQLconnection(String dbURL) throws IOException {
         try {
             final Properties props = new Properties();
@@ -179,7 +179,7 @@ public class ClustersPerformanceWriter {
 
         abstractDP.resetDuplicates();
         if (abstractDP instanceof BilateralDuplicatePropagation) { // Clean-Clean ER
-            for (EquivalenceCluster cluster : entityClusters) {                
+            for (EquivalenceCluster cluster : entityClusters) {
                 if (cluster.getEntityIdsD1().size() != 1
                         || cluster.getEntityIdsD2().size() != 1) {
                     continue;
@@ -196,7 +196,7 @@ public class ClustersPerformanceWriter {
                 final int originalDuplicates = abstractDP.getNoOfDuplicates();
                 abstractDP.isSuperfluous(entityId1, entityId2);
                 final int newDuplicates = abstractDP.getNoOfDuplicates();
-                
+
                 sb.append(profile1.getEntityUrl()).append(",");
                 sb.append(profile2.getEntityUrl()).append(",");
                 if (originalDuplicates == newDuplicates) {
@@ -287,14 +287,14 @@ public class ClustersPerformanceWriter {
         final PrintWriter printWriter = new PrintWriter(new File(outputFile));
 
         printWriter.println("<?xml version=\"1.0\"?>");
-	    printWriter.println();
-	    printWriter.println("<rdf:RDF");
-	    printWriter.println("xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"");
-	    printWriter.println("xmlns:obj=\"https://www.w3schools.com/rdf/\">");
-	    
+        printWriter.println();
+        printWriter.println("<rdf:RDF");
+        printWriter.println("xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"");
+        printWriter.println("xmlns:obj=\"https://www.w3schools.com/rdf/\">");
+
         abstractDP.resetDuplicates();
         if (abstractDP instanceof BilateralDuplicatePropagation) { // Clean-Clean ER
-            for (EquivalenceCluster cluster : entityClusters) {                
+            for (EquivalenceCluster cluster : entityClusters) {
                 if (cluster.getEntityIdsD1().size() != 1
                         || cluster.getEntityIdsD2().size() != 1) {
                     continue;
@@ -311,69 +311,67 @@ public class ClustersPerformanceWriter {
                 final int originalDuplicates = abstractDP.getNoOfDuplicates();
                 abstractDP.isSuperfluous(entityId1, entityId2);
                 final int newDuplicates = abstractDP.getNoOfDuplicates();
-                
-            	printWriter.println();
 
-            	printWriter.println("<rdf:Description rdf:about=\""+cluster.toString()+"\">");
+                printWriter.println();
 
-            	printWriter.print("<obj:"+"url1"+">");
-            	printWriter.print(profile1.getEntityUrl().replace("&", "")+"");
-            	printWriter.println("</obj:"+"url1>");
-            	
-            	printWriter.print("<obj:"+"url2"+">");
-            	printWriter.print(profile2.getEntityUrl().replace("&", "")+"");
-            	printWriter.println("</obj:"+"url2>");
-            	
-                
-                printWriter.print("<obj:"+"pairType"+">");
+                printWriter.println("<rdf:Description rdf:about=\"" + cluster.toString() + "\">");
+
+                printWriter.print("<obj:" + "url1" + ">");
+                printWriter.print(profile1.getEntityUrl().replace("&", "") + "");
+                printWriter.println("</obj:" + "url1>");
+
+                printWriter.print("<obj:" + "url2" + ">");
+                printWriter.print(profile2.getEntityUrl().replace("&", "") + "");
+                printWriter.println("</obj:" + "url2>");
+
+                printWriter.print("<obj:" + "pairType" + ">");
                 if (originalDuplicates == newDuplicates) {
-                	printWriter.print("FP"); //false positive
+                    printWriter.print("FP"); //false positive
                 } else { // originalDuplicates < newDuplicates
-                	printWriter.print("TP"); // true positive
-                }               
-            	printWriter.println("</obj:"+"pairType>");
-            	
-            	printWriter.print("<obj:"+"Profile1"+">");
-            	printWriter.print((profile1+"").replace("&", ""));
-            	printWriter.println("</obj:"+"Profile1>");
-            	
-            	printWriter.print("<obj:"+"Profile2"+">");
-            	printWriter.print((profile2+"").replace("&", ""));
-            	printWriter.println("</obj:"+"Profile2>");
-                
-            	printWriter.println("</rdf:Description>");
+                    printWriter.print("TP"); // true positive
+                }
+                printWriter.println("</obj:" + "pairType>");
+
+                printWriter.print("<obj:" + "Profile1" + ">");
+                printWriter.print((profile1 + "").replace("&", ""));
+                printWriter.println("</obj:" + "Profile1>");
+
+                printWriter.print("<obj:" + "Profile2" + ">");
+                printWriter.print((profile2 + "").replace("&", ""));
+                printWriter.println("</obj:" + "Profile2>");
+
+                printWriter.println("</rdf:Description>");
             }
 
             for (IdDuplicates duplicatesPair : abstractDP.getFalseNegatives()) {
                 final EntityProfile profile1 = profilesD1.get(duplicatesPair.getEntityId1());
                 final EntityProfile profile2 = profilesD2.get(duplicatesPair.getEntityId2());
 
-            	printWriter.println();
+                printWriter.println();
 
-                printWriter.println("<rdf:Description rdf:about=\""+duplicatesPair.toString()+"\">");
+                printWriter.println("<rdf:Description rdf:about=\"" + duplicatesPair.toString() + "\">");
 
-            	printWriter.print("<obj:"+"url1"+">");
-            	printWriter.print(profile1.getEntityUrl().replace("&", "")+"");
-            	printWriter.println("</obj:"+"url1>");
-            	
-            	printWriter.print("<obj:"+"url2"+">");
-            	printWriter.print(profile2.getEntityUrl().replace("&", "")+"");
-            	printWriter.println("</obj:"+"url2>");
-            	
-                
-                printWriter.print("<obj:"+"pairType"+">");
-            	printWriter.print("FN"); // false negative
-            	printWriter.println("</obj:"+"pairType>");
-            	
-            	printWriter.print("<obj:"+"Profile1"+">");
-            	printWriter.print((profile1+"").replace("&", ""));
-            	printWriter.println("</obj:"+"Profile1>");
-            	
-            	printWriter.print("<obj:"+"Profile2"+">");
-            	printWriter.print((profile2+"").replace("&", ""));
-            	printWriter.println("</obj:"+"Profile2>");
-                
-            	printWriter.println("</rdf:Description>");
+                printWriter.print("<obj:" + "url1" + ">");
+                printWriter.print(profile1.getEntityUrl().replace("&", "") + "");
+                printWriter.println("</obj:" + "url1>");
+
+                printWriter.print("<obj:" + "url2" + ">");
+                printWriter.print(profile2.getEntityUrl().replace("&", "") + "");
+                printWriter.println("</obj:" + "url2>");
+
+                printWriter.print("<obj:" + "pairType" + ">");
+                printWriter.print("FN"); // false negative
+                printWriter.println("</obj:" + "pairType>");
+
+                printWriter.print("<obj:" + "Profile1" + ">");
+                printWriter.print((profile1 + "").replace("&", ""));
+                printWriter.println("</obj:" + "Profile1>");
+
+                printWriter.print("<obj:" + "Profile2" + ">");
+                printWriter.print((profile2 + "").replace("&", ""));
+                printWriter.println("</obj:" + "Profile2>");
+
+                printWriter.println("</rdf:Description>");
             }
         } else { // Dirty ER
             for (EquivalenceCluster cluster : entityClusters) {
@@ -389,37 +387,36 @@ public class ClustersPerformanceWriter {
                         final int originalDuplicates = abstractDP.getNoOfDuplicates();
                         abstractDP.isSuperfluous(duplicatesArray[i], duplicatesArray[j]);
                         final int newDuplicates = abstractDP.getNoOfDuplicates();
-                        
-                    	printWriter.println();
 
-                        printWriter.println("<rdf:Description rdf:about=\""+cluster.toString()+"\">");
+                        printWriter.println();
 
-                    	printWriter.print("<obj:"+"url1"+">");
-                    	printWriter.print(profile1.getEntityUrl().replace("&", "")+"");
-                    	printWriter.println("</obj:"+"url1>");
-                    	
-                    	printWriter.print("<obj:"+"url2"+">");
-                    	printWriter.print(profile2.getEntityUrl().replace("&", "")+"");
-                    	printWriter.println("</obj:"+"url2>");
-                    	
-                        
-                        printWriter.print("<obj:"+"pairType"+">");
+                        printWriter.println("<rdf:Description rdf:about=\"" + cluster.toString() + "\">");
+
+                        printWriter.print("<obj:" + "url1" + ">");
+                        printWriter.print(profile1.getEntityUrl().replace("&", "") + "");
+                        printWriter.println("</obj:" + "url1>");
+
+                        printWriter.print("<obj:" + "url2" + ">");
+                        printWriter.print(profile2.getEntityUrl().replace("&", "") + "");
+                        printWriter.println("</obj:" + "url2>");
+
+                        printWriter.print("<obj:" + "pairType" + ">");
                         if (originalDuplicates == newDuplicates) {
-                        	printWriter.print("FP"); //false positive
+                            printWriter.print("FP"); //false positive
                         } else { // originalDuplicates < newDuplicates
-                        	printWriter.print("TP"); // true positive
-                        }               
-                    	printWriter.println("</obj:"+"pairType>");
-                    	
-                    	printWriter.print("<obj:"+"Profile1"+">");
-                    	printWriter.print((profile1+"").replace("&", ""));
-                    	printWriter.println("</obj:"+"Profile1>");
-                    	
-                    	printWriter.print("<obj:"+"Profile2"+">");
-                    	printWriter.print((profile2+"").replace("&", ""));
-                    	printWriter.println("</obj:"+"Profile2>");
-                        
-                    	printWriter.println("</rdf:Description>");
+                            printWriter.print("TP"); // true positive
+                        }
+                        printWriter.println("</obj:" + "pairType>");
+
+                        printWriter.print("<obj:" + "Profile1" + ">");
+                        printWriter.print((profile1 + "").replace("&", ""));
+                        printWriter.println("</obj:" + "Profile1>");
+
+                        printWriter.print("<obj:" + "Profile2" + ">");
+                        printWriter.print((profile2 + "").replace("&", ""));
+                        printWriter.println("</obj:" + "Profile2>");
+
+                        printWriter.println("</rdf:Description>");
                     }
                 }
             }
@@ -428,34 +425,33 @@ public class ClustersPerformanceWriter {
                 final EntityProfile profile1 = profilesD1.get(duplicatesPair.getEntityId1());
                 final EntityProfile profile2 = profilesD1.get(duplicatesPair.getEntityId2());
 
-            	printWriter.println();
+                printWriter.println();
 
-                printWriter.println("<rdf:Description rdf:about=\""+duplicatesPair.toString()+"\">");
+                printWriter.println("<rdf:Description rdf:about=\"" + duplicatesPair.toString() + "\">");
 
-            	printWriter.print("<obj:"+"url1"+">");
-            	printWriter.print(profile1.getEntityUrl().replace("&", "")+"");
-            	printWriter.println("</obj:"+"url1>");
-            	
-            	printWriter.print("<obj:"+"url2"+">");
-            	printWriter.print(profile2.getEntityUrl().replace("&", "")+"");
-            	printWriter.println("</obj:"+"url2>");
-            	
-                
-                printWriter.print("<obj:"+"pairType"+">");
-            	printWriter.print("FN"); // false negative
-            	printWriter.println("</obj:"+"pairType>");
-            	
-            	printWriter.print("<obj:"+"Profile1"+">");
-            	printWriter.print((profile1+"").replace("&", ""));
-            	printWriter.println("</obj:"+"Profile1>");
-            	
-            	printWriter.print("<obj:"+"Profile2"+">");
-            	printWriter.print((profile2+"").replace("&", ""));
-            	printWriter.println("</obj:"+"Profile2>");
-                
-            	printWriter.println("</rdf:Description>");
+                printWriter.print("<obj:" + "url1" + ">");
+                printWriter.print(profile1.getEntityUrl().replace("&", "") + "");
+                printWriter.println("</obj:" + "url1>");
+
+                printWriter.print("<obj:" + "url2" + ">");
+                printWriter.print(profile2.getEntityUrl().replace("&", "") + "");
+                printWriter.println("</obj:" + "url2>");
+
+                printWriter.print("<obj:" + "pairType" + ">");
+                printWriter.print("FN"); // false negative
+                printWriter.println("</obj:" + "pairType>");
+
+                printWriter.print("<obj:" + "Profile1" + ">");
+                printWriter.print((profile1 + "").replace("&", ""));
+                printWriter.println("</obj:" + "Profile1>");
+
+                printWriter.print("<obj:" + "Profile2" + ">");
+                printWriter.print((profile2 + "").replace("&", ""));
+                printWriter.println("</obj:" + "Profile2>");
+
+                printWriter.println("</rdf:Description>");
             }
-            
+
         }
 
         if (0 < totalMatches) {
@@ -470,23 +466,23 @@ public class ClustersPerformanceWriter {
             fMeasure = 0;
         }
 
-    	printWriter.println();
+        printWriter.println();
 
-        printWriter.println("<rdf:Description rdf:about=\""+"STATS"+"\">");
+        printWriter.println("<rdf:Description rdf:about=\"" + "STATS" + "\">");
 
-        printWriter.print("<obj:"+"Precision"+">");
-    	printWriter.print(precision+"");
-    	printWriter.println("</obj:"+"Precision>");
-    	
-        printWriter.print("<obj:"+"Recall"+">");
-    	printWriter.print(recall+"");
-    	printWriter.println("</obj:"+"Recall>");
-    	
-        printWriter.print("<obj:"+"F-Measure"+">");
-    	printWriter.print(fMeasure+"");
-    	printWriter.println("</obj:"+"F-Measure>");
+        printWriter.print("<obj:" + "Precision" + ">");
+        printWriter.print(precision + "");
+        printWriter.println("</obj:" + "Precision>");
 
-    	printWriter.println("</rdf:Description>");
+        printWriter.print("<obj:" + "Recall" + ">");
+        printWriter.print(recall + "");
+        printWriter.println("</obj:" + "Recall>");
+
+        printWriter.print("<obj:" + "F-Measure" + ">");
+        printWriter.print(fMeasure + "");
+        printWriter.println("</obj:" + "F-Measure>");
+
+        printWriter.println("</rdf:Description>");
 
         printWriter.println("</rdf:RDF>");
         printWriter.close();
@@ -504,9 +500,9 @@ public class ClustersPerformanceWriter {
         printWriter.println("{\"triples\":\n");
         printWriter.println("[");
 
-        String subString="{Subject: \"";
-        String predString="\", Predicate: \"";
-        String objString="\", Object: \"";
+        String subString = "{Subject: \"";
+        String predString = "\", Predicate: \"";
+        String objString = "\", Object: \"";
 
         abstractDP.resetDuplicates();
         if (abstractDP instanceof BilateralDuplicatePropagation) { // Clean-Clean ER
@@ -528,18 +524,18 @@ public class ClustersPerformanceWriter {
                 abstractDP.isSuperfluous(entityId1, entityId2);
                 final int newDuplicates = abstractDP.getNoOfDuplicates();
 
-                printWriter.print(subString+cluster.toString());
-                printWriter.print(predString+"url1");
-                printWriter.print(objString+profile1.getEntityUrl().replace("&", "").replace("\\", "")+"");
+                printWriter.print(subString + cluster.toString());
+                printWriter.print(predString + "url1");
+                printWriter.print(objString + profile1.getEntityUrl().replace("&", "").replace("\\", "") + "");
                 printWriter.println("\"},");
 
-                printWriter.print(subString+cluster.toString());
-                printWriter.print(predString+"url2");
-                printWriter.print(objString+profile2.getEntityUrl().replace("&", "").replace("\\", "")+"");
+                printWriter.print(subString + cluster.toString());
+                printWriter.print(predString + "url2");
+                printWriter.print(objString + profile2.getEntityUrl().replace("&", "").replace("\\", "") + "");
                 printWriter.println("\"},");
 
-                printWriter.print(subString+cluster.toString());
-                printWriter.print(predString+"pairType");
+                printWriter.print(subString + cluster.toString());
+                printWriter.print(predString + "pairType");
                 printWriter.print(objString);
                 if (originalDuplicates == newDuplicates) {
                     printWriter.print("FP"); //false positive
@@ -548,17 +544,16 @@ public class ClustersPerformanceWriter {
                 }
                 printWriter.println("\"},");
 
-
-                printWriter.print(subString+cluster.toString());
-                printWriter.print(predString+"Profile1");
+                printWriter.print(subString + cluster.toString());
+                printWriter.print(predString + "Profile1");
                 printWriter.print(objString);
-                printWriter.print((profile1+"").replace("&", "").replace("\\", ""));
+                printWriter.print((profile1 + "").replace("&", "").replace("\\", ""));
                 printWriter.println("\"},");
 
-                printWriter.print(subString+cluster.toString());
-                printWriter.print(predString+"Profile2");
+                printWriter.print(subString + cluster.toString());
+                printWriter.print(predString + "Profile2");
                 printWriter.print(objString);
-                printWriter.print((profile2+"").replace("&", "").replace("\\", ""));
+                printWriter.print((profile2 + "").replace("&", "").replace("\\", ""));
                 printWriter.println("\"},");
             }
 
@@ -566,34 +561,33 @@ public class ClustersPerformanceWriter {
                 final EntityProfile profile1 = profilesD1.get(duplicatesPair.getEntityId1());
                 final EntityProfile profile2 = profilesD2.get(duplicatesPair.getEntityId2());
 
-                printWriter.print(subString+duplicatesPair.toString());
-                printWriter.print(predString+"url1");
-                printWriter.print(objString+profile1.getEntityUrl().replace("&", "").replace("\\", "")+"");
+                printWriter.print(subString + duplicatesPair.toString());
+                printWriter.print(predString + "url1");
+                printWriter.print(objString + profile1.getEntityUrl().replace("&", "").replace("\\", "") + "");
                 printWriter.println("\"},");
 
-                printWriter.print(subString+duplicatesPair.toString());
-                printWriter.print(predString+"url2");
-                printWriter.print(objString+profile2.getEntityUrl().replace("&", "").replace("\\", "")+"");
+                printWriter.print(subString + duplicatesPair.toString());
+                printWriter.print(predString + "url2");
+                printWriter.print(objString + profile2.getEntityUrl().replace("&", "").replace("\\", "") + "");
                 printWriter.println("\"},");
 
-                printWriter.print(subString+duplicatesPair.toString());
-                printWriter.print(predString+"pairType");
+                printWriter.print(subString + duplicatesPair.toString());
+                printWriter.print(predString + "pairType");
                 printWriter.print(objString);
                 printWriter.print("FN"); //false negative
 
                 printWriter.println("\"},");
 
-
-                printWriter.print(subString+duplicatesPair.toString());
-                printWriter.print(predString+"Profile1");
+                printWriter.print(subString + duplicatesPair.toString());
+                printWriter.print(predString + "Profile1");
                 printWriter.print(objString);
-                printWriter.print((profile1+"").replace("&", "").replace("\\", ""));
+                printWriter.print((profile1 + "").replace("&", "").replace("\\", ""));
                 printWriter.println("\"},");
 
-                printWriter.print(subString+duplicatesPair.toString());
-                printWriter.print(predString+"Profile2");
+                printWriter.print(subString + duplicatesPair.toString());
+                printWriter.print(predString + "Profile2");
                 printWriter.print(objString);
-                printWriter.print((profile2+"").replace("&", "").replace("\\", ""));
+                printWriter.print((profile2 + "").replace("&", "").replace("\\", ""));
                 printWriter.println("\"},");
             }
         } else { // Dirty ER
@@ -611,18 +605,18 @@ public class ClustersPerformanceWriter {
                         abstractDP.isSuperfluous(duplicatesArray[i], duplicatesArray[j]);
                         final int newDuplicates = abstractDP.getNoOfDuplicates();
 
-                        printWriter.print(subString+cluster.toString());
-                        printWriter.print(predString+"url1");
-                        printWriter.print(objString+profile1.getEntityUrl().replace("&", "").replace("\\", "")+"");
+                        printWriter.print(subString + cluster.toString());
+                        printWriter.print(predString + "url1");
+                        printWriter.print(objString + profile1.getEntityUrl().replace("&", "").replace("\\", "") + "");
                         printWriter.println("\"},");
 
-                        printWriter.print(subString+cluster.toString());
-                        printWriter.print(predString+"url2");
-                        printWriter.print(objString+profile2.getEntityUrl().replace("&", "").replace("\\", "")+"");
+                        printWriter.print(subString + cluster.toString());
+                        printWriter.print(predString + "url2");
+                        printWriter.print(objString + profile2.getEntityUrl().replace("&", "").replace("\\", "") + "");
                         printWriter.println("\"},");
 
-                        printWriter.print(subString+cluster.toString());
-                        printWriter.print(predString+"pairType");
+                        printWriter.print(subString + cluster.toString());
+                        printWriter.print(predString + "pairType");
                         printWriter.print(objString);
                         if (originalDuplicates == newDuplicates) {
                             printWriter.print("FP"); //false positive
@@ -631,17 +625,16 @@ public class ClustersPerformanceWriter {
                         }
                         printWriter.println("\"},");
 
-
-                        printWriter.print(subString+cluster.toString());
-                        printWriter.print(predString+"Profile1");
+                        printWriter.print(subString + cluster.toString());
+                        printWriter.print(predString + "Profile1");
                         printWriter.print(objString);
-                        printWriter.print((profile1+"").replace("&", "").replace("\\", ""));
+                        printWriter.print((profile1 + "").replace("&", "").replace("\\", ""));
                         printWriter.println("\"},");
 
-                        printWriter.print(subString+cluster.toString());
-                        printWriter.print(predString+"Profile2");
+                        printWriter.print(subString + cluster.toString());
+                        printWriter.print(predString + "Profile2");
                         printWriter.print(objString);
-                        printWriter.print((profile2+"").replace("&", "").replace("\\", ""));
+                        printWriter.print((profile2 + "").replace("&", "").replace("\\", ""));
                         printWriter.println("\"},");
                     }
                 }
@@ -651,34 +644,33 @@ public class ClustersPerformanceWriter {
                 final EntityProfile profile1 = profilesD1.get(duplicatesPair.getEntityId1());
                 final EntityProfile profile2 = profilesD1.get(duplicatesPair.getEntityId2());
 
-                printWriter.print(subString+duplicatesPair.toString());
-                printWriter.print(predString+"url1");
-                printWriter.print(objString+profile1.getEntityUrl().replace("&", "").replace("\\", "")+"");
+                printWriter.print(subString + duplicatesPair.toString());
+                printWriter.print(predString + "url1");
+                printWriter.print(objString + profile1.getEntityUrl().replace("&", "").replace("\\", "") + "");
                 printWriter.println("\"},");
 
-                printWriter.print(subString+duplicatesPair.toString());
-                printWriter.print(predString+"url2");
-                printWriter.print(objString+profile2.getEntityUrl().replace("&", "").replace("\\", "")+"");
+                printWriter.print(subString + duplicatesPair.toString());
+                printWriter.print(predString + "url2");
+                printWriter.print(objString + profile2.getEntityUrl().replace("&", "").replace("\\", "") + "");
                 printWriter.println("\"},");
 
-                printWriter.print(subString+duplicatesPair.toString());
-                printWriter.print(predString+"pairType");
+                printWriter.print(subString + duplicatesPair.toString());
+                printWriter.print(predString + "pairType");
                 printWriter.print(objString);
                 printWriter.print("FN"); //false negative
 
                 printWriter.println("\"},");
 
-
-                printWriter.print(subString+duplicatesPair.toString());
-                printWriter.print(predString+"Profile1");
+                printWriter.print(subString + duplicatesPair.toString());
+                printWriter.print(predString + "Profile1");
                 printWriter.print(objString);
-                printWriter.print((profile1+"").replace("&", "").replace("\\", ""));
+                printWriter.print((profile1 + "").replace("&", "").replace("\\", ""));
                 printWriter.println("\"},");
 
-                printWriter.print(subString+duplicatesPair.toString());
-                printWriter.print(predString+"Profile2");
+                printWriter.print(subString + duplicatesPair.toString());
+                printWriter.print(predString + "Profile2");
                 printWriter.print(objString);
-                printWriter.print((profile2+"").replace("&", "").replace("\\", ""));
+                printWriter.print((profile2 + "").replace("&", "").replace("\\", ""));
                 printWriter.println("\"},");
             }
 
@@ -695,22 +687,22 @@ public class ClustersPerformanceWriter {
         } else {
             fMeasure = 0;
         }
-        printWriter.print(subString+"STATS");
-        printWriter.print(predString+"Precision");
+        printWriter.print(subString + "STATS");
+        printWriter.print(predString + "Precision");
         printWriter.print(objString);
-        printWriter.print(precision+"");
+        printWriter.print(precision + "");
         printWriter.println("\"},");
 
-        printWriter.print(subString+"STATS");
-        printWriter.print(predString+"Recall");
+        printWriter.print(subString + "STATS");
+        printWriter.print(predString + "Recall");
         printWriter.print(objString);
-        printWriter.print(recall+"");
+        printWriter.print(recall + "");
         printWriter.println("\"},");
 
-        printWriter.print(subString+"STATS");
-        printWriter.print(predString+"F-Measure");
+        printWriter.print(subString + "STATS");
+        printWriter.print(predString + "F-Measure");
         printWriter.print(objString);
-        printWriter.print(fMeasure+"");
+        printWriter.print(fMeasure + "");
         printWriter.println("\"}");
 
         printWriter.println("]");
@@ -727,8 +719,8 @@ public class ClustersPerformanceWriter {
         totalMatches = 0;
         final PrintWriter printWriter = new PrintWriter(new File(outputFile));
 
-        String xmlnsrdf="http://www.w3.org/1999/02/22/";
-        String xmlnsobj="https://www.w3schools.com/rdf/";
+        String xmlnsrdf = "http://www.w3.org/1999/02/22/";
+        String xmlnsobj = "https://www.w3schools.com/rdf/";
 
         abstractDP.resetDuplicates();
         if (abstractDP instanceof BilateralDuplicatePropagation) { // Clean-Clean ER
@@ -750,18 +742,18 @@ public class ClustersPerformanceWriter {
                 abstractDP.isSuperfluous(entityId1, entityId2);
                 final int newDuplicates = abstractDP.getNoOfDuplicates();
 
-                printWriter.print("<"+xmlnsrdf+cluster.toString()+"> ");
-                printWriter.print("<"+xmlnsobj+"url1"+"> \"");
-                printWriter.print(profile1.getEntityUrl().replace("&", "").replace("\\", "")+"");
+                printWriter.print("<" + xmlnsrdf + cluster.toString() + "> ");
+                printWriter.print("<" + xmlnsobj + "url1" + "> \"");
+                printWriter.print(profile1.getEntityUrl().replace("&", "").replace("\\", "") + "");
                 printWriter.println("\"^^<http://www.w3.org/2001/XMLSchema#string>");
 
-                printWriter.print("<"+xmlnsrdf+cluster.toString()+"> ");
-                printWriter.print("<"+xmlnsobj+"url2"+"> \"");
-                printWriter.print(profile2.getEntityUrl().replace("&", "").replace("\\", "")+"");
+                printWriter.print("<" + xmlnsrdf + cluster.toString() + "> ");
+                printWriter.print("<" + xmlnsobj + "url2" + "> \"");
+                printWriter.print(profile2.getEntityUrl().replace("&", "").replace("\\", "") + "");
                 printWriter.println("\"^^<http://www.w3.org/2001/XMLSchema#string>");
 
-                printWriter.print("<"+xmlnsrdf+cluster.toString()+"> ");
-                printWriter.print("<"+xmlnsobj+"pairType"+"> \"");
+                printWriter.print("<" + xmlnsrdf + cluster.toString() + "> ");
+                printWriter.print("<" + xmlnsobj + "pairType" + "> \"");
                 if (originalDuplicates == newDuplicates) {
                     printWriter.print("FP"); //false positive
                 } else { // originalDuplicates < newDuplicates
@@ -769,15 +761,14 @@ public class ClustersPerformanceWriter {
                 }
                 printWriter.println("\"^^<http://www.w3.org/2001/XMLSchema#string>");
 
-
-                printWriter.print("<"+xmlnsrdf+cluster.toString()+"> ");
-                printWriter.print("<"+xmlnsobj+"Profile1"+"> \"");
-                printWriter.print((profile1+"").replace("&", "").replace("\\", ""));
+                printWriter.print("<" + xmlnsrdf + cluster.toString() + "> ");
+                printWriter.print("<" + xmlnsobj + "Profile1" + "> \"");
+                printWriter.print((profile1 + "").replace("&", "").replace("\\", ""));
                 printWriter.println("\"^^<http://www.w3.org/2001/XMLSchema#string>");
 
-                printWriter.print("<"+xmlnsrdf+cluster.toString()+"> ");
-                printWriter.print("<"+xmlnsobj+"Profile2"+"> \"");
-                printWriter.print((profile2+"").replace("&", "").replace("\\", ""));
+                printWriter.print("<" + xmlnsrdf + cluster.toString() + "> ");
+                printWriter.print("<" + xmlnsobj + "Profile2" + "> \"");
+                printWriter.print((profile2 + "").replace("&", "").replace("\\", ""));
                 printWriter.println("\"^^<http://www.w3.org/2001/XMLSchema#string>");
             }
 
@@ -785,31 +776,30 @@ public class ClustersPerformanceWriter {
                 final EntityProfile profile1 = profilesD1.get(duplicatesPair.getEntityId1());
                 final EntityProfile profile2 = profilesD2.get(duplicatesPair.getEntityId2());
 
-                printWriter.print("<"+xmlnsrdf+duplicatesPair.toString()+"> ");
-                printWriter.print("<"+xmlnsobj+"url1"+"> \"");
-                printWriter.print(profile1.getEntityUrl().replace("&", "").replace("\\", "")+"");
+                printWriter.print("<" + xmlnsrdf + duplicatesPair.toString() + "> ");
+                printWriter.print("<" + xmlnsobj + "url1" + "> \"");
+                printWriter.print(profile1.getEntityUrl().replace("&", "").replace("\\", "") + "");
                 printWriter.println("\"^^<http://www.w3.org/2001/XMLSchema#string>");
 
-                printWriter.print("<"+xmlnsrdf+duplicatesPair.toString()+"> ");
-                printWriter.print("<"+xmlnsobj+"url2"+"> \"");
-                printWriter.print(profile2.getEntityUrl().replace("&", "").replace("\\", "")+"");
+                printWriter.print("<" + xmlnsrdf + duplicatesPair.toString() + "> ");
+                printWriter.print("<" + xmlnsobj + "url2" + "> \"");
+                printWriter.print(profile2.getEntityUrl().replace("&", "").replace("\\", "") + "");
                 printWriter.println("\"^^<http://www.w3.org/2001/XMLSchema#string>");
 
-                printWriter.print("<"+xmlnsrdf+duplicatesPair.toString()+"> ");
-                printWriter.print("<"+xmlnsobj+"pairType"+"> \"");
+                printWriter.print("<" + xmlnsrdf + duplicatesPair.toString() + "> ");
+                printWriter.print("<" + xmlnsobj + "pairType" + "> \"");
                 printWriter.print("FN"); //false positive
 
                 printWriter.println("\"^^<http://www.w3.org/2001/XMLSchema#string>");
 
-
-                printWriter.print("<"+xmlnsrdf+duplicatesPair.toString()+"> ");
-                printWriter.print("<"+xmlnsobj+"Profile1"+"> \"");
-                printWriter.print((profile1+"").replace("&", "").replace("\\", ""));
+                printWriter.print("<" + xmlnsrdf + duplicatesPair.toString() + "> ");
+                printWriter.print("<" + xmlnsobj + "Profile1" + "> \"");
+                printWriter.print((profile1 + "").replace("&", "").replace("\\", ""));
                 printWriter.println("\"^^<http://www.w3.org/2001/XMLSchema#string>");
 
-                printWriter.print("<"+xmlnsrdf+duplicatesPair.toString()+"> ");
-                printWriter.print("<"+xmlnsobj+"Profile2"+"> \"");
-                printWriter.print((profile2+"").replace("&", "").replace("\\", ""));
+                printWriter.print("<" + xmlnsrdf + duplicatesPair.toString() + "> ");
+                printWriter.print("<" + xmlnsobj + "Profile2" + "> \"");
+                printWriter.print((profile2 + "").replace("&", "").replace("\\", ""));
                 printWriter.println("\"^^<http://www.w3.org/2001/XMLSchema#string>");
             }
         } else { // Dirty ER
@@ -827,18 +817,18 @@ public class ClustersPerformanceWriter {
                         abstractDP.isSuperfluous(duplicatesArray[i], duplicatesArray[j]);
                         final int newDuplicates = abstractDP.getNoOfDuplicates();
 
-                        printWriter.print("<"+xmlnsrdf+cluster.toString()+"> ");
-                        printWriter.print("<"+xmlnsobj+"url1"+"> \"");
-                        printWriter.print(profile1.getEntityUrl().replace("&", "").replace("\\", "")+"");
+                        printWriter.print("<" + xmlnsrdf + cluster.toString() + "> ");
+                        printWriter.print("<" + xmlnsobj + "url1" + "> \"");
+                        printWriter.print(profile1.getEntityUrl().replace("&", "").replace("\\", "") + "");
                         printWriter.println("\"^^<http://www.w3.org/2001/XMLSchema#string>");
 
-                        printWriter.print("<"+xmlnsrdf+cluster.toString()+"> ");
-                        printWriter.print("<"+xmlnsobj+"url2"+"> \"");
-                        printWriter.print(profile2.getEntityUrl().replace("&", "").replace("\\", "")+"");
+                        printWriter.print("<" + xmlnsrdf + cluster.toString() + "> ");
+                        printWriter.print("<" + xmlnsobj + "url2" + "> \"");
+                        printWriter.print(profile2.getEntityUrl().replace("&", "").replace("\\", "") + "");
                         printWriter.println("\"^^<http://www.w3.org/2001/XMLSchema#string>");
 
-                        printWriter.print("<"+xmlnsrdf+cluster.toString()+"> ");
-                        printWriter.print("<"+xmlnsobj+"pairType"+"> \"");
+                        printWriter.print("<" + xmlnsrdf + cluster.toString() + "> ");
+                        printWriter.print("<" + xmlnsobj + "pairType" + "> \"");
                         if (originalDuplicates == newDuplicates) {
                             printWriter.print("FP"); //false positive
                         } else { // originalDuplicates < newDuplicates
@@ -846,15 +836,14 @@ public class ClustersPerformanceWriter {
                         }
                         printWriter.println("\"^^<http://www.w3.org/2001/XMLSchema#string>");
 
-
-                        printWriter.print("<"+xmlnsrdf+cluster.toString()+"> ");
-                        printWriter.print("<"+xmlnsobj+"Profile1"+"> \"");
-                        printWriter.print((profile1+"").replace("&", "").replace("\\", ""));
+                        printWriter.print("<" + xmlnsrdf + cluster.toString() + "> ");
+                        printWriter.print("<" + xmlnsobj + "Profile1" + "> \"");
+                        printWriter.print((profile1 + "").replace("&", "").replace("\\", ""));
                         printWriter.println("\"^^<http://www.w3.org/2001/XMLSchema#string>");
 
-                        printWriter.print("<"+xmlnsrdf+cluster.toString()+"> ");
-                        printWriter.print("<"+xmlnsobj+"Profile2"+"> \"");
-                        printWriter.print((profile2+"").replace("&", "").replace("\\", ""));
+                        printWriter.print("<" + xmlnsrdf + cluster.toString() + "> ");
+                        printWriter.print("<" + xmlnsobj + "Profile2" + "> \"");
+                        printWriter.print((profile2 + "").replace("&", "").replace("\\", ""));
                         printWriter.println("\"^^<http://www.w3.org/2001/XMLSchema#string>");
                     }
                 }
@@ -864,31 +853,30 @@ public class ClustersPerformanceWriter {
                 final EntityProfile profile1 = profilesD1.get(duplicatesPair.getEntityId1());
                 final EntityProfile profile2 = profilesD1.get(duplicatesPair.getEntityId2());
 
-                printWriter.print("<"+xmlnsrdf+duplicatesPair.toString()+"> ");
-                printWriter.print("<"+xmlnsobj+"url1"+"> \"");
-                printWriter.print(profile1.getEntityUrl().replace("&", "").replace("\\", "")+"");
+                printWriter.print("<" + xmlnsrdf + duplicatesPair.toString() + "> ");
+                printWriter.print("<" + xmlnsobj + "url1" + "> \"");
+                printWriter.print(profile1.getEntityUrl().replace("&", "").replace("\\", "") + "");
                 printWriter.println("\"^^<http://www.w3.org/2001/XMLSchema#string>");
 
-                printWriter.print("<"+xmlnsrdf+duplicatesPair.toString()+"> ");
-                printWriter.print("<"+xmlnsobj+"url2"+"> \"");
-                printWriter.print(profile2.getEntityUrl().replace("&", "").replace("\\", "")+"");
+                printWriter.print("<" + xmlnsrdf + duplicatesPair.toString() + "> ");
+                printWriter.print("<" + xmlnsobj + "url2" + "> \"");
+                printWriter.print(profile2.getEntityUrl().replace("&", "").replace("\\", "") + "");
                 printWriter.println("\"^^<http://www.w3.org/2001/XMLSchema#string>");
 
-                printWriter.print("<"+xmlnsrdf+duplicatesPair.toString()+"> ");
-                printWriter.print("<"+xmlnsobj+"pairType"+"> \"");
+                printWriter.print("<" + xmlnsrdf + duplicatesPair.toString() + "> ");
+                printWriter.print("<" + xmlnsobj + "pairType" + "> \"");
                 printWriter.print("FN"); //false negative
 
                 printWriter.println("\"^^<http://www.w3.org/2001/XMLSchema#string>");
 
-
-                printWriter.print("<"+xmlnsrdf+duplicatesPair.toString()+"> ");
-                printWriter.print("<"+xmlnsobj+"Profile1"+"> \"");
-                printWriter.print((profile1+"").replace("&", "").replace("\\", ""));
+                printWriter.print("<" + xmlnsrdf + duplicatesPair.toString() + "> ");
+                printWriter.print("<" + xmlnsobj + "Profile1" + "> \"");
+                printWriter.print((profile1 + "").replace("&", "").replace("\\", ""));
                 printWriter.println("\"^^<http://www.w3.org/2001/XMLSchema#string>");
 
-                printWriter.print("<"+xmlnsrdf+duplicatesPair.toString()+"> ");
-                printWriter.print("<"+xmlnsobj+"Profile2"+"> \"");
-                printWriter.print((profile2+"").replace("&", "").replace("\\", ""));
+                printWriter.print("<" + xmlnsrdf + duplicatesPair.toString() + "> ");
+                printWriter.print("<" + xmlnsobj + "Profile2" + "> \"");
+                printWriter.print((profile2 + "").replace("&", "").replace("\\", ""));
                 printWriter.println("\"^^<http://www.w3.org/2001/XMLSchema#string>");
             }
 
@@ -906,45 +894,44 @@ public class ClustersPerformanceWriter {
             fMeasure = 0;
         }
 
-        printWriter.print("<"+xmlnsrdf+"STATS"+"> ");
-        printWriter.print("<"+xmlnsobj+"Precision"+"> \"");
-        printWriter.print(precision+"");
+        printWriter.print("<" + xmlnsrdf + "STATS" + "> ");
+        printWriter.print("<" + xmlnsobj + "Precision" + "> \"");
+        printWriter.print(precision + "");
         printWriter.println("\"^^<http://www.w3.org/2001/XMLSchema#string>");
 
-        printWriter.print("<"+xmlnsrdf+"STATS"+"> ");
-        printWriter.print("<"+xmlnsobj+"Recall"+"> \"");
-        printWriter.print(recall+"");
+        printWriter.print("<" + xmlnsrdf + "STATS" + "> ");
+        printWriter.print("<" + xmlnsobj + "Recall" + "> \"");
+        printWriter.print(recall + "");
         printWriter.println("\"^^<http://www.w3.org/2001/XMLSchema#string>");
 
-        printWriter.print("<"+xmlnsrdf+"STATS"+"> ");
-        printWriter.print("<"+xmlnsobj+"F-Measure"+"> \"");
-        printWriter.print(fMeasure+"");
+        printWriter.print("<" + xmlnsrdf + "STATS" + "> ");
+        printWriter.print("<" + xmlnsobj + "F-Measure" + "> \"");
+        printWriter.print(fMeasure + "");
         printWriter.println("\"^^<http://www.w3.org/2001/XMLSchema#string>");
         printWriter.close();
     }
 
     public void printDetailedResultsToHDTrdf(List<EntityProfile> profilesD1, List<EntityProfile> profilesD2, String outputFile) throws IOException, ParserException {
 
-        this.printDetailedResultsToRDFNT(profilesD1, profilesD2, outputFile+"help.nt");
+        this.printDetailedResultsToRDFNT(profilesD1, profilesD2, outputFile + "help.nt");
         String baseURI = "http://www.w3.org/";
         //String rdfInput = "data//minExample.nt";
-        String rdfInput = outputFile+"help.nt";
+        String rdfInput = outputFile + "help.nt";
         String inputType = "ntriples";
         String hdtOutput = outputFile;
 
         // Create HDT from RDF file
         HDT hdt = HDTManager.generateHDT(
-                rdfInput,         // Input RDF File
-                baseURI,          // Base URI
+                rdfInput, // Input RDF File
+                baseURI, // Base URI
                 RDFNotation.parse(inputType), // Input Type
-                new HDTSpecification(),   // HDT Options
-                null              // Progress Listener
+                new HDTSpecification(), // HDT Options
+                null // Progress Listener
         );
 
         // OPTIONAL: Add additional domain-specific properties to the header:
         //Header header = hdt.getHeader();
         //header.insert("myResource1", "property" , "value");
-
         // Save generated HDT to a file
         hdt.saveToHDT(hdtOutput, null);
 
@@ -962,12 +949,12 @@ public class ClustersPerformanceWriter {
         StringBuilder sb = new StringBuilder();
 
         String sparqlQueryString1 = "INSERT DATA { "
-        		+ "GRAPH "+GraphName+" { ";
+                + "GRAPH " + GraphName + " { ";
         sb.append(sparqlQueryString1);
-	    
+
         abstractDP.resetDuplicates();
         if (abstractDP instanceof BilateralDuplicatePropagation) { // Clean-Clean ER
-            for (EquivalenceCluster cluster : entityClusters) {                
+            for (EquivalenceCluster cluster : entityClusters) {
                 if (cluster.getEntityIdsD1().size() != 1
                         || cluster.getEntityIdsD2().size() != 1) {
                     continue;
@@ -984,109 +971,105 @@ public class ClustersPerformanceWriter {
                 final int originalDuplicates = abstractDP.getNoOfDuplicates();
                 abstractDP.isSuperfluous(entityId1, entityId2);
                 final int newDuplicates = abstractDP.getNoOfDuplicates();
-                
-                sb.append("<obj/"+"record/"+cluster.toString()+"> ");
-            	sb.append("<url1> ");
-            	sb.append("\""+profile1.getEntityUrl().replace("&", "")+""+"\".\n");
-            	
-            	sb.append("<obj/"+"record/"+cluster.toString()+"> ");
-            	sb.append("<url2> ");
-            	sb.append("\""+profile2.getEntityUrl().replace("&", "")+""+"\".\n");
-            	
-            	sb.append("<obj/"+"record/"+cluster.toString()+"> ");
-            	sb.append("<pairType> ");
+
+                sb.append("<obj/" + "record/" + cluster.toString() + "> ");
+                sb.append("<url1> ");
+                sb.append("\"" + profile1.getEntityUrl().replace("&", "") + "" + "\".\n");
+
+                sb.append("<obj/" + "record/" + cluster.toString() + "> ");
+                sb.append("<url2> ");
+                sb.append("\"" + profile2.getEntityUrl().replace("&", "") + "" + "\".\n");
+
+                sb.append("<obj/" + "record/" + cluster.toString() + "> ");
+                sb.append("<pairType> ");
                 if (originalDuplicates == newDuplicates) {
-                	sb.append("\""+"FP"+"\".\n");//false positive
+                    sb.append("\"" + "FP" + "\".\n");//false positive
                 } else { // originalDuplicates < newDuplicates
-                	sb.append("\""+"TP"+"\".\n"); // true positive
-                }               
-            	
-                sb.append("<obj/"+"record/"+cluster.toString()+"> ");
-            	sb.append("<Profile1> ");
-            	sb.append("\""+(profile1+"").replace("&", "")+"\".\n");
-            	
-            	sb.append("<obj/"+"record/"+cluster.toString()+"> ");
-            	sb.append("<Profile2> ");
-            	sb.append("\""+(profile2+"").replace("&", "")+"\".\n");
-            	
-            	//execute query every 1000 steps
-            	if (totalMatches % 1000 == 0)
-                {
+                    sb.append("\"" + "TP" + "\".\n"); // true positive
+                }
+
+                sb.append("<obj/" + "record/" + cluster.toString() + "> ");
+                sb.append("<Profile1> ");
+                sb.append("\"" + (profile1 + "").replace("&", "") + "\".\n");
+
+                sb.append("<obj/" + "record/" + cluster.toString() + "> ");
+                sb.append("<Profile2> ");
+                sb.append("\"" + (profile2 + "").replace("&", "") + "\".\n");
+
+                //execute query every 1000 steps
+                if (totalMatches % 1000 == 0) {
                     sb.append("}\n }");
                     String sparqlQueryString = sb.toString();
 
                     //System.out.println(sparqlQueryString);
-                    UpdateRequest update  = UpdateFactory.create(sparqlQueryString);
+                    UpdateRequest update = UpdateFactory.create(sparqlQueryString);
                     UpdateProcessor qexec = UpdateExecutionFactory.createRemote(update, endpointURL);
                     qexec.execute();
                     sb.setLength(0);
                     sb.append(sparqlQueryString1);
                 }
-                
+
             }
 
-            if (totalMatches % 1000 != 0)
-            {
-            	sb.append("}\n }");
+            if (totalMatches % 1000 != 0) {
+                sb.append("}\n }");
                 String sparqlQueryString = sb.toString();
 
                 //System.out.println(sparqlQueryString);
-                UpdateRequest update  = UpdateFactory.create(sparqlQueryString);
+                UpdateRequest update = UpdateFactory.create(sparqlQueryString);
                 UpdateProcessor qexec = UpdateExecutionFactory.createRemote(update, endpointURL);
                 qexec.execute();
                 sb.setLength(0);
                 sb.append(sparqlQueryString1);
             }
-            
+
             int counter = 0;
             for (IdDuplicates duplicatesPair : abstractDP.getFalseNegatives()) {
                 final EntityProfile profile1 = profilesD1.get(duplicatesPair.getEntityId1());
                 final EntityProfile profile2 = profilesD2.get(duplicatesPair.getEntityId2());
 
                 counter++;
-                
-                sb.append("<obj/"+"record/"+duplicatesPair.toString()+"> ");
-            	sb.append("<url1> ");
-            	sb.append("\""+profile1.getEntityUrl().replace("&", "")+""+"\".\n");
-            	
-            	sb.append("<obj/"+"record/"+duplicatesPair.toString()+"> ");
-            	sb.append("<url2> ");
-            	sb.append("\""+profile2.getEntityUrl().replace("&", "")+""+"\".\n");
-            	
-            	sb.append("<obj/"+"record/"+duplicatesPair.toString()+"> ");
-            	sb.append("<pairType> ");    
-            	sb.append("\""+"FN"+"\".\n"); // false negative
-            	
-                sb.append("<obj/"+"record/"+duplicatesPair.toString()+"> ");
-            	sb.append("<Profile1> ");
-            	sb.append("\""+(profile1+"").replace("&", "")+"\".\n");
-            	
-            	sb.append("<obj/"+"record/"+duplicatesPair.toString()+"> ");
-            	sb.append("<Profile2> ");
-            	sb.append("\""+(profile2+"").replace("&", "")+"\".\n");
-            	
-            	//execute query every 1000 steps
-            	if (counter % 1000 == 0)
-                {
+
+                sb.append("<obj/" + "record/" + duplicatesPair.toString() + "> ");
+                sb.append("<url1> ");
+                sb.append("\"" + profile1.getEntityUrl().replace("&", "") + "" + "\".\n");
+
+                sb.append("<obj/" + "record/" + duplicatesPair.toString() + "> ");
+                sb.append("<url2> ");
+                sb.append("\"" + profile2.getEntityUrl().replace("&", "") + "" + "\".\n");
+
+                sb.append("<obj/" + "record/" + duplicatesPair.toString() + "> ");
+                sb.append("<pairType> ");
+                sb.append("\"" + "FN" + "\".\n"); // false negative
+
+                sb.append("<obj/" + "record/" + duplicatesPair.toString() + "> ");
+                sb.append("<Profile1> ");
+                sb.append("\"" + (profile1 + "").replace("&", "") + "\".\n");
+
+                sb.append("<obj/" + "record/" + duplicatesPair.toString() + "> ");
+                sb.append("<Profile2> ");
+                sb.append("\"" + (profile2 + "").replace("&", "") + "\".\n");
+
+                //execute query every 1000 steps
+                if (counter % 1000 == 0) {
                     sb.append("}\n }");
                     String sparqlQueryString = sb.toString();
 
                     //System.out.println(sparqlQueryString);
-                    UpdateRequest update  = UpdateFactory.create(sparqlQueryString);
+                    UpdateRequest update = UpdateFactory.create(sparqlQueryString);
                     UpdateProcessor qexec = UpdateExecutionFactory.createRemote(update, endpointURL);
                     qexec.execute();
                     sb.setLength(0);
                     sb.append(sparqlQueryString1);
                 }
             }
-            
-            if (counter % 1000 != 0)
-            {
-            	sb.append("}\n }");
+
+            if (counter % 1000 != 0) {
+                sb.append("}\n }");
                 String sparqlQueryString = sb.toString();
 
                 //System.out.println(sparqlQueryString);
-                UpdateRequest update  = UpdateFactory.create(sparqlQueryString);
+                UpdateRequest update = UpdateFactory.create(sparqlQueryString);
                 UpdateProcessor qexec = UpdateExecutionFactory.createRemote(update, endpointURL);
                 qexec.execute();
                 sb.setLength(0);
@@ -1106,39 +1089,38 @@ public class ClustersPerformanceWriter {
                         final int originalDuplicates = abstractDP.getNoOfDuplicates();
                         abstractDP.isSuperfluous(duplicatesArray[i], duplicatesArray[j]);
                         final int newDuplicates = abstractDP.getNoOfDuplicates();
-                        
-                        sb.append("<obj/"+"record/"+cluster.toString()+"> ");
-                    	sb.append("<url1> ");
-                    	sb.append("\""+profile1.getEntityUrl().replace("&", "")+""+"\".\n");
-                    	
-                    	sb.append("<obj/"+"record/"+cluster.toString()+"> ");
-                    	sb.append("<url2> ");
-                    	sb.append("\""+profile2.getEntityUrl().replace("&", "")+""+"\".\n");
-                    	
-                    	sb.append("<obj/"+"record/"+cluster.toString()+"> ");
-                    	sb.append("<pairType> ");
+
+                        sb.append("<obj/" + "record/" + cluster.toString() + "> ");
+                        sb.append("<url1> ");
+                        sb.append("\"" + profile1.getEntityUrl().replace("&", "") + "" + "\".\n");
+
+                        sb.append("<obj/" + "record/" + cluster.toString() + "> ");
+                        sb.append("<url2> ");
+                        sb.append("\"" + profile2.getEntityUrl().replace("&", "") + "" + "\".\n");
+
+                        sb.append("<obj/" + "record/" + cluster.toString() + "> ");
+                        sb.append("<pairType> ");
                         if (originalDuplicates == newDuplicates) {
-                        	sb.append("\""+"FP"+"\".\n");//false positive
+                            sb.append("\"" + "FP" + "\".\n");//false positive
                         } else { // originalDuplicates < newDuplicates
-                        	sb.append("\""+"TP"+"\".\n"); // true positive
-                        }               
-                    	
-                        sb.append("<obj/"+"record/"+cluster.toString()+"> ");
-                    	sb.append("<Profile1> ");
-                    	sb.append("\""+(profile1+"").replace("&", "")+"\".\n");
-                    	
-                    	sb.append("<obj/"+"record/"+cluster.toString()+"> ");
-                    	sb.append("<Profile2> ");
-                    	sb.append("\""+(profile2+"").replace("&", "")+"\".\n");
-                    	
-                    	//execute query every 1000 steps
-                    	if (totalMatches % 1000 == 0)
-                        {
+                            sb.append("\"" + "TP" + "\".\n"); // true positive
+                        }
+
+                        sb.append("<obj/" + "record/" + cluster.toString() + "> ");
+                        sb.append("<Profile1> ");
+                        sb.append("\"" + (profile1 + "").replace("&", "") + "\".\n");
+
+                        sb.append("<obj/" + "record/" + cluster.toString() + "> ");
+                        sb.append("<Profile2> ");
+                        sb.append("\"" + (profile2 + "").replace("&", "") + "\".\n");
+
+                        //execute query every 1000 steps
+                        if (totalMatches % 1000 == 0) {
                             sb.append("}\n }");
                             String sparqlQueryString = sb.toString();
 
                             //System.out.println(sparqlQueryString);
-                            UpdateRequest update  = UpdateFactory.create(sparqlQueryString);
+                            UpdateRequest update = UpdateFactory.create(sparqlQueryString);
                             UpdateProcessor qexec = UpdateExecutionFactory.createRemote(update, endpointURL);
                             qexec.execute();
                             sb.setLength(0);
@@ -1146,14 +1128,13 @@ public class ClustersPerformanceWriter {
                         }
                     }
                 }
-                
-                if (totalMatches % 1000 != 0)
-                {
-                	sb.append("}\n }");
+
+                if (totalMatches % 1000 != 0) {
+                    sb.append("}\n }");
                     String sparqlQueryString = sb.toString();
 
                     //System.out.println(sparqlQueryString);
-                    UpdateRequest update  = UpdateFactory.create(sparqlQueryString);
+                    UpdateRequest update = UpdateFactory.create(sparqlQueryString);
                     UpdateProcessor qexec = UpdateExecutionFactory.createRemote(update, endpointURL);
                     qexec.execute();
                     sb.setLength(0);
@@ -1162,54 +1143,52 @@ public class ClustersPerformanceWriter {
             }
 
             int counter2 = 0;
-           
+
             for (IdDuplicates duplicatesPair : abstractDP.getFalseNegatives()) {
                 final EntityProfile profile1 = profilesD1.get(duplicatesPair.getEntityId1());
                 final EntityProfile profile2 = profilesD1.get(duplicatesPair.getEntityId2());
 
                 counter2++;
-                sb.append("<obj/"+"record/"+duplicatesPair.toString()+"> ");
-            	sb.append("<url1> ");
-            	sb.append("\""+profile1.getEntityUrl().replace("&", "")+""+"\".\n");
-            	
-            	sb.append("<obj/"+"record/"+duplicatesPair.toString()+"> ");
-            	sb.append("<url2> ");
-            	sb.append("\""+profile2.getEntityUrl().replace("&", "")+""+"\".\n");
-            	
-            	sb.append("<obj/"+"record/"+duplicatesPair.toString()+"> ");
-            	sb.append("<pairType> ");    
-            	sb.append("\""+"FN"+"\".\n"); // false negative
-            	
-                sb.append("<obj/"+"record/"+duplicatesPair.toString()+"> ");
-            	sb.append("<Profile1> ");
-            	sb.append("\""+(profile1+"").replace("&", "")+"\".\n");
-            	
-            	sb.append("<obj/"+"record/"+duplicatesPair.toString()+"> ");
-            	sb.append("<Profile2> ");
-            	sb.append("\""+(profile2+"").replace("&", "")+"\".\n");
-            	
-            	//execute query every 1000 steps
-            	if (counter2 % 1000 == 0)
-                {
+                sb.append("<obj/" + "record/" + duplicatesPair.toString() + "> ");
+                sb.append("<url1> ");
+                sb.append("\"" + profile1.getEntityUrl().replace("&", "") + "" + "\".\n");
+
+                sb.append("<obj/" + "record/" + duplicatesPair.toString() + "> ");
+                sb.append("<url2> ");
+                sb.append("\"" + profile2.getEntityUrl().replace("&", "") + "" + "\".\n");
+
+                sb.append("<obj/" + "record/" + duplicatesPair.toString() + "> ");
+                sb.append("<pairType> ");
+                sb.append("\"" + "FN" + "\".\n"); // false negative
+
+                sb.append("<obj/" + "record/" + duplicatesPair.toString() + "> ");
+                sb.append("<Profile1> ");
+                sb.append("\"" + (profile1 + "").replace("&", "") + "\".\n");
+
+                sb.append("<obj/" + "record/" + duplicatesPair.toString() + "> ");
+                sb.append("<Profile2> ");
+                sb.append("\"" + (profile2 + "").replace("&", "") + "\".\n");
+
+                //execute query every 1000 steps
+                if (counter2 % 1000 == 0) {
                     sb.append("}\n }");
                     String sparqlQueryString = sb.toString();
 
                     //System.out.println(sparqlQueryString);
-                    UpdateRequest update  = UpdateFactory.create(sparqlQueryString);
+                    UpdateRequest update = UpdateFactory.create(sparqlQueryString);
                     UpdateProcessor qexec = UpdateExecutionFactory.createRemote(update, endpointURL);
                     qexec.execute();
                     sb.setLength(0);
                     sb.append(sparqlQueryString1);
                 }
             }
-            
-            if (counter2 % 1000 != 0)
-            {
-            	sb.append("}\n }");
+
+            if (counter2 % 1000 != 0) {
+                sb.append("}\n }");
                 String sparqlQueryString = sb.toString();
 
                 //System.out.println(sparqlQueryString);
-                UpdateRequest update  = UpdateFactory.create(sparqlQueryString);
+                UpdateRequest update = UpdateFactory.create(sparqlQueryString);
                 UpdateProcessor qexec = UpdateExecutionFactory.createRemote(update, endpointURL);
                 qexec.execute();
                 sb.setLength(0);
@@ -1229,28 +1208,28 @@ public class ClustersPerformanceWriter {
             fMeasure = 0;
         }
 
-        sb.append("<obj/"+"record/"+"STATS"+"> ");
-    	sb.append("<Precision> ");
-    	sb.append("\""+precision+"\".\n");
+        sb.append("<obj/" + "record/" + "STATS" + "> ");
+        sb.append("<Precision> ");
+        sb.append("\"" + precision + "\".\n");
 
-    	sb.append("<obj/"+"record/"+"STATS"+"> ");
-    	sb.append("<Recall> ");
-    	sb.append("\""+recall+"\".\n");
-    	
-    	sb.append("<obj/"+"record/"+"STATS"+"> ");
-    	sb.append("<F-Measure> ");
-    	sb.append("\""+fMeasure+"\".\n");
-    	
-    	sb.append("}\n }");
+        sb.append("<obj/" + "record/" + "STATS" + "> ");
+        sb.append("<Recall> ");
+        sb.append("\"" + recall + "\".\n");
+
+        sb.append("<obj/" + "record/" + "STATS" + "> ");
+        sb.append("<F-Measure> ");
+        sb.append("\"" + fMeasure + "\".\n");
+
+        sb.append("}\n }");
         String sparqlQueryString = sb.toString();
 
         //System.out.println(sparqlQueryString);
-        UpdateRequest update  = UpdateFactory.create(sparqlQueryString);
+        UpdateRequest update = UpdateFactory.create(sparqlQueryString);
         UpdateProcessor qexec = UpdateExecutionFactory.createRemote(update, endpointURL);
         qexec.execute();
-        
+
     }
-    
+
     public void printDetailedResultsToXML(List<EntityProfile> profilesD1, List<EntityProfile> profilesD2, String outputFile) throws FileNotFoundException {
         if (entityClusters.length == 0) {
             Log.warn("Empty set of equivalence clusters given as input!");
@@ -1261,13 +1240,13 @@ public class ClustersPerformanceWriter {
         final PrintWriter printWriter = new PrintWriter(new File(outputFile));
 
         printWriter.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-	    printWriter.println();
+        printWriter.println();
 
-	    printWriter.println("<general>");
-	    
+        printWriter.println("<general>");
+
         abstractDP.resetDuplicates();
         if (abstractDP instanceof BilateralDuplicatePropagation) { // Clean-Clean ER
-            for (EquivalenceCluster cluster : entityClusters) {                
+            for (EquivalenceCluster cluster : entityClusters) {
                 if (cluster.getEntityIdsD1().size() != 1
                         || cluster.getEntityIdsD2().size() != 1) {
                     continue;
@@ -1284,68 +1263,66 @@ public class ClustersPerformanceWriter {
                 final int originalDuplicates = abstractDP.getNoOfDuplicates();
                 abstractDP.isSuperfluous(entityId1, entityId2);
                 final int newDuplicates = abstractDP.getNoOfDuplicates();
-                
-            	printWriter.println();
-            	
-            	printWriter.println("<entity id=\""+cluster.toString()+"\">");
 
-            	printWriter.print("<url1"+">");
-            	printWriter.print(profile1.getEntityUrl().replace("&", "")+"");
-            	printWriter.println("</url1>");
-            	
-            	printWriter.print("<url2"+">");
-            	printWriter.print(profile2.getEntityUrl().replace("&", "")+"");
-            	printWriter.println("</url2>");
-            	
-                
-                printWriter.print("<pairType"+">");
+                printWriter.println();
+
+                printWriter.println("<entity id=\"" + cluster.toString() + "\">");
+
+                printWriter.print("<url1" + ">");
+                printWriter.print(profile1.getEntityUrl().replace("&", "") + "");
+                printWriter.println("</url1>");
+
+                printWriter.print("<url2" + ">");
+                printWriter.print(profile2.getEntityUrl().replace("&", "") + "");
+                printWriter.println("</url2>");
+
+                printWriter.print("<pairType" + ">");
                 if (originalDuplicates == newDuplicates) {
-                	printWriter.print("FP"); //false positive
+                    printWriter.print("FP"); //false positive
                 } else { // originalDuplicates < newDuplicates
-                	printWriter.print("TP"); // true positive
-                }               
-            	printWriter.println("</pairType>");
-            	
-            	printWriter.print("<Profile1"+">");
-            	printWriter.print((profile1+"").replace("&", ""));
-            	printWriter.println("</Profile1>");
-            	
-            	printWriter.print("<Profile2"+">");
-            	printWriter.print((profile2+"").replace("&", ""));
-            	printWriter.println("</Profile2>");
-                
-            	printWriter.println("</entity>");
+                    printWriter.print("TP"); // true positive
+                }
+                printWriter.println("</pairType>");
+
+                printWriter.print("<Profile1" + ">");
+                printWriter.print((profile1 + "").replace("&", ""));
+                printWriter.println("</Profile1>");
+
+                printWriter.print("<Profile2" + ">");
+                printWriter.print((profile2 + "").replace("&", ""));
+                printWriter.println("</Profile2>");
+
+                printWriter.println("</entity>");
             }
 
             for (IdDuplicates duplicatesPair : abstractDP.getFalseNegatives()) {
                 final EntityProfile profile1 = profilesD1.get(duplicatesPair.getEntityId1());
                 final EntityProfile profile2 = profilesD2.get(duplicatesPair.getEntityId2());
-            	printWriter.println();
+                printWriter.println();
 
-                printWriter.println("<entity id=\""+duplicatesPair.toString()+"\">");
+                printWriter.println("<entity id=\"" + duplicatesPair.toString() + "\">");
 
-            	printWriter.print("<url1"+">");
-            	printWriter.print(profile1.getEntityUrl().replace("&", "")+"");
-            	printWriter.println("</url1>");
-            	
-            	printWriter.print("<url2"+">");
-            	printWriter.print(profile2.getEntityUrl().replace("&", "")+"");
-            	printWriter.println("</url2>");
-            	
-                
-                printWriter.print("<pairType"+">");
-            	printWriter.print("FN"); // false negative
-            	printWriter.println("</pairType>");
-            	
-            	printWriter.print("<Profile1"+">");
-            	printWriter.print((profile1+"").replace("&", ""));
-            	printWriter.println("</Profile1>");
-            	
-            	printWriter.print("<Profile2"+">");
-            	printWriter.print((profile2+"").replace("&", ""));
-            	printWriter.println("</Profile2>");
-                
-            	printWriter.println("</entity>");
+                printWriter.print("<url1" + ">");
+                printWriter.print(profile1.getEntityUrl().replace("&", "") + "");
+                printWriter.println("</url1>");
+
+                printWriter.print("<url2" + ">");
+                printWriter.print(profile2.getEntityUrl().replace("&", "") + "");
+                printWriter.println("</url2>");
+
+                printWriter.print("<pairType" + ">");
+                printWriter.print("FN"); // false negative
+                printWriter.println("</pairType>");
+
+                printWriter.print("<Profile1" + ">");
+                printWriter.print((profile1 + "").replace("&", ""));
+                printWriter.println("</Profile1>");
+
+                printWriter.print("<Profile2" + ">");
+                printWriter.print((profile2 + "").replace("&", ""));
+                printWriter.println("</Profile2>");
+
+                printWriter.println("</entity>");
             }
         } else { // Dirty ER
             for (EquivalenceCluster cluster : entityClusters) {
@@ -1361,37 +1338,36 @@ public class ClustersPerformanceWriter {
                         final int originalDuplicates = abstractDP.getNoOfDuplicates();
                         abstractDP.isSuperfluous(duplicatesArray[i], duplicatesArray[j]);
                         final int newDuplicates = abstractDP.getNoOfDuplicates();
-                        
-                    	printWriter.println();
 
-                        printWriter.println("<entity id=\""+cluster.toString()+"\">");
+                        printWriter.println();
 
-                    	printWriter.print("<url1"+">");
-                    	printWriter.print(profile1.getEntityUrl().replace("&", "")+"");
-                    	printWriter.println("</url1>");
-                    	
-                    	printWriter.print("<url2"+">");
-                    	printWriter.print(profile2.getEntityUrl().replace("&", "")+"");
-                    	printWriter.println("</url2>");
-                    	
-                        
-                        printWriter.print("<pairType"+">");
+                        printWriter.println("<entity id=\"" + cluster.toString() + "\">");
+
+                        printWriter.print("<url1" + ">");
+                        printWriter.print(profile1.getEntityUrl().replace("&", "") + "");
+                        printWriter.println("</url1>");
+
+                        printWriter.print("<url2" + ">");
+                        printWriter.print(profile2.getEntityUrl().replace("&", "") + "");
+                        printWriter.println("</url2>");
+
+                        printWriter.print("<pairType" + ">");
                         if (originalDuplicates == newDuplicates) {
-                        	printWriter.print("FP"); //false positive
+                            printWriter.print("FP"); //false positive
                         } else { // originalDuplicates < newDuplicates
-                        	printWriter.print("TP"); // true positive
-                        }               
-                    	printWriter.println("</pairType>");
-                    	
-                    	printWriter.print("<Profile1"+">");
-                    	printWriter.print((profile1+"").replace("&", ""));
-                    	printWriter.println("</Profile1>");
-                    	
-                    	printWriter.print("<Profile2"+">");
-                    	printWriter.print((profile2+"").replace("&", ""));
-                    	printWriter.println("</Profile2>");
-                        
-                    	printWriter.println("</entity>");
+                            printWriter.print("TP"); // true positive
+                        }
+                        printWriter.println("</pairType>");
+
+                        printWriter.print("<Profile1" + ">");
+                        printWriter.print((profile1 + "").replace("&", ""));
+                        printWriter.println("</Profile1>");
+
+                        printWriter.print("<Profile2" + ">");
+                        printWriter.print((profile2 + "").replace("&", ""));
+                        printWriter.println("</Profile2>");
+
+                        printWriter.println("</entity>");
                     }
                 }
             }
@@ -1400,34 +1376,33 @@ public class ClustersPerformanceWriter {
                 final EntityProfile profile1 = profilesD1.get(duplicatesPair.getEntityId1());
                 final EntityProfile profile2 = profilesD1.get(duplicatesPair.getEntityId2());
 
-            	printWriter.println();
+                printWriter.println();
 
-                printWriter.println("<entity id=\""+duplicatesPair.toString()+"\">");
+                printWriter.println("<entity id=\"" + duplicatesPair.toString() + "\">");
 
-            	printWriter.print("<url1"+">");
-            	printWriter.print(profile1.getEntityUrl().replace("&", "")+"");
-            	printWriter.println("</url1>");
-            	
-            	printWriter.print("<url2"+">");
-            	printWriter.print(profile2.getEntityUrl().replace("&", "")+"");
-            	printWriter.println("</url2>");
-            	
-                
-                printWriter.print("<pairType"+">");
-            	printWriter.print("FN"); // false negative
-            	printWriter.println("</pairType>");
-            	
-            	printWriter.print("<Profile1"+">");
-            	printWriter.print((profile1+"").replace("&", ""));
-            	printWriter.println("</Profile1>");
-            	
-            	printWriter.print("<Profile2"+">");
-            	printWriter.print((profile2+"").replace("&", ""));
-            	printWriter.println("</Profile2>");
-                
-            	printWriter.println("</entity>");
+                printWriter.print("<url1" + ">");
+                printWriter.print(profile1.getEntityUrl().replace("&", "") + "");
+                printWriter.println("</url1>");
+
+                printWriter.print("<url2" + ">");
+                printWriter.print(profile2.getEntityUrl().replace("&", "") + "");
+                printWriter.println("</url2>");
+
+                printWriter.print("<pairType" + ">");
+                printWriter.print("FN"); // false negative
+                printWriter.println("</pairType>");
+
+                printWriter.print("<Profile1" + ">");
+                printWriter.print((profile1 + "").replace("&", ""));
+                printWriter.println("</Profile1>");
+
+                printWriter.print("<Profile2" + ">");
+                printWriter.print((profile2 + "").replace("&", ""));
+                printWriter.println("</Profile2>");
+
+                printWriter.println("</entity>");
             }
-            
+
         }
 
         if (0 < totalMatches) {
@@ -1442,27 +1417,27 @@ public class ClustersPerformanceWriter {
             fMeasure = 0;
         }
 
-    	printWriter.println();
+        printWriter.println();
 
         printWriter.println("<stats>");
 
-        printWriter.print("<Precision"+">");
-    	printWriter.print(precision+"");
-    	printWriter.println("</Precision>");
-    	
-        printWriter.print("<Recall"+">");
-    	printWriter.print(recall+"");
-    	printWriter.println("</Recall>");
-    	
-        printWriter.print("<F-Measure"+">");
-    	printWriter.print(fMeasure+"");
-    	printWriter.println("</F-Measure>");
-    	
+        printWriter.print("<Precision" + ">");
+        printWriter.print(precision + "");
+        printWriter.println("</Precision>");
+
+        printWriter.print("<Recall" + ">");
+        printWriter.print(recall + "");
+        printWriter.println("</Recall>");
+
+        printWriter.print("<F-Measure" + ">");
+        printWriter.print(fMeasure + "");
+        printWriter.println("</F-Measure>");
+
         printWriter.println("</stats>");
 
-    	printWriter.println();
+        printWriter.println();
 
-    	printWriter.println("</general>");
+        printWriter.println("</general>");
 
         printWriter.close();
     }
@@ -1475,12 +1450,12 @@ public class ClustersPerformanceWriter {
 
         totalMatches = 0;
         StringBuilder sb = new StringBuilder();
-        String dbquery1 = "INSERT INTO "+ dbtable + " (url1, url2, pairtype, Profile1, Profile2) VALUES ";
+        String dbquery1 = "INSERT INTO " + dbtable + " (url1, url2, pairtype, Profile1, Profile2) VALUES ";
         sb.append(dbquery1);
 
         abstractDP.resetDuplicates();
         if (abstractDP instanceof BilateralDuplicatePropagation) { // Clean-Clean ER
-            for (EquivalenceCluster cluster : entityClusters) {                
+            for (EquivalenceCluster cluster : entityClusters) {
                 if (cluster.getEntityIdsD1().size() != 1
                         || cluster.getEntityIdsD2().size() != 1) {
                     continue;
@@ -1497,28 +1472,28 @@ public class ClustersPerformanceWriter {
                 final int originalDuplicates = abstractDP.getNoOfDuplicates();
                 abstractDP.isSuperfluous(entityId1, entityId2);
                 final int newDuplicates = abstractDP.getNoOfDuplicates();
-                
-                sb.append("('"+profile1.getEntityUrl()+"', ");
-                sb.append("'"+profile2.getEntityUrl()+"', ");
-            	
+
+                sb.append("('" + profile1.getEntityUrl() + "', ");
+                sb.append("'" + profile2.getEntityUrl() + "', ");
+
                 if (originalDuplicates == newDuplicates) {
-                    sb.append("'"+"FP"+"', "); //false positive
+                    sb.append("'" + "FP" + "', "); //false positive
                 } else { // originalDuplicates < newDuplicates
-                    sb.append("'"+"TP"+"', "); //true positive
+                    sb.append("'" + "TP" + "', "); //true positive
                 }
-                sb.append("'"+profile1+"', ");
-            	sb.append("'"+profile2+"'), ");
+                sb.append("'" + profile1 + "', ");
+                sb.append("'" + profile2 + "'), ");
             }
 
             for (IdDuplicates duplicatesPair : abstractDP.getFalseNegatives()) {
                 final EntityProfile profile1 = profilesD1.get(duplicatesPair.getEntityId1());
                 final EntityProfile profile2 = profilesD2.get(duplicatesPair.getEntityId2());
 
-                sb.append("('"+profile1.getEntityUrl()+"', ");
-                sb.append("'"+profile2.getEntityUrl()+"', ");
-                sb.append("'"+"FN"+"', "); // false negative
-                sb.append("'"+profile1+"', ");
-            	sb.append("'"+profile2+"'), ");
+                sb.append("('" + profile1.getEntityUrl() + "', ");
+                sb.append("'" + profile2.getEntityUrl() + "', ");
+                sb.append("'" + "FN" + "', "); // false negative
+                sb.append("'" + profile1 + "', ");
+                sb.append("'" + profile2 + "'), ");
             }
         } else { // Dirty ER
             for (EquivalenceCluster cluster : entityClusters) {
@@ -1535,16 +1510,16 @@ public class ClustersPerformanceWriter {
                         abstractDP.isSuperfluous(duplicatesArray[i], duplicatesArray[j]);
                         final int newDuplicates = abstractDP.getNoOfDuplicates();
 
-                        sb.append("('"+profile1.getEntityUrl()+"', ");
-                        sb.append("'"+profile2.getEntityUrl()+"', ");
-                    	
+                        sb.append("('" + profile1.getEntityUrl() + "', ");
+                        sb.append("'" + profile2.getEntityUrl() + "', ");
+
                         if (originalDuplicates == newDuplicates) {
-                            sb.append("'"+"FP"+"', "); //false positive
+                            sb.append("'" + "FP" + "', "); //false positive
                         } else { // originalDuplicates < newDuplicates
-                            sb.append("'"+"TP"+"', "); //true positive
+                            sb.append("'" + "TP" + "', "); //true positive
                         }
-                        sb.append("'"+profile1+"', ");
-                    	sb.append("'"+profile2+"'), ");
+                        sb.append("'" + profile1 + "', ");
+                        sb.append("'" + profile2 + "'), ");
                     }
                 }
             }
@@ -1553,11 +1528,11 @@ public class ClustersPerformanceWriter {
                 final EntityProfile profile1 = profilesD1.get(duplicatesPair.getEntityId1());
                 final EntityProfile profile2 = profilesD1.get(duplicatesPair.getEntityId2());
 
-                sb.append("('"+profile1.getEntityUrl()+"', ");
-                sb.append("'"+profile2.getEntityUrl()+"', ");
-                sb.append("'"+"FN"+"', "); // false negative
-                sb.append("'"+profile1+"', ");
-            	sb.append("'"+profile2+"'), ");
+                sb.append("('" + profile1.getEntityUrl() + "', ");
+                sb.append("'" + profile2.getEntityUrl() + "', ");
+                sb.append("'" + "FN" + "', "); // false negative
+                sb.append("'" + profile1 + "', ");
+                sb.append("'" + profile2 + "'), ");
             }
         }
 
@@ -1573,15 +1548,15 @@ public class ClustersPerformanceWriter {
             fMeasure = 0;
         }
 
-        sb.append("('"+precision+"', ");
-        sb.append("'"+recall+"', ");
-        sb.append("'"+fMeasure+"', ");
-        sb.append("'"+"NULL"+"', ");
-    	sb.append("'"+"NULL"+"'); ");
+        sb.append("('" + precision + "', ");
+        sb.append("'" + recall + "', ");
+        sb.append("'" + fMeasure + "', ");
+        sb.append("'" + "NULL" + "', ");
+        sb.append("'" + "NULL" + "'); ");
 
-    	String dbquery = sb.toString();
+        String dbquery = sb.toString();
 
-    	try {
+        try {
             if (dbuser == null) {
                 Log.error("Database user has not been set!");
             }
@@ -1592,7 +1567,6 @@ public class ClustersPerformanceWriter {
                 Log.error("Database table has not been set!");
             }
 
-
             Connection conn = null;
             if (dbURL.startsWith("mysql")) {
                 conn = getMySQLconnection(dbURL);
@@ -1602,14 +1576,13 @@ public class ClustersPerformanceWriter {
                 Log.error("Only MySQL and PostgreSQL are supported for the time being!");
             }
 
-
             final Statement stmt = conn.createStatement();
             stmt.executeQuery(dbquery);//retrieve the appropriate table
-            } catch (Exception ex) {
-                Log.error("Error in db writing!", ex);
-            }
+        } catch (Exception ex) {
+            Log.error("Error in db writing!", ex);
+        }
     }
-    
+
     public void setStatistics() {
         if (entityClusters.length == 0) {
             Log.warn("Empty set of equivalence clusters given as input!");

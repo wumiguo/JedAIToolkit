@@ -1,5 +1,5 @@
 /*
- * Copyright [2016-2018] [George Papadakis (gpapadis@yahoo.gr)]
+ * Copyright [2016-2020] [George Papadakis (gpapadis@yahoo.gr)]
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,23 +15,21 @@
  */
 package org.scify.jedai.schemaclustering;
 
-import gnu.trove.map.TObjectIntMap;
 import java.util.List;
 import org.scify.jedai.configuration.IConfiguration;
+import org.scify.jedai.datamodel.AttributeClusters;
 import org.scify.jedai.datamodel.EntityProfile;
+import org.scify.jedai.utilities.IConstants;
 import org.scify.jedai.utilities.IDocumentation;
 
 /**
  *
  * @author GAP2
  */
-public interface ISchemaClustering extends IConfiguration, IDocumentation {
-    
-    int DATASET_1 = 0;
-    int DATASET_2 = 1;
-    
-    public TObjectIntMap<String>[] getClusters(List<EntityProfile> profiles);
-    
-    public TObjectIntMap<String>[] getClusters(List<EntityProfile> profilesD1, List<EntityProfile> profilesD2);
-    
+public interface ISchemaClustering extends IConfiguration, IConstants, IDocumentation {
+
+    public AttributeClusters[] getClusters(List<EntityProfile> profiles);
+
+    public AttributeClusters[] getClusters(List<EntityProfile> profilesD1, List<EntityProfile> profilesD2);
+
 }

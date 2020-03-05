@@ -1,5 +1,5 @@
 /*
-* Copyright [2016-2018] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2020] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -246,7 +246,7 @@ public class BlockFiltering extends AbstractBlockProcessing {
                 for (TIntIterator iterator2 = retainedEntitiesD2.iterator(); iterator2.hasNext();) {
                     counterD2[iterator2.next()]++;
                 }
-                newBlocks.add(new BilateralBlock(retainedEntitiesD1.toArray(), retainedEntitiesD2.toArray()));
+                newBlocks.add(new BilateralBlock(oldBlock.getEntropy(), retainedEntitiesD1.toArray(), retainedEntitiesD2.toArray()));
             }
         }
 
@@ -276,7 +276,7 @@ public class BlockFiltering extends AbstractBlockProcessing {
                 for (TIntIterator iterator = retainedEntities.iterator(); iterator.hasNext();) {
                     counterD1[iterator.next()]++;
                 }
-                newBlocks.add(new UnilateralBlock(retainedEntities.toArray()));
+                newBlocks.add(new UnilateralBlock(oldBlock.getEntropy(), retainedEntities.toArray()));
             }
         }
 

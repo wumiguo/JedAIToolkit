@@ -1,5 +1,5 @@
 /*
-* Copyright [2016-2018] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2020] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -16,23 +16,20 @@
 package org.scify.jedai.entitymatching;
 
 import org.scify.jedai.datamodel.AbstractBlock;
-import org.scify.jedai.datamodel.EntityProfile;
 import org.scify.jedai.datamodel.SimilarityPairs;
 import org.scify.jedai.utilities.IDocumentation;
 import java.util.List;
 import org.scify.jedai.configuration.IConfiguration;
+import org.scify.jedai.datamodel.Comparison;
+import org.scify.jedai.utilities.IConstants;
 
 /**
  *
  * @author G.A.P. II
  */
-public interface IEntityMatching extends IConfiguration, IDocumentation {
-
-    int DATASET_1 = 0;
-    int DATASET_2 = 1;
-
-    public SimilarityPairs executeComparisons(List<AbstractBlock> blocks, List<EntityProfile> profiles);
-
-    public SimilarityPairs executeComparisons(List<AbstractBlock> blocks, List<EntityProfile> profilesD1, List<EntityProfile> profilesD2);
-
+public interface IEntityMatching extends IConfiguration, IConstants, IDocumentation {
+    
+    public double executeComparison(Comparison comparison);
+    
+    public SimilarityPairs executeComparisons(List<AbstractBlock> blocks);
 }

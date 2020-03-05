@@ -1,5 +1,5 @@
 /*
-* Copyright [2016-2018] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2020] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -40,24 +40,33 @@ public class ProfileMatcher extends AbstractEntityMatching {
     protected ITextModel[] entityModelsD1;
     protected ITextModel[] entityModelsD2;
 
-    public ProfileMatcher() {
-        this(RepresentationModel.TOKEN_UNIGRAM_GRAPHS, SimilarityMetric.GRAPH_VALUE_SIMILARITY);
+    public ProfileMatcher(List<EntityProfile> profiles) {
+        this(profiles, null, RepresentationModel.TOKEN_UNIGRAMS, SimilarityMetric.COSINE_SIMILARITY);
     }
+    
+    public ProfileMatcher(List<EntityProfile> profilesD1, List<EntityProfile> profilesD2) {
+        this(profilesD1, profilesD2, RepresentationModel.TOKEN_UNIGRAMS, SimilarityMetric.COSINE_SIMILARITY);
+    }
+    
+    public ProfileMatcher(List<EntityProfile> profiles, RepresentationModel model, SimilarityMetric simMetric) {
+        this(profiles, null, model, simMetric);
+    }
+    
+    public ProfileMatcher(List<EntityProfile> profilesD1, List<EntityProfile> profilesD2, RepresentationModel model, SimilarityMetric simMetric) {
+        super(profilesD1, profilesD2, model, simMetric);
 
-    public ProfileMatcher(RepresentationModel model, SimilarityMetric simMetric) {
-        super(model, simMetric);
+        buildModels();
     }
 
     @Override
-    public SimilarityPairs executeComparisons(List<AbstractBlock> blocks,
-            List<EntityProfile> profilesD1, List<EntityProfile> profilesD2) {
-        Log.info("Applying " + getMethodName() + " with the following configuration : " + getMethodConfiguration());
-
+    protected final void buildModels() {
         if (profilesD1 == null) {
             Log.error("First list of entity profiles is null! "
                     + "The first argument should always contain entities.");
             System.exit(-1);
         }
+
+        Log.info("Applying " + getMethodName() + " with the following configuration : " + getMethodConfiguration());
 
         isCleanCleanER = false;
         entityModelsD1 = getModels(DATASET_1, profilesD1);
@@ -65,20 +74,31 @@ public class ProfileMatcher extends AbstractEntityMatching {
             isCleanCleanER = true;
             entityModelsD2 = getModels(DATASET_2, profilesD2);
         }
+    }
 
-        final SimilarityPairs simPairs = new SimilarityPairs(isCleanCleanER, blocks);
+    @Override
+    public double executeComparison(Comparison comparison) {
+        if (isCleanCleanER) {
+            return entityModelsD1[comparison.getEntityId1()].getSimilarity(entityModelsD2[comparison.getEntityId2()]);
+        }
+
+        return entityModelsD1[comparison.getEntityId1()].getSimilarity(entityModelsD1[comparison.getEntityId2()]);
+    }
+
+    @Override
+    public SimilarityPairs executeComparisons(List<AbstractBlock> blocks) {
+        final SimilarityPairs simPairs = new SimilarityPairs(profilesD2 != null, blocks);
         blocks.stream().map((block) -> block.getComparisonIterator()).forEachOrdered((iterator) -> {
             while (iterator.hasNext()) {
-                Comparison currentComparison = iterator.next();
-                double currentSimilarity = getSimilarity(currentComparison);
-                if (0 < currentSimilarity) {
-                    currentComparison.setUtilityMeasure(currentSimilarity);
+                final Comparison currentComparison = iterator.next();
+                double similarity = executeComparison(currentComparison);
+                if (0 < similarity) {
+                    currentComparison.setUtilityMeasure(similarity);
                     simPairs.addComparison(currentComparison);
                 }
             }
         });
-        
-        simPairs.normalizeSimilarities();
+
         return simPairs;
     }
 
@@ -169,13 +189,5 @@ public class ProfileMatcher extends AbstractEntityMatching {
             default:
                 return "invalid parameter id";
         }
-    }
-
-    public double getSimilarity(Comparison comparison) {
-        if (isCleanCleanER) {
-            return entityModelsD1[comparison.getEntityId1()].getSimilarity(entityModelsD2[comparison.getEntityId2()]);
-        }
-
-        return entityModelsD1[comparison.getEntityId1()].getSimilarity(entityModelsD1[comparison.getEntityId2()]);
     }
 }

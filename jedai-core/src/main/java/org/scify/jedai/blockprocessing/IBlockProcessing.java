@@ -1,5 +1,5 @@
 /*
-* Copyright [2016-2018] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2020] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -20,15 +20,13 @@ import org.scify.jedai.utilities.IDocumentation;
 
 import java.util.List;
 import org.scify.jedai.configuration.IConfiguration;
+import org.scify.jedai.utilities.IConstants;
 
 /**
  *
  * @author G.A.P. II
  */
-public interface IBlockProcessing extends IConfiguration, IDocumentation {
-
-    int DATASET_1 = 0;
-    int DATASET_2 = 1;
+public interface IBlockProcessing extends IConfiguration, IConstants, IDocumentation {
 
     public List<AbstractBlock> refineBlocks(List<AbstractBlock> blocks);
     

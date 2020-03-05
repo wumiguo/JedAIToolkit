@@ -1,5 +1,5 @@
 /*
-* Copyright [2016-2018] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2020] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -38,6 +38,11 @@ public abstract class GraphModel extends AbstractModel {
 
     @Override
     public void finalizeModel() {};
+    
+    @Override
+    public double getEntropy(boolean normalized) {
+        return 0;
+    }
     
     protected DocumentNGramGraph getGraphModel() {
         return graphModel;

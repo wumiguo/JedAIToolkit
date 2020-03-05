@@ -1,5 +1,5 @@
 /*
-* Copyright [2016-2018] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2020] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -48,7 +48,7 @@ public class CompareXmlRdfProfiles {
         EntityCSVReader csvEntityReader = new EntityCSVReader(mainDirectory + "ACM.csv");
         csvEntityReader.setAttributeNamesInFirstRow(true);
         csvEntityReader.setIdIndex(0);
-        csvEntityReader.setSeparator(',');
+        csvEntityReader.setSeparator(",");
         List<EntityProfile> csvDBLP = csvEntityReader.getEntityProfiles();
         System.out.println("CSV DBLP Entity Profiles\t:\t" + csvDBLP.size());
 

@@ -1,5 +1,5 @@
 /*
-* Copyright [2016-2018] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2020] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -31,8 +31,10 @@ public class DecomposedBlock extends AbstractBlock {
     private int[] blockIndices;
     private final int[] entities1;
     private final int[] entities2;
+    private final int[] weights;
     
-    public DecomposedBlock(boolean ccER, int[] entities1, int[] entities2) {
+    public DecomposedBlock(boolean ccER, int[] entities1, int[] entities2, int[] weights) {
+        super(1.0);
         if (entities1.length != entities2.length) {
             System.err.println("\n\nCreating imbalanced decomposed block!!!!");
             System.err.println("Entities 1\t:\t" + entities1.length);
@@ -41,6 +43,7 @@ public class DecomposedBlock extends AbstractBlock {
         cleanCleanER = ccER;
         this.entities1 = entities1;
         this.entities2 = entities2;
+        this.weights = weights;
         blockIndices = null;
     }
     
@@ -56,10 +59,6 @@ public class DecomposedBlock extends AbstractBlock {
         return entities2;
     }
     
-    public boolean isCleanCleanER() {
-        return cleanCleanER;
-    }
-    
     @Override
     public double getNoOfComparisons() {
         return entities1.length;
@@ -68,6 +67,14 @@ public class DecomposedBlock extends AbstractBlock {
     @Override
     public double getTotalBlockAssignments() {
         return 2*entities1.length;
+    }
+    
+    public int[] getWeights() {
+        return weights;
+    }
+    
+    public boolean isCleanCleanER() {
+        return cleanCleanER;
     }
     
     @Override

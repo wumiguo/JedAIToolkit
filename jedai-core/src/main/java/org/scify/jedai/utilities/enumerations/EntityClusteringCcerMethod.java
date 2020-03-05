@@ -1,5 +1,5 @@
 /*
-* Copyright [2016-2018] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2020] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -16,7 +16,9 @@
 
 package org.scify.jedai.utilities.enumerations;
 
+import org.scify.jedai.entityclustering.BestAssignmentHeuristic;
 import org.scify.jedai.entityclustering.IEntityClustering;
+import org.scify.jedai.entityclustering.RowColumnClustering;
 import org.scify.jedai.entityclustering.UniqueMappingClustering;
 
 /**
@@ -24,14 +26,20 @@ import org.scify.jedai.entityclustering.UniqueMappingClustering;
  * @author GAP2
  */
 public enum EntityClusteringCcerMethod {
-    UNIQUE_MAPPING_CLUSTERING;
+	UNIQUE_MAPPING_CLUSTERING,
+	ROW_COLUMN_ASSIGNMENT_CLUSTERING,
+	BEST_ASSIGNMENT_HEURISTIC_CLUSTERING;
 
     public static IEntityClustering getDefaultConfiguration(EntityClusteringCcerMethod ecMethod) {
         switch (ecMethod) {
-            case UNIQUE_MAPPING_CLUSTERING:
-                return new UniqueMappingClustering();
-            default:
-                return new UniqueMappingClustering();
+        case UNIQUE_MAPPING_CLUSTERING:
+            return new UniqueMappingClustering();
+        case ROW_COLUMN_ASSIGNMENT_CLUSTERING:
+            return new RowColumnClustering();
+        case BEST_ASSIGNMENT_HEURISTIC_CLUSTERING:
+            return new BestAssignmentHeuristic();
+        default:
+            return new UniqueMappingClustering();
         }
     }
 }

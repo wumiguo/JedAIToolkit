@@ -1,5 +1,5 @@
 /*
-* Copyright [2016-2018] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2020] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -16,6 +16,8 @@
 
 package org.scify.jedai.utilities.enumerations;
 
+import java.util.List;
+import org.scify.jedai.datamodel.EntityProfile;
 import org.scify.jedai.entitymatching.GroupLinkage;
 import org.scify.jedai.entitymatching.IEntityMatching;
 import org.scify.jedai.entitymatching.ProfileMatcher;
@@ -28,14 +30,14 @@ public enum EntityMatchingMethod {
     GROUP_LINKAGE,
     PROFILE_MATCHER;
     
-    public static IEntityMatching getDefaultConfiguration(EntityMatchingMethod emMethod) {
+    public static IEntityMatching getDefaultConfiguration(List<EntityProfile> profilesD1, List<EntityProfile> profilesD2, EntityMatchingMethod emMethod) {
         switch(emMethod) {
             case GROUP_LINKAGE:
-                return new GroupLinkage();
+                return new GroupLinkage(profilesD1, profilesD2);
             case PROFILE_MATCHER:
-                return new ProfileMatcher();
+                return new ProfileMatcher(profilesD1, profilesD2);
             default:
-                return new ProfileMatcher();
+                return new ProfileMatcher(profilesD1, profilesD2);
         }
     }
 }

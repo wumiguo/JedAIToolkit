@@ -1,5 +1,5 @@
 /*
-* Copyright [2016-2018] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2020] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -22,15 +22,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.jena.atlas.json.JsonArray;
+import org.scify.jedai.datamodel.DecomposedBlock;
 
 /**
  *
  * @author gap2
  */
 public class ComparisonPropagation extends AbstractComparisonCleaning {
-    
+
     public ComparisonPropagation() {
         super();
+    }
+
+    protected void addDecomposedBlock(int entityId, List<AbstractBlock> newBlocks) {
+        final int[] entityIds = replicateId(entityId, validEntities.size());
+        final int[] neighborIds = validEntities.toArray();
+        final int[] dummyWeights = replicateId(-1, validEntities.size());
+        newBlocks.add(new DecomposedBlock(cleanCleanER, entityIds, neighborIds, dummyWeights));
     }
 
     @Override
@@ -68,7 +76,7 @@ public class ComparisonPropagation extends AbstractComparisonCleaning {
     public int getNumberOfGridConfigurations() {
         return 1; // parameter-free
     }
-    
+
     @Override
     public JsonArray getParameterConfiguration() {
         return new JsonArray();
@@ -94,7 +102,7 @@ public class ComparisonPropagation extends AbstractComparisonCleaning {
                         validEntities.add(neighborId);
                     }
                 }
-                addDecomposedBlock(i, validEntities, newBlocks);
+                addDecomposedBlock(i, newBlocks);
             }
         }
     }
@@ -106,12 +114,12 @@ public class ComparisonPropagation extends AbstractComparisonCleaning {
                 validEntities.clear();
                 for (int blockIndex : associatedBlocks) {
                     for (int neighborId : uBlocks[blockIndex].getEntities()) {
-                        if (neighborId < i) {
+                        if (i < neighborId) {
                             validEntities.add(neighborId);
                         }
                     }
                 }
-                addDecomposedBlock(i, validEntities, newBlocks);
+                addDecomposedBlock(i, newBlocks);
             }
         }
     }
@@ -125,7 +133,7 @@ public class ComparisonPropagation extends AbstractComparisonCleaning {
     public void setNumberedGridConfiguration(int iterationNumber) {
         Log.warn("Grid search is inapplicable! " + getMethodName() + " is a parameter-free method!");
     }
-    
+
     @Override
     public void setNumberedRandomConfiguration(int iterationNumber) {
         Log.warn("Random search is inapplicable! " + getMethodName() + " is a parameter-free method!");

@@ -1,5 +1,5 @@
 /*
-* Copyright [2016-2018] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2020] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -15,10 +15,9 @@
  */
 package org.scify.jedai.schemaclustering;
 
-import gnu.trove.iterator.TObjectIntIterator;
-import gnu.trove.map.TObjectIntMap;
 import java.util.List;
 import org.apache.log4j.BasicConfigurator;
+import org.scify.jedai.datamodel.AttributeClusters;
 import org.scify.jedai.datamodel.EntityProfile;
 import org.scify.jedai.datareader.entityreader.EntitySerializationReader;
 import org.scify.jedai.utilities.enumerations.RepresentationModel;
@@ -43,13 +42,11 @@ public class TestAllMethodsDirtyER {
             System.out.println("Profiles D1\t:\t" + profiles.size());
 
             final AttributeValueClustering avc = new AttributeValueClustering(RepresentationModel.CHARACTER_TRIGRAMS, SimilarityMetric.ENHANCED_JACCARD_SIMILARITY);
-            final TObjectIntMap<String>[] clusters = avc.getClusters(profiles);
+            final AttributeClusters[] clusters = avc.getClusters(profiles);
             for (int j = 0; j < clusters.length; j++) {
                 System.out.println("\nDataset\t:\t" + (j + 1));
-                final TObjectIntIterator<String> it = clusters[j].iterator();
-                while (it.hasNext()) {
-                    it.advance();
-                    System.out.println(it.key() + "\t" + it.value());
+                for (int k = 0; k < clusters[j].getNoOfClusters(); k++) {
+                    System.out.println(k + "\t" + clusters[j].getClusterEntropy(k));
                 }
             }
         }

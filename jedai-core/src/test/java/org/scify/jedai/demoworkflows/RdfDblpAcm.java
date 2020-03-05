@@ -1,5 +1,5 @@
 /*
-* Copyright [2016-2018] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2020] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -49,7 +49,7 @@ public class RdfDblpAcm {
     public static void main(String[] args) throws FileNotFoundException {
         BasicConfigurator.configure();
         
-        String mainDirectory = "data/cleanCleanErDatasets/DBLP-ACM/";
+        String mainDirectory = "data/cleanCleanErDatasets/";
 
         EntityRDFReader rdfEntityReader = new EntityRDFReader(mainDirectory + "DBLP2toRdf.xml");
         List<EntityProfile> rdfDBLP = rdfEntityReader.getEntityProfiles();
@@ -61,7 +61,7 @@ public class RdfDblpAcm {
 
         GtRdfCsvReader csvGtReader = new GtRdfCsvReader(mainDirectory + "DBLP-ACM" + File.separator + "DBLP-ACM_perfectMapping.csv");
         csvGtReader.setIgnoreFirstRow(true);
-        csvGtReader.setSeparator(',');
+        csvGtReader.setSeparator(",");
         csvGtReader.getDuplicatePairs(rdfDBLP, rdfACM);
         final AbstractDuplicatePropagation duplicatePropagation = new BilateralDuplicatePropagation(csvGtReader.getDuplicatePairs(rdfDBLP, rdfACM));
         System.out.println("Existing Duplicates\t:\t" + duplicatePropagation.getDuplicates().size());
@@ -94,8 +94,8 @@ public class RdfDblpAcm {
         
         double time3 = System.currentTimeMillis();
         
-        IEntityMatching entityMatching = new ProfileMatcher();
-        SimilarityPairs simPairs = entityMatching.executeComparisons(blocks, rdfDBLP, rdfACM);
+        IEntityMatching entityMatching = new ProfileMatcher(rdfDBLP, rdfACM);
+        SimilarityPairs simPairs = entityMatching.executeComparisons(blocks);
         workflowConf.append("\n").append(entityMatching.getMethodConfiguration());
         workflowName.append("->").append(entityMatching.getMethodName());
 

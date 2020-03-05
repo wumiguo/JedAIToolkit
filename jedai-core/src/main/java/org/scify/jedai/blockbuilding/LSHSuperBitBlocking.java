@@ -1,5 +1,5 @@
 /*
-* Copyright [2016-2018] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2020] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  */
 package org.scify.jedai.blockbuilding;
 
+import com.esotericsoftware.minlog.Log;
 import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TIntArrayList;
 import info.debatty.java.lsh.SuperBit;
@@ -148,7 +149,7 @@ public class LSHSuperBitBlocking extends AbstractBlockBuilding {
     }
     
     protected void initializeLshFunctions() {
-        System.out.println("Dimensionality\t:\t" + SuperBitUnigrams.getCorpusDimensionality());
+        Log.info("Dimensionality\t:\t" + SuperBitUnigrams.getCorpusDimensionality());
         superbit = new SuperBit(SuperBitUnigrams.getCorpusDimensionality(), bandsNumber, bandSize);
     }
     

@@ -1,5 +1,5 @@
 /*
-* Copyright [2016-2018] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2020] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  */
 package org.scify.jedai.blockprocessing.comparisoncleaning;
 
+import org.scify.jedai.datamodel.Comparison;
 import org.scify.jedai.utilities.enumerations.WeightingScheme;
 
 /**
@@ -49,7 +50,7 @@ public class ReciprocalCardinalityNodePruning extends CardinalityNodePruning {
             return false;
         }
 
-        if (nearestEntities[neighborId].contains(entityId)) {
+        if (nearestEntities[neighborId].contains(new Comparison(cleanCleanER, -1, entityId))) {
             return entityId < neighborId;
         }
 

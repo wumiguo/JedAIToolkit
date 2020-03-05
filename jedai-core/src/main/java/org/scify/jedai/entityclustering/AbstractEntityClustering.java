@@ -1,5 +1,5 @@
 /*
-* Copyright [2016-2018] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2020] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -48,7 +48,7 @@ public abstract class AbstractEntityClustering implements IEntityClustering {
     public AbstractEntityClustering(double simTh) {
         threshold = simTh;
         
-        gridThreshold = new DblGridSearchConfiguration(0.95, 0.05, 0.05);
+        gridThreshold = new DblGridSearchConfiguration(1.00, 0.05, 0.05);
         randomThreshold = new DblRandomSearchConfiguration(0.99, 0.01);
     }
 
@@ -142,9 +142,10 @@ public abstract class AbstractEntityClustering implements IEntityClustering {
 
     protected void initializeData(SimilarityPairs simPairs) {
         Log.info("Applying " + getMethodName() + " with the following configuration : " + getMethodConfiguration());
-
+        
+//        simPairs.normalizeSimilarities();
         isCleanCleanER = simPairs.isCleanCleanER();
-
+        
         int maxEntity1 = getMaxEntityId(simPairs.getEntityIds1());
         int maxEntity2 = getMaxEntityId(simPairs.getEntityIds2());
         if (simPairs.isCleanCleanER()) {

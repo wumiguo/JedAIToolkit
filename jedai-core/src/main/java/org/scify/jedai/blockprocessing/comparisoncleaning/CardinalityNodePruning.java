@@ -1,5 +1,5 @@
 /*
-* Copyright [2016-2018] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2020] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -23,12 +23,12 @@ import org.scify.jedai.utilities.enumerations.WeightingScheme;
 import com.esotericsoftware.minlog.Log;
 
 import gnu.trove.iterator.TIntIterator;
-import gnu.trove.set.TIntSet;
-import gnu.trove.set.hash.TIntHashSet;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.PriorityQueue;
+import java.util.Set;
 
 /**
  *
@@ -38,10 +38,11 @@ public class CardinalityNodePruning extends CardinalityEdgePruning {
 
     protected int firstId;
     protected int lastId;
-    protected TIntSet[] nearestEntities;
+    
+    protected Set<Comparison>[] nearestEntities;
 
     public CardinalityNodePruning() {
-        this(WeightingScheme.ARCS);
+        this(WeightingScheme.JS);
     }
 
     public CardinalityNodePruning(WeightingScheme scheme) {
@@ -66,7 +67,7 @@ public class CardinalityNodePruning extends CardinalityEdgePruning {
             return true;
         }
 
-        if (nearestEntities[neighborId].contains(entityId)) {
+        if (nearestEntities[neighborId].contains(new Comparison(cleanCleanER, -1, entityId))) {
             return entityId < neighborId;
         }
 
@@ -75,7 +76,7 @@ public class CardinalityNodePruning extends CardinalityEdgePruning {
 
     @Override
     protected List<AbstractBlock> pruneEdges() {
-        nearestEntities = new TIntSet[noOfEntities];
+        nearestEntities = new HashSet[noOfEntities];
         topKEdges = new PriorityQueue<>((int) (2 * threshold), new IncComparisonWeightComparator());
         if (weightingScheme.equals(WeightingScheme.ARCS)) {
             for (int i = 0; i < noOfEntities; i++) {
@@ -98,11 +99,11 @@ public class CardinalityNodePruning extends CardinalityEdgePruning {
         for (int i = 0; i < noOfEntities; i++) {
             if (nearestEntities[i] != null) {
                 retainedComparisons.clear();
-                final TIntIterator intIterator = nearestEntities[i].iterator();
-                while (intIterator.hasNext()) {
-                    int neighborId = intIterator.next();
-                    if (isValidComparison(i, neighborId)) {
-                        retainedComparisons.add(getComparison(i, neighborId));
+                for (Comparison c : nearestEntities[i]) {
+                    if (isValidComparison(i, c.getEntityId2())) {
+                        final Comparison correctComparison = getComparison(i, c.getEntityId2());
+                        correctComparison.setUtilityMeasure(c.getUtilityMeasure());
+                        retainedComparisons.add(correctComparison);
                     }
                 }
                 addDecomposedBlock(retainedComparisons, newBlocks);
@@ -144,9 +145,6 @@ public class CardinalityNodePruning extends CardinalityEdgePruning {
             }
         }
 
-        nearestEntities[entityId] = new TIntHashSet();
-        for (Comparison comparison : topKEdges) {
-            nearestEntities[entityId].add(comparison.getEntityId2());
-        }
+        nearestEntities[entityId] = new HashSet<>(topKEdges);
     }
 }

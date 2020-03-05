@@ -1,5 +1,5 @@
 /*
-* Copyright [2016-2018] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2020] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
+import java.util.HashSet;
 
 import java.util.List;
 import java.util.PriorityQueue;
@@ -42,6 +43,7 @@ public class ExtendedCanopyClustering extends CardinalityNodePruning {
 
     protected final int inclusiveThreshold;
     protected final int exclusiveThreshold;
+    
     protected TIntSet excludedEntities;
     
     public ExtendedCanopyClustering() {
@@ -130,7 +132,7 @@ public class ExtendedCanopyClustering extends CardinalityNodePruning {
         final TIntIterator iterator = entityIds.iterator();
         
         excludedEntities = new TIntHashSet();
-        nearestEntities = new TIntSet[noOfEntities];
+        nearestEntities = new HashSet[noOfEntities];
         topKEdges = new PriorityQueue<>((int) (2 * inclusiveThreshold), new IncComparisonWeightComparator());
         if (weightingScheme.equals(WeightingScheme.ARCS)) {
             while (iterator.hasNext()) {
@@ -181,13 +183,12 @@ public class ExtendedCanopyClustering extends CardinalityNodePruning {
 
         int counter = 0;
         int freedEntities = inclusiveThreshold - exclusiveThreshold;
-        nearestEntities[entityId] = new TIntHashSet();
+        nearestEntities[entityId] = new HashSet<>(topKEdges);
         for (Comparison comparison : topKEdges) {
             counter++;
             if (freedEntities < counter) {
                 excludedEntities.add(comparison.getEntityId2());
             }
-            nearestEntities[entityId].add(comparison.getEntityId2());
         }
     }
 }

@@ -1,5 +1,5 @@
 /*
-* Copyright [2016-2018] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2020] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -32,7 +32,11 @@ public class BilateralBlock extends AbstractBlock implements Serializable {
     private final int[] index2Entities;
 
     public BilateralBlock(int[] entities1, int[] entities2) {
-        super();
+        this(1.0, entities1, entities2);
+    }
+    
+    public BilateralBlock(double entropy, int[] entities1, int[] entities2) {
+        super(entropy);
         index1Entities = entities1;
         index2Entities = entities2;
         comparisons = ((double) index1Entities.length) * ((double) index2Entities.length);

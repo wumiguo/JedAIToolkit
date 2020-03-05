@@ -1,5 +1,5 @@
 /*
-* Copyright [2016-2018] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2020] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -135,8 +135,7 @@ public class UndirectedGraph {
         s.append(V).append(" vertices, ").append(E).append(" edges ").append(NEWLINE);
         for (int v = 0; v < V; v++) {
             s.append(v).append(": ");
-            TIntIterator nodeIterator = adj[v].iterator();
-            while (nodeIterator.hasNext()) {
+            for (TIntIterator nodeIterator = adj[v].iterator(); nodeIterator.hasNext(); ) {
                 int w = nodeIterator.next();
                 s.append(w).append(" ");
             }

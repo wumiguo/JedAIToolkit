@@ -1,5 +1,5 @@
 /*
-* Copyright [2016-2018] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2020] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -41,7 +41,7 @@ public class TestGtCSVReader {
         
         GtCSVReader csvReader = new GtCSVReader(gtFilePath);
         csvReader.setIgnoreFirstRow(true);
-        csvReader.setSeparator(';');
+        csvReader.setSeparator(";");
         Set<IdDuplicates> duplicates = csvReader.getDuplicatePairs(profiles);
         System.out.println("No of duplicates\t:\t" + duplicates.size());
 //        for (EntityProfile profile : profiles) {

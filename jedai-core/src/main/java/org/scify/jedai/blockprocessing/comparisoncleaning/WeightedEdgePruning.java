@@ -1,5 +1,5 @@
 /*
-* Copyright [2016-2018] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2020] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -193,15 +193,17 @@ public class WeightedEdgePruning extends AbstractMetablocking {
 
     protected void verifyValidEntities(int entityId, List<AbstractBlock> newBlocks) {
         retainedNeighbors.clear();
+        retainedNeighborsWeights.clear();
         if (!cleanCleanER) {
             for (TIntIterator tIterator = validEntities.iterator(); tIterator.hasNext();) {
                 int neighborId = tIterator.next();
                 double weight = getWeight(entityId, neighborId);
                 if (threshold <= weight) {
                     retainedNeighbors.add(neighborId);
+                    retainedNeighborsWeights.add(discretizeComparisonWeight(weight));
                 }
             }
-            addDecomposedBlock(entityId, retainedNeighbors, newBlocks);
+            addDecomposedBlock(entityId, retainedNeighbors, retainedNeighborsWeights, newBlocks);
         } else {
             if (entityId < datasetLimit) {
                 for (TIntIterator tIterator = validEntities.iterator(); tIterator.hasNext();) {
@@ -209,18 +211,20 @@ public class WeightedEdgePruning extends AbstractMetablocking {
                     double weight = getWeight(entityId, neighborId);
                     if (threshold <= weight) {
                         retainedNeighbors.add(neighborId - datasetLimit);
+                        retainedNeighborsWeights.add(discretizeComparisonWeight(weight));
                     }
                 }
-                addDecomposedBlock(entityId, retainedNeighbors, newBlocks);
+                addDecomposedBlock(entityId, retainedNeighbors, retainedNeighborsWeights, newBlocks);
             } else {
                 for (TIntIterator tIterator = validEntities.iterator(); tIterator.hasNext();) {
                     int neighborId = tIterator.next();
                     double weight = getWeight(entityId, neighborId);
                     if (threshold <= weight) {
                         retainedNeighbors.add(neighborId);
+                        retainedNeighborsWeights.add(discretizeComparisonWeight(weight));
                     }
                 }
-                addReversedDecomposedBlock(entityId - datasetLimit, retainedNeighbors, newBlocks);
+                addReversedDecomposedBlock(entityId - datasetLimit, retainedNeighbors, retainedNeighborsWeights, newBlocks);
             }
         }
     }

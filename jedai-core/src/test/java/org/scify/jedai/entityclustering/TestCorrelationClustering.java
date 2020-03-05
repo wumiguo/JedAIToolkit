@@ -1,5 +1,5 @@
 /*
-* Copyright [2016-2018] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2020] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -91,8 +91,8 @@ public class TestCorrelationClustering {
 
         double time3 = System.currentTimeMillis();
 
-        IEntityMatching em = EntityMatchingMethod.getDefaultConfiguration(emMethod);
-        SimilarityPairs simPairs = em.executeComparisons(blocks, profiles);
+        IEntityMatching em = EntityMatchingMethod.getDefaultConfiguration(profiles, null, emMethod);
+        SimilarityPairs simPairs = em.executeComparisons(blocks);
 
         double time4 = System.currentTimeMillis();
 

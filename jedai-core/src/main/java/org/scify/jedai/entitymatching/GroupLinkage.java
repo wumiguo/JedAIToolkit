@@ -1,5 +1,5 @@
 /*
-* Copyright [2016-2018] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2020] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -48,70 +48,89 @@ public class GroupLinkage extends AbstractEntityMatching {
     protected ITextModel[][] entityModelsD1;
     protected ITextModel[][] entityModelsD2;
 
-    public GroupLinkage() {
-        this(0.1, RepresentationModel.TOKEN_UNIGRAM_GRAPHS, SimilarityMetric.GRAPH_VALUE_SIMILARITY);
+    public GroupLinkage(List<EntityProfile> profiles) {
+        this(0.1, profiles, null, RepresentationModel.TOKEN_UNIGRAMS, SimilarityMetric.COSINE_SIMILARITY);
     }
     
-    public GroupLinkage(double simThr, RepresentationModel model, SimilarityMetric simMetric) {
-        super(model, simMetric);
+    public GroupLinkage(List<EntityProfile> profilesD1, List<EntityProfile> profilesD2) {
+        this(0.1, profilesD1, profilesD2, RepresentationModel.TOKEN_UNIGRAMS, SimilarityMetric.COSINE_SIMILARITY);
+    }
+
+    public GroupLinkage(double simThr, List<EntityProfile> profiles, RepresentationModel model, SimilarityMetric simMetric) {
+        this(simThr, profiles, null, model, simMetric);
+    }
+    
+    public GroupLinkage(double simThr, List<EntityProfile> profilesD1, List<EntityProfile> profilesD2, RepresentationModel model, SimilarityMetric simMetric) {
+        super(profilesD1, profilesD2, model, simMetric);
+        
         similarityThreshold = simThr;
+        
+        buildModels();
     }
 
     @Override
-    public SimilarityPairs executeComparisons(List<AbstractBlock> blocks,
-            List<EntityProfile> profilesD1, List<EntityProfile> profilesD2) {
-        Log.info("Applying " + getMethodName() + " with the following configuration : " + getMethodConfiguration());
-        
+    protected final void buildModels() {
         if (profilesD1 == null) {
             Log.error("First list of entity profiles is null! "
                     + "The first argument should always contain entities.");
             System.exit(-1);
         }
 
-        isCleanCleanER = false;
-        entityModelsD1 = getModels(DATASET_1, profilesD1);
-        if (profilesD2 != null) {
-            isCleanCleanER = true;
-            entityModelsD2 = getModels(DATASET_2, profilesD2);
+        if (entityModelsD1 == null) {
+            Log.info("Applying " + getMethodName() + " with the following configuration : " + getMethodConfiguration());
+
+            isCleanCleanER = false;
+            entityModelsD1 = getModels(DATASET_1, profilesD1);
+            if (profilesD2 != null) {
+                isCleanCleanER = true;
+                entityModelsD2 = getModels(DATASET_2, profilesD2);
+            }
         }
-        
-        final SimilarityPairs simPairs = new SimilarityPairs(isCleanCleanER, blocks);
+    }
+    
+    @Override
+    public double executeComparison(Comparison comparison) {
+        final Queue<SimilarityEdge> similarityQueue = getSimilarityEdges(comparison);
+        final WeightedGraph<String, DefaultWeightedEdge> similarityGraph = getSimilarityGraph(similarityQueue);
+        int verticesNum = entityModelsD1[comparison.getEntityId1()].length;
+        if (isCleanCleanER) {
+            verticesNum += entityModelsD2[comparison.getEntityId2()].length;
+        } else {
+            verticesNum += entityModelsD1[comparison.getEntityId2()].length;
+        }
+
+        return getSimilarity(similarityGraph, verticesNum);
+    }
+
+    @Override
+    public SimilarityPairs executeComparisons(List<AbstractBlock> blocks) {
+        final SimilarityPairs simPairs = new SimilarityPairs(profilesD2 != null, blocks);
         blocks.stream().map((block) -> block.getComparisonIterator()).forEachOrdered((iterator) -> {
             while (iterator.hasNext()) {
                 final Comparison currentComparison = iterator.next();
-                final Queue<SimilarityEdge> similarityQueue = getSimilarityEdges(currentComparison);
-                final WeightedGraph<String, DefaultWeightedEdge> similarityGraph = getSimilarityGraph(similarityQueue);
-                int verticesNum = entityModelsD1[currentComparison.getEntityId1()].length;
-                if (isCleanCleanER) {
-                    verticesNum += entityModelsD2[currentComparison.getEntityId2()].length;
-                } else {
-                    verticesNum += entityModelsD1[currentComparison.getEntityId2()].length;
-                }
-                
-                double currentSimilarity = getSimilarity(similarityGraph, verticesNum);
-                if (0 < currentSimilarity) {
-                    currentComparison.setUtilityMeasure(currentSimilarity);
+                double similarity = executeComparison(currentComparison);
+                if (0 < similarity) {
+                    currentComparison.setUtilityMeasure(similarity);
                     simPairs.addComparison(currentComparison);
                 }
             }
         });
 
-        simPairs.normalizeSimilarities();
         return simPairs;
     }
 
     @Override
     public String getMethodConfiguration() {
-        return getParameterName(0) + "=" + representationModel + "\t" +
-               getParameterName(1) + "=" + simMetric + "\t" +
-               getParameterName(2) + "=" + similarityThreshold;
+        return getParameterName(0) + "=" + representationModel + "\t"
+                + getParameterName(1) + "=" + simMetric + "\t"
+                + getParameterName(2) + "=" + similarityThreshold;
     }
-    
+
     @Override
     public String getMethodInfo() {
         return getMethodName() + ": it implements the group linkage algorithm for schema-agnostic comparison of the attribute values of two entity profiles.";
     }
-    
+
     @Override
     public String getMethodName() {
         return "Group Linkage";
@@ -120,9 +139,9 @@ public class GroupLinkage extends AbstractEntityMatching {
     @Override
     public String getMethodParameters() {
         return getMethodName() + " involves three parameters:\n"
-               + "1)" + getParameterDescription(0) + ".\n"
-               + "2)" + getParameterDescription(1) + ".\n"
-               + "3)" + getParameterDescription(2) + ".";
+                + "1)" + getParameterDescription(0) + ".\n"
+                + "2)" + getParameterDescription(1) + ".\n"
+                + "3)" + getParameterDescription(2) + ".";
     }
 
     //Every element of the getModels list is an ITextModel[] array, corresponding to 
@@ -134,7 +153,7 @@ public class GroupLinkage extends AbstractEntityMatching {
         for (EntityProfile profile : profiles) {
             int validAttributes = 0;
             validAttributes = profile.getAttributes().stream().filter((attribute) -> (!attribute.getValue().isEmpty())).map((_item) -> 1).reduce(validAttributes, Integer::sum);
-            
+
             int counter = 0;
             ModelsList[entityCounter] = new ITextModel[validAttributes];
             for (Attribute attribute : profile.getAttributes()) {
@@ -143,7 +162,7 @@ public class GroupLinkage extends AbstractEntityMatching {
                     ModelsList[entityCounter][counter].updateModel(attribute.getValue());
                     ModelsList[entityCounter][counter].finalizeModel();
                     counter++;
-                } 
+                }
             }
             entityCounter++;
         }
@@ -170,7 +189,7 @@ public class GroupLinkage extends AbstractEntityMatching {
         obj2.put("maxValue", "-");
         obj2.put("stepValue", "-");
         obj2.put("description", getParameterDescription(1));
-        
+
         final JsonObject obj3 = new JsonObject();
         obj3.put("class", "java.lang.Double");
         obj3.put("name", getParameterName(2));
@@ -200,7 +219,7 @@ public class GroupLinkage extends AbstractEntityMatching {
                 return "invalid parameter id";
         }
     }
-    
+
     @Override
     public String getParameterName(int parameterId) {
         switch (parameterId) {
@@ -214,7 +233,7 @@ public class GroupLinkage extends AbstractEntityMatching {
                 return "invalid parameter id";
         }
     }
-    
+
     private double getSimilarity(WeightedGraph<String, DefaultWeightedEdge> simGraph, int verticesNum) {
         double nominator = 0;
         double denominator = (double) verticesNum; //m1+m2
@@ -233,7 +252,7 @@ public class GroupLinkage extends AbstractEntityMatching {
         } else {
             model2 = entityModelsD1[comparison.getEntityId2()];
         }
-        
+
         int s1 = model1.length;
         int s2 = model2.length;
         final Queue<SimilarityEdge> SEqueue = new PriorityQueue<>(s1 * s2, new DecSimilarityEdgeComparator());
@@ -270,5 +289,5 @@ public class GroupLinkage extends AbstractEntityMatching {
 
     public void setSimilarityThreshold(double p) {
         this.similarityThreshold = p;
-    }
+    }    
 }

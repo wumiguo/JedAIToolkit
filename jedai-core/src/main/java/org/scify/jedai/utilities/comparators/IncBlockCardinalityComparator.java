@@ -1,5 +1,5 @@
 /*
-* Copyright [2016-2018] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2020] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@ package org.scify.jedai.utilities.comparators;
 
 import org.scify.jedai.datamodel.AbstractBlock;
 import java.util.Comparator;
+import org.scify.jedai.datamodel.ComparisonIterator;
 
 /**
  *
@@ -24,15 +25,31 @@ import java.util.Comparator;
  */
 public class IncBlockCardinalityComparator implements Comparator<AbstractBlock> {
 
-   /* 
+    /* 
     * This comparator orders blocks in increasing order of cardinality, i.e.,
     * from the smallest number of comparisons to the largest one.
     * It is useful for Block Cleaning techniques.
-    */
-    
+    * Blocks with the same number of comparisons are ordered in decreasing aggregate comparison weight.
+     */
     @Override
     public int compare(AbstractBlock block1, AbstractBlock block2) {
-        return new Double(block1.getNoOfComparisons()).compareTo(block2.getNoOfComparisons());
+        if (block1.getNoOfComparisons() != block2.getNoOfComparisons()) {
+            return new Double(block1.getNoOfComparisons()).compareTo(block2.getNoOfComparisons());
+        }
+
+        Double totalWeight1 = 0.0;
+        ComparisonIterator cIterator = block1.getComparisonIterator();
+        while (cIterator.hasNext()) {
+            totalWeight1 += cIterator.next().getUtilityMeasure();
+        }
+
+        Double totalWeight2 = 0.0;
+        cIterator = block2.getComparisonIterator();
+        while (cIterator.hasNext()) {
+            totalWeight2 += cIterator.next().getUtilityMeasure();
+        }
+        
+        return totalWeight2.compareTo(totalWeight1);
     }
 
 //    public static void main(String[] args) {

@@ -1,5 +1,5 @@
 /*
-* Copyright [2016-2018] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2020] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -198,7 +198,7 @@ public class RicochetSRClustering extends AbstractEntityClustering {
             if ((!NonCenter.contains(i)) && (!Center.contains(i))) {
                 Center.add(i);
                 clusterCenter[i] = i;
-                TIntHashSet tinthelp = new TIntHashSet();               
+                TIntHashSet tinthelp = new TIntHashSet();
                 tinthelp.add(i);
                 Clusters.put(i, tinthelp);//initialize v1 Cluster with its own value
                 simWithCenter[i] = 1.0;

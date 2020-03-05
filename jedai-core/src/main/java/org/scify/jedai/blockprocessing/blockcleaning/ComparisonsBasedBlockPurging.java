@@ -1,5 +1,5 @@
 /*
-* Copyright [2016-2018] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2020] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -42,14 +42,14 @@ public class ComparisonsBasedBlockPurging extends AbstractBlockPurging {
 
     protected final DblGridSearchConfiguration gridSFactor;
     protected final DblRandomSearchConfiguration randomSFactor;
-    
-    public ComparisonsBasedBlockPurging() {
-        this(1.025);
+
+    public ComparisonsBasedBlockPurging(boolean isCleanCleanER) {
+        this(isCleanCleanER ? 1.00 : 1.025);
     }
 
     public ComparisonsBasedBlockPurging(double sf) {
         smoothingFactor = sf;
-        
+
         gridSFactor = new DblGridSearchConfiguration(2.0, 1.0, 0.02);
         randomSFactor = new DblRandomSearchConfiguration(2.0, 1.0);
     }
@@ -79,7 +79,7 @@ public class ComparisonsBasedBlockPurging extends AbstractBlockPurging {
     public int getNumberOfGridConfigurations() {
         return gridSFactor.getNumberOfConfigurations();
     }
-    
+
     @Override
     public JsonArray getParameterConfiguration() {
         final JsonObject obj = new JsonObject();
@@ -122,7 +122,7 @@ public class ComparisonsBasedBlockPurging extends AbstractBlockPurging {
     protected boolean satisfiesThreshold(AbstractBlock block) {
         return block.getNoOfComparisons() <= maxComparisonsPerBlock;
     }
-    
+
     @Override
     public void setNextRandomConfiguration() {
         smoothingFactor = (Double) randomSFactor.getNextRandomValue();
@@ -132,7 +132,7 @@ public class ComparisonsBasedBlockPurging extends AbstractBlockPurging {
     public void setNumberedGridConfiguration(int iterationNumber) {
         smoothingFactor = (Double) gridSFactor.getNumberedValue(iterationNumber);
     }
-    
+
     @Override
     public void setNumberedRandomConfiguration(int iterationNumber) {
         smoothingFactor = (Double) randomSFactor.getNumberedRandom(iterationNumber);
@@ -190,5 +190,5 @@ public class ComparisonsBasedBlockPurging extends AbstractBlockPurging {
 
         maxComparisonsPerBlock = previousSize;
         Log.info("Maximum comparisons per block\t:\t" + maxComparisonsPerBlock);
-    } 
+    }
 }

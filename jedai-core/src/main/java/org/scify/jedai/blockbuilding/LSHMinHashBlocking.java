@@ -1,5 +1,5 @@
 /*
-* Copyright [2016-2018] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2020] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  */
 package org.scify.jedai.blockbuilding;
 
+import com.esotericsoftware.minlog.Log;
 import info.debatty.java.lsh.MinHash;
 import java.util.HashSet;
 import java.util.Set;
@@ -26,6 +27,8 @@ import org.scify.jedai.textmodels.MinHashUnigrams;
  * @author GAP2
  */
 public class LSHMinHashBlocking extends LSHSuperBitBlocking {
+    
+    //TODO: Make sure that the entity ids in Unilateral blocks are ordered in increasing id (i.e., smallest first)
 
     protected MinHash minhash;
 
@@ -66,7 +69,7 @@ public class LSHMinHashBlocking extends LSHSuperBitBlocking {
 
     @Override
     protected void initializeLshFunctions() {
-        System.out.println("Dimensionality\t:\t" + MinHashUnigrams.getCorpusDimensionality());
+        Log.info("Dimensionality\t:\t" + MinHashUnigrams.getCorpusDimensionality());
         minhash = new MinHash(bandSize * bandsNumber, MinHashUnigrams.getCorpusDimensionality());
     }
 

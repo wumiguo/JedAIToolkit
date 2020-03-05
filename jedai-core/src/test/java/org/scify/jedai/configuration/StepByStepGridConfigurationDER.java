@@ -1,5 +1,5 @@
 /*
-* Copyright [2016-2018] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2020] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -74,7 +74,7 @@ public class StepByStepGridConfigurationDER {
             final IBlockProcessing bp1 = new SizeBasedBlockPurging();
             final IBlockProcessing bp2 = new BlockFiltering();
             final IBlockProcessing cc = new CardinalityNodePruning();
-            final IEntityMatching em = new ProfileMatcher();
+            final IEntityMatching em = new ProfileMatcher(profiles);
             final IEntityClustering ec = new CenterClustering();
 
             final StringBuilder matchingWorkflowName = new StringBuilder();
@@ -212,7 +212,7 @@ public class StepByStepGridConfigurationDER {
             double bestFMeasure = 0;
             for (int j = 0; j < em.getNumberOfGridConfigurations(); j++) {
                 em.setNumberedGridConfiguration(j);
-                final SimilarityPairs sims = em.executeComparisons(finalBlocks, profiles);
+                final SimilarityPairs sims = em.executeComparisons(finalBlocks);
 
                 for (int k = 0; k < ec.getNumberOfGridConfigurations(); k++) {
                     ec.setNumberedGridConfiguration(k);
@@ -236,7 +236,7 @@ public class StepByStepGridConfigurationDER {
             double time1 = System.currentTimeMillis();
 
             em.setNumberedGridConfiguration(bestOuterIteration);
-            final SimilarityPairs sims = em.executeComparisons(finalBlocks, profiles);
+            final SimilarityPairs sims = em.executeComparisons(finalBlocks);
 
             ec.setNumberedGridConfiguration(bestInnerIteration);
             final EquivalenceCluster[] clusters = ec.getDuplicates(sims);

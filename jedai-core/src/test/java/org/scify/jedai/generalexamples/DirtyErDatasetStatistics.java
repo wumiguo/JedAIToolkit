@@ -1,5 +1,5 @@
 /*
-* Copyright [2016-2018] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2020] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -39,12 +39,15 @@ public class DirtyErDatasetStatistics {
         String[] entitiesFiles = {mainFolder + "restaurantProfiles",
             mainFolder + "censusProfiles",
             mainFolder + "coraProfiles",
-            mainFolder + "cddbProfiles"
+            mainFolder + "cddbProfiles",
+            mainFolder + "newDBPedia1",
+            mainFolder + "newDBPedia2"
         };
         String[] groundTruthFiles = {mainFolder + "restaurantIdDuplicates",
             mainFolder + "censusIdDuplicates",
             mainFolder + "coraIdDuplicates",
-            mainFolder + "cddbIdDuplicates"
+            mainFolder + "cddbIdDuplicates",
+            mainFolder + "newDBPedia1",
         };
 
         for (int i = 0; i < entitiesFiles.length; i++) {

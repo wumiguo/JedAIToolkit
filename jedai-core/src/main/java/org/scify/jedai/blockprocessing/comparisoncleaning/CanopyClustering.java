@@ -1,5 +1,5 @@
 /*
-* Copyright [2016-2018] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2020] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -23,11 +23,13 @@ import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
+import java.util.HashSet;
 
 import java.util.List;
 import java.util.Random;
 import org.apache.jena.atlas.json.JsonArray;
 import org.apache.jena.atlas.json.JsonObject;
+import org.scify.jedai.datamodel.Comparison;
 
 /**
  *
@@ -37,6 +39,7 @@ public class CanopyClustering extends CardinalityNodePruning {
 
     protected final double inclusiveThreshold;
     protected final double exclusiveThreshold;
+    
     protected TIntSet excludedEntities;
 
     public CanopyClustering() {
@@ -145,7 +148,7 @@ public class CanopyClustering extends CardinalityNodePruning {
         final TIntIterator iterator = entityIds.iterator();
 
         excludedEntities = new TIntHashSet();
-        nearestEntities = new TIntSet[noOfEntities];
+        nearestEntities = new HashSet[noOfEntities];
         if (weightingScheme.equals(WeightingScheme.ARCS)) {
             while (iterator.hasNext()) {
                 int currentId = iterator.next();
@@ -169,21 +172,20 @@ public class CanopyClustering extends CardinalityNodePruning {
 
     @Override
     protected void verifyValidEntities(int entityId) {
-        nearestEntities[entityId] = new TIntHashSet();
+        nearestEntities[entityId] = new HashSet<>();
         for (TIntIterator tIterator = validEntities.iterator(); tIterator.hasNext();) {
             int neighborId = tIterator.next();
             if (excludedEntities.contains(neighborId)) {
-                System.out.println("Excluded!!!");
                 continue;
             }
 
             double weight = getWeight(entityId, neighborId);
             if (inclusiveThreshold < weight) {
                 if (exclusiveThreshold < weight) {
-                    System.out.println(weight);
                     excludedEntities.add(neighborId);
                 }
-                nearestEntities[entityId].add(neighborId);
+                final Comparison retainedComparison = new Comparison(cleanCleanER, -1, neighborId);
+                nearestEntities[entityId].add(retainedComparison);
             }
         }
     }

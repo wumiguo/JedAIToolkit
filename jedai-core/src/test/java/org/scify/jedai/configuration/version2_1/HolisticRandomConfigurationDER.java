@@ -1,5 +1,5 @@
 /*
-* Copyright [2016-2018] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2020] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -76,7 +76,7 @@ public class HolisticRandomConfigurationDER {
         final IBlockProcessing bp1 = new SizeBasedBlockPurging(PURGING_FACTOR[i]);
         final IBlockProcessing bp2 = new BlockFiltering(FILTERING_RATIO[i]);
         final IBlockProcessing cc = new CardinalityNodePruning(WEIGHTING_SCHEME[i]);
-        final IEntityMatching em = new ProfileMatcher(REP_MODEL[i], SIM_METRIC[i]);
+        final IEntityMatching em = new ProfileMatcher(profiles, REP_MODEL[i], SIM_METRIC[i]);
         final IEntityClustering ec = new ConnectedComponentsClustering(SIM_THRESHOLD[i]);
 
         final StringBuilder matchingWorkflowName = new StringBuilder();
@@ -101,7 +101,7 @@ public class HolisticRandomConfigurationDER {
         final List<AbstractBlock> purgedBlocks = bp1.refineBlocks(blocks);
         final List<AbstractBlock> filteredBlocks = bp2.refineBlocks(purgedBlocks);
         final List<AbstractBlock> finalBlocks = cc.refineBlocks(filteredBlocks);
-        final SimilarityPairs sims = em.executeComparisons(finalBlocks, profiles);
+        final SimilarityPairs sims = em.executeComparisons(finalBlocks);
         final EquivalenceCluster[] clusters = ec.getDuplicates(sims);
 
         double time2 = System.currentTimeMillis();

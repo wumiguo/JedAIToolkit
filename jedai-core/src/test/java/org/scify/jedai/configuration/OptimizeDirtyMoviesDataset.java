@@ -1,5 +1,5 @@
 /*
-* Copyright [2016-2018] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2020] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -73,7 +73,7 @@ public class OptimizeDirtyMoviesDataset {
         final IBlockBuilding bb = new StandardBlocking();
         final IBlockProcessing bp = new BlockFiltering();
         final IBlockProcessing cc = new CardinalityNodePruning(WeightingScheme.ECBS);
-        final IEntityMatching em = new ProfileMatcher();
+        final IEntityMatching em = new ProfileMatcher(profiles1);
         final IEntityClustering ec = new UniqueMappingClustering();
 
         final StringBuilder matchingWorkflowName = new StringBuilder();
@@ -103,7 +103,7 @@ public class OptimizeDirtyMoviesDataset {
         double bestFMeasure = 0;
         for (int j = 0; j < NO_OF_TRIALS; j++) {
             em.setNextRandomConfiguration();
-            final SimilarityPairs sims = em.executeComparisons(finalBlocks, profiles1);
+            final SimilarityPairs sims = em.executeComparisons(finalBlocks);
 
             ec.setNextRandomConfiguration();
             final EquivalenceCluster[] clusters = ec.getDuplicates(sims);
@@ -122,7 +122,7 @@ public class OptimizeDirtyMoviesDataset {
         double time1 = System.currentTimeMillis();
 
         em.setNumberedRandomConfiguration(bestIteration);
-        final SimilarityPairs sims = em.executeComparisons(finalBlocks, profiles1);
+        final SimilarityPairs sims = em.executeComparisons(finalBlocks);
 
         ec.setNumberedRandomConfiguration(bestIteration);
         final EquivalenceCluster[] clusters = ec.getDuplicates(sims);

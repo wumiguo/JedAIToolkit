@@ -1,5 +1,5 @@
 /*
-* Copyright [2016-2018] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2020] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -23,9 +23,9 @@ import gnu.trove.map.TIntDoubleMap;
  */
 public class VertexWeight {
 
-    private final int pos;
     private final double weight;
     private final int noOfAdj;
+    private final int pos; //id
     private final TIntDoubleMap Connections;
 
     public VertexWeight(int pos, double weight, int noOfAdj, TIntDoubleMap Connections) {

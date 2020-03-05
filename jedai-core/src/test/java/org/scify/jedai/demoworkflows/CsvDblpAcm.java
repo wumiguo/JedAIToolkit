@@ -1,5 +1,5 @@
 /*
-* Copyright [2016-2018] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2020] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -29,7 +29,6 @@ import org.scify.jedai.datamodel.EquivalenceCluster;
 import org.scify.jedai.datamodel.SimilarityPairs;
 import org.scify.jedai.datareader.entityreader.EntityCSVReader;
 import org.scify.jedai.datareader.groundtruthreader.GtCSVReader;
-import org.scify.jedai.datawriter.BlocksPerformanceWriter;
 import org.scify.jedai.datawriter.ClustersPerformanceWriter;
 import org.scify.jedai.datawriter.PrintStatsToFile;
 import org.scify.jedai.entityclustering.ConnectedComponentsClustering;
@@ -40,8 +39,6 @@ import org.scify.jedai.utilities.BlocksPerformance;
 import org.scify.jedai.utilities.ClustersPerformance;
 import org.scify.jedai.utilities.datastructures.AbstractDuplicatePropagation;
 import org.scify.jedai.utilities.datastructures.BilateralDuplicatePropagation;
-import org.scify.jedai.utilities.PrintToFile;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
 import org.apache.log4j.BasicConfigurator;
@@ -60,20 +57,20 @@ public class CsvDblpAcm {
         EntityCSVReader csvEntityReader = new EntityCSVReader(mainDirectory + "DBLP2.csv");
         csvEntityReader.setAttributeNamesInFirstRow(true);
         csvEntityReader.setIdIndex(0);
-        csvEntityReader.setSeparator(',');
+        csvEntityReader.setSeparator(",");
         List<EntityProfile> csvDBLP = csvEntityReader.getEntityProfiles();
         System.out.println("CSV DBLP Entity Profiles\t:\t" + csvDBLP.size());
         
         csvEntityReader = new EntityCSVReader(mainDirectory + "ACM.csv");
         csvEntityReader.setAttributeNamesInFirstRow(true);
         csvEntityReader.setIdIndex(0);
-        csvEntityReader.setSeparator(',');
+        csvEntityReader.setSeparator(",");
         List<EntityProfile> csvACM = csvEntityReader.getEntityProfiles();
         System.out.println("CSV ACM Entity Profiles\t:\t" + csvACM.size());
 
         GtCSVReader csvGtReader = new GtCSVReader(mainDirectory + "DBLP-ACM_perfectMapping.csv");
         csvGtReader.setIgnoreFirstRow(true);
-        csvGtReader.setSeparator(',');
+        csvGtReader.setSeparator(",");
         csvGtReader.getDuplicatePairs(csvDBLP, csvACM);
         final AbstractDuplicatePropagation duplicatePropagation = new BilateralDuplicatePropagation(csvGtReader.getDuplicatePairs(csvDBLP, csvACM));
         System.out.println("Existing Duplicates\t:\t" + duplicatePropagation.getDuplicates().size());
@@ -111,8 +108,8 @@ public class CsvDblpAcm {
 
         double time3 = System.currentTimeMillis();
         
-        IEntityMatching entityMatching = new ProfileMatcher();
-        SimilarityPairs simPairs = entityMatching.executeComparisons(blocks, csvDBLP, csvACM);
+        IEntityMatching entityMatching = new ProfileMatcher(csvDBLP, csvACM);
+        SimilarityPairs simPairs = entityMatching.executeComparisons(blocks);
         workflowConf.append("\n").append(entityMatching.getMethodConfiguration());
         workflowName.append("->").append(entityMatching.getMethodName());
 

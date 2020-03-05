@@ -1,5 +1,5 @@
 /*
- * Copyright [2016-2018] [George Papadakis (gpapadis@yahoo.gr)]
+ * Copyright [2016-2020] [George Papadakis (gpapadis@yahoo.gr)]
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,6 @@ import com.esotericsoftware.minlog.Log;
 
 import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TIntArrayList;
-import gnu.trove.map.TObjectIntMap;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -33,12 +32,15 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import org.scify.jedai.datamodel.AttributeClusters;
 
 /**
  *
  * @author gap2
  */
 public abstract class AbstractBlockBuilding implements IBlockBuilding {
+
+    protected boolean isUsingEntropy;
 
     protected double noOfEntitiesD1;
     protected double noOfEntitiesD2;
@@ -48,9 +50,10 @@ public abstract class AbstractBlockBuilding implements IBlockBuilding {
     protected List<EntityProfile> entityProfilesD2;
     protected Map<String, TIntList> invertedIndexD1;
     protected Map<String, TIntList> invertedIndexD2;
-    protected TObjectIntMap<String>[] schemaClusters;
+    protected AttributeClusters[] schemaClusters;
 
     public AbstractBlockBuilding() {
+        isUsingEntropy = false;
     }
 
     protected void buildBlocks() {
@@ -82,7 +85,7 @@ public abstract class AbstractBlockBuilding implements IBlockBuilding {
     }
 
     @Override
-    public List<AbstractBlock> getBlocks(List<EntityProfile> profilesD1, List<EntityProfile> profilesD2, TObjectIntMap<String>[] sClusters) {
+    public List<AbstractBlock> getBlocks(List<EntityProfile> profilesD1, List<EntityProfile> profilesD2, AttributeClusters[] sClusters) {
         Log.info("Applying " + getMethodName() + " with the following configuration : " + getMethodConfiguration());
 
         if (profilesD1 == null) {
@@ -144,16 +147,18 @@ public abstract class AbstractBlockBuilding implements IBlockBuilding {
         }
     }
 
-    protected void indexEntities(Map<String, TIntList> index, List<EntityProfile> entities, TObjectIntMap<String> schemaClusters) {
+    protected void indexEntities(Map<String, TIntList> index, List<EntityProfile> entities, AttributeClusters schemaClusters) {
+        isUsingEntropy = true;
+
         int counter = 0;
         for (EntityProfile profile : entities) {
             final Set<String> allKeys = new HashSet<>();
             for (Attribute attribute : profile.getAttributes()) {
-                int clusterId = schemaClusters.get(attribute.getName());
+                int clusterId = schemaClusters.getClusterId(attribute.getName());
                 for (String key : getBlockingKeys(attribute.getValue().toLowerCase())) {
                     String normalizedKey = key.trim();
                     if (0 < normalizedKey.length()) {
-                        allKeys.add(normalizedKey + CLUSTER_PREFIX + clusterId);
+                        allKeys.add(normalizedKey + CLUSTER_PREFIX + clusterId + CLUSTER_PREFIX + schemaClusters.getClusterEntropy(clusterId));
                     }
                 }
             }
@@ -171,18 +176,37 @@ public abstract class AbstractBlockBuilding implements IBlockBuilding {
     }
 
     protected void parseIndex() {
-        invertedIndexD1.values().stream().filter((entityList) -> (1 < entityList.size())).forEachOrdered((entityList) -> {
-            blocks.add(new UnilateralBlock(entityList.toArray()));
-        });
+        if (!isUsingEntropy) {
+            invertedIndexD1.values().stream().filter((entityList) -> (1 < entityList.size())).forEachOrdered((entityList) -> {
+                blocks.add(new UnilateralBlock(entityList.toArray()));
+            });
+        } else {
+            invertedIndexD1.entrySet().forEach((entry) -> {
+                final String[] entropyString = entry.getKey().split(CLUSTER_SUFFIX);
+                double entropyValue = Double.parseDouble(entropyString[1]);
+                blocks.add(new UnilateralBlock(entropyValue, entry.getValue().toArray()));
+            });
+        }
     }
 
     protected void parseIndices() {
-        invertedIndexD1.entrySet().forEach((entry) -> {
-            final TIntList entityIdsD2 = invertedIndexD2.get(entry.getKey());
-            if (entityIdsD2 != null && !entityIdsD2.isEmpty()) {
-                blocks.add(new BilateralBlock(entry.getValue().toArray(), entityIdsD2.toArray()));
-            }
-        });
+        if (!isUsingEntropy) {
+            invertedIndexD1.entrySet().forEach((entry) -> {
+                final TIntList entityIdsD2 = invertedIndexD2.get(entry.getKey());
+                if (entityIdsD2 != null && !entityIdsD2.isEmpty()) {
+                    blocks.add(new BilateralBlock(entry.getValue().toArray(), entityIdsD2.toArray()));
+                }
+            });
+        } else {
+            invertedIndexD1.entrySet().forEach((entry) -> {
+                final TIntList entityIdsD2 = invertedIndexD2.get(entry.getKey());
+                if (entityIdsD2 != null && !entityIdsD2.isEmpty()) {
+                    final String[] entropyString = entry.getKey().split(CLUSTER_SUFFIX);
+                    double entropyValue = Double.parseDouble(entropyString[1]);
+                    blocks.add(new BilateralBlock(entropyValue, entry.getValue().toArray(), entityIdsD2.toArray()));
+                }
+            });
+        }
     }
 
     //read blocks from the inverted index

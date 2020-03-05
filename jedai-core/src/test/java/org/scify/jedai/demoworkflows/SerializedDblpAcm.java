@@ -1,5 +1,5 @@
 /*
-* Copyright [2016-2018] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2020] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -93,8 +93,8 @@ public class SerializedDblpAcm {
 
         double time3 = System.currentTimeMillis();
 
-        IEntityMatching entityMatching = new ProfileMatcher();
-        SimilarityPairs simPairs = entityMatching.executeComparisons(blocks, serializedDBLP, serializedACM);
+        IEntityMatching entityMatching = new ProfileMatcher(serializedDBLP, serializedACM);
+        SimilarityPairs simPairs = entityMatching.executeComparisons(blocks);
         workflowConf.append("\n").append(entityMatching.getMethodConfiguration());
         workflowName.append("->").append(entityMatching.getMethodName());
 

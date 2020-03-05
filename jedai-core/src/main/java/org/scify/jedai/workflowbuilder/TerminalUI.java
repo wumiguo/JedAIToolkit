@@ -1,5 +1,5 @@
 /*
-* Copyright [2016-2018] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2020] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -51,7 +51,7 @@ import org.scify.jedai.utilities.enumerations.EntityMatchingMethod;
  *
  * @author GAP2
  */
-public class BlockingBasedWorkflow {
+public class TerminalUI {
 
     private final static String MAIN_DIR_CCER_DATASETS = System.getProperty("user.dir") + File.separator + "data" + File.separator + "cleanCleanErDatasets" + File.separator;
     private final static String MAIN_DIR_DER_DATASETS = System.getProperty("user.dir") + File.separator + "data" + File.separator + "dirtyErDatasets" + File.separator;
@@ -337,8 +337,8 @@ public class BlockingBasedWorkflow {
         int emMethodId = getEntityMatchingMethod();
         double time7 = System.currentTimeMillis();
 
-        final IEntityMatching entityMatchingMethod = EntityMatchingMethod.getDefaultConfiguration(EntityMatchingMethod.values()[emMethodId - 1]);
-        final SimilarityPairs simPairs = entityMatchingMethod.executeComparisons(blocks, profilesD1, profilesD2);
+        final IEntityMatching entityMatchingMethod = EntityMatchingMethod.getDefaultConfiguration(profilesD1, profilesD2, EntityMatchingMethod.values()[emMethodId - 1]);
+        final SimilarityPairs simPairs = entityMatchingMethod.executeComparisons(blocks);
 
         double time8 = System.currentTimeMillis();
 

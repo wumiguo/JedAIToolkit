@@ -1,5 +1,5 @@
 /*
-* Copyright [2016-2018] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2020] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -72,8 +72,8 @@ public class TestAllMethods {
             }
             
             for (RepresentationModel model : RepresentationModel.values()) {
-                IEntityMatching pm = new ProfileMatcher(model, SimilarityMetric.getModelDefaultSimMetric(model));
-                SimilarityPairs simPairs = pm.executeComparisons(blocks, profiles);
+                IEntityMatching pm = new ProfileMatcher(profiles, model, SimilarityMetric.getModelDefaultSimMetric(model));
+                SimilarityPairs simPairs = pm.executeComparisons(blocks);
                 for (int i = 0; i < 10; i++) {
                     System.out.println(simPairs.getEntityIds1()[i] + "\t\t" + simPairs.getEntityIds2()[i] + "\t\t" + simPairs.getSimilarities()[i]);
                 }

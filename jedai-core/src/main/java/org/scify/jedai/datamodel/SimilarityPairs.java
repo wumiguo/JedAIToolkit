@@ -1,5 +1,5 @@
 /*
-* Copyright [2016-2018] [George Papadakis (gpapadis@yahoo.gr)]
+* Copyright [2016-2020] [George Papadakis (gpapadis@yahoo.gr)]
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -19,14 +19,13 @@ import com.esotericsoftware.minlog.Log;
 import java.io.Serializable;
 
 import java.util.List;
+import org.scify.jedai.utilities.IConstants;
 
 /**
  *
  * @author G.A.P. II
  */
-public class SimilarityPairs implements Serializable {
-
-    private final static int MAX_COMPARISONS = Integer.MAX_VALUE - 2;
+public class SimilarityPairs implements IConstants, Serializable {
 
     private final boolean isCleanCleanER;
     private int currentIndex;
@@ -35,6 +34,7 @@ public class SimilarityPairs implements Serializable {
     private final int[] entityIds2;
 
     public SimilarityPairs(boolean ccer, int comparisons) {
+        currentIndex = 0;
         isCleanCleanER = ccer;
         entityIds1 = new int[comparisons];
         entityIds2 = new int[comparisons];
@@ -42,6 +42,7 @@ public class SimilarityPairs implements Serializable {
     }
     
     public SimilarityPairs(boolean ccer, List<AbstractBlock> blocks) {
+        currentIndex = 0;
         isCleanCleanER = ccer;
         double totalComparisons = countComparisons(blocks);
         entityIds1 = new int[(int) totalComparisons];
@@ -91,20 +92,5 @@ public class SimilarityPairs implements Serializable {
 
     public boolean isCleanCleanER() {
         return isCleanCleanER;
-    }
-    
-    public void normalizeSimilarities() {
-        if (0 < currentIndex) {
-            double maxSimilarity = 0;
-            for (int i = 0; i < currentIndex; i++) {
-                maxSimilarity = Math.max(maxSimilarity, similarities[i]);
-            }
-            
-            if (0 < maxSimilarity) {
-                for (int i = 0; i < currentIndex; i++) {
-                    similarities[i] /= maxSimilarity;
-                }
-            }
-        }
     }
 }
