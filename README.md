@@ -1,3 +1,7 @@
+<p align="center"> 
+<img src="https://github.com/scify/JedAIToolkit/blob/mavenizedVersion/documentation/JedAI_logo_small.png">
+</p>
+
 # Java gEneric DAta Integration (JedAI) Toolkit
 JedAI constitutes an open source, high scalability toolkit that offers out-of-the-box solutions for any data integration task, e.g., Record Linkage, Entity Resolution and Link Discovery. At its core lies a set of *domain-independent*, *state-of-the-art* techniques that apply to both RDF and relational data. These techniques rely on an approximate, *schema-agnostic* functionality based on *(meta-)blocking* for high scalability. 
 
@@ -7,7 +11,9 @@ JedAI can be used in three different ways:
   2) As a **desktop application** with an intuitive Graphical User Interface that can be used by both expert and lay users.
   3) As a **workbench** that compares the relative performance of different (configurations of) ER workflows.
   
-This repository contains the code (in Java 8) of JedAI's open source library. The code of JedAI's desktop application and workbench is available in this [repository](https://github.com/scify/jedai-ui).
+This repository contains the code (in Java 8) of JedAI's open source library. The code of JedAI's desktop application and workbench is available in this [repository](https://github.com/scify/jedai-ui). 
+
+Several **datasets** already converted into the serialized data type of JedAI can be found [here](jedai-core/data).
 
 You can find a short presentation of JedAI Toolkit [here](documentation/JedAIpresentation.pptx).
 
@@ -15,7 +21,7 @@ You can find a short presentation of JedAI Toolkit [here](documentation/JedAIpre
 
 If you use JedAI, please cite the following paper:
 
-*George Papadakis, Leonidas Tsekouras, Emmanouil Thanos, George Giannakopoulos, Themis Palpanas and Manolis Koubarakis: "JedAI: The Force behind Entity Resolution", in ESWC 2017* ([pdf](documentation/jedaiDemoEswc17.pdf)).
+*George Papadakis, Leonidas Tsekouras, Emmanouil Thanos, George Giannakopoulos, Themis Palpanas and Manolis Koubarakis: "The return of JedAI: End-to-End Entity Resolution for Structured and Semi-Structured Data", in VLDB 2018* ([pdf](http://www.vldb.org/pvldb/vol11/p1950-papadakis.pdf)).
 
 ### Consortium
 
@@ -40,21 +46,22 @@ The following formats are currently supported:
  1) CSV 
  2) RDF (any format, including XML, OWL)
  3) SQL (mySQL, PostgreSQL)
+ 4) SPARQL endpoints
+ 5) Java serialized objects
  
-The next version will add support for more formats: SPARQL endpoints, JSON, MongoDB, Oracle and SQL Server.
+The next version will add support for more formats: JSON, MongoDB, Oracle and SQL Server.
   
 ### Block Building 
 It clusters entities into overlapping blocks in a lazy manner that relies on unsupervised blocking keys: every token in an attribute value forms a key. Blocks are then extracted, possibly using a transformation, based on its equality or on its similarity with other keys.
 
 The following methods are currently supported:
  1) Standard/Token Blocking
- 2) Attribute Clustering
- 3) Sorted Neighborhood
- 4) Extended Sorted Neighborhood
- 5) Q-Grams Blocking
- 6) Extended Q-Grams Blocking
- 7) Suffix Arrays Blocking
- 8) Extended Suffix Arrays Blocking
+ 2) Sorted Neighborhood
+ 3) Extended Sorted Neighborhood
+ 4) Q-Grams Blocking
+ 5) Extended Q-Grams Blocking
+ 6) Suffix Arrays Blocking
+ 7) Extended Suffix Arrays Blocking
   
 For more details on the functionality of these methods, see [here](http://www.vldb.org/pvldb/vol9/p312-papadakis.pdf).  
 
@@ -64,10 +71,9 @@ Its goal is to clean a set of overlapping blocks from unnecessary comparisons, w
 The following methods are currently supported:
  1) Size-based Block Purging
  2) Comparison-based Block Purging
- 3) Block Scheduling
- 4) Block Filtering
+ 3) Block Filtering
  
-All methods are optional, but complementary with each other and can be used in combination. Note that all methods are compatible with Clean-Clean ER, but only the first three methods apply to Dirty ER. For more details on the functionality of these methods, see [here](http://www.vldb.org/pvldb/vol9/p684-papadakis.pdf).  
+All methods are optional, but complementary with each other and can be used in combination. For more details on the functionality of these methods, see [here](http://www.vldb.org/pvldb/vol9/p684-papadakis.pdf).  
 
 ### Comparison Cleaning
 Similar to Block Cleaning, this step aims to clean a set of blocks from both redundant and superfluous comparisons. Unlike Block Cleaning, its methods operate on the finer granularity of individual comparisons. 
@@ -122,9 +128,25 @@ The following domain-independent methods are currently supported for Dirty ER:
 5) Merge-Center Clustering
 6) Ricochet SR Clustering
 
-For more details on the functionality of these methods, see [here](http://www.vldb.org/pvldb/2/vldb09-1025.pdf). 
+For more details on the functionality of these methods, see [here](http://dblab.cs.toronto.edu/~fchiang/docs/vldb09.pdf). 
 
 For Clean-Clean ER, only one method is supported:
 1) Unique Mapping Clustering
 
 For more details on its functionality, see [here](https://arxiv.org/pdf/1207.4525.pdf).
+
+## How to add JedAI as a dependency to your project
+
+Visit https://search.maven.org/artifact/org.scify/jedai-core
+
+## How to run
+Make sure you have installed git on your OS. From the CLI navigate into project's directory, then build it with:
+```
+$ git submodule update --init
+$ mvn clean package
+```
+You'll find the library in `jedai-core/target/jedai-core-{version}.jar` and the GUI in `jedai-ui/target/jedai-ui-{version}.jar`. 
+For example, to simply run the GUI just type:
+```
+$ java -jar jedai-ui/target/jedai-ui-{version}.jar
+```
