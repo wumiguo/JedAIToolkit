@@ -8,12 +8,12 @@ JedAI constitutes an open source, high scalability toolkit that offers out-of-th
 JedAI can be used in three different ways:
 
   1) As an **open source library** that implements numerous state-of-the-art methods for all steps of the end-to-end ER work presented in the figure below.
-  2) As a **desktop application** with an intuitive Graphical User Interface that can be used by both expert and lay users.
+  2) As a [**desktop application**](https://github.com/scify/jedai-ui) with an intuitive Graphical User Interface that can be used by both expert and lay users.
   3) As a **workbench** that compares the relative performance of different (configurations of) ER workflows.
   
 This repository contains the code (in Java 8) of JedAI's open source library. The code of JedAI's desktop application and workbench is available in this [repository](https://github.com/scify/jedai-ui). 
 
-Several **datasets** already converted into the serialized data type of JedAI can be found [here](jedai-core/data).
+Several **datasets** already converted into the serialized data type of JedAI can be found [here](./data).
 
 You can find a short presentation of JedAI Toolkit [here](documentation/JedAIpresentation.pptx).
 
@@ -27,8 +27,8 @@ If you use JedAI, please cite the following paper:
 
 JEDAI is a collaboration project involving the following partners:
 * [Department of Informatics and Telecommunications, University of Athens](http://www.di.uoa.gr),
-* [Software and Knowledge Engineering Lab, National Center for Scientific Research "Demokritos"](https://www.iit.demokritos.gr/skel) ,
-* [Science-For-You not-for-profit company](http://www.scify.gr/site/en) 
+* [Software and Knowledge Engineering Lab, National Center for Scientific Research "Demokritos"](https://www.iit.demokritos.gr/labs/skel/) ,
+* [Science-For-You not-for-profit company](https://www.scify.gr/site/en) 
 * [LIPADE, Paris Descartes University](http://lipade.mi.parisdescartes.fr)
 
 ## JedAI Workflow
@@ -140,13 +140,5 @@ For more details on its functionality, see [here](https://arxiv.org/pdf/1207.452
 Visit https://search.maven.org/artifact/org.scify/jedai-core
 
 ## How to run
-Make sure you have installed git on your OS. From the CLI navigate into project's directory, then build it with:
-```
-$ git submodule update --init
-$ mvn clean package
-```
-You'll find the library in `jedai-core/target/jedai-core-{version}.jar` and the GUI in `jedai-ui/target/jedai-ui-{version}.jar`. 
-For example, to simply run the GUI just type:
-```
-$ java -jar jedai-ui/target/jedai-ui-{version}.jar
-```
+
+~TODO~
