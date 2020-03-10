@@ -33,9 +33,11 @@ JEDAI is a collaboration project involving the following partners:
 
 ## JedAI Workflow
 
-JedAI implements a schema-agnostic, domain-independent end-to-end workflow for both Clean-Clean and Dirty ER that consists of 7 steps, as shown in the following image:
+JedAI supports 3 workflows, as shown in the following images:
 
-![Image](documentation/JedaiWorkflow.png)
+![Image](documentations/workflow1.png)
+![Image](documentations/workflow2.png)
+![Image](documentations/workflow3.png)
 
 Below, we explain in more detail the purpose and the functionality of every step.
 
@@ -143,11 +145,11 @@ Visit https://search.maven.org/artifact/org.scify/jedai-core
 
 You can combine JedAI with Python through PyJNIus (https://github.com/kivy/pyjnius).
 
-Preparation Steps:  
-1. Install python3 and PyJNIus (https://github.com/kivy/pyjnius).  
-2. Install java 8 openjdk and openjfx for java 8 and configure it as the default java.  
-3. Create a directory or a jar file with jedai-core and its dependencies. One approach is to use the maven-assembly-plugin  
-(https://maven.apache.org/plugins/maven-assembly-plugin/usage.html), which will package everything to a single jar file:  
+Preparation Steps:
+1. Install python3 and PyJNIus (https://github.com/kivy/pyjnius).
+2. Install java 8 openjdk and openjfx for java 8 and configure it as the default java.
+3. Create a directory or a jar file with jedai-core and its dependencies. One approach is to use the maven-assembly-plugin
+(https://maven.apache.org/plugins/maven-assembly-plugin/usage.html), which will package everything to a single jar file:
 jedai-core-3.0-jar-with-dependencies.jar
 
 In the following code block a simple example is presented in python 3. The code reads the ACM.csv file found at (JedAIToolkit/data/cleanCleanErDatasets/DBLP-ACM) and prints the entities found:
