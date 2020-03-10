@@ -35,9 +35,9 @@ JEDAI is a collaboration project involving the following partners:
 
 JedAI supports 3 workflows, as shown in the following images:
 
-![Workflow1](documentations/workflow1.png)
-![Workflow2](documentations/workflow2.png)
-![Workflow3](documentations/workflow3.png)
+![Workflow1](documentation/workflow1.png)
+![Workflow2](documentation/workflow2.png)
+![Workflow3](documentation/workflow3.png)
 
 Below, we explain in more detail the purpose and the functionality of every step.
 
