@@ -15,6 +15,8 @@ This repository contains the code (in Java 8) of JedAI's open source library. Th
 
 Several **datasets** already converted into the serialized data type of JedAI can be found [here](./data).
 
+JedAI is also available as a Docker image [here](https://hub.docker.com/repository/docker/gmandi/jedai-webapp). See below for more details.
+
 You can find a short presentation of JedAI Toolkit [here](documentation/JedAIpresentation.pptx).
 
 ### Citation
@@ -140,6 +142,18 @@ For more details on its functionality, see [here](https://arxiv.org/pdf/1207.452
 ## How to add JedAI as a dependency to your project
 
 Visit https://search.maven.org/artifact/org.scify/jedai-core
+
+## How to run JedAI as a Docker image
+
+After installing Docker on your machine, type the following commands:
+
+~~~~
+docker pull gmandi/jedai-webapp
+
+docker run -p 8080:8080 gmandi/jedai-webapp
+~~~~
+
+Then, open your browser and go to localhost:8080. JedAI should be running on your browser!
 
 ## How to use JedAI with Python
 
