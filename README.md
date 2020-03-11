@@ -15,7 +15,7 @@ This repository contains the code (in Java 8) of JedAI's open source library. Th
 
 Several **datasets** already converted into the serialized data type of JedAI can be found [here](./data).
 
-JedAI is also available as a Docker image [here](https://hub.docker.com/repository/docker/gmandi/jedai-webapp). See below for more details.
+JedAI is also available as a **Docker image** [here](https://hub.docker.com/repository/docker/gmandi/jedai-webapp). See below for more details.
 
 You can find a short presentation of JedAI Toolkit [here](documentation/JedAIpresentation.pptx).
 
