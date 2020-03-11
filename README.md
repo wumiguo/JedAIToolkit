@@ -132,6 +132,12 @@ The following domain-independent methods are currently supported for Dirty ER:
 5) Merge-Center Clustering
 6) Ricochet SR Clustering
 
+### Similarity Join
+Similarity Join conveys the state-of-the-art algorithms for accelerating the computation of a specific character- or token-based similarity measure in combination with a user-determined similarity threshold.
+
+### Comparison Prioritization
+Comparison Prioritization associates all comparisons in a block collection with a weight that is proportional to the likelihood that they involve duplicates and then, it emits them iteratively, in decreasing weight.
+
 For more details on the functionality of these methods, see [here](http://dblab.cs.toronto.edu/~fchiang/docs/vldb09.pdf). 
 
 For Clean-Clean ER, only one method is supported:
