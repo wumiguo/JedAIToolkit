@@ -20,7 +20,7 @@ Brute-force Comparisons | File Format | Data Origin |
 |Amazon-Walmart|2,554| 22,074 | 14,143 | 114,315 | 853 | 5.2 | 5.64E+07 | JSO ([Amazon entity file](cleanCleanErDatasets/amazonProfiles2), [Walmart entity file](cleanCleanErDatasets/walmartProfiles), [groundtruth file](cleanCleanErDatasets/amazonWalmartIdDuplicates)) | Real data |
 |DBLP-Scholar|	2,516	|61,353|	10,064	|198,001|	2,308|	4.0|	1.54E+08|JSO ([DBLP entity file](cleanCleanErDatasets/dblpProfiles2), [Scholar entity file](cleanCleanErDatasets/scholarProfiles), [groundtruth file](cleanCleanErDatasets/dblpScholarIdDuplicates))|Real data |
 |Movies	|27,615	|23,182|	155,436	|816,009	|22,863|	5.6|	6.40E+08|JSO ([IMDB entity file](cleanCleanErDatasets/imdbProfiles), [DBPedia entity file](cleanCleanErDatasets/dbpediaProfiles.zip), [groundtruth file](cleanCleanErDatasets/moviesIdDuplicates))|Real data |
-<!---|DBPedia|	1,190,733	|2,164,040	|1.69E+07	|3.50E+07	|892,586	|14.2	|2.58E+12|JSO |Real data |-->
+|DBPedia|	1,190,733	|2,164,040	|1.69E+07	|3.50E+07	|892,586	|14.2	|2.58E+12|[JSO](https://drive.google.com/open?id=1rFAwrmlsfR86fVIkOaGXCSzbfZIZufY2) |Real data |
 
 # Dirty ER datasets
 
