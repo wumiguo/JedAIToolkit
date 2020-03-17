@@ -1,6 +1,8 @@
 <p align="center"> 
-<img src="https://github.com/scify/JedAIToolkit/blob/mavenizedVersion/documentation/JedAI_logo_small.png">
+<img src="https://github.com/scify/JedAIToolkit/blob/master/documentation/JedAI_logo_small.png">
 </p>
+
+Please see [here](https://github.com/scify/JedAIToolkit/blob/master/documentation/JedAI_3D_ER.pdf) for a detailed description of version 3.0.
 
 # Java gEneric DAta Integration (JedAI) Toolkit
 JedAI constitutes an open source, high scalability toolkit that offers out-of-the-box solutions for any data integration task, e.g., Record Linkage, Entity Resolution and Link Discovery. At its core lies a set of *domain-independent*, *state-of-the-art* techniques that apply to both RDF and relational data. These techniques rely on an approximate, *schema-agnostic* functionality based on *(meta-)blocking* for high scalability. 
@@ -48,12 +50,21 @@ It transforms the input data into a list of entity profiles. An entity is a uniq
 
 The following formats are currently supported:
  1) CSV 
- 2) RDF (any format, including XML, OWL)
- 3) SQL (mySQL, PostgreSQL)
+ 2) RDF in any format, i.e., XML, OWL, HDT, JSON
+ 3) Relational Databases (mySQL, PostgreSQL)
  4) SPARQL endpoints
  5) Java serialized objects
  
-The next version will add support for more formats: JSON, MongoDB, Oracle and SQL Server.
+### Schema Clustering
+
+This is an optional step, suitable for highly heterogeneous datasets with a schema comprising a large diversity of attribute names. To this end, it groups together attributes that are syntactically similar, but are not necessarily semantically equivalent. 
+
+The following methods are currently supported:
+1) Attribute Name Clustering
+2) Attribute Value Clustering
+3) Holistic Attribute Clustering
+
+For more details on the functionality of these methods, see [here](http://www.vldb.org/pvldb/vol9/p312-papadakis.pdf).  
   
 ### Block Building 
 It clusters entities into overlapping blocks in a lazy manner that relies on unsupervised blocking keys: every token in an attribute value forms a key. Blocks are then extracted, possibly using a transformation, based on its equality or on its similarity with other keys.
@@ -66,16 +77,19 @@ The following methods are currently supported:
  5) Extended Q-Grams Blocking
  6) Suffix Arrays Blocking
  7) Extended Suffix Arrays Blocking
+ 8) LSH MinHash Blocking
+ 9) LSH SuperBit Blocking
   
-For more details on the functionality of these methods, see [here](http://www.vldb.org/pvldb/vol9/p312-papadakis.pdf).  
+For more details on the functionality of these methods, see [here](https://github.com/scify/JedAIToolkit/blob/master/documentation/JedAI_3D_ER.pdf).  
 
 ### Block Cleaning
 Its goal is to clean a set of overlapping blocks from unnecessary comparisons, which can be either *redundant* (i.e., repeated comparisons that have already been executed in a previously examined block) or *superfluous* (i.e., comparisons that involve non-matching entities). Its methods operate on the coarse level of individual blocks or entities.
 
 The following methods are currently supported:
  1) Size-based Block Purging
- 2) Comparison-based Block Purging
+ 2) Cardinality-based Block Purging
  3) Block Filtering
+ 4) Block Clustering
  
 All methods are optional, but complementary with each other and can be used in combination. For more details on the functionality of these methods, see [here](http://www.vldb.org/pvldb/vol9/p684-papadakis.pdf).  
 
@@ -90,21 +104,30 @@ The following methods are currently supported:
  5) Weighed Node Pruning (WNP)
  6) Reciprocal Cardinality Node Pruning (ReCNP)
  7) Reciprocal Weighed Node Pruning (ReWNP)
+ 8) BLAST
+ 9) Canopy Clusetring
+ 10) Extended Canopy Clustering
 
-Most of these methods are Meta-blocking techniques. All methods are optional, but competive, in the sense that only one of them can part of an ER workflow. For more details on the functionality of these methods, see [here](http://www.sciencedirect.com/science/article/pii/S2214579616300168).  
+Most of these methods are Meta-blocking techniques. All methods are optional, but competive, in the sense that only one of them can part of an ER workflow. For more details on the functionality of these methods, see [here](http://www.sciencedirect.com/science/article/pii/S2214579616300168). They can be combined with one of the following weighting schemes:
+   1) Aggregate Reciprocal Comparisons Scheme (ARCS)
+   2) Common Blocks Scheme (CBS)
+   3) Enhanced  Common  Blocks  Scheme (ECBS)
+   4) Jaccard Scheme (JS)
+   5) Enhanced  Jaccard  Scheme (EJS)
+   6) Pearson chi-squared test
 
 ### Entity Matching
 It compares pairs of entity profiles, associating every pair with a similarity in [0,1]. Its output comprises the *similarity graph*, i.e., an undirected, weighted graph where the nodes correspond to entities and the edges connect pairs of compared entities. 
 
 The following schema-agnostic methods are currently supported:
-1) [Group Linkage](http://pike.psu.edu/publications/icde07.pdf), 
-2) Profile Matcher, which aggregates all attributes values in an individual entity into a textual representation.
+  1) [Group Linkage](http://pike.psu.edu/publications/icde07.pdf), 
+  2) Profile Matcher, which aggregates all attributes values in an individual entity into a textual representation.
 
 Both methods can be combined with the following representation models.
- 1) character n-grams (n=2, 3 or 4)
- 2) character n-gram graphs (n=2, 3 or 4)
- 3) token n-grams (n=1, 2 or 3)
- 4) token n-gram graphs (n=1, 2 or 3)
+  1) character n-grams (n=2, 3 or 4)
+  2) character n-gram graphs (n=2, 3 or 4)
+  3) token n-grams (n=1, 2 or 3)
+  4) token n-gram graphs (n=1, 2 or 3)
 
 For more details on the functionality of these bag and graph models, see [here](https://link.springer.com/article/10.1007%2Fs11280-015-0365-x).
 
@@ -120,31 +143,58 @@ The graph models can be combined with the following graph similarity measures:
    2) Normalized Value similarity 
    3) Value similarity 
    4) Overall Graph similarity
+   
+Any word or character-level pre-trained embeddings are also supported in combination with cosine similarity or Euclidean distance.
 
 ### Entity Clustering
 It takes as input the similarity graph produced by Entity Matching and partitions it into a set of equivalence clusters, with every cluster corresponding to a distinct real-world object.
 
 The following domain-independent methods are currently supported for Dirty ER:
-1) Center Clustering
-2) Connected Components Clustering
-3) Cut Clustering
-4) Markov Clustering
-5) Merge-Center Clustering
-6) Ricochet SR Clustering
+  1) Connected Components Clustering
+  2) Center Clustering
+  3) Merge-Center Clustering
+  4) Ricochet SR Clustering
+  5) Correlation Clustering
+  6) Markov Clustering
+  7) Cut Clustering
+
+For more details on the functionality of these methods, see [here](http://dblab.cs.toronto.edu/~fchiang/docs/vldb09.pdf). 
+
+For Clean-Clean ER, the following methods are supported:
+  1) Unique Mapping Clustering
+  2) Row-Column Clustering
+  3) Best Assignment Clustering
+
+For more details on the functionality of the first method, see [here](https://arxiv.org/pdf/1207.4525.pdf). The 2nd algorithm implements an efficient approximation of the Hungarian Algorithm, while the 3rd one implements an efficient, heuristic solution to the assignment problem in unbalanced bipartite graphs.
 
 ### Similarity Join
 Similarity Join conveys the state-of-the-art algorithms for accelerating the computation of a specific character- or token-based similarity measure in combination with a user-determined similarity threshold.
 
+The following token-based similarity jon algorithms are supported:
+  1) AllPairs
+  2) PPJoin
+  3) SilkMoth
+
+The following character-based similarity jon algorithms are also supported:
+  1) FastSS
+  2) PassJoin
+  3) PartEnum
+  4) EdJoin
+  5) AllPairs
+
 ### Comparison Prioritization
 Comparison Prioritization associates all comparisons in a block collection with a weight that is proportional to the likelihood that they involve duplicates and then, it emits them iteratively, in decreasing weight.
 
-For more details on the functionality of these methods, see [here](http://dblab.cs.toronto.edu/~fchiang/docs/vldb09.pdf). 
+The following methods are currently supported:
+  1) Local Progressive Sorted Neighborhood
+  2) Global Progressive Sorted Neighborhood
+  3) Progressive Block Scheduling
+  4) Progressive Entity Scheduling
+  5) Progressive Global Top Comparisons
+  6) Progressive Local Top Comparisons
 
-For Clean-Clean ER, only one method is supported:
-1) Unique Mapping Clustering
-
-For more details on its functionality, see [here](https://arxiv.org/pdf/1207.4525.pdf).
-
+For more details on the functionality of these methods, see [here](https://arxiv.org/pdf/1905.06385.pdf).
+  
 ## How to add JedAI as a dependency to your project
 
 Visit https://search.maven.org/artifact/org.scify/jedai-core
