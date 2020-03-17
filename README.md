@@ -3,6 +3,7 @@
 </p>
 
 Please check our [technical report](https://github.com/scify/JedAIToolkit/blob/master/documentation/JedAI_3D_ER.pdf) for a detailed description of version 3.0. 
+
 The code for running JedAI on Apache Spark is available [here](https://github.com/scify/JedAI-Spark). 
 
 # Java gEneric DAta Integration (JedAI) Toolkit
