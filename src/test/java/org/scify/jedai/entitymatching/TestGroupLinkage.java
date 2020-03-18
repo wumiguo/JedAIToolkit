@@ -41,9 +41,9 @@ public class TestGroupLinkage {
 
     public static void main(String[] args) {
         BasicConfigurator.configure();
-        
-        String entitiesFilePath1 = "/home/ethanos/Downloads/JEDAIfiles/im-identity/oaei2014_identity_aPROFILES";
-        String groundTruthFilePath = "/home/ethanos/Downloads/JEDAIfiles/cddbTestDuplicates";
+
+        String entitiesFilePath1 = "data\\dirtyErDatasets\\dblpAcmProfiles";
+        String groundTruthFilePath = "data\\dirtyErDatasets\\dblpAcmIdDuplicates";
 
         IEntityReader eReader1 = new EntitySerializationReader(entitiesFilePath1);
         List<EntityProfile> profiles1 = eReader1.getEntityProfiles();
@@ -71,11 +71,11 @@ public class TestGroupLinkage {
 
             long start = System.nanoTime();
             for (RepresentationModel model : RepresentationModel.values()) {
-                if (model.equals(RepresentationModel.CHARACTER_BIGRAMS)) {
+                if (model.equals(RepresentationModel.PRETRAINED_CHARACTER_VECTORS)) {
                     GroupLinkage gp = new GroupLinkage(0.1, profiles1, model, SimilarityMetric.getModelDefaultSimMetric(model));
                     gp.setSimilarityThreshold(0.1);
                     SimilarityPairs simPairs = gp.executeComparisons(blocks);
-                    
+
                     for (int i = 0; i < simPairs.getNoOfComparisons(); i++) {
                         System.out.println(simPairs.getEntityIds1()[i] + "\t\t" + simPairs.getEntityIds2()[i] + "\t\t" + simPairs.getSimilarities()[i]);
                     }
