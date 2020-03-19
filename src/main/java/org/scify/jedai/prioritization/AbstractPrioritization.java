@@ -17,6 +17,8 @@
 package org.scify.jedai.prioritization;
 
 import java.util.Iterator;
+import org.scify.jedai.configuration.gridsearch.IntGridSearchConfiguration;
+import org.scify.jedai.configuration.randomsearch.IntRandomSearchConfiguration;
 import org.scify.jedai.datamodel.Comparison;
 
 /**
@@ -25,11 +27,17 @@ import org.scify.jedai.datamodel.Comparison;
  */
 public abstract class AbstractPrioritization implements IPrioritization {
 
-    protected final int comparisonsBudget;
+    protected int comparisonsBudget;
 
     protected Iterator<Comparison> compIterator;
     
+    protected final IntGridSearchConfiguration gridComparisonsBudget;
+    protected final IntRandomSearchConfiguration randomComparisonsBudget;
+    
     public AbstractPrioritization(int budget) {
         comparisonsBudget = budget;
+        
+        gridComparisonsBudget = new IntGridSearchConfiguration(1000000, 1000, 1000);
+        randomComparisonsBudget = new IntRandomSearchConfiguration(1000000, 1000);
     }
 }

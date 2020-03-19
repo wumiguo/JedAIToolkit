@@ -35,7 +35,6 @@ import org.scify.jedai.utilities.comparators.IncComparisonWeightComparator;
  */
 public class ProgressiveCNPDecomponsedBlocks extends AbstractDecomposedBlocksProcessing {
 
-    private final int comparisonsBudget;
     private final int maxComsPerEntity;
 
     private double[] minimumWeight;
@@ -44,7 +43,6 @@ public class ProgressiveCNPDecomponsedBlocks extends AbstractDecomposedBlocksPro
 
     public ProgressiveCNPDecomponsedBlocks(int comparisonsBudget, List<AbstractBlock> inputBlocks) {
         super(inputBlocks);
-        this.comparisonsBudget = comparisonsBudget;
         maxComsPerEntity = Math.max(1, 2 * comparisonsBudget / noOfEntities);
         minimumWeight = new double[noOfEntities];
         for (int i = 0; i < minimumWeight[i]; i++) {

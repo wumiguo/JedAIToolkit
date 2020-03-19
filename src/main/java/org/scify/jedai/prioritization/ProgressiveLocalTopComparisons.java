@@ -18,7 +18,6 @@ package org.scify.jedai.prioritization;
 import com.esotericsoftware.minlog.Log;
 import org.scify.jedai.prioritization.utilities.ProgressiveCNP;
 import java.util.List;
-import org.apache.jena.atlas.json.JsonArray;
 import org.scify.jedai.datamodel.AbstractBlock;
 import org.scify.jedai.datamodel.Comparison;
 import org.scify.jedai.datamodel.DecomposedBlock;
@@ -60,43 +59,14 @@ public class ProgressiveLocalTopComparisons extends AbstractHashBasedPrioritizat
     }
 
     @Override
-    public int getNumberOfGridConfigurations() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public String getMethodConfiguration() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
     public String getMethodInfo() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return getMethodName() + ": it extracts the k top-weighted comparisons per entity from the input blocks and orders all of them in decreasing matching likelihood. "
+                + "It uses the same k as Cardinality Node Pruning.";
     }
 
     @Override
     public String getMethodName() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public String getMethodParameters() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public JsonArray getParameterConfiguration() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public String getParameterDescription(int parameterId) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public String getParameterName(int parameterId) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return "Progressive Local Top Comparisons";
     }
 
     @Override
@@ -107,20 +77,5 @@ public class ProgressiveLocalTopComparisons extends AbstractHashBasedPrioritizat
     @Override
     public Comparison next() {
         return compIterator.next();
-    }
-    
-    @Override
-    public void setNextRandomConfiguration() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public void setNumberedGridConfiguration(int iterationNumber) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public void setNumberedRandomConfiguration(int iterationNumber) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }
