@@ -45,6 +45,7 @@ public enum SimilarityMetric {
             case TOKEN_TRIGRAMS:
             case TOKEN_UNIGRAMS:
             case PRETRAINED_WORD_VECTORS:
+            case PRETRAINED_CHARACTER_VECTORS:
                 simMetrics.add(COSINE_SIMILARITY);
                 simMetrics.add(ENHANCED_JACCARD_SIMILARITY);
                 simMetrics.add(GENERALIZED_JACCARD_SIMILARITY);
@@ -56,7 +57,6 @@ public enum SimilarityMetric {
             case TOKEN_BIGRAMS_TF_IDF:
             case TOKEN_TRIGRAMS_TF_IDF:
             case TOKEN_UNIGRAMS_TF_IDF:
-            case PRETRAINED_CHARACTER_VECTORS:
                 simMetrics.add(ARCS_SIMILARITY);
                 simMetrics.add(COSINE_SIMILARITY);
                 simMetrics.add(GENERALIZED_JACCARD_SIMILARITY);
