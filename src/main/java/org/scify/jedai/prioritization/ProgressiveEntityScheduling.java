@@ -18,7 +18,6 @@ package org.scify.jedai.prioritization;
 import com.esotericsoftware.minlog.Log;
 import java.util.Iterator;
 import java.util.List;
-import org.apache.jena.atlas.json.JsonArray;
 import org.scify.jedai.datamodel.AbstractBlock;
 import org.scify.jedai.datamodel.Comparison;
 import org.scify.jedai.datamodel.VertexWeight;
@@ -59,58 +58,14 @@ public class ProgressiveEntityScheduling extends AbstractHashBasedPrioritization
     }
 
     @Override
-    public int getNumberOfGridConfigurations() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public void setNextRandomConfiguration() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public void setNumberedGridConfiguration(int iterationNumber) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public void setNumberedRandomConfiguration(int iterationNumber) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public String getMethodConfiguration() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
     public String getMethodInfo() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return getMethodName() + ": it orders all entities in decreasing average comparison weight \n"
+                + "and then prioritizes all comparisons involving the current entity by ordering them in decreasing matching likelihood.";
     }
 
     @Override
     public String getMethodName() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public String getMethodParameters() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public JsonArray getParameterConfiguration() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public String getParameterDescription(int parameterId) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public String getParameterName(int parameterId) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return "Progressive Entity Scheduling";
     }
 
     @Override

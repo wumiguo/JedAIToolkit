@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.jena.atlas.json.JsonArray;
 import org.scify.jedai.datamodel.AbstractBlock;
 import org.scify.jedai.datamodel.Comparison;
 import org.scify.jedai.datamodel.ComparisonIterator;
@@ -43,7 +42,7 @@ public class ProgressiveBlockScheduling extends AbstractHashBasedPrioritization 
 
     private AbstractBlock[] blocksArray;
     private BlockcentricEntityIndex entityIndex;
-
+    
     public ProgressiveBlockScheduling(int budget, WeightingScheme wScheme) {
         super(budget, wScheme);
     }
@@ -54,7 +53,7 @@ public class ProgressiveBlockScheduling extends AbstractHashBasedPrioritization 
             Log.error("No blocks were given as input!");
             System.exit(-1);
         }
-        
+
         Collections.sort(blocks, new IncBlockCardinalityComparator());
         blocksArray = blocks.toArray(new AbstractBlock[blocks.size()]);
         isDecomposedBlock = blocksArray[0] instanceof DecomposedBlock;
@@ -65,26 +64,6 @@ public class ProgressiveBlockScheduling extends AbstractHashBasedPrioritization 
         blockCounter = 0;
         comparisonCounter = 0;
         filterComparisons();
-    }
-
-    @Override
-    public int getNumberOfGridConfigurations() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public void setNextRandomConfiguration() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public void setNumberedGridConfiguration(int iterationNumber) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public void setNumberedRandomConfiguration(int iterationNumber) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     private void filterComparisons() {
@@ -106,38 +85,14 @@ public class ProgressiveBlockScheduling extends AbstractHashBasedPrioritization 
     }
 
     @Override
-    public String getMethodConfiguration() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
     public String getMethodInfo() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return getMethodName() + ": it orders the input blocks in ascending number of comparisons and then "
+                + "prioritizes all comparisons in the current block in decreasing matching likelihood.";
     }
 
     @Override
     public String getMethodName() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public String getMethodParameters() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public JsonArray getParameterConfiguration() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public String getParameterDescription(int parameterId) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public String getParameterName(int parameterId) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return "Progressive Block Scheduling";
     }
 
     @Override

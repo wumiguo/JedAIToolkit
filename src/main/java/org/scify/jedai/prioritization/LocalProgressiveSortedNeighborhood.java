@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import org.apache.jena.atlas.json.JsonArray;
+import org.apache.jena.atlas.json.JsonObject;
 import org.scify.jedai.datamodel.Comparison;
 import org.scify.jedai.utilities.comparators.DecComparisonWeightComparator;
 import org.scify.jedai.utilities.enumerations.ProgressiveWeightingScheme;
@@ -88,58 +89,68 @@ public class LocalProgressiveSortedNeighborhood extends AbstractSimilarityBasedP
     }
 
     @Override
-    public int getNumberOfGridConfigurations() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public void setNextRandomConfiguration() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public void setNumberedGridConfiguration(int iterationNumber) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public void setNumberedRandomConfiguration(int iterationNumber) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
     public String getMethodConfiguration() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return getParameterName(0) + "=" + comparisonsBudget;
     }
 
     @Override
     public String getMethodInfo() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return getMethodName() + ": it applies directly to the input entities, sorting them according to schema-agnostic Sorted Neighborhood. "
+                + "Then, it slides a window w=1 along the sorted list of entities to compare all profiles in consecutive positions. "
+                + "The window size is iteratively incremented until reaching the user-defined budget. "
+                + "In each window size, the initialization phase orders non-redundant comparisons in decreasing frequency.";
     }
 
     @Override
     public String getMethodName() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return "Local Progressive Sorted Neighborhood";
     }
 
     @Override
     public String getMethodParameters() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return getMethodName() + " involves a single parameter:\n"
+                + "1)" + getParameterDescription(0) + ".\n";
     }
 
     @Override
+    public int getNumberOfGridConfigurations() {
+        return gridComparisonsBudget.getNumberOfConfigurations();
+    }
+    
+    @Override
     public JsonArray getParameterConfiguration() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        final JsonObject obj1 = new JsonObject();
+        obj1.put("class", "java.lang.Integer");
+        obj1.put("name", getParameterName(0));
+        obj1.put("defaultValue", "10000");
+        obj1.put("minValue", "1000");
+        obj1.put("maxValue", "1000000");
+        obj1.put("stepValue", "1000");
+        obj1.put("description", getParameterDescription(0));
+
+        final JsonArray array = new JsonArray();
+        array.add(obj1);
+        return array;
     }
 
     @Override
     public String getParameterDescription(int parameterId) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        switch (parameterId) {
+            case 0:
+                return "The " + getParameterName(0) + " defines the maximum number of pairwise comparisons that will be executed.";
+            default:
+                return "invalid parameter id";
+        }
     }
 
     @Override
     public String getParameterName(int parameterId) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        switch (parameterId) {
+            case 0:
+                return "Budget";
+            default:
+                return "invalid parameter id";
+        }
     }
 
     @Override
@@ -157,6 +168,21 @@ public class LocalProgressiveSortedNeighborhood extends AbstractSimilarityBasedP
         return compIterator.next();
     }
 
+    @Override
+    public void setNextRandomConfiguration() {
+        comparisonsBudget = (Integer) randomComparisonsBudget.getNextRandomValue();
+    }
+
+    @Override
+    public void setNumberedGridConfiguration(int iterationNumber) {
+        comparisonsBudget = (Integer) gridComparisonsBudget.getNumberedValue(iterationNumber);
+    }
+
+    @Override
+    public void setNumberedRandomConfiguration(int iterationNumber) {
+        comparisonsBudget = (Integer) randomComparisonsBudget.getNumberedRandom(iterationNumber);
+    }
+    
     private void updateCounters(int entityId, int neighborId) {
         if (flags[neighborId] != entityId) {
             counters[neighborId] = 0;

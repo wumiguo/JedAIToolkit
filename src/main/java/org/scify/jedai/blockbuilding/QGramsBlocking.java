@@ -135,7 +135,7 @@ public class QGramsBlocking extends StandardBlocking {
                 return "invalid parameter id";
         }
     }
-
+    
     @Override
     public void setNextRandomConfiguration() {
         nGramSize = (Integer) randomNGSize.getNextRandomValue();
