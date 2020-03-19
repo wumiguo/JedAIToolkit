@@ -23,6 +23,7 @@ import org.scify.jedai.textmodels.TokenNGramGraphs;
 import org.scify.jedai.textmodels.TokenNGrams;
 import org.scify.jedai.textmodels.TokenNGramsWithGlobalWeights;
 import org.scify.jedai.textmodels.embeddings.PretrainedCharacterVectors;
+import org.scify.jedai.textmodels.embeddings.PretrainedVectors;
 import org.scify.jedai.textmodels.embeddings.PretrainedWordVectors;
 
 /**
@@ -129,6 +130,10 @@ public enum RepresentationModel {
             case TOKEN_TRIGRAM_GRAPHS:
             case TOKEN_UNIGRAM_GRAPHS:
                 TokenNGramGraphs.resetGlobalValues(datasetId);
+                break;
+            case PRETRAINED_WORD_VECTORS:
+            case PRETRAINED_CHARACTER_VECTORS:
+                PretrainedVectors.resetGlobalValues(datasetId);
                 break;
             default:
                 ;
