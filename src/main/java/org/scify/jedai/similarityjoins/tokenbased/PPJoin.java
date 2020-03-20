@@ -57,6 +57,18 @@ public class PPJoin extends AbstractTokenBasedJoin {
         return getSimilarityPairs(comparisons);
     }
 
+    @Override
+    public String getMethodInfo() {
+        return getMethodName() + ": it sorts the tokens of every attribute value in increasing global order of frequency across all "
+                + "values and then it combines Prefix Filtering with Positional Filtering, which estimates a tighter upper "
+                + "bound for the overlap between the two sets of tokens, based on the positions where the common tokens in the prefix occur.";
+    }
+
+    @Override
+    public String getMethodName() {
+        return "PPJoin";
+    }
+    
     private int getOverlap(int x, int y, int requireOverlap, int... poslen) {
         int posx = poslen.length > 0 ? poslen[0] : 0;
         int posy = poslen.length > 1 ? poslen[1] : 0;
@@ -123,7 +135,6 @@ public class PPJoin extends AbstractTokenBasedJoin {
     }
 
     private List<Comparison> performJoin() {
-        int resnum=0;
         final List<Comparison> executedComparisons = new ArrayList<>();
         final TIntObjectMap<ListItemPPJ> index = new TIntObjectHashMap<>();
         for (int k = 0; k < records.length; k++) {
@@ -241,7 +252,6 @@ public class PPJoin extends AbstractTokenBasedJoin {
                         final Comparison currentComp = getComparison(originalId[k], originalId[cand]);
                         currentComp.setUtilityMeasure(jaccardSim);
                         executedComparisons.add(currentComp);
-                        resnum++;
                     }
                 }
             }

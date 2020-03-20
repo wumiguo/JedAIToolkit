@@ -13,22 +13,29 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
  */
+package org.scify.jedai.progressivejoin;
 
-package org.scify.jedai.similarityjoins;
-
+import java.util.ArrayList;
 import java.util.List;
-import org.scify.jedai.datamodel.EntityProfile;
-import org.scify.jedai.datamodel.SimilarityPairs;
-
 
 /**
  *
  * @author mthanos
  */
+public class ListHead {
 
-public interface ISimilarityJoins {
+    private List<int[]> invlist = new ArrayList<>();
 
-    public SimilarityPairs executeFiltering(String attributeName, List<EntityProfile> dataset);
+    public List<int[]> getInvlist() {
+        return invlist;
+    }
 
-    public SimilarityPairs executeFiltering(String attributeName1, String attributeName2, List<EntityProfile> dataset1, List<EntityProfile> dataset2);
+    public void add(int[] value) {
+        invlist.add(value);
+    }
+
+    public void cutoff_from(int position) {
+        invlist = invlist.subList(position, invlist.size());
+    }
+
 }

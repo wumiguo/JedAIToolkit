@@ -47,6 +47,19 @@ public class FastSS extends AbstractCharacterBasedJoin {
         this.delPos = new TIntArrayList();
     }
 
+    @Override
+    protected SimilarityPairs applyJoin(String attributeName1, String attributeName2, List<EntityProfile> dataset1, List<EntityProfile> dataset2) {
+        checkedFlag.clear();
+        delPos.clear();
+        stringHashIndex.clear();
+
+        final List<Comparison> comparisons = processDataset(attributeNameD1, profilesD1);
+        if (profilesD2 != null) { // Dirty ER
+            comparisons.addAll(processDataset(attributeNameD2, profilesD2));
+        }
+        return getSimilarityPairs(comparisons);
+    }
+
     private int checkEditDistance(TIntList p1, TIntList p2) {
         int i = 0, j = 0, updates = 0;
         while (i < p1.size() && j < p2.size()) {
@@ -64,16 +77,15 @@ public class FastSS extends AbstractCharacterBasedJoin {
     }
 
     @Override
-    protected SimilarityPairs applyJoin(String attributeName1, String attributeName2, List<EntityProfile> dataset1, List<EntityProfile> dataset2) {
-        checkedFlag.clear();
-        delPos.clear();
-        stringHashIndex.clear();
+    public String getMethodInfo() {
+        return getMethodName() + ": it is ideal for short textual values. It associates every value with the set "
+                + "of substrings that are produced after deleting a certain number of characters, "
+                + "and every other value that shares one or more substrings is considered a candidate match.";
+    }
 
-        final List<Comparison> comparisons = processDataset(attributeNameD1, profilesD1);
-        if (profilesD2 != null) { // Dirty ER
-            comparisons.addAll(processDataset(attributeNameD2, profilesD2));
-        }
-        return getSimilarityPairs(comparisons);
+    @Override
+    public String getMethodName() {
+        return "FastSS";
     }
 
     private List<Comparison> insertIndex(String attributeValue) {

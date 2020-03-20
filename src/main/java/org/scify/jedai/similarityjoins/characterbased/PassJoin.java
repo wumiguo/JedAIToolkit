@@ -64,6 +64,17 @@ public class PassJoin extends AbstractCharacterBasedJoin {
         return getSimilarityPairs(comparisons);
     }
 
+    @Override
+    public String getMethodInfo() {
+        return getMethodName() + ": it partitions a textual value into a set of non-overlapping character q-grams and, "
+                + "based on the pigeon-hole principle, it considers as candidate matches the values that share at least one of these q-grams.";
+    }
+
+    @Override
+    public String getMethodName() {
+        return "PassJoin";
+    }
+
     private void init() {
         PN = threshold + 1;
 

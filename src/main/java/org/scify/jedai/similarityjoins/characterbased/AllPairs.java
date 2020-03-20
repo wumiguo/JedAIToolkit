@@ -51,6 +51,11 @@ public class AllPairs extends AbstractCharacterBasedJoin {
     private final List<String> attributeValues;
     private TIntList[] tokens;
 
+    public AllPairs(int thr) {
+        this(3, thr);
+    }
+
+    
     public AllPairs(int q, int thr) {
         super(thr);
         
@@ -58,14 +63,6 @@ public class AllPairs extends AbstractCharacterBasedJoin {
         attributeValues = new ArrayList<>();
     }
     
-
-    public AllPairs(int thr) {
-        super(thr);
-        
-        this.q = 3;
-        attributeValues = new ArrayList<>();
-    }
-
     @Override
     protected SimilarityPairs applyJoin(String attributeName1, String attributeName2, List<EntityProfile> dataset1, List<EntityProfile> dataset2) {
         int rangeBound = init();
@@ -73,6 +70,34 @@ public class AllPairs extends AbstractCharacterBasedJoin {
         getTokens(rangeBound);
         final List<Comparison> comparisons = performJoin(rangeBound);
         return getSimilarityPairs(comparisons);
+    }
+    
+    @Override
+    public String getMethodInfo() {
+        return getMethodName() + ": it adapts Prefix Filtering to Edit Distance";
+    }
+
+    @Override
+    public String getMethodName() {
+        return "Character-based All Pairs";
+    }
+
+    private int getOverlap(int x, int y) {
+        int posx = 0;
+        int posy = 0;
+        int result = 0;
+        while (posx < tokens[x].size() && posy < tokens[y].size()) {
+            if (tokens[x].get(posx) == tokens[y].get(posy)) {
+                result++;
+                posx++;
+                posy++;
+            } else if (tokens[x].get(posx) < tokens[y].get(posy)) {
+                posx++;
+            } else {
+                posy++;
+            }
+        }
+        return result;
     }
 
     private void getTokens(int rangeBound) {
@@ -111,25 +136,7 @@ public class AllPairs extends AbstractCharacterBasedJoin {
             token.sort();
         }
     }
-
-    private int getOverlap(int x, int y) {
-        int posx = 0;
-        int posy = 0;
-        int result = 0;
-        while (posx < tokens[x].size() && posy < tokens[y].size()) {
-            if (tokens[x].get(posx) == tokens[y].get(posy)) {
-                result++;
-                posx++;
-                posy++;
-            } else if (tokens[x].get(posx) < tokens[y].get(posy)) {
-                posx++;
-            } else {
-                posy++;
-            }
-        }
-        return result;
-    }
-
+    
     private int init() {
         widowBound = -1;
         

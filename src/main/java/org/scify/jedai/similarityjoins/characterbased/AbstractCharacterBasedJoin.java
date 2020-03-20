@@ -16,6 +16,10 @@
 
 package org.scify.jedai.similarityjoins.characterbased;
 
+import org.apache.jena.atlas.json.JsonArray;
+import org.apache.jena.atlas.json.JsonObject;
+import org.scify.jedai.configuration.gridsearch.IntGridSearchConfiguration;
+import org.scify.jedai.configuration.randomsearch.IntRandomSearchConfiguration;
 import org.scify.jedai.similarityjoins.AbstractSimilarityJoin;
 
 /**
@@ -27,11 +31,18 @@ public abstract class AbstractCharacterBasedJoin extends AbstractSimilarityJoin 
     
     protected int matrixDimension1;
     protected int matrixDimension2;
-    protected final int threshold;
+    
+    protected int threshold;
+    
+    protected final IntGridSearchConfiguration gridThreshold;
+    protected final IntRandomSearchConfiguration randomThreshold;
     
     public AbstractCharacterBasedJoin(int thr) {
         super();
         threshold = thr;
+        
+        gridThreshold = new IntGridSearchConfiguration(10, 1, 1);
+        randomThreshold = new IntRandomSearchConfiguration(10, 1);
     }
     
     protected int djbHash(String str, int len) {
@@ -62,7 +73,7 @@ public abstract class AbstractCharacterBasedJoin extends AbstractSimilarityJoin 
             return ylen;
         }
 
-        int[][] matrix = new int[matrixDimension1][matrixDimension2];
+        final int[][] matrix = new int[matrixDimension1][matrixDimension2];
         for (int k = 0; k <= THRESHOLD; k++) {
             matrix[0][THRESHOLD + k] = k;
         }
@@ -92,7 +103,62 @@ public abstract class AbstractCharacterBasedJoin extends AbstractSimilarityJoin 
                 return THRESHOLD + 1;
             }
         }
+        
         return matrix[xlen][ylen - xlen + THRESHOLD];
+    }
+    
+    @Override
+    public String getMethodConfiguration() {
+        return getParameterName(0) + "=" + threshold;
+    }
+    
+    @Override
+    public String getMethodParameters() {
+        return getMethodName() + " involves a single parameter:\n"
+                + "1)" + getParameterDescription(0) + ".\n";
+    }
+    
+    @Override
+    public int getNumberOfGridConfigurations() {
+        return gridThreshold.getNumberOfConfigurations();
+    }
+    
+    @Override
+    public JsonArray getParameterConfiguration() {
+        final JsonObject obj = new JsonObject();
+        obj.put("class", "java.lang.Integer");
+        obj.put("name", getParameterName(0));
+        obj.put("defaultValue", "3");
+        obj.put("minValue", "1");
+        obj.put("maxValue", "10");
+        obj.put("stepValue", "1");
+        obj.put("description", getParameterDescription(0));
+
+        final JsonArray array = new JsonArray();
+        array.add(obj);
+
+        return array;
+    }
+    
+    @Override
+    public String getParameterDescription(int parameterId) {
+        switch (parameterId) {
+            case 0:
+                return "The " + getParameterName(0) + " specifies the minimum edit distance between two attribute values, "
+                        + "below which they are considered as matches. ";
+            default:
+                return "invalid parameter id";
+        }
+    }
+
+    @Override
+    public String getParameterName(int parameterId) {
+        switch (parameterId) {
+            case 0:
+                return "Threshold";
+            default:
+                return "invalid parameter id";
+        }
     }
     
     protected int max3(int i1, int i2, int i3) {
@@ -101,5 +167,20 @@ public abstract class AbstractCharacterBasedJoin extends AbstractSimilarityJoin 
 
     protected static int min3(int i1, int i2, int i3) {
         return Math.min(i1, Math.min(i2, i3));
+    }
+    
+    @Override
+    public void setNextRandomConfiguration() {
+        threshold = (Integer) randomThreshold.getNextRandomValue();
+    }
+
+    @Override
+    public void setNumberedGridConfiguration(int iterationNumber) {
+        threshold = (Integer) gridThreshold.getNumberedValue(iterationNumber);
+    }
+
+    @Override
+    public void setNumberedRandomConfiguration(int iterationNumber) {
+        threshold = (Integer) randomThreshold.getNumberedRandom(iterationNumber);
     }
 }

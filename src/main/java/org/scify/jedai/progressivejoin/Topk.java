@@ -13,8 +13,7 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
  */
-
-package org.scify.jedai.similarityjoins.tokenbased;
+package org.scify.jedai.progressivejoin;
 
 import gnu.trove.iterator.TIntIntIterator;
 import gnu.trove.list.TIntList;
@@ -24,40 +23,47 @@ import gnu.trove.map.hash.TIntIntHashMap;
 import javafx.util.Pair;
 import org.scify.jedai.datamodel.Comparison;
 import org.scify.jedai.datamodel.EntityProfile;
-import org.scify.jedai.datamodel.SimilarityPairs;
 import org.scify.jedai.datamodel.joins.IntPair;
-import org.scify.jedai.similarityjoins.tokenbased.topk.SetSimJoin;
 
 import java.util.*;
+import org.apache.jena.atlas.json.JsonArray;
+import org.scify.jedai.configuration.gridsearch.DblGridSearchConfiguration;
+import org.scify.jedai.configuration.randomsearch.DblRandomSearchConfiguration;
 
 /**
  *
  * @author mthanos
  */
-public class Topk extends AbstractTokenBasedJoin {
-
-    private int k;//defines how many top pairs will be found
+public class Topk extends AbstractProgressiveJoin {
 
     private int[] originalId;
+
+    protected double threshold;
+
+    protected final DblGridSearchConfiguration gridThreshold;
+    protected final DblRandomSearchConfiguration randomThreshold;
+
     private final List<String> attributeValues;
     private TIntList[] records;
 
-    public Topk(double thr, int k) {
-        super(thr);
-        this.k = k;
+    public Topk(double thr, int budget) {
+        super(budget);
+        threshold = thr;
         attributeValues = new ArrayList<>();
+        
+        gridThreshold = new DblGridSearchConfiguration(1.0, 0.025, 0.025);
+        randomThreshold = new DblRandomSearchConfiguration(1.0, 0.01);
     }
 
     @Override
-    public SimilarityPairs applyJoin(String attributeName1, String attributeName2, List<EntityProfile> dataset1, List<EntityProfile> dataset2) {
+    public void prepareJoin(String attributeName1, String attributeName2, List<EntityProfile> dataset1, List<EntityProfile> dataset2) {
         init();
 
         final List<Comparison> comparisons = performJoin();
-        return getSimilarityPairs(comparisons);
+        getSimilarityPairs(comparisons);
     }
 
     private void init() {
-
         int counter = 0;
         final List<Pair<String, Integer>> idIdentifier = new ArrayList<>();
         for (EntityProfile profile : profilesD1) {
@@ -83,7 +89,8 @@ public class Topk extends AbstractTokenBasedJoin {
             originalId[i] = currentPair.getValue();
             records[i] = new TIntArrayList();
         }
-        TIntIntMap freqMap = new TIntIntHashMap();
+        
+        final TIntIntMap freqMap = new TIntIntHashMap();
         for (int sIndex = 0; sIndex < noOfEntities; sIndex++) {
 
             final String s = attributeValues.get(sIndex).trim();
@@ -101,7 +108,7 @@ public class Topk extends AbstractTokenBasedJoin {
 
         }
 
-        List<IntPair> tokenFreq = new ArrayList<>();
+        final List<IntPair> tokenFreq = new ArrayList<>();
         for (TIntIntIterator iterator = freqMap.iterator(); iterator.hasNext();) {
             iterator.advance();
             tokenFreq.add(new IntPair(iterator.key(), iterator.value()));
@@ -124,8 +131,7 @@ public class Topk extends AbstractTokenBasedJoin {
     }
 
     private List<Comparison> performJoin() {
-
-        SetSimJoin ssj = new SetSimJoin();
+        final SetSimJoin ssj = new SetSimJoin();
         LinkedHashMap<String, ArrayList<Integer>> recordsForTopk = new LinkedHashMap<>();
         int cnter = 0;
         for (TIntList rec : records) {
@@ -140,7 +146,8 @@ public class Topk extends AbstractTokenBasedJoin {
         ssj.setNoOfEntities(noOfEntities);
         ssj.setDatasetDelimiter(datasetDelimiter);
         ssj.setRecords(recordsForTopk);
-        ssj.topkGlobal(k);
+        ssj.topkGlobal(comparisonsBudget);
+        
         ArrayList<Object[]> results = ssj.getResults();
         final List<Comparison> executedComparisons = new ArrayList<>();
 
@@ -164,5 +171,70 @@ public class Topk extends AbstractTokenBasedJoin {
         }
 
         return executedComparisons;
+    }
+
+    @Override
+    public int getNumberOfGridConfigurations() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void setNextRandomConfiguration() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void setNumberedGridConfiguration(int iterationNumber) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void setNumberedRandomConfiguration(int iterationNumber) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public String getMethodConfiguration() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public String getMethodInfo() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public String getMethodName() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public String getMethodParameters() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public JsonArray getParameterConfiguration() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public String getParameterDescription(int parameterId) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public String getParameterName(int parameterId) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public boolean hasNext() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Comparison next() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

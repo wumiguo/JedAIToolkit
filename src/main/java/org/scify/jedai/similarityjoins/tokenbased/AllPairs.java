@@ -13,7 +13,6 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
  */
-
 package org.scify.jedai.similarityjoins.tokenbased;
 
 import gnu.trove.list.TIntList;
@@ -109,7 +108,9 @@ public class AllPairs extends AbstractTokenBasedJoin {
         for (int sIndex = 0; sIndex < noOfEntities; sIndex++) {
 
             final String s = attributeValues.get(sIndex).trim();
-            if (s.length()<1) continue;
+            if (s.length() < 1) {
+                continue;
+            }
 
             String[] split = s.split(" ");
             for (int sp = 0; sp < split.length; sp++) {
@@ -203,5 +204,17 @@ public class AllPairs extends AbstractTokenBasedJoin {
             }
         }
         return executedComparisons;
+    }
+
+    @Override
+    public String getMethodInfo() {
+        return getMethodName() + ": it sorts the tokens of every attribute value in increasing global order of frequency across all "
+                + "values and then it applies Prefix Filtering such that two values exceed the user-specified "
+                + "similarity threshold if their prefixes share at least one token.";
+    }
+
+    @Override
+    public String getMethodName() {
+        return "Token-based All Pairs";
     }
 }

@@ -26,7 +26,7 @@ import org.scify.jedai.datamodel.*;
  *
  * @author mthanos
  */
-public abstract class AbstractSimilarityJoin implements ISimilarityJoins {
+public abstract class AbstractSimilarityJoin implements ISimilarityJoin {
 
     protected boolean isCleanCleanER;
 
