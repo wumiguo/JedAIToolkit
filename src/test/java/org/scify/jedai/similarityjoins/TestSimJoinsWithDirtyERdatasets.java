@@ -25,7 +25,6 @@ import org.scify.jedai.datareader.groundtruthreader.IGroundTruthReader;
 import org.scify.jedai.datawriter.ClustersPerformanceWriter;
 import org.scify.jedai.entityclustering.ConnectedComponentsClustering;
 import org.scify.jedai.entityclustering.IEntityClustering;
-import org.scify.jedai.similarityjoins.tokenbased.Topk;
 import org.scify.jedai.utilities.ClustersPerformance;
 import org.scify.jedai.utilities.datastructures.AbstractDuplicatePropagation;
 import org.scify.jedai.utilities.datastructures.UnilateralDuplicatePropagation;
@@ -34,6 +33,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
+import org.scify.jedai.similarityjoins.tokenbased.PPJoin;
 
 /**
  *
@@ -121,8 +121,7 @@ public class TestSimJoinsWithDirtyERdatasets {
         final AbstractDuplicatePropagation duplicatePropagation = new UnilateralDuplicatePropagation(gtReader.getDuplicatePairs(eReader.getEntityProfiles()));
         System.out.println("Existing Duplicates\t:\t" + duplicatePropagation.getDuplicates().size());
 
-        //PPJoin join = new PPJoin(jaccardThreshold);
-        Topk join = new Topk(jaccardThreshold, 13000);
+        PPJoin join = new PPJoin(jaccardThreshold);
         SimilarityPairs simPairs = join.executeFiltering("all", profiles);
         double time1 = System.currentTimeMillis();
 

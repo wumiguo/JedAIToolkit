@@ -34,7 +34,6 @@ import java.util.Queue;
 import org.apache.jena.atlas.json.JsonArray;
 import org.apache.jena.atlas.json.JsonObject;
 
-import org.jgrapht.WeightedGraph;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.SimpleDirectedWeightedGraph;
 
@@ -91,7 +90,7 @@ public class GroupLinkage extends AbstractEntityMatching {
     @Override
     public double executeComparison(Comparison comparison) {
         final Queue<SimilarityEdge> similarityQueue = getSimilarityEdges(comparison);
-        final WeightedGraph<String, DefaultWeightedEdge> similarityGraph = getSimilarityGraph(similarityQueue);
+        final SimpleDirectedWeightedGraph<String, DefaultWeightedEdge> similarityGraph = getSimilarityGraph(similarityQueue);
         int verticesNum = entityModelsD1[comparison.getEntityId1()].length;
         if (isCleanCleanER) {
             verticesNum += entityModelsD2[comparison.getEntityId2()].length;
@@ -234,7 +233,7 @@ public class GroupLinkage extends AbstractEntityMatching {
         }
     }
 
-    private double getSimilarity(WeightedGraph<String, DefaultWeightedEdge> simGraph, int verticesNum) {
+    private double getSimilarity(SimpleDirectedWeightedGraph<String, DefaultWeightedEdge> simGraph, int verticesNum) {
         double nominator = 0;
         double denominator = (double) verticesNum; //m1+m2
         for (DefaultWeightedEdge e : simGraph.edgeSet()) {
@@ -268,8 +267,8 @@ public class GroupLinkage extends AbstractEntityMatching {
         return SEqueue;
     }
 
-    private WeightedGraph<String, DefaultWeightedEdge> getSimilarityGraph(Queue<SimilarityEdge> seQueue) {
-        final WeightedGraph<String, DefaultWeightedEdge> graph = new SimpleDirectedWeightedGraph<>(DefaultWeightedEdge.class);
+    private SimpleDirectedWeightedGraph<String, DefaultWeightedEdge> getSimilarityGraph(Queue<SimilarityEdge> seQueue) {
+        final SimpleDirectedWeightedGraph<String, DefaultWeightedEdge> graph = new SimpleDirectedWeightedGraph<>(DefaultWeightedEdge.class);
         while (seQueue.size() > 0) {
             SimilarityEdge se = seQueue.remove();
             int i = se.getModel1Pos();
