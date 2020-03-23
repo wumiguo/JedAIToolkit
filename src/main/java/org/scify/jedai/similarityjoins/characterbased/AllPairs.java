@@ -190,6 +190,14 @@ public class AllPairs extends AbstractCharacterBasedJoin {
         final List<Comparison> executedComparisons = new ArrayList<>();
         for (int x = 0; x < rangeBound; x++) {
             for (int y = x + 1; y < rangeBound; y++) {
+                if (isCleanCleanER) {
+                    if (originalId[x] < datasetDelimiter && originalId[y] < datasetDelimiter) { // both belong to dataset 1
+                        continue;
+                    }
+                    if (datasetDelimiter <= originalId[x] && datasetDelimiter <= originalId[y]) { // both belong to dataset 2
+                        continue;
+                    }
+                }
             	int distance=getEditDistance(attributeValues.get(x), attributeValues.get(y), threshold);
             	if (distance <= threshold) {
                     final Comparison currentComp = getComparison(originalId[x],  originalId[y]);
@@ -240,6 +248,15 @@ public class AllPairs extends AbstractCharacterBasedJoin {
 
             for (TIntIterator setIterator = occurances.iterator(); setIterator.hasNext(); ) {
                 int cand = setIterator.next();
+                if (isCleanCleanER) {
+                    if (originalId[k] < datasetDelimiter && originalId[cand] < datasetDelimiter) { // both belong to dataset 1
+                        continue;
+                    }
+
+                    if (datasetDelimiter <= originalId[k] && datasetDelimiter <= originalId[cand]) { // both belong to dataset 2
+                        continue;
+                    }
+                }
                 int realOverlap = getOverlap(k, cand);
                 int testValue = realOverlap + threshold * q;
                 if (testValue < tokens[k].size() || testValue < tokens[cand].size()) {
@@ -248,7 +265,12 @@ public class AllPairs extends AbstractCharacterBasedJoin {
               
                 double distance = getEditDistance(attributeValues.get(k), attributeValues.get(cand), threshold);
                 if (distance <= threshold) {
-                    final Comparison currentComp = getComparison(originalId[k],  originalId[cand]);
+                    int id1= Math.min(originalId[k],originalId[cand]);
+                    int id2= Math.max(originalId[k],originalId[cand]);
+                    final Comparison currentComp = getComparison(id1,  id2);
+                    /*if (isCleanCleanER) {
+                        if(originalId[k]>datasetDelimiter)
+                    }*/
                     currentComp.setUtilityMeasure(1-distance/threshold);
                     executedComparisons.add(currentComp);
                 }
@@ -269,9 +291,22 @@ public class AllPairs extends AbstractCharacterBasedJoin {
             }
 
             while (bound != rangeBound) {
+                if (isCleanCleanER) {
+                    if (originalId[k] < datasetDelimiter && originalId[bound] < datasetDelimiter) { // both belong to dataset 1
+                        bound++;
+                        continue;
+                    }
+
+                    if (datasetDelimiter <= originalId[k] && datasetDelimiter <= originalId[bound]) { // both belong to dataset 2
+                        bound++;
+                        continue;
+                    }
+                }
                 double distance = getEditDistance(attributeValues.get(k), attributeValues.get(bound), threshold);
                 if (distance <= threshold) {
-                    final Comparison currentComp = getComparison(originalId[k],  originalId[bound]);
+                    int id1= Math.min(originalId[k],originalId[bound]);
+                    int id2= Math.max(originalId[k],originalId[bound]);
+                    final Comparison currentComp = getComparison(id1,  id2);
                     currentComp.setUtilityMeasure(1-distance/threshold);
                     executedComparisons.add(currentComp);
                 }
