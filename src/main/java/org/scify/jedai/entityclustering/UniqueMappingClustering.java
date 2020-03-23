@@ -22,9 +22,6 @@ import org.scify.jedai.datamodel.SimilarityEdge;
 import org.scify.jedai.datamodel.SimilarityPairs;
 import org.scify.jedai.utilities.comparators.DecSimilarityEdgeComparator;
 
-import gnu.trove.set.TIntSet;
-import gnu.trove.set.hash.TIntHashSet;
-
 import java.util.Iterator;
 import java.util.PriorityQueue;
 import java.util.Queue;
@@ -33,9 +30,7 @@ import java.util.Queue;
  *
  * @author vefthym
  */
-public class UniqueMappingClustering extends AbstractEntityClustering {
-
-    private final TIntSet matchedIds; //the ids of entities that have been already matched
+public class UniqueMappingClustering extends AbstractCcerEntityClustering {
 
     public UniqueMappingClustering() {
         this(0.5);
@@ -43,8 +38,6 @@ public class UniqueMappingClustering extends AbstractEntityClustering {
 
     public UniqueMappingClustering(double simTh) {
         super(simTh);
-
-        matchedIds = new TIntHashSet();
     }
 
     @Override
@@ -98,23 +91,5 @@ public class UniqueMappingClustering extends AbstractEntityClustering {
     @Override
     public String getMethodName() {
         return "Unique Mapping Clustering";
-    }
-
-    @Override
-    public void setNextRandomConfiguration() {
-        matchedIds.clear();
-        super.setNextRandomConfiguration();
-    }
-
-    @Override
-    public void setNumberedGridConfiguration(int iterationNumber) {
-        matchedIds.clear();
-        super.setNumberedGridConfiguration(iterationNumber);
-    }
-
-    @Override
-    public void setNumberedRandomConfiguration(int iterationNumber) {
-        matchedIds.clear();
-        super.setNumberedRandomConfiguration(iterationNumber);
     }
 }

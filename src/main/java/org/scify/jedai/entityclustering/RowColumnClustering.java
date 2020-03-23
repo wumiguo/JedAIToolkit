@@ -20,18 +20,14 @@ import org.scify.jedai.datamodel.Comparison;
 import org.scify.jedai.datamodel.EquivalenceCluster;
 import org.scify.jedai.datamodel.SimilarityPairs;
 
-import gnu.trove.set.TIntSet;
-import gnu.trove.set.hash.TIntHashSet;
-
 import java.util.Iterator;
 
 /**
  *
  * @author Manos
  */
-public class RowColumnClustering extends AbstractEntityClustering {
+public class RowColumnClustering extends AbstractCcerEntityClustering {
 
-    private final TIntSet matchedIds; //the ids of entities that have been already matched
     protected double[][] matrix; // inverted similarity matrix (cost matrix)
 
     protected int[] selectedRow, selectedColumn, columnsFromSelectedRow;
@@ -46,8 +42,6 @@ public class RowColumnClustering extends AbstractEntityClustering {
 
     public RowColumnClustering(double simTh) {
         super(simTh);
-
-        matchedIds = new TIntHashSet();
     }
 
     public void init(double[][] matrix) {
@@ -187,23 +181,5 @@ public class RowColumnClustering extends AbstractEntityClustering {
     @Override
     public String getMethodName() {
         return "Row-Column Proxy Clustering";
-    }
-
-    @Override
-    public void setNextRandomConfiguration() {
-        matchedIds.clear();
-        super.setNextRandomConfiguration();
-    }
-
-    @Override
-    public void setNumberedGridConfiguration(int iterationNumber) {
-        matchedIds.clear();
-        super.setNumberedGridConfiguration(iterationNumber);
-    }
-
-    @Override
-    public void setNumberedRandomConfiguration(int iterationNumber) {
-        matchedIds.clear();
-        super.setNumberedRandomConfiguration(iterationNumber);
     }
 }

@@ -20,9 +20,6 @@ import org.scify.jedai.datamodel.Comparison;
 import org.scify.jedai.datamodel.EquivalenceCluster;
 import org.scify.jedai.datamodel.SimilarityPairs;
 
-import gnu.trove.set.TIntSet;
-import gnu.trove.set.hash.TIntHashSet;
-
 import java.util.Iterator;
 import java.util.Random;
 
@@ -30,15 +27,11 @@ import java.util.Random;
  *
  * @author Manos
  */
-public class BestAssignmentHeuristic extends AbstractEntityClustering {
-
-    private final TIntSet matchedIds; //the ids of entities that have been already matched
+public class BestAssignmentHeuristic extends AbstractCcerEntityClustering {
 
     protected double[][] matrix; // inverted similarity matrix (cost matrix)
 
     private int[] selectedColumn;
-
-    private double cost;
 
     private int numMoves;
 
@@ -48,8 +41,6 @@ public class BestAssignmentHeuristic extends AbstractEntityClustering {
 
     public BestAssignmentHeuristic(double simTh) {
         super(simTh);
-
-        matchedIds = new TIntHashSet();
     }
 
     public void init(double[][] matrix) {
@@ -69,10 +60,8 @@ public class BestAssignmentHeuristic extends AbstractEntityClustering {
     }
 
     private void getInitialSolution() {
-        cost = 0;
         for (int i = 0; i < matrix.length; i++) {
             selectedColumn[i] = i;
-            cost += matrix[i][i];
         }
     }
 
@@ -83,7 +72,6 @@ public class BestAssignmentHeuristic extends AbstractEntityClustering {
         if (acceptSwap(D)) {
             selectedColumn[row1] = col2;
             selectedColumn[row2] = col1;
-            cost += D;
         }
     }
 
@@ -172,23 +160,5 @@ public class BestAssignmentHeuristic extends AbstractEntityClustering {
     @Override
     public String getMethodName() {
         return "Assignment Problem Heuristic Clustering";
-    }
-
-    @Override
-    public void setNextRandomConfiguration() {
-        matchedIds.clear();
-        super.setNextRandomConfiguration();
-    }
-
-    @Override
-    public void setNumberedGridConfiguration(int iterationNumber) {
-        matchedIds.clear();
-        super.setNumberedGridConfiguration(iterationNumber);
-    }
-
-    @Override
-    public void setNumberedRandomConfiguration(int iterationNumber) {
-        matchedIds.clear();
-        super.setNumberedRandomConfiguration(iterationNumber);
     }
 }
