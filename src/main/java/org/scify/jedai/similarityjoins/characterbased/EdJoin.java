@@ -13,13 +13,10 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
  */
-
 package org.scify.jedai.similarityjoins.characterbased;
 
 import gnu.trove.iterator.TIntIntIterator;
 import gnu.trove.iterator.TIntIterator;
-import gnu.trove.list.TIntList;
-import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.map.TIntIntMap;
 import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.hash.TIntIntHashMap;
@@ -30,7 +27,6 @@ import javafx.util.Pair;
 import org.scify.jedai.datamodel.Comparison;
 import org.scify.jedai.datamodel.EntityProfile;
 import org.scify.jedai.datamodel.SimilarityPairs;
-import org.scify.jedai.datamodel.joins.IntListPair;
 import org.scify.jedai.datamodel.joins.IntPair;
 import org.scify.jedai.datamodel.joins.ListItemPPJ;
 
@@ -43,7 +39,6 @@ import java.util.List;
  *
  * @author mthanos
  */
-
 public class EdJoin extends AbstractCharacterBasedJoin {
 
     private int maxLength;
@@ -58,23 +53,22 @@ public class EdJoin extends AbstractCharacterBasedJoin {
         this(3, thr);
     }
 
-
     public EdJoin(int q, int thr) {
         super(thr);
-        
+
         this.q = q;
         attributeValues = new ArrayList<>();
     }
-    
+
     @Override
     protected SimilarityPairs applyJoin(String attributeName1, String attributeName2, List<EntityProfile> dataset1, List<EntityProfile> dataset2) {
         int rangeBound = init();
-              
+
         getTokens(rangeBound);
         final List<Comparison> comparisons = performJoin(rangeBound);
         return getSimilarityPairs(comparisons);
     }
-    
+
     @Override
     public String getMethodInfo() {
         return getMethodName() + ": it adapts Prefix Filtering to Edit Distance";
@@ -90,7 +84,7 @@ public class EdJoin extends AbstractCharacterBasedJoin {
         int posy = 0;
         int result = 0;
         while (posx < tokens[x].size() && posy < tokens[y].size()) {
-            if (tokens[x].get(posx).getKey() == tokens[y].get(posy).getKey()) {
+            if (tokens[x].get(posx).getKey().equals(tokens[y].get(posy).getKey())) {
                 result++;
                 posx++;
                 posy++;
@@ -109,14 +103,14 @@ public class EdJoin extends AbstractCharacterBasedJoin {
             final String currentValue = attributeValues.get(k);
             for (int sp = 0; sp < currentValue.length() - q + 1; sp++) {
                 int token = djbHash(currentValue.substring(sp), q);
-                tokens[k].add(new Pair<>(token,sp));
+                tokens[k].add(new Pair<>(token, sp));
                 int cur = freqMap.get(token);
                 freqMap.put(token, cur + 1);
             }
         }
 
         final List<IntPair> packages = new ArrayList<>();
-        for (TIntIntIterator iterator = freqMap.iterator(); iterator.hasNext(); ) {
+        for (TIntIntIterator iterator = freqMap.iterator(); iterator.hasNext();) {
             iterator.advance();
             packages.add(new IntPair(iterator.key(), iterator.value()));
         }
@@ -132,36 +126,31 @@ public class EdJoin extends AbstractCharacterBasedJoin {
         }
 
         for (int k = rangeBound; k < noOfEntities; k++) {
-            final List<Pair<Integer,Integer>> token = tokens[k];
+            final List<Pair<Integer, Integer>> token = tokens[k];
             for (int t = 0; t < token.size(); t++) {
                 int oldsecond = token.get(t).getValue();
-                token.set(t, new Pair(freqMap.get(token.get(t).getKey()),oldsecond));
+                token.set(t, new Pair(freqMap.get(token.get(t).getKey()), oldsecond));
             }
             token.sort(Comparator.comparingInt(Pair::getKey));
         }
     }
 
-    int get_prefix_length(List<Pair<Integer,Integer>> token)
-    {
+    int get_prefix_length(List<Pair<Integer, Integer>> token) {
         int low = threshold + 1;
         int high = q * threshold + 1;
-        while (low < high)
-        {
+        while (low < high) {
             int mid = (low + high) / 2;
             int errors = 0, location = 0;
-            List<Pair<Integer,Integer>> duplicate = new ArrayList<>(token);
+            List<Pair<Integer, Integer>> duplicate = new ArrayList<>(token);
             duplicate.sort(Comparator.comparingInt(Pair::getValue));
 
-            for (int k = 0; k < mid; k++)
-            {
-                if (duplicate.get(k).getValue() >= location)
-                {
+            for (int k = 0; k < mid; k++) {
+                if (duplicate.get(k).getValue() >= location) {
                     errors++;
                     location = duplicate.get(k).getValue() + q;
                 }
             }
-            if (errors <= threshold)
-            {
+            if (errors <= threshold) {
                 low = mid + 1;
             } else {
                 high = mid;
@@ -173,12 +162,12 @@ public class EdJoin extends AbstractCharacterBasedJoin {
 
     private int init() {
         widowBound = -1;
-        
+
         tokens = new List[noOfEntities];
         for (int i = 0; i < noOfEntities; i++) {
             tokens[i] = new ArrayList<>();
         }
-        
+
         int counter = 0;
         final List<Pair<String, Integer>> idIdentifier = new ArrayList<>();
         for (EntityProfile profile : profilesD1) {
@@ -192,7 +181,7 @@ public class EdJoin extends AbstractCharacterBasedJoin {
                 idIdentifier.add(new Pair<>(nextValue, counter++));
             }
         }
-        
+
         attributeValues.clear();
         originalId = new int[noOfEntities];
         idIdentifier.sort((s1, s2) -> s1.getKey().length() - s2.getKey().length());
@@ -205,9 +194,9 @@ public class EdJoin extends AbstractCharacterBasedJoin {
 
         matrixDimension1 = maxLength + 1;
         matrixDimension2 = 2 * threshold + 1;
-        
+
         int lengthBound = (threshold + 1) * q;
-        int rangeBound = noOfEntities; 
+        int rangeBound = noOfEntities;
         for (int sIndex = 0; sIndex < noOfEntities; sIndex++) {
             final String s = attributeValues.get(sIndex);
 
@@ -216,10 +205,10 @@ public class EdJoin extends AbstractCharacterBasedJoin {
                 break;
             }
         }
-        
+
         return rangeBound;
     }
-    
+
     private List<Comparison> performJoin(int rangeBound) {
         final List<Comparison> executedComparisons = new ArrayList<>();
         for (int x = 0; x < rangeBound; x++) {
@@ -232,12 +221,12 @@ public class EdJoin extends AbstractCharacterBasedJoin {
                         continue;
                     }
                 }
-            	int distance=getEditDistance(attributeValues.get(x), attributeValues.get(y), threshold);
-            	if (distance <= threshold) {
-                    final Comparison currentComp = getComparison(originalId[x],  originalId[y]);
-                    currentComp.setUtilityMeasure(1-distance/threshold);
+                int distance = getEditDistance(attributeValues.get(x), attributeValues.get(y), threshold);
+                if (distance <= threshold) {
+                    final Comparison currentComp = getComparison(originalId[x], originalId[y]);
+                    currentComp.setUtilityMeasure(1 - distance / threshold);
                     executedComparisons.add(currentComp);
-                }	
+                }
             }
         }
         final TIntObjectMap<ListItemPPJ> index = new TIntObjectHashMap();
@@ -245,20 +234,22 @@ public class EdJoin extends AbstractCharacterBasedJoin {
             int count = 0;
             int prefix_length = get_prefix_length(tokens[k]);
 
-
             final TIntSet occurances = new TIntHashSet();
-            for (Iterator<Pair<Integer, Integer>> iter = tokens[k].iterator(); iter.hasNext(); ) {
+            for (Iterator<Pair<Integer, Integer>> iter = tokens[k].iterator(); iter.hasNext();) {
                 Pair<Integer, Integer> token = iter.next();
-                if (count++ >= prefix_length) break;
-                if (token.getKey() <= widowBound) continue;
-
+                if (count++ >= prefix_length) {
+                    break;
+                }
+                if (token.getKey() <= widowBound) {
+                    continue;
+                }
 
                 ListItemPPJ item = index.get(token.getKey());
-                if (item == null) { 
+                if (item == null) {
                     item = new ListItemPPJ();
                     index.put(token.getKey(), item);
                 }
-                
+
                 final List<IntPair> list = item.getIds();
                 final int noOfIds = list.size();
                 while ((item.getPos() < noOfIds)
@@ -272,12 +263,12 @@ public class EdJoin extends AbstractCharacterBasedJoin {
                         occurances.add(cand);
                     }
                 }
-                list.add(new IntPair(k,token.getValue()));
+                list.add(new IntPair(k, token.getValue()));
                 item.setIds(list);
                 index.put(token.getValue(), item);
             }
 
-            for (TIntIterator setIterator = occurances.iterator(); setIterator.hasNext(); ) {
+            for (TIntIterator setIterator = occurances.iterator(); setIterator.hasNext();) {
                 int cand = setIterator.next();
                 if (isCleanCleanER) {
                     if (originalId[k] < datasetDelimiter && originalId[cand] < datasetDelimiter) { // both belong to dataset 1
@@ -293,16 +284,16 @@ public class EdJoin extends AbstractCharacterBasedJoin {
                 if (testValue < tokens[k].size() || testValue < tokens[cand].size()) {
                     continue;
                 }
-              
+
                 double distance = getEditDistance(attributeValues.get(k), attributeValues.get(cand), threshold);
                 if (distance <= threshold) {
-                    int id1= Math.min(originalId[k],originalId[cand]);
-                    int id2= Math.max(originalId[k],originalId[cand]);
-                    final Comparison currentComp = getComparison(id1,  id2);
+                    int id1 = Math.min(originalId[k], originalId[cand]);
+                    int id2 = Math.max(originalId[k], originalId[cand]);
+                    final Comparison currentComp = getComparison(id1, id2);
                     /*if (isCleanCleanER) {
                         if(originalId[k]>datasetDelimiter)
                     }*/
-                    currentComp.setUtilityMeasure(1-distance/threshold);
+                    currentComp.setUtilityMeasure(1 - distance / threshold);
                     executedComparisons.add(currentComp);
                 }
             }
@@ -310,7 +301,7 @@ public class EdJoin extends AbstractCharacterBasedJoin {
             if (attributeValues.get(k).length() - threshold >= (threshold + 1) * q) {
                 continue;
             }
-            
+
             int bound = noOfEntities;
             for (int sIndex = 0; sIndex < noOfEntities; sIndex++) {
                 final String s = attributeValues.get(sIndex);
@@ -335,10 +326,10 @@ public class EdJoin extends AbstractCharacterBasedJoin {
                 }
                 double distance = getEditDistance(attributeValues.get(k), attributeValues.get(bound), threshold);
                 if (distance <= threshold) {
-                    int id1= Math.min(originalId[k],originalId[bound]);
-                    int id2= Math.max(originalId[k],originalId[bound]);
-                    final Comparison currentComp = getComparison(id1,  id2);
-                    currentComp.setUtilityMeasure(1-distance/threshold);
+                    int id1 = Math.min(originalId[k], originalId[bound]);
+                    int id2 = Math.max(originalId[k], originalId[bound]);
+                    final Comparison currentComp = getComparison(id1, id2);
+                    currentComp.setUtilityMeasure(1 - distance / threshold);
                     executedComparisons.add(currentComp);
                 }
                 bound++;

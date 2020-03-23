@@ -13,14 +13,13 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
  */
-
 package org.scify.jedai.similarityjoins.tokenbased;
 
 import javafx.util.Pair;
 import org.scify.jedai.datamodel.Comparison;
 import org.scify.jedai.datamodel.EntityProfile;
 import org.scify.jedai.datamodel.SimilarityPairs;
-import org.scify.jedai.similarityjoins.fuzzy_set_simjoin.FuzzySetSimJoin;
+import org.scify.jedai.similarityjoins.fuzzysets.FuzzySetSimJoin;
 
 import java.util.*;
 
@@ -32,12 +31,14 @@ public class FuzzySetJoin extends AbstractTokenBasedJoin {
 
     private int[] originalId;
     private final List<String> attributeValues;
-    private List<String>[] records1, records2;
-    private Map<String, List<Set<String>>> collection1 = new LinkedHashMap<String, List<Set<String>>>();
-    private Map<String, List<Set<String>>> collection2 = new LinkedHashMap<String, List<Set<String>>>();
+    private List<String>[] records1;
+    private final Map<String, List<Set<String>>> collection1;
+    private final Map<String, List<Set<String>>> collection2;
 
     public FuzzySetJoin(double thr) {
         super(thr);
+        collection1 = new LinkedHashMap<>();
+        collection2 = new LinkedHashMap<>();
         attributeValues = new ArrayList<>();
     }
 
@@ -60,7 +61,6 @@ public class FuzzySetJoin extends AbstractTokenBasedJoin {
     }
 
     private void init() {
-
         int counter = 0;
         final List<Pair<String, Integer>> idIdentifier = new ArrayList<>();
         for (EntityProfile profile : profilesD1) {
@@ -76,11 +76,10 @@ public class FuzzySetJoin extends AbstractTokenBasedJoin {
         }
 
         //idIdentifier.sort((s1, s2) -> s1.getKey().split(" ").length - s2.getKey().split(" ").length);
-
         attributeValues.clear();
         originalId = new int[noOfEntities];
         records1 = new List[noOfEntities];
-        records2 = new List[noOfEntities-datasetDelimiter];
+//        records2 = new List[noOfEntities - datasetDelimiter];
         for (int i = 0; i < noOfEntities; i++) {
             final Pair<String, Integer> currentPair = idIdentifier.get(i);
             attributeValues.add(currentPair.getKey());
@@ -99,11 +98,12 @@ public class FuzzySetJoin extends AbstractTokenBasedJoin {
             List<Set<String>> asList = new ArrayList<>();
             asList.add(asSet);
             if (isCleanCleanER) {
-                if (i<datasetDelimiter) collection1.put(originalId[i] + "", asList);
-                else collection2.put(originalId[i] + "", asList);
-            }
-            else
-            {
+                if (i < datasetDelimiter) {
+                    collection1.put(originalId[i] + "", asList);
+                } else {
+                    collection2.put(originalId[i] + "", asList);
+                }
+            } else {
                 collection1.put(originalId[i] + "", asList);
                 collection2.put(originalId[i] + "", asList);
             }
@@ -111,7 +111,6 @@ public class FuzzySetJoin extends AbstractTokenBasedJoin {
     }
 
     private List<Comparison> performJoin() {
-
         FuzzySetSimJoin fssj = new FuzzySetSimJoin();
 //		List<int[]> matchingPairs = fssj.join(input1, input2, simThreshold);
         HashMap<String, Double> matchingPairs = fssj.join(collection1, collection2, threshold);
@@ -127,9 +126,8 @@ public class FuzzySetJoin extends AbstractTokenBasedJoin {
             //System.out.println(id1+" "+id2+" "+jaccardSim+" "+isCleanCleanER+" "+datasetDelimiter);
 
             if (isCleanCleanER) {
-                id2+=datasetDelimiter;
-            }
-            else if (id1 == id2) {
+                id2 += datasetDelimiter;
+            } else if (id1 == id2) {
                 continue;
             }
             if (jaccardSim >= threshold) {
@@ -140,4 +138,5 @@ public class FuzzySetJoin extends AbstractTokenBasedJoin {
         }
 
         return executedComparisons;
-    }}
+    }
+}

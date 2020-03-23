@@ -30,7 +30,6 @@ import org.scify.jedai.datamodel.EntityProfile;
 import org.scify.jedai.utilities.comparators.DecComparisonWeightComparator;
 import org.scify.jedai.utilities.comparators.IncComparisonWeightComparator;
 import org.scify.jedai.utilities.enumerations.ProgressiveWeightingScheme;
-import org.scify.jedai.utilities.enumerations.WeightingScheme;
 
 /**
  * @author gap2

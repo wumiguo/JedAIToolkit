@@ -13,7 +13,6 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
  */
-
 package org.scify.jedai.similarityjoins.tokenbased;
 
 import gnu.trove.list.TIntList;
@@ -24,7 +23,6 @@ import org.scify.jedai.datamodel.EntityProfile;
 import org.scify.jedai.datamodel.SimilarityPairs;
 import org.scify.jedai.datamodel.joins.Category;
 
-import java.io.*;
 import java.util.*;
 
 /**
@@ -32,7 +30,6 @@ import java.util.*;
  * @author mthanos
  */
 public class PartEnumJoin extends AbstractTokenBasedJoin {
-
 
     private int MAX_LEN = 3300;
     private int MAX_CATEGORY = 100;
@@ -63,20 +60,21 @@ public class PartEnumJoin extends AbstractTokenBasedJoin {
         } catch (IOException e) {
             e.printStackTrace();
         }*/
-        helper=new Category[MAX_CATEGORY];
+        helper = new Category[MAX_CATEGORY];
         int len = 1;
-        this.categoryTHRESHOLD=threshold;
-        System.out.println(categoryTHRESHOLD+" catthres");
-        for (int k = 0; k < MAX_CATEGORY; k++)
-        {
+        this.categoryTHRESHOLD = threshold;
+        System.out.println(categoryTHRESHOLD + " catthres");
+        for (int k = 0; k < MAX_CATEGORY; k++) {
             helper[k] = new Category(len, threshold, categoryN);
             len = helper[k].e_len + 1;
-            if (len > MAX_LEN) break;
+            if (len > MAX_LEN) {
+                break;
+            }
         }
 
         convert_to_signature();
 
-        System.out.println(res_num+"\t"+cand_num);
+        System.out.println(res_num + "\t" + cand_num);
         final List<Comparison> comparisons = performJoin();
         return getSimilarityPairs(comparisons);
     }
@@ -123,7 +121,9 @@ public class PartEnumJoin extends AbstractTokenBasedJoin {
         for (int sIndex = 0; sIndex < noOfEntities; sIndex++) {
 
             final String s = attributeValues.get(sIndex).trim();
-            if (s.length() < 1) continue;
+            if (s.length() < 1) {
+                continue;
+            }
 
             String[] split = s.split(" ");
             for (int sp = 0; sp < split.length; sp++) {
@@ -138,20 +138,17 @@ public class PartEnumJoin extends AbstractTokenBasedJoin {
         return executedComparisons;
     }
 
-    private int check_overlap(TIntList a, TIntList b, int overlap)
-    {
+    private int check_overlap(TIntList a, TIntList b, int overlap) {
         int posa = 0, posb = 0, count = 0;
-        while (posa < (int)a.size() && posb < (int)b.size())
-        {
-            if (count + Math.min((int)a.size() - posa, (int)b.size() - posb) < overlap)
+        while (posa < (int) a.size() && posb < (int) b.size()) {
+            if (count + Math.min((int) a.size() - posa, (int) b.size() - posb) < overlap) {
                 return -1;
-            if (a.get(posa) == b.get(posb))
-            {
+            }
+            if (a.get(posa) == b.get(posb)) {
                 count++;
                 posa++;
                 posb++;
-            } else if (a.get(posa) < b.get(posb))
-            {
+            } else if (a.get(posa) < b.get(posb)) {
                 posa++;
             } else {
                 posb++;
@@ -160,46 +157,43 @@ public class PartEnumJoin extends AbstractTokenBasedJoin {
         return count;
     }
 
-    private double verify(TIntList a, TIntList b)
-    {
+    private double verify(TIntList a, TIntList b) {
         double factor = categoryTHRESHOLD / (1 + categoryTHRESHOLD);
-        int require_overlap = (int)Math.ceil(factor * (a.size() + b.size()) - 1e-6);
+        int require_overlap = (int) Math.ceil(factor * (a.size() + b.size()) - 1e-6);
         int real_overlap = check_overlap(a, b, require_overlap);
 
-        if (real_overlap == -1) return -1;
-        return (real_overlap / (double)(a.size() + b.size() - real_overlap));
+        if (real_overlap == -1) {
+            return -1;
+        }
+        return (real_overlap / (double) (a.size() + b.size() - real_overlap));
     }
 
     void perform_join(int k, int id, boolean[] checked_flag) {
 
         int index = -1;
-        for (int i = 0; i < helper[k].N1; i++)
-        {
+        for (int i = 0; i < helper[k].N1; i++) {
             for (TIntList sub : helper[k].subs) {
                 index++;
                 TIntList prepare = new TIntArrayList();
-                for (int j=0;j<sub.size();j++)
-                {
-                    int s_pos=-1;
-                    for (int ppos = 0;ppos<records[id].size();ppos++)
-                    {
-                        if (records[id].get(ppos)>=helper[k].range_start[i][sub.get(j)])
-                        {
-                            s_pos=(ppos);
+                for (int j = 0; j < sub.size(); j++) {
+                    int s_pos = -1;
+                    for (int ppos = 0; ppos < records[id].size(); ppos++) {
+                        if (records[id].get(ppos) >= helper[k].range_start[i][sub.get(j)]) {
+                            s_pos = (ppos);
                             break;
                         }
-                        if (ppos==records[id].size()-1) s_pos=ppos+1;
+                        if (ppos == records[id].size() - 1) {
+                            s_pos = ppos + 1;
+                        }
                     }
-                    int e_pos=-1;
-                    for (int ppos = 0;ppos<records[id].size();ppos++)
-                    {
-                        if (records[id].get(ppos)>=helper[k].range_end[i][sub.get(j)])
-                        {
-                            e_pos=(ppos);
+                    int e_pos = -1;
+                    for (int ppos = 0; ppos < records[id].size(); ppos++) {
+                        if (records[id].get(ppos) >= helper[k].range_end[i][sub.get(j)]) {
+                            e_pos = (ppos);
                             break;
                         }
-                        if (ppos==records[id].size()-1) {
-                            e_pos = ppos+1;
+                        if (ppos == records[id].size() - 1) {
+                            e_pos = ppos + 1;
                         }
                     }
 
@@ -209,15 +203,12 @@ public class PartEnumJoin extends AbstractTokenBasedJoin {
                     }
                 }
 
-                int hash_value=java.util.Arrays.hashCode(prepare.toArray());
+                int hash_value = java.util.Arrays.hashCode(prepare.toArray());
 
                 TIntList candidate;
-                if ((helper[k].sig_map[index].get(hash_value))==null)
-                {
-                    candidate= new TIntArrayList();
-                }
-                else
-                {
+                if ((helper[k].sig_map[index].get(hash_value)) == null) {
+                    candidate = new TIntArrayList();
+                } else {
                     candidate = (helper[k].sig_map[index].get(hash_value));// [index][hash_value];
                 }
                 for (int cand_id = 0; cand_id < candidate.size(); cand_id++) {
@@ -234,8 +225,8 @@ public class PartEnumJoin extends AbstractTokenBasedJoin {
                         cand_num++;
                         //System.out.println("cand "+cand_id);
                         checked_flag[candidate.get(cand_id)] = true;
-                        double jacsim=verify(records[cand_id], records[id]);
-                        if ( jacsim>= threshold) {
+                        double jacsim = verify(records[cand_id], records[id]);
+                        if (jacsim >= threshold) {
                             res_num++;
                             final Comparison currentComp = getComparison(originalId[cand_id], originalId[id]);
                             currentComp.setUtilityMeasure(jacsim);
@@ -243,8 +234,8 @@ public class PartEnumJoin extends AbstractTokenBasedJoin {
                         }
                     }
                 }
-                if (candidate.size() == 0 ||
-                        candidate.get(candidate.size()-1) != id) {
+                if (candidate.size() == 0
+                        || candidate.get(candidate.size() - 1) != id) {
                     candidate.add(id);
                 }
                 helper[k].sig_map[index].put(hash_value, candidate);
@@ -252,23 +243,25 @@ public class PartEnumJoin extends AbstractTokenBasedJoin {
         }
     }
 
-    void convert_to_signature()
-    {
+    void convert_to_signature() {
         executedComparisons = new ArrayList<>();
         boolean[] checked_flag = new boolean[records.length];
-        for (int i=0;i<checked_flag.length;i++)
-            checked_flag[i]=true;
-        for (int id = 0; id < (int)records.length; id++)
-        {
+        for (int i = 0; i < checked_flag.length; i++) {
+            checked_flag[i] = true;
+        }
+        for (int id = 0; id < (int) records.length; id++) {
             int k;
             for (k = 0; k < MAX_CATEGORY; k++) {
                 if (helper[k].s_len <= (int) records[id].size()
-                        && helper[k].e_len >= (int) records[id].size())
+                        && helper[k].e_len >= (int) records[id].size()) {
                     break;
+                }
             }
 
-            assert(k < MAX_CATEGORY);
-            for (int i=0;i<id;i++) checked_flag[i]=false;
+            assert (k < MAX_CATEGORY);
+            for (int i = 0; i < id; i++) {
+                checked_flag[i] = false;
+            }
             perform_join(k, id, checked_flag);
             perform_join(k + 1, id, checked_flag);
         }

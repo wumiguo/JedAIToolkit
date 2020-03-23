@@ -13,7 +13,6 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
  */
-
 package org.scify.jedai.similarityjoins.characterbased;
 
 import gnu.trove.iterator.TIntIntIterator;
@@ -29,6 +28,8 @@ import gnu.trove.set.hash.TIntHashSet;
 import java.util.ArrayList;
 import java.util.List;
 import javafx.util.Pair;
+import org.scify.jedai.configuration.gridsearch.IntGridSearchConfiguration;
+import org.scify.jedai.configuration.randomsearch.IntRandomSearchConfiguration;
 import org.scify.jedai.datamodel.Comparison;
 
 import org.scify.jedai.datamodel.EntityProfile;
@@ -40,38 +41,48 @@ import org.scify.jedai.datamodel.joins.IntPair;
  *
  * @author mthanos
  */
-
 public class AllPairs extends AbstractCharacterBasedJoin {
 
     private int maxLength;
-    private final int q;
+    private int q;
     private int widowBound;
 
     private int[] originalId;
     private final List<String> attributeValues;
     private TIntList[] tokens;
 
+    protected final IntGridSearchConfiguration gridNGSize;
+    protected final IntRandomSearchConfiguration randomNGSize;
+
     public AllPairs(int thr) {
         this(3, thr);
     }
 
-    
     public AllPairs(int q, int thr) {
         super(thr);
-        
+
         this.q = q;
         attributeValues = new ArrayList<>();
+
+        gridNGSize = new IntGridSearchConfiguration(6, 2, 1);
+        randomNGSize = new IntRandomSearchConfiguration(6, 2);
     }
-    
+
     @Override
     protected SimilarityPairs applyJoin(String attributeName1, String attributeName2, List<EntityProfile> dataset1, List<EntityProfile> dataset2) {
         int rangeBound = init();
-              
+
         getTokens(rangeBound);
         final List<Comparison> comparisons = performJoin(rangeBound);
         return getSimilarityPairs(comparisons);
     }
-    
+
+    @Override
+    public String getMethodConfiguration() {
+        return getParameterName(0) + "=" + threshold + ",\t"
+                + getParameterName(1) + "=" + q;
+    }
+
     @Override
     public String getMethodInfo() {
         return getMethodName() + ": it adapts Prefix Filtering to Edit Distance";
@@ -80,6 +91,18 @@ public class AllPairs extends AbstractCharacterBasedJoin {
     @Override
     public String getMethodName() {
         return "Character-based All Pairs";
+    }
+    
+    @Override
+    public String getMethodParameters() {
+        return getMethodName() + " involves two parameters:\n"
+                + "1)" + getParameterDescription(0) + ".\n"
+                + "2)" + getParameterDescription(1) + ".";
+    }
+
+    @Override
+    public int getNumberOfGridConfigurations() {
+        return gridNGSize.getNumberOfConfigurations() * gridThreshold.getNumberOfConfigurations();
     }
 
     private int getOverlap(int x, int y) {
@@ -99,7 +122,33 @@ public class AllPairs extends AbstractCharacterBasedJoin {
         }
         return result;
     }
-
+    
+    @Override
+    public String getParameterDescription(int parameterId) {
+        switch (parameterId) {
+            case 0:
+                return "The " + getParameterName(0) + " specifies the minimum edit distance between two attribute values, "
+                        + "below which they are considered as matches. ";
+            case 1:
+                return "The " + getParameterName(1) + " determines the size of n-grams that are used for adapting Prefix "
+                        + "Filtering to Edit Distance.";
+            default:
+                return "invalid parameter id";
+        }
+    }
+    
+    @Override
+    public String getParameterName(int parameterId) {
+        switch (parameterId) {
+            case 0:
+                return "Threshold";
+            case 1:
+                return "N-Gram Size";
+            default:
+                return "invalid parameter id";
+        }
+    }
+    
     private void getTokens(int rangeBound) {
         final TIntIntMap freqMap = new TIntIntHashMap();
         for (int k = rangeBound; k < noOfEntities; k++) {
@@ -113,7 +162,7 @@ public class AllPairs extends AbstractCharacterBasedJoin {
         }
 
         final List<IntPair> packages = new ArrayList<>();
-        for (TIntIntIterator iterator = freqMap.iterator(); iterator.hasNext(); ) {
+        for (TIntIntIterator iterator = freqMap.iterator(); iterator.hasNext();) {
             iterator.advance();
             packages.add(new IntPair(iterator.key(), iterator.value()));
         }
@@ -136,15 +185,15 @@ public class AllPairs extends AbstractCharacterBasedJoin {
             token.sort();
         }
     }
-    
+
     private int init() {
         widowBound = -1;
-        
+
         tokens = new TIntList[noOfEntities];
         for (int i = 0; i < noOfEntities; i++) {
             tokens[i] = new TIntArrayList();
         }
-        
+
         int counter = 0;
         final List<Pair<String, Integer>> idIdentifier = new ArrayList<>();
         for (EntityProfile profile : profilesD1) {
@@ -158,7 +207,7 @@ public class AllPairs extends AbstractCharacterBasedJoin {
                 idIdentifier.add(new Pair<>(nextValue, counter++));
             }
         }
-        
+
         attributeValues.clear();
         originalId = new int[noOfEntities];
         idIdentifier.sort((s1, s2) -> s1.getKey().length() - s2.getKey().length());
@@ -171,9 +220,9 @@ public class AllPairs extends AbstractCharacterBasedJoin {
 
         matrixDimension1 = maxLength + 1;
         matrixDimension2 = 2 * threshold + 1;
-        
+
         int lengthBound = (threshold + 1) * q;
-        int rangeBound = noOfEntities; 
+        int rangeBound = noOfEntities;
         for (int sIndex = 0; sIndex < noOfEntities; sIndex++) {
             final String s = attributeValues.get(sIndex);
 
@@ -182,7 +231,7 @@ public class AllPairs extends AbstractCharacterBasedJoin {
                 break;
             }
         }
-        
+
         return rangeBound;
     }
     
@@ -198,12 +247,12 @@ public class AllPairs extends AbstractCharacterBasedJoin {
                         continue;
                     }
                 }
-            	int distance=getEditDistance(attributeValues.get(x), attributeValues.get(y), threshold);
-            	if (distance <= threshold) {
-                    final Comparison currentComp = getComparison(originalId[x],  originalId[y]);
-                    currentComp.setUtilityMeasure(1-distance/threshold);
+                int distance = getEditDistance(attributeValues.get(x), attributeValues.get(y), threshold);
+                if (distance <= threshold) {
+                    final Comparison currentComp = getComparison(originalId[x], originalId[y]);
+                    currentComp.setUtilityMeasure(1 - distance / threshold);
                     executedComparisons.add(currentComp);
-                }	
+                }
             }
         }
         final TIntObjectMap<IntListPair> index = new TIntObjectHashMap();
@@ -212,7 +261,7 @@ public class AllPairs extends AbstractCharacterBasedJoin {
             int lastToken = -1;
 
             final TIntSet occurances = new TIntHashSet();
-            for (TIntIterator iter = tokens[k].iterator(); iter.hasNext(); ) {
+            for (TIntIterator iter = tokens[k].iterator(); iter.hasNext();) {
                 int token = iter.next();
                 if (count++ >= threshold * q + 1) {
                     break;
@@ -223,11 +272,11 @@ public class AllPairs extends AbstractCharacterBasedJoin {
                 lastToken = token;
 
                 IntListPair item = index.get(token);
-                if (item == null) { 
+                if (item == null) {
                     item = new IntListPair();
                     index.put(token, item);
                 }
-                
+
                 final TIntList list = item.getValue();
                 final int noOfIds = list.size();
                 while ((item.getKey() < noOfIds)
@@ -246,7 +295,7 @@ public class AllPairs extends AbstractCharacterBasedJoin {
                 index.put(token, item);
             }
 
-            for (TIntIterator setIterator = occurances.iterator(); setIterator.hasNext(); ) {
+            for (TIntIterator setIterator = occurances.iterator(); setIterator.hasNext();) {
                 int cand = setIterator.next();
                 if (isCleanCleanER) {
                     if (originalId[k] < datasetDelimiter && originalId[cand] < datasetDelimiter) { // both belong to dataset 1
@@ -262,16 +311,16 @@ public class AllPairs extends AbstractCharacterBasedJoin {
                 if (testValue < tokens[k].size() || testValue < tokens[cand].size()) {
                     continue;
                 }
-              
+
                 double distance = getEditDistance(attributeValues.get(k), attributeValues.get(cand), threshold);
                 if (distance <= threshold) {
-                    int id1= Math.min(originalId[k],originalId[cand]);
-                    int id2= Math.max(originalId[k],originalId[cand]);
-                    final Comparison currentComp = getComparison(id1,  id2);
+                    int id1 = Math.min(originalId[k], originalId[cand]);
+                    int id2 = Math.max(originalId[k], originalId[cand]);
+                    final Comparison currentComp = getComparison(id1, id2);
                     /*if (isCleanCleanER) {
                         if(originalId[k]>datasetDelimiter)
                     }*/
-                    currentComp.setUtilityMeasure(1-distance/threshold);
+                    currentComp.setUtilityMeasure(1 - distance / threshold);
                     executedComparisons.add(currentComp);
                 }
             }
@@ -279,7 +328,7 @@ public class AllPairs extends AbstractCharacterBasedJoin {
             if (attributeValues.get(k).length() - threshold >= (threshold + 1) * q) {
                 continue;
             }
-            
+
             int bound = noOfEntities;
             for (int sIndex = 0; sIndex < noOfEntities; sIndex++) {
                 final String s = attributeValues.get(sIndex);
@@ -304,15 +353,36 @@ public class AllPairs extends AbstractCharacterBasedJoin {
                 }
                 double distance = getEditDistance(attributeValues.get(k), attributeValues.get(bound), threshold);
                 if (distance <= threshold) {
-                    int id1= Math.min(originalId[k],originalId[bound]);
-                    int id2= Math.max(originalId[k],originalId[bound]);
-                    final Comparison currentComp = getComparison(id1,  id2);
-                    currentComp.setUtilityMeasure(1-distance/threshold);
+                    int id1 = Math.min(originalId[k], originalId[bound]);
+                    int id2 = Math.max(originalId[k], originalId[bound]);
+                    final Comparison currentComp = getComparison(id1, id2);
+                    currentComp.setUtilityMeasure(1 - distance / threshold);
                     executedComparisons.add(currentComp);
                 }
                 bound++;
             }
         }
         return executedComparisons;
+    }
+    
+    @Override
+    public void setNextRandomConfiguration() {
+        super.setNextRandomConfiguration();
+        q = (Integer) randomNGSize.getNextRandomValue();
+    }
+
+    @Override
+    public void setNumberedGridConfiguration(int iterationNumber) {
+        int ngSizeIteration = iterationNumber / gridThreshold.getNumberOfConfigurations();
+        q = (Integer) gridNGSize.getNumberedValue(ngSizeIteration);
+        
+        int thrIteration = iterationNumber - ngSizeIteration * gridThreshold.getNumberOfConfigurations();
+        threshold = (Integer) gridThreshold.getNumberedValue(thrIteration);
+    }
+
+    @Override
+    public void setNumberedRandomConfiguration(int iterationNumber) {
+        super.setNumberedRandomConfiguration(iterationNumber);
+        q = (Integer) randomNGSize.getNumberedRandom(iterationNumber);
     }
 }
