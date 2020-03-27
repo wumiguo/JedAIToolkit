@@ -44,46 +44,6 @@ public class RowColumnClustering extends AbstractCcerEntityClustering {
         super(simTh);
     }
 
-    public void init(double[][] matrix) {
-        this.matrix = matrix;
-
-        this.selectedColumn = new int[matrix.length];
-        this.isColumnCovered = new boolean[matrix[0].length];
-
-        this.selectedRow = new int[matrix[0].length];
-        this.columnsFromSelectedRow = new int[matrix.length];
-        this.isRowCovered = new boolean[matrix.length];
-    }
-
-    public int[] getSolution() {
-        getRowAssignment();
-        getColumnAssignment();
-        if (costRowScan < costColumnScan) {
-            return selectedColumn;
-        } else {
-            return columnsFromSelectedRow;
-        }
-    }
-
-    public void getRowAssignment() {
-        costRowScan = 0;
-        for (int row = 0; row < matrix.length; row++) {
-            selectedColumn[row] = columnWithMin(row);
-            isColumnCovered[selectedColumn[row]] = true;
-            costRowScan += matrix[row][selectedColumn[row]];
-        }
-    }
-
-    public void getColumnAssignment() {
-        costColumnScan = 0;
-        for (int col = 0; col < matrix[0].length; col++) {
-            selectedRow[col] = rowWithMin(col);
-            columnsFromSelectedRow[selectedRow[col]] = col;
-            isRowCovered[selectedRow[col]] = true;
-            costColumnScan += matrix[selectedRow[col]][col];
-        }
-    }
-
     private int columnWithMin(int rowNumber) {
         int pos = -1;
         double min = Double.MAX_VALUE;
@@ -99,37 +59,21 @@ public class RowColumnClustering extends AbstractCcerEntityClustering {
         return pos;
     }
 
-    private int rowWithMin(int columnNumber) {
-        int pos = -1;
-        double min = Double.MAX_VALUE;
-        for (int row = 0; row < matrix.length; row++) {
-            if (isRowCovered[row]) {
-                continue;
-            }
-            if (matrix[row][columnNumber] < min) {
-                pos = row;
-                min = matrix[row][columnNumber];
-            }
+    private void getColumnAssignment() {
+        costColumnScan = 0;
+        for (int col = 0; col < matrix[0].length; col++) {
+            selectedRow[col] = rowWithMin(col);
+            columnsFromSelectedRow[selectedRow[col]] = col;
+            isRowCovered[selectedRow[col]] = true;
+            costColumnScan += matrix[selectedRow[col]][col];
         }
-        return pos;
     }
-
-    //inverts the input to 1.0-simMatrix in order to apply the minimization problem
-    public double[][] getNegative(double[][] initMatrix) {
-        int N = initMatrix.length;
-        double[][] negMatrix = new double[N][N];
-        for (int i = 0; i < initMatrix.length; i++) {
-            for (int j = 0; j < initMatrix[i].length; j++) {
-                negMatrix[i][j] = 1.0 - initMatrix[i][j];
-            }
-        }
-        return negMatrix;
-    }
-
+    
     @Override
     public EquivalenceCluster[] getDuplicates(SimilarityPairs simPairs) {
         Log.info("Input comparisons\t:\t" + simPairs.getNoOfComparisons());
-        
+
+        matchedIds.clear();
         if (simPairs.getNoOfComparisons() == 0) {
             return new EquivalenceCluster[0];
         }
@@ -181,5 +125,62 @@ public class RowColumnClustering extends AbstractCcerEntityClustering {
     @Override
     public String getMethodName() {
         return "Row-Column Proxy Clustering";
+    }
+    
+    //inverts the input to 1.0-simMatrix in order to apply the minimization problem
+    private double[][] getNegative(double[][] initMatrix) {
+        int N = initMatrix.length;
+        double[][] negMatrix = new double[N][N];
+        for (int i = 0; i < initMatrix.length; i++) {
+            for (int j = 0; j < initMatrix[i].length; j++) {
+                negMatrix[i][j] = 1.0 - initMatrix[i][j];
+            }
+        }
+        return negMatrix;
+    }
+    
+    private void getRowAssignment() {
+        costRowScan = 0;
+        for (int row = 0; row < matrix.length; row++) {
+            selectedColumn[row] = columnWithMin(row);
+            isColumnCovered[selectedColumn[row]] = true;
+            costRowScan += matrix[row][selectedColumn[row]];
+        }
+    }
+    
+    private int[] getSolution() {
+        getRowAssignment();
+        getColumnAssignment();
+        if (costRowScan < costColumnScan) {
+            return selectedColumn;
+        } else {
+            return columnsFromSelectedRow;
+        }
+    }
+    
+    private void init(double[][] matrix) {
+        this.matrix = matrix;
+
+        this.selectedColumn = new int[matrix.length];
+        this.isColumnCovered = new boolean[matrix[0].length];
+
+        this.selectedRow = new int[matrix[0].length];
+        this.columnsFromSelectedRow = new int[matrix.length];
+        this.isRowCovered = new boolean[matrix.length];
+    }
+    
+    private int rowWithMin(int columnNumber) {
+        int pos = -1;
+        double min = Double.MAX_VALUE;
+        for (int row = 0; row < matrix.length; row++) {
+            if (isRowCovered[row]) {
+                continue;
+            }
+            if (matrix[row][columnNumber] < min) {
+                pos = row;
+                min = matrix[row][columnNumber];
+            }
+        }
+        return pos;
     }
 }

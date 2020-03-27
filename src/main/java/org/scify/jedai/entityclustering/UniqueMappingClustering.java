@@ -44,6 +44,7 @@ public class UniqueMappingClustering extends AbstractCcerEntityClustering {
     public EquivalenceCluster[] getDuplicates(SimilarityPairs simPairs) {
         Log.info("Input comparisons\t:\t" + simPairs.getNoOfComparisons());
         
+        matchedIds.clear();
         if (simPairs.getNoOfComparisons() == 0) {
             return new EquivalenceCluster[0];
         }
