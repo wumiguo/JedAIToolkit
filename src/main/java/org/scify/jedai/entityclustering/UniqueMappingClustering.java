@@ -33,7 +33,7 @@ import java.util.Queue;
 public class UniqueMappingClustering extends AbstractCcerEntityClustering {
 
     public UniqueMappingClustering() {
-        this(0.5);
+        this(0.1);
     }
 
     public UniqueMappingClustering(double simTh) {

@@ -135,7 +135,7 @@ public abstract class AbstractMetablocking extends AbstractComparisonCleaning im
         final JsonObject obj1 = new JsonObject();
         obj1.put("class", "org.scify.jedai.utilities.enumerations.WeightingScheme");
         obj1.put("name", getParameterName(0));
-        obj1.put("defaultValue", "org.scify.jedai.utilities.enumerations.WeightingScheme.CBS");
+        obj1.put("defaultValue", "org.scify.jedai.utilities.enumerations.WeightingScheme.JS");
         obj1.put("minValue", "-");
         obj1.put("maxValue", "-");
         obj1.put("stepValue", "-");

@@ -41,11 +41,11 @@ public class ProfileMatcher extends AbstractEntityMatching {
     protected ITextModel[] entityModelsD2;
 
     public ProfileMatcher(List<EntityProfile> profiles) {
-        this(profiles, null, RepresentationModel.TOKEN_UNIGRAMS, SimilarityMetric.COSINE_SIMILARITY);
+        this(profiles, null, RepresentationModel.CHARACTER_FOURGRAMS_TF_IDF, SimilarityMetric.COSINE_SIMILARITY);
     }
     
     public ProfileMatcher(List<EntityProfile> profilesD1, List<EntityProfile> profilesD2) {
-        this(profilesD1, profilesD2, RepresentationModel.TOKEN_UNIGRAMS, SimilarityMetric.COSINE_SIMILARITY);
+        this(profilesD1, profilesD2, RepresentationModel.CHARACTER_FOURGRAMS_TF_IDF, SimilarityMetric.COSINE_SIMILARITY);
     }
     
     public ProfileMatcher(List<EntityProfile> profiles, RepresentationModel model, SimilarityMetric simMetric) {
@@ -146,7 +146,7 @@ public class ProfileMatcher extends AbstractEntityMatching {
         final JsonObject obj1 = new JsonObject();
         obj1.put("class", "org.scify.jedai.utilities.enumerations.RepresentationModel");
         obj1.put("name", getParameterName(0));
-        obj1.put("defaultValue", "org.scify.jedai.utilities.enumerations.RepresentationModel.TOKEN_UNIGRAM_GRAPHS");
+        obj1.put("defaultValue", "org.scify.jedai.utilities.enumerations.RepresentationModel.CHARACTER_FOURGRAMS_TF_IDF");
         obj1.put("minValue", "-");
         obj1.put("maxValue", "-");
         obj1.put("stepValue", "-");
@@ -155,7 +155,7 @@ public class ProfileMatcher extends AbstractEntityMatching {
         final JsonObject obj2 = new JsonObject();
         obj2.put("class", "org.scify.jedai.utilities.enumerations.SimilarityMetric");
         obj2.put("name", getParameterName(1));
-        obj2.put("defaultValue", "org.scify.jedai.utilities.enumerations.SimilarityMetric.GRAPH_VALUE_SIMILARITY");
+        obj2.put("defaultValue", "org.scify.jedai.utilities.enumerations.SimilarityMetric.COSINE_SIMILARITY");
         obj2.put("minValue", "-");
         obj2.put("maxValue", "-");
         obj2.put("stepValue", "-");

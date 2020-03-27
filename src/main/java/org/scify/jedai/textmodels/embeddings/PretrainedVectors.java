@@ -17,12 +17,10 @@ import java.util.*;
   <sources_dir>/JedAIToolkit/jedai-core/src/main/resources/embeddings/weights.txt
 
   Expected file format is:
-  <dimension>,<separator>
   element1<separator>value1<separator>value2....
   .....
 
   e.g.
-  4,,
   town,2.1,4.0,6.22,8.9
   car,8.0,7.11,6.41,4.44
   .....

@@ -109,7 +109,7 @@ public abstract class AbstractEntityClustering implements IEntityClustering {
         final JsonObject obj1 = new JsonObject();
         obj1.put("class", "java.lang.Double");
         obj1.put("name", getParameterName(0));
-        obj1.put("defaultValue", "0.5");
+        obj1.put("defaultValue", "0.1");
         obj1.put("minValue", "0.1");
         obj1.put("maxValue", "0.95");
         obj1.put("stepValue", "0.05");

@@ -85,7 +85,7 @@ public class ComparisonsBasedBlockPurging extends AbstractBlockPurging {
         final JsonObject obj = new JsonObject();
         obj.put("class", "java.lang.Double");
         obj.put("name", getParameterName(0));
-        obj.put("defaultValue", "1.025");
+        obj.put("defaultValue", "1.0");
         obj.put("minValue", "1.0");
         obj.put("maxValue", "2.0");
         obj.put("stepValue", "0.01");
