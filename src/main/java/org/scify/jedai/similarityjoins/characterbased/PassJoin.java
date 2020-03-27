@@ -22,14 +22,15 @@ import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
-import java.util.ArrayList;
-import java.util.List;
-import javafx.util.Pair;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.scify.jedai.datamodel.Comparison;
-
 import org.scify.jedai.datamodel.EntityProfile;
 import org.scify.jedai.datamodel.SimilarityPairs;
 import org.scify.jedai.datamodel.joins.PIndex;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -85,7 +86,7 @@ public class PassJoin extends AbstractCharacterBasedJoin {
 
             MaxDictLen = Math.max(MaxDictLen, nextValue.length());
             MinDictLen = Math.min(MinDictLen, nextValue.length());
-            idIdentifier.add(new Pair<>(nextValue, counter++));
+            idIdentifier.add(new ImmutablePair<>(nextValue, counter++));
         }
 
         if (isCleanCleanER) {
@@ -94,7 +95,7 @@ public class PassJoin extends AbstractCharacterBasedJoin {
 
                 MaxDictLen = Math.max(MaxDictLen, nextValue.length());
                 MinDictLen = Math.min(MinDictLen, nextValue.length());
-                idIdentifier.add(new Pair<>(nextValue, counter++));
+                idIdentifier.add(new ImmutablePair<>(nextValue, counter++));
             }
         }
 
