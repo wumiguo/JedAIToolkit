@@ -177,13 +177,13 @@ public class FuzzySetSimJoin {
         TIntDoubleMap tokenScores = new TIntDoubleHashMap();
         // first compute values
         for (int[] ints : querySet) {
-            for (int j = 0; j < ints.length; j++) {
+            for (int anInt : ints) {
                 score = 0;
-                if (tokenScores.containsKey(ints[j])) {
-                    score = tokenScores.get(ints[j]);
+                if (tokenScores.containsKey(anInt)) {
+                    score = tokenScores.get(anInt);
                 }
                 score += (1.0 / ints.length);
-                tokenScores.put(ints[j], score);
+                tokenScores.put(anInt, score);
             }
         }
         // then include costs
