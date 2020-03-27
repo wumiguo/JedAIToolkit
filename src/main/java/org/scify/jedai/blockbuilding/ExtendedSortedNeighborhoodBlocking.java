@@ -15,20 +15,19 @@
  */
 package org.scify.jedai.blockbuilding;
 
-import org.scify.jedai.datamodel.BilateralBlock;
-import org.scify.jedai.datamodel.UnilateralBlock;
-
 import gnu.trove.list.TIntList;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
-
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
 import org.apache.jena.atlas.json.JsonArray;
 import org.apache.jena.atlas.json.JsonObject;
 import org.scify.jedai.configuration.gridsearch.IntGridSearchConfiguration;
 import org.scify.jedai.configuration.randomsearch.IntRandomSearchConfiguration;
+import org.scify.jedai.datamodel.BilateralBlock;
+import org.scify.jedai.datamodel.UnilateralBlock;
+
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  *
@@ -86,7 +85,7 @@ public class ExtendedSortedNeighborhoodBlocking extends SortedNeighborhoodBlocki
     @Override
     protected void parseIndex() {
         final Set<String> blockingKeysSet = invertedIndexD1.keySet();
-        final String[] sortedTerms = blockingKeysSet.toArray(new String[blockingKeysSet.size()]);
+        final String[] sortedTerms = blockingKeysSet.toArray(new String[0]);
         Arrays.sort(sortedTerms);
 
         //slide window over the sorted list of blocking keys
@@ -108,7 +107,7 @@ public class ExtendedSortedNeighborhoodBlocking extends SortedNeighborhoodBlocki
         final Set<String> blockingKeysSet = new HashSet<>();
         blockingKeysSet.addAll(invertedIndexD1.keySet());
         blockingKeysSet.addAll(invertedIndexD2.keySet());
-        final String[] sortedTerms = blockingKeysSet.toArray(new String[blockingKeysSet.size()]);
+        final String[] sortedTerms = blockingKeysSet.toArray(new String[0]);
         Arrays.sort(sortedTerms);
 
         //slide window over the sorted list of blocking keys

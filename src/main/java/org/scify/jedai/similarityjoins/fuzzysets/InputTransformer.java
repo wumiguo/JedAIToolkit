@@ -27,7 +27,7 @@ public class InputTransformer {
      */
     public LinkedHashMap<String, Integer> computeTokenFrequencies(Collection<List<Set<String>>> collection) {
 
-        LinkedHashMap<String, Integer> tokFreq = new LinkedHashMap<String, Integer>();
+        LinkedHashMap<String, Integer> tokFreq = new LinkedHashMap<>();
 
         Integer frequency;
         for (List<Set<String>> set : collection) {
@@ -53,7 +53,7 @@ public class InputTransformer {
      */
     TObjectIntMap<String> mapTokensToInts(LinkedHashMap<String, Integer> tokenFrequencies) {
 
-        TObjectIntMap<String> tokenDict = new TObjectIntHashMap<String>();
+        TObjectIntMap<String> tokenDict = new TObjectIntHashMap<>();
 
         int counter = 0;
 
@@ -81,7 +81,7 @@ public class InputTransformer {
 
         int[][][] collection = new int[input.size()][][];
 
-        boolean existingDictionary = tokenDictionary.size() > 0 ? true : false;
+        boolean existingDictionary = tokenDictionary.size() > 0;
         int unknownTokenCounter = 0;
 
         int i = 0, j, k;

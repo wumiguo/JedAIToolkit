@@ -16,12 +16,13 @@
 
 package org.scify.jedai.progressivejoin;
 
-import java.util.Iterator;
-import java.util.List;
 import org.scify.jedai.configuration.IConfiguration;
 import org.scify.jedai.datamodel.Comparison;
 import org.scify.jedai.datamodel.EntityProfile;
 import org.scify.jedai.utilities.IDocumentation;
+
+import java.util.Iterator;
+import java.util.List;
 
 
 /**
@@ -31,7 +32,7 @@ import org.scify.jedai.utilities.IDocumentation;
 
 public interface IProgressiveJoin extends IConfiguration, IDocumentation, Iterator<Comparison> {
 
-    public void developEntityBasedSchedule(String attributeName, List<EntityProfile> dataset);
+    void developEntityBasedSchedule(String attributeName, List<EntityProfile> dataset);
 
-    public void developEntityBasedSchedule(String attributeName1, String attributeName2, List<EntityProfile> dataset1, List<EntityProfile> dataset2);
+    void developEntityBasedSchedule(String attributeName1, String attributeName2, List<EntityProfile> dataset1, List<EntityProfile> dataset2);
 }

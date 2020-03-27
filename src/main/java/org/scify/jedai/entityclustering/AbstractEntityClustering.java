@@ -80,9 +80,9 @@ public abstract class AbstractEntityClustering implements IEntityClustering {
 
     protected int getMaxEntityId(int[] entityIds) {
         int maxId = Integer.MIN_VALUE;
-        for (int i = 0; i < entityIds.length; i++) {
-            if (maxId < entityIds[i]) {
-                maxId = entityIds[i];
+        for (int entityId : entityIds) {
+            if (maxId < entityId) {
+                maxId = entityId;
             }
         }
         return maxId;

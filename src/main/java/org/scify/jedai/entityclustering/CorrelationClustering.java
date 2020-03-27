@@ -210,7 +210,7 @@ public class CorrelationClustering extends AbstractEntityClustering {
 
         int newOF = getOF();
         if (newOF > prevOF) {
-            clustersCreated[prevCluster].getEntityIdsD1().remove(Integer.valueOf(entity));
+            clustersCreated[prevCluster].getEntityIdsD1().remove(entity);
             clustersCreated[newCluster].addEntityIdD1(entity);
             return newOF;
         } else {

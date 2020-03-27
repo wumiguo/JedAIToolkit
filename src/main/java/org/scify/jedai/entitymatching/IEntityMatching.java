@@ -15,13 +15,14 @@
  */
 package org.scify.jedai.entitymatching;
 
-import org.scify.jedai.datamodel.AbstractBlock;
-import org.scify.jedai.datamodel.SimilarityPairs;
-import org.scify.jedai.utilities.IDocumentation;
-import java.util.List;
 import org.scify.jedai.configuration.IConfiguration;
+import org.scify.jedai.datamodel.AbstractBlock;
 import org.scify.jedai.datamodel.Comparison;
+import org.scify.jedai.datamodel.SimilarityPairs;
 import org.scify.jedai.utilities.IConstants;
+import org.scify.jedai.utilities.IDocumentation;
+
+import java.util.List;
 
 /**
  *
@@ -29,7 +30,7 @@ import org.scify.jedai.utilities.IConstants;
  */
 public interface IEntityMatching extends IConfiguration, IConstants, IDocumentation {
     
-    public double executeComparison(Comparison comparison);
+    double executeComparison(Comparison comparison);
     
-    public SimilarityPairs executeComparisons(List<AbstractBlock> blocks);
+    SimilarityPairs executeComparisons(List<AbstractBlock> blocks);
 }

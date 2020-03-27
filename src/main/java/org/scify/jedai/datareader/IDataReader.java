@@ -25,5 +25,5 @@ import org.scify.jedai.utilities.IDocumentation;
 
 public interface IDataReader extends IDocumentation {
          
-    public void storeSerializedObject(Object object, String outputPath);
+    void storeSerializedObject(Object object, String outputPath);
 }

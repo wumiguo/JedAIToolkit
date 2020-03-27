@@ -62,12 +62,12 @@ public class MinHashUnigrams extends TokenNGramsWithGlobalWeights {
     @Override
     public void updateModel(String text) {
         final String[] tokens = text.toLowerCase().split("[\\W_]");
-        for (int j = 0; j < tokens.length; j++) {
+        for (String token : tokens) {
             int counter = 0;
             String currentTerm;
             do {
                 counter++;
-                currentTerm = tokens[j] + "#" + counter;
+                currentTerm = token + "#" + counter;
             } while (termsList.contains(currentTerm));
             termsList.add(currentTerm);
         }

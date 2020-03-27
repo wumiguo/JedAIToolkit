@@ -52,7 +52,7 @@ public class FuzzySetSimJoin {
         InputTransformer it = new InputTransformer();
 
         // Create an empty token dictionary
-        tokenDict = new TObjectIntHashMap<String>();
+        tokenDict = new TObjectIntHashMap<>();
         // use instead the following if order by frequency is needed
         // TObjectIntMap<String> tokenDict =
         // it.mapTokensToIntsByFrequency(input2.values());
@@ -81,7 +81,7 @@ public class FuzzySetSimJoin {
 //		public List<int[]> join(int[][][] collection1, int[][][] collection2, double simThreshold) {
 
 //		List<int[]> matchingPairs = new ArrayList<int[]>();
-        HashMap<String, Double> matchingPairs = new HashMap<String, Double>();
+        HashMap<String, Double> matchingPairs = new HashMap<>();
 
         /* CREATE INDEX */
         indexingTime = System.nanoTime();
@@ -176,14 +176,14 @@ public class FuzzySetSimJoin {
         double score;
         TIntDoubleMap tokenScores = new TIntDoubleHashMap();
         // first compute values
-        for (int i = 0; i < querySet.length; i++) {
-            for (int j = 0; j < querySet[i].length; j++) {
+        for (int[] ints : querySet) {
+            for (int j = 0; j < ints.length; j++) {
                 score = 0;
-                if (tokenScores.containsKey(querySet[i][j])) {
-                    score = tokenScores.get(querySet[i][j]);
+                if (tokenScores.containsKey(ints[j])) {
+                    score = tokenScores.get(ints[j]);
                 }
-                score += (1.0 / querySet[i].length);
-                tokenScores.put(querySet[i][j], score);
+                score += (1.0 / ints.length);
+                tokenScores.put(ints[j], score);
             }
         }
         // then include costs
@@ -238,7 +238,7 @@ public class FuzzySetSimJoin {
     private TIntObjectMap<TIntDoubleMap> applyCheckFilter(int[][] querySet, int[][][] collection,
             TIntSet[] unflattenedSignature, TIntObjectMap<TIntList>[] idx, double simThreshold) {
 
-        TIntObjectMap<TIntDoubleMap> checkFilterCandidates = new TIntObjectHashMap<TIntDoubleMap>();
+        TIntObjectMap<TIntDoubleMap> checkFilterCandidates = new TIntObjectHashMap<>();
 
         TIntDoubleMap cachedScores;
         double sim;
@@ -346,10 +346,10 @@ public class FuzzySetSimJoin {
         while (sit.hasNext()) {
             int id_s = sit.next();
 
-            SimpleWeightedGraph<String, DefaultWeightedEdge> g = new SimpleWeightedGraph<String, DefaultWeightedEdge>(
+            SimpleWeightedGraph<String, DefaultWeightedEdge> g = new SimpleWeightedGraph<>(
                     DefaultWeightedEdge.class);
-            HashSet<String> r_partition = new HashSet<String>();
-            HashSet<String> s_partition = new HashSet<String>();
+            HashSet<String> r_partition = new HashSet<>();
+            HashSet<String> s_partition = new HashSet<>();
 
             for (int id_r = 0; id_r < querySet.length; id_r++) {
                 String r_v = "r_" + id_r;
@@ -367,7 +367,7 @@ public class FuzzySetSimJoin {
 
             double match = 0.0;
             //System.out.println(g.edgeSet().size()+"asd"+g.vertexSet().size());
-            MaximumWeightBipartiteMatching<String, DefaultWeightedEdge> matching = new MaximumWeightBipartiteMatching<String, DefaultWeightedEdge>(
+            MaximumWeightBipartiteMatching<String, DefaultWeightedEdge> matching = new MaximumWeightBipartiteMatching<>(
                     g, r_partition, s_partition);
             for (DefaultWeightedEdge ed : matching.getMatching().getEdges()) {
                 //System.out.println(g.getEdgeWeight(ed)+" "+g.getEdgeSource(ed)+" "+g.getEdgeTarget(ed));

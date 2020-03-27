@@ -89,7 +89,7 @@ public class SetSimJoin {
         isindataset1 = new boolean[noOfEntities];
         final int[] internalid = {0};
         records.forEach((key, value) -> {
-            isindataset1[internalid[0]] = (Integer.parseInt(key) < datasetDelimiter) ? true : false;
+            isindataset1[internalid[0]] = Integer.parseInt(key) < datasetDelimiter;
             records_internal.put(internalid[0], value);
             mapper.put(internalid[0]++, key);
         });

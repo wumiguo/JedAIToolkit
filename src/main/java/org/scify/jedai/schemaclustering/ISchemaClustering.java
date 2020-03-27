@@ -15,12 +15,13 @@
  */
 package org.scify.jedai.schemaclustering;
 
-import java.util.List;
 import org.scify.jedai.configuration.IConfiguration;
 import org.scify.jedai.datamodel.AttributeClusters;
 import org.scify.jedai.datamodel.EntityProfile;
 import org.scify.jedai.utilities.IConstants;
 import org.scify.jedai.utilities.IDocumentation;
+
+import java.util.List;
 
 /**
  *
@@ -28,8 +29,8 @@ import org.scify.jedai.utilities.IDocumentation;
  */
 public interface ISchemaClustering extends IConfiguration, IConstants, IDocumentation {
 
-    public AttributeClusters[] getClusters(List<EntityProfile> profiles);
+    AttributeClusters[] getClusters(List<EntityProfile> profiles);
 
-    public AttributeClusters[] getClusters(List<EntityProfile> profilesD1, List<EntityProfile> profilesD2);
+    AttributeClusters[] getClusters(List<EntityProfile> profilesD1, List<EntityProfile> profilesD2);
 
 }

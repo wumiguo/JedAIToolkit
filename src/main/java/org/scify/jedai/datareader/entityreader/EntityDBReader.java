@@ -15,26 +15,14 @@
  */
 package org.scify.jedai.datareader.entityreader;
 
-import org.scify.jedai.datamodel.EntityProfile;
-
 import com.esotericsoftware.minlog.Log;
-
-import java.io.IOException;
-
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.Statement;
-
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Properties;
-import java.util.Set;
-
 import org.apache.jena.atlas.json.JsonArray;
 import org.apache.jena.atlas.json.JsonObject;
+import org.scify.jedai.datamodel.EntityProfile;
+
+import java.io.IOException;
+import java.sql.*;
+import java.util.*;
 
 /**
  *
@@ -137,9 +125,7 @@ public class EntityDBReader extends AbstractEntityReader {
     public String getMethodConfiguration() {
         final StringBuilder sb = new StringBuilder();
         sb.append("{");
-        attributesToExclude.forEach((attributeName) -> {
-            sb.append(attributeName).append(",");
-        });
+        attributesToExclude.forEach((attributeName) -> sb.append(attributeName).append(","));
         sb.append("}");
     
         return getParameterName(0) + "=" + inputFilePath + "\t"

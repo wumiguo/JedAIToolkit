@@ -30,7 +30,7 @@ import org.scify.jedai.utilities.IDocumentation;
 
 public interface ISimilarityJoin extends IConfiguration, IDocumentation {
 
-    public SimilarityPairs executeFiltering(String attributeName, List<EntityProfile> dataset);
+    SimilarityPairs executeFiltering(String attributeName, List<EntityProfile> dataset);
 
-    public SimilarityPairs executeFiltering(String attributeName1, String attributeName2, List<EntityProfile> dataset1, List<EntityProfile> dataset2);
+    SimilarityPairs executeFiltering(String attributeName1, String attributeName2, List<EntityProfile> dataset1, List<EntityProfile> dataset2);
 }

@@ -15,21 +15,17 @@
  */
 package org.scify.jedai.blockprocessing.blockcleaning;
 
-import org.scify.jedai.datamodel.AbstractBlock;
-import org.scify.jedai.utilities.comparators.IncBlockCardinalityComparator;
-
 import com.esotericsoftware.minlog.Log;
-
 import gnu.trove.set.TDoubleSet;
 import gnu.trove.set.hash.TDoubleHashSet;
-
-import java.util.Collections;
-import java.util.List;
-
 import org.apache.jena.atlas.json.JsonArray;
 import org.apache.jena.atlas.json.JsonObject;
 import org.scify.jedai.configuration.gridsearch.DblGridSearchConfiguration;
 import org.scify.jedai.configuration.randomsearch.DblRandomSearchConfiguration;
+import org.scify.jedai.datamodel.AbstractBlock;
+import org.scify.jedai.utilities.comparators.IncBlockCardinalityComparator;
+
+import java.util.List;
 
 /**
  *
@@ -140,11 +136,9 @@ public class ComparisonsBasedBlockPurging extends AbstractBlockPurging {
 
     @Override
     protected void setThreshold(List<AbstractBlock> blocks) {
-        Collections.sort(blocks, new IncBlockCardinalityComparator());
+        blocks.sort(new IncBlockCardinalityComparator());
         final TDoubleSet distinctComparisonsLevel = new TDoubleHashSet();
-        blocks.forEach((block) -> {
-            distinctComparisonsLevel.add(block.getNoOfComparisons());
-        });
+        blocks.forEach((block) -> distinctComparisonsLevel.add(block.getNoOfComparisons()));
 
         int index = -1;
         double[] blockAssignments = new double[distinctComparisonsLevel.size()];

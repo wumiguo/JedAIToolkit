@@ -32,7 +32,7 @@ public class DecBlockUtilityComparator implements Comparator<AbstractBlock> {
     
     @Override
     public int compare(AbstractBlock block1, AbstractBlock block2) {
-        return new Double(block2.getUtilityMeasure()).compareTo(block1.getUtilityMeasure());
+        return Double.compare(block2.getUtilityMeasure(), block1.getUtilityMeasure());
     }
 
 //    public static void main(String[] args) {

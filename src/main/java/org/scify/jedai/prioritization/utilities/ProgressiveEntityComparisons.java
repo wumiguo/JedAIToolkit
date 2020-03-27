@@ -17,7 +17,6 @@ package org.scify.jedai.prioritization.utilities;
 
 import gnu.trove.iterator.TIntIterator;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import org.scify.jedai.blockprocessing.comparisoncleaning.WeightedNodePruning;
 import org.scify.jedai.datamodel.AbstractBlock;
@@ -74,7 +73,7 @@ public class ProgressiveEntityComparisons extends WeightedNodePruning {
         }
         
         if (1 <= entityComparisons.size()) {
-            Collections.sort(entityComparisons, new DecComparisonWeightComparator());
+            entityComparisons.sort(new DecComparisonWeightComparator());
             entityComparisons.remove(0); // has already been emitted
         }
         return entityComparisons;

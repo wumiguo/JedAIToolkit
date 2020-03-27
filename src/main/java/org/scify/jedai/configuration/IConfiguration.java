@@ -21,12 +21,12 @@ package org.scify.jedai.configuration;
  */
 public interface IConfiguration {
     
-    public int getNumberOfGridConfigurations();
+    int getNumberOfGridConfigurations();
 
-    public void setNextRandomConfiguration();
+    void setNextRandomConfiguration();
 
-    public void setNumberedGridConfiguration(int iterationNumber);
+    void setNumberedGridConfiguration(int iterationNumber);
 
-    public void setNumberedRandomConfiguration(int iterationNumber);
+    void setNumberedRandomConfiguration(int iterationNumber);
     
 }

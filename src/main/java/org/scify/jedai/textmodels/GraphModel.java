@@ -37,8 +37,8 @@ public abstract class GraphModel extends AbstractModel {
     }
 
     @Override
-    public void finalizeModel() {};
-    
+    public void finalizeModel() {}
+
     @Override
     public double getEntropy(boolean normalized) {
         return 0;

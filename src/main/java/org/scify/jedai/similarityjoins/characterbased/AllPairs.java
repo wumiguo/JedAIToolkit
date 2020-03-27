@@ -36,6 +36,7 @@ import org.scify.jedai.datamodel.joins.IntListPair;
 import org.scify.jedai.datamodel.joins.IntPair;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -167,7 +168,7 @@ public class AllPairs extends AbstractCharacterBasedJoin {
             iterator.advance();
             packages.add(new IntPair(iterator.key(), iterator.value()));
         }
-        packages.sort((p1, p2) -> p1.getValue() - p2.getValue());
+        packages.sort(Comparator.comparingInt(IntPair::getValue));
 
         int noOfPackages = packages.size();
         for (int k = 0; k < noOfPackages; k++) {
@@ -211,7 +212,7 @@ public class AllPairs extends AbstractCharacterBasedJoin {
 
         attributeValues.clear();
         originalId = new int[noOfEntities];
-        idIdentifier.sort((s1, s2) -> s1.getKey().length() - s2.getKey().length());
+        idIdentifier.sort(Comparator.comparingInt(s -> s.getKey().length()));
         for (int i = 0; i < noOfEntities; i++) {
             final Pair<String, Integer> currentPair = idIdentifier.get(i);
             attributeValues.add(currentPair.getKey());

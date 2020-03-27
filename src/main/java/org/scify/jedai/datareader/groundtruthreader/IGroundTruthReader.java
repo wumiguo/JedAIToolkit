@@ -28,8 +28,8 @@ import java.util.Set;
 
 public interface IGroundTruthReader {
     
-    public Set<IdDuplicates> getDuplicatePairs(List<EntityProfile> profiles); 
+    Set<IdDuplicates> getDuplicatePairs(List<EntityProfile> profiles);
     
-    public Set<IdDuplicates> getDuplicatePairs(List<EntityProfile> profilesD1,
-            List<EntityProfile> profilesD2); 
+    Set<IdDuplicates> getDuplicatePairs(List<EntityProfile> profilesD1,
+                                        List<EntityProfile> profilesD2);
 }

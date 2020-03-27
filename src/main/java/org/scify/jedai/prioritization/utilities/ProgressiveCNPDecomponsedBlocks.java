@@ -17,17 +17,11 @@ package org.scify.jedai.prioritization.utilities;
 
 import org.scify.jedai.datamodel.AbstractBlock;
 import org.scify.jedai.datamodel.Comparison;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.PriorityQueue;
-import java.util.Queue;
-import java.util.Set;
 import org.scify.jedai.datamodel.ComparisonIterator;
 import org.scify.jedai.utilities.comparators.DecComparisonWeightComparator;
 import org.scify.jedai.utilities.comparators.IncComparisonWeightComparator;
+
+import java.util.*;
 
 /**
  *
@@ -90,7 +84,7 @@ public class ProgressiveCNPDecomponsedBlocks extends AbstractDecomposedBlocksPro
         topComsPerEntity = null;
         
         final List<Comparison> sortedTopComparisons = new ArrayList<>(topComparisons);
-        Collections.sort(sortedTopComparisons, new DecComparisonWeightComparator());
+        sortedTopComparisons.sort(new DecComparisonWeightComparator());
         compIterator = sortedTopComparisons.iterator();
     }
     

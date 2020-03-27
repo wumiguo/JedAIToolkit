@@ -34,7 +34,7 @@ public class IncBlockCardinalityComparator implements Comparator<AbstractBlock> 
     @Override
     public int compare(AbstractBlock block1, AbstractBlock block2) {
         if (block1.getNoOfComparisons() != block2.getNoOfComparisons()) {
-            return new Double(block1.getNoOfComparisons()).compareTo(block2.getNoOfComparisons());
+            return Double.compare(block1.getNoOfComparisons(), block2.getNoOfComparisons());
         }
 
         Double totalWeight1 = 0.0;

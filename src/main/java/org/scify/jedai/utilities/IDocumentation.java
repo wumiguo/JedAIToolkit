@@ -25,17 +25,17 @@ public interface IDocumentation {
 
     String PARAMETER_FREE = "Parameter-free method";
     
-    public String getMethodConfiguration();
+    String getMethodConfiguration();
 
-    public String getMethodInfo();
+    String getMethodInfo();
 
-    public String getMethodName();
+    String getMethodName();
 
-    public String getMethodParameters();
+    String getMethodParameters();
 
-    public JsonArray getParameterConfiguration();
+    JsonArray getParameterConfiguration();
 
-    public String getParameterDescription(int parameterId);
+    String getParameterDescription(int parameterId);
 
-    public String getParameterName(int parameterId);
+    String getParameterName(int parameterId);
 }

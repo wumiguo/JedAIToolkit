@@ -15,24 +15,12 @@
  */
 package org.scify.jedai.blockbuilding;
 
-import org.scify.jedai.datamodel.AbstractBlock;
-import org.scify.jedai.datamodel.Attribute;
-import org.scify.jedai.datamodel.BilateralBlock;
-import org.scify.jedai.datamodel.EntityProfile;
-import org.scify.jedai.datamodel.UnilateralBlock;
-
 import com.esotericsoftware.minlog.Log;
-
 import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TIntArrayList;
+import org.scify.jedai.datamodel.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import org.scify.jedai.datamodel.AttributeClusters;
+import java.util.*;
 
 /**
  *
@@ -177,33 +165,31 @@ public abstract class AbstractBlockBuilding implements IBlockBuilding {
 
     protected void parseIndex() {
         if (!isUsingEntropy) {
-            invertedIndexD1.values().stream().filter((entityList) -> (1 < entityList.size())).forEachOrdered((entityList) -> {
-                blocks.add(new UnilateralBlock(entityList.toArray()));
-            });
+            invertedIndexD1.values().stream().filter((entityList) -> (1 < entityList.size())).forEachOrdered((entityList) -> blocks.add(new UnilateralBlock(entityList.toArray())));
         } else {
-            invertedIndexD1.entrySet().forEach((entry) -> {
-                final String[] entropyString = entry.getKey().split(CLUSTER_SUFFIX);
+            invertedIndexD1.forEach((key, value) -> {
+                final String[] entropyString = key.split(CLUSTER_SUFFIX);
                 double entropyValue = Double.parseDouble(entropyString[1]);
-                blocks.add(new UnilateralBlock(entropyValue, entry.getValue().toArray()));
+                blocks.add(new UnilateralBlock(entropyValue, value.toArray()));
             });
         }
     }
 
     protected void parseIndices() {
         if (!isUsingEntropy) {
-            invertedIndexD1.entrySet().forEach((entry) -> {
-                final TIntList entityIdsD2 = invertedIndexD2.get(entry.getKey());
+            invertedIndexD1.forEach((key, value) -> {
+                final TIntList entityIdsD2 = invertedIndexD2.get(key);
                 if (entityIdsD2 != null && !entityIdsD2.isEmpty()) {
-                    blocks.add(new BilateralBlock(entry.getValue().toArray(), entityIdsD2.toArray()));
+                    blocks.add(new BilateralBlock(value.toArray(), entityIdsD2.toArray()));
                 }
             });
         } else {
-            invertedIndexD1.entrySet().forEach((entry) -> {
-                final TIntList entityIdsD2 = invertedIndexD2.get(entry.getKey());
+            invertedIndexD1.forEach((key, value) -> {
+                final TIntList entityIdsD2 = invertedIndexD2.get(key);
                 if (entityIdsD2 != null && !entityIdsD2.isEmpty()) {
-                    final String[] entropyString = entry.getKey().split(CLUSTER_SUFFIX);
+                    final String[] entropyString = key.split(CLUSTER_SUFFIX);
                     double entropyValue = Double.parseDouble(entropyString[1]);
-                    blocks.add(new BilateralBlock(entropyValue, entry.getValue().toArray(), entityIdsD2.toArray()));
+                    blocks.add(new BilateralBlock(entropyValue, value.toArray(), entityIdsD2.toArray()));
                 }
             });
         }

@@ -15,14 +15,14 @@
  */
 package org.scify.jedai.blockbuilding;
 
+import org.scify.jedai.configuration.IConfiguration;
 import org.scify.jedai.datamodel.AbstractBlock;
+import org.scify.jedai.datamodel.AttributeClusters;
 import org.scify.jedai.datamodel.EntityProfile;
+import org.scify.jedai.utilities.IConstants;
 import org.scify.jedai.utilities.IDocumentation;
 
 import java.util.List;
-import org.scify.jedai.configuration.IConfiguration;
-import org.scify.jedai.datamodel.AttributeClusters;
-import org.scify.jedai.utilities.IConstants;
 
 /**
  *
@@ -33,10 +33,10 @@ public interface IBlockBuilding extends IConfiguration, IConstants, IDocumentati
     String CLUSTER_PREFIX = "#$!cl";
     String CLUSTER_SUFFIX = "#$!en";
     
-    public List<AbstractBlock> getBlocks(List<EntityProfile> profiles);
+    List<AbstractBlock> getBlocks(List<EntityProfile> profiles);
 
-    public List<AbstractBlock> getBlocks(List<EntityProfile> profilesD1, List<EntityProfile> profilesD2);
+    List<AbstractBlock> getBlocks(List<EntityProfile> profilesD1, List<EntityProfile> profilesD2);
 
-    public List<AbstractBlock> getBlocks(List<EntityProfile> profilesD1, List<EntityProfile> profilesD2, AttributeClusters[] schemaClusters);
+    List<AbstractBlock> getBlocks(List<EntityProfile> profilesD1, List<EntityProfile> profilesD2, AttributeClusters[] schemaClusters);
     
 }

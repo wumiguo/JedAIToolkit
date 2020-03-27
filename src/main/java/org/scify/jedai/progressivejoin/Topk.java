@@ -30,6 +30,7 @@ import org.scify.jedai.datamodel.EntityProfile;
 import org.scify.jedai.datamodel.joins.IntPair;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -81,7 +82,7 @@ public class Topk extends AbstractProgressiveJoin {
             }
         }
 
-        idIdentifier.sort((s1, s2) -> s1.getKey().split(" ").length - s2.getKey().split(" ").length);
+        idIdentifier.sort(Comparator.comparingInt(s -> s.getKey().split(" ").length));
 
         attributeValues.clear();
         originalId = new int[noOfEntities];
@@ -102,8 +103,8 @@ public class Topk extends AbstractProgressiveJoin {
             }
 
             String[] split = s.split(" ");
-            for (int sp = 0; sp < split.length; sp++) {
-                int token = djbHash(split[sp]);
+            for (String value : split) {
+                int token = djbHash(value);
                 records[sIndex].add(token);
                 int freq = freqMap.get(token);
                 freqMap.put(token, (freq + 1));

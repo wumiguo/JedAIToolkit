@@ -34,13 +34,13 @@ public class Util {
      */
     public static <K extends Comparable<? super K>, V extends Comparable<? super V>> LinkedHashMap<K, V> sortByValue(
             Map<K, V> map) {
-        List<Entry<K, V>> list = new ArrayList<Entry<K, V>>(map.entrySet());
+        List<Entry<K, V>> list = new ArrayList<>(map.entrySet());
         Comparator<Entry<K, V>> byValue = Entry.comparingByValue();
         Comparator<Entry<K, V>> byKey = Entry.comparingByKey();
         Comparator<Entry<K, V>> byValueThenByKey = byValue.thenComparing(byKey);
         list.sort(byValueThenByKey);
 
-        LinkedHashMap<K, V> result = new LinkedHashMap<K, V>();
+        LinkedHashMap<K, V> result = new LinkedHashMap<>();
         for (Entry<K, V> entry : list) {
             result.put(entry.getKey(), entry.getValue());
         }
@@ -125,7 +125,7 @@ public class Util {
     /**
      * Prints a map
      */
-    public static <K extends Object, V extends Object> void printMap(Map<K, V> map, int maxN) {
+    public static <K, V> void printMap(Map<K, V> map, int maxN) {
 
         int counter = 0;
         for (Object key : map.keySet()) {

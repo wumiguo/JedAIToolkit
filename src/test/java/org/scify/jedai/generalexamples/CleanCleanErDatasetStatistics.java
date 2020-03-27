@@ -15,7 +15,8 @@
  */
 package org.scify.jedai.generalexamples;
 
-import java.util.HashSet;
+import org.apache.log4j.BasicConfigurator;
+import org.scify.jedai.datamodel.Attribute;
 import org.scify.jedai.datamodel.EntityProfile;
 import org.scify.jedai.datareader.entityreader.EntitySerializationReader;
 import org.scify.jedai.datareader.entityreader.IEntityReader;
@@ -23,10 +24,10 @@ import org.scify.jedai.datareader.groundtruthreader.GtSerializationReader;
 import org.scify.jedai.datareader.groundtruthreader.IGroundTruthReader;
 import org.scify.jedai.utilities.datastructures.AbstractDuplicatePropagation;
 import org.scify.jedai.utilities.datastructures.BilateralDuplicatePropagation;
+
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import org.apache.log4j.BasicConfigurator;
-import org.scify.jedai.datamodel.Attribute;
 
 /**
  *
@@ -44,10 +45,10 @@ public class CleanCleanErDatasetStatistics {
         String[] groundTruthFiles = {mainFolder + "newDBPediaMatches"
         };
 
-        for (int i = 0; i < entitiesFiles.length; i++) {
-            System.out.println("\n\n\n\n\nCurrent dataset\t:\t" + entitiesFiles[i]);
+        for (String entitiesFile : entitiesFiles) {
+            System.out.println("\n\n\n\n\nCurrent dataset\t:\t" + entitiesFile);
 
-            IEntityReader eReader = new EntitySerializationReader(entitiesFiles[i]);
+            IEntityReader eReader = new EntitySerializationReader(entitiesFile);
             List<EntityProfile> profiles = eReader.getEntityProfiles();
             System.out.println("Input Entity Profiles\t:\t" + profiles.size());
             final Set<String> distinctAttributes = new HashSet<>();

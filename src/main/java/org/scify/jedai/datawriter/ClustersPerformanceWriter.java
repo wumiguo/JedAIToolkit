@@ -972,15 +972,15 @@ public class ClustersPerformanceWriter {
                 abstractDP.isSuperfluous(entityId1, entityId2);
                 final int newDuplicates = abstractDP.getNoOfDuplicates();
 
-                sb.append("<obj/" + "record/" + cluster.toString() + "> ");
+                sb.append("<obj/" + "record/").append(cluster.toString()).append("> ");
                 sb.append("<url1> ");
-                sb.append("\"" + profile1.getEntityUrl().replace("&", "") + "" + "\".\n");
+                sb.append("\"").append(profile1.getEntityUrl().replace("&", "")).append("\".\n");
 
-                sb.append("<obj/" + "record/" + cluster.toString() + "> ");
+                sb.append("<obj/" + "record/").append(cluster.toString()).append("> ");
                 sb.append("<url2> ");
-                sb.append("\"" + profile2.getEntityUrl().replace("&", "") + "" + "\".\n");
+                sb.append("\"").append(profile2.getEntityUrl().replace("&", "")).append("\".\n");
 
-                sb.append("<obj/" + "record/" + cluster.toString() + "> ");
+                sb.append("<obj/" + "record/").append(cluster.toString()).append("> ");
                 sb.append("<pairType> ");
                 if (originalDuplicates == newDuplicates) {
                     sb.append("\"" + "FP" + "\".\n");//false positive
@@ -988,13 +988,13 @@ public class ClustersPerformanceWriter {
                     sb.append("\"" + "TP" + "\".\n"); // true positive
                 }
 
-                sb.append("<obj/" + "record/" + cluster.toString() + "> ");
+                sb.append("<obj/" + "record/").append(cluster.toString()).append("> ");
                 sb.append("<Profile1> ");
-                sb.append("\"" + (profile1 + "").replace("&", "") + "\".\n");
+                sb.append("\"").append((profile1 + "").replace("&", "")).append("\".\n");
 
-                sb.append("<obj/" + "record/" + cluster.toString() + "> ");
+                sb.append("<obj/" + "record/").append(cluster.toString()).append("> ");
                 sb.append("<Profile2> ");
-                sb.append("\"" + (profile2 + "").replace("&", "") + "\".\n");
+                sb.append("\"").append((profile2 + "").replace("&", "")).append("\".\n");
 
                 //execute query every 1000 steps
                 if (totalMatches % 1000 == 0) {
@@ -1030,25 +1030,25 @@ public class ClustersPerformanceWriter {
 
                 counter++;
 
-                sb.append("<obj/" + "record/" + duplicatesPair.toString() + "> ");
+                sb.append("<obj/" + "record/").append(duplicatesPair.toString()).append("> ");
                 sb.append("<url1> ");
-                sb.append("\"" + profile1.getEntityUrl().replace("&", "") + "" + "\".\n");
+                sb.append("\"").append(profile1.getEntityUrl().replace("&", "")).append("\".\n");
 
-                sb.append("<obj/" + "record/" + duplicatesPair.toString() + "> ");
+                sb.append("<obj/" + "record/").append(duplicatesPair.toString()).append("> ");
                 sb.append("<url2> ");
-                sb.append("\"" + profile2.getEntityUrl().replace("&", "") + "" + "\".\n");
+                sb.append("\"").append(profile2.getEntityUrl().replace("&", "")).append("\".\n");
 
-                sb.append("<obj/" + "record/" + duplicatesPair.toString() + "> ");
+                sb.append("<obj/" + "record/").append(duplicatesPair.toString()).append("> ");
                 sb.append("<pairType> ");
                 sb.append("\"" + "FN" + "\".\n"); // false negative
 
-                sb.append("<obj/" + "record/" + duplicatesPair.toString() + "> ");
+                sb.append("<obj/" + "record/").append(duplicatesPair.toString()).append("> ");
                 sb.append("<Profile1> ");
-                sb.append("\"" + (profile1 + "").replace("&", "") + "\".\n");
+                sb.append("\"").append((profile1 + "").replace("&", "")).append("\".\n");
 
-                sb.append("<obj/" + "record/" + duplicatesPair.toString() + "> ");
+                sb.append("<obj/" + "record/").append(duplicatesPair.toString()).append("> ");
                 sb.append("<Profile2> ");
-                sb.append("\"" + (profile2 + "").replace("&", "") + "\".\n");
+                sb.append("\"").append((profile2 + "").replace("&", "")).append("\".\n");
 
                 //execute query every 1000 steps
                 if (counter % 1000 == 0) {
@@ -1090,15 +1090,15 @@ public class ClustersPerformanceWriter {
                         abstractDP.isSuperfluous(duplicatesArray[i], duplicatesArray[j]);
                         final int newDuplicates = abstractDP.getNoOfDuplicates();
 
-                        sb.append("<obj/" + "record/" + cluster.toString() + "> ");
+                        sb.append("<obj/" + "record/").append(cluster.toString()).append("> ");
                         sb.append("<url1> ");
-                        sb.append("\"" + profile1.getEntityUrl().replace("&", "") + "" + "\".\n");
+                        sb.append("\"").append(profile1.getEntityUrl().replace("&", "")).append("\".\n");
 
-                        sb.append("<obj/" + "record/" + cluster.toString() + "> ");
+                        sb.append("<obj/" + "record/").append(cluster.toString()).append("> ");
                         sb.append("<url2> ");
-                        sb.append("\"" + profile2.getEntityUrl().replace("&", "") + "" + "\".\n");
+                        sb.append("\"").append(profile2.getEntityUrl().replace("&", "")).append("\".\n");
 
-                        sb.append("<obj/" + "record/" + cluster.toString() + "> ");
+                        sb.append("<obj/" + "record/").append(cluster.toString()).append("> ");
                         sb.append("<pairType> ");
                         if (originalDuplicates == newDuplicates) {
                             sb.append("\"" + "FP" + "\".\n");//false positive
@@ -1106,13 +1106,13 @@ public class ClustersPerformanceWriter {
                             sb.append("\"" + "TP" + "\".\n"); // true positive
                         }
 
-                        sb.append("<obj/" + "record/" + cluster.toString() + "> ");
+                        sb.append("<obj/" + "record/").append(cluster.toString()).append("> ");
                         sb.append("<Profile1> ");
-                        sb.append("\"" + (profile1 + "").replace("&", "") + "\".\n");
+                        sb.append("\"").append((profile1 + "").replace("&", "")).append("\".\n");
 
-                        sb.append("<obj/" + "record/" + cluster.toString() + "> ");
+                        sb.append("<obj/" + "record/").append(cluster.toString()).append("> ");
                         sb.append("<Profile2> ");
-                        sb.append("\"" + (profile2 + "").replace("&", "") + "\".\n");
+                        sb.append("\"").append((profile2 + "").replace("&", "")).append("\".\n");
 
                         //execute query every 1000 steps
                         if (totalMatches % 1000 == 0) {
@@ -1149,25 +1149,25 @@ public class ClustersPerformanceWriter {
                 final EntityProfile profile2 = profilesD1.get(duplicatesPair.getEntityId2());
 
                 counter2++;
-                sb.append("<obj/" + "record/" + duplicatesPair.toString() + "> ");
+                sb.append("<obj/" + "record/").append(duplicatesPair.toString()).append("> ");
                 sb.append("<url1> ");
-                sb.append("\"" + profile1.getEntityUrl().replace("&", "") + "" + "\".\n");
+                sb.append("\"").append(profile1.getEntityUrl().replace("&", "")).append("\".\n");
 
-                sb.append("<obj/" + "record/" + duplicatesPair.toString() + "> ");
+                sb.append("<obj/" + "record/").append(duplicatesPair.toString()).append("> ");
                 sb.append("<url2> ");
-                sb.append("\"" + profile2.getEntityUrl().replace("&", "") + "" + "\".\n");
+                sb.append("\"").append(profile2.getEntityUrl().replace("&", "")).append("\".\n");
 
-                sb.append("<obj/" + "record/" + duplicatesPair.toString() + "> ");
+                sb.append("<obj/" + "record/").append(duplicatesPair.toString()).append("> ");
                 sb.append("<pairType> ");
                 sb.append("\"" + "FN" + "\".\n"); // false negative
 
-                sb.append("<obj/" + "record/" + duplicatesPair.toString() + "> ");
+                sb.append("<obj/" + "record/").append(duplicatesPair.toString()).append("> ");
                 sb.append("<Profile1> ");
-                sb.append("\"" + (profile1 + "").replace("&", "") + "\".\n");
+                sb.append("\"").append((profile1 + "").replace("&", "")).append("\".\n");
 
-                sb.append("<obj/" + "record/" + duplicatesPair.toString() + "> ");
+                sb.append("<obj/" + "record/").append(duplicatesPair.toString()).append("> ");
                 sb.append("<Profile2> ");
-                sb.append("\"" + (profile2 + "").replace("&", "") + "\".\n");
+                sb.append("\"").append((profile2 + "").replace("&", "")).append("\".\n");
 
                 //execute query every 1000 steps
                 if (counter2 % 1000 == 0) {
@@ -1210,15 +1210,15 @@ public class ClustersPerformanceWriter {
 
         sb.append("<obj/" + "record/" + "STATS" + "> ");
         sb.append("<Precision> ");
-        sb.append("\"" + precision + "\".\n");
+        sb.append("\"").append(precision).append("\".\n");
 
         sb.append("<obj/" + "record/" + "STATS" + "> ");
         sb.append("<Recall> ");
-        sb.append("\"" + recall + "\".\n");
+        sb.append("\"").append(recall).append("\".\n");
 
         sb.append("<obj/" + "record/" + "STATS" + "> ");
         sb.append("<F-Measure> ");
-        sb.append("\"" + fMeasure + "\".\n");
+        sb.append("\"").append(fMeasure).append("\".\n");
 
         sb.append("}\n }");
         String sparqlQueryString = sb.toString();
@@ -1473,27 +1473,27 @@ public class ClustersPerformanceWriter {
                 abstractDP.isSuperfluous(entityId1, entityId2);
                 final int newDuplicates = abstractDP.getNoOfDuplicates();
 
-                sb.append("('" + profile1.getEntityUrl() + "', ");
-                sb.append("'" + profile2.getEntityUrl() + "', ");
+                sb.append("('").append(profile1.getEntityUrl()).append("', ");
+                sb.append("'").append(profile2.getEntityUrl()).append("', ");
 
                 if (originalDuplicates == newDuplicates) {
                     sb.append("'" + "FP" + "', "); //false positive
                 } else { // originalDuplicates < newDuplicates
                     sb.append("'" + "TP" + "', "); //true positive
                 }
-                sb.append("'" + profile1 + "', ");
-                sb.append("'" + profile2 + "'), ");
+                sb.append("'").append(profile1).append("', ");
+                sb.append("'").append(profile2).append("'), ");
             }
 
             for (IdDuplicates duplicatesPair : abstractDP.getFalseNegatives()) {
                 final EntityProfile profile1 = profilesD1.get(duplicatesPair.getEntityId1());
                 final EntityProfile profile2 = profilesD2.get(duplicatesPair.getEntityId2());
 
-                sb.append("('" + profile1.getEntityUrl() + "', ");
-                sb.append("'" + profile2.getEntityUrl() + "', ");
+                sb.append("('").append(profile1.getEntityUrl()).append("', ");
+                sb.append("'").append(profile2.getEntityUrl()).append("', ");
                 sb.append("'" + "FN" + "', "); // false negative
-                sb.append("'" + profile1 + "', ");
-                sb.append("'" + profile2 + "'), ");
+                sb.append("'").append(profile1).append("', ");
+                sb.append("'").append(profile2).append("'), ");
             }
         } else { // Dirty ER
             for (EquivalenceCluster cluster : entityClusters) {
@@ -1510,16 +1510,16 @@ public class ClustersPerformanceWriter {
                         abstractDP.isSuperfluous(duplicatesArray[i], duplicatesArray[j]);
                         final int newDuplicates = abstractDP.getNoOfDuplicates();
 
-                        sb.append("('" + profile1.getEntityUrl() + "', ");
-                        sb.append("'" + profile2.getEntityUrl() + "', ");
+                        sb.append("('").append(profile1.getEntityUrl()).append("', ");
+                        sb.append("'").append(profile2.getEntityUrl()).append("', ");
 
                         if (originalDuplicates == newDuplicates) {
                             sb.append("'" + "FP" + "', "); //false positive
                         } else { // originalDuplicates < newDuplicates
                             sb.append("'" + "TP" + "', "); //true positive
                         }
-                        sb.append("'" + profile1 + "', ");
-                        sb.append("'" + profile2 + "'), ");
+                        sb.append("'").append(profile1).append("', ");
+                        sb.append("'").append(profile2).append("'), ");
                     }
                 }
             }
@@ -1528,11 +1528,11 @@ public class ClustersPerformanceWriter {
                 final EntityProfile profile1 = profilesD1.get(duplicatesPair.getEntityId1());
                 final EntityProfile profile2 = profilesD1.get(duplicatesPair.getEntityId2());
 
-                sb.append("('" + profile1.getEntityUrl() + "', ");
-                sb.append("'" + profile2.getEntityUrl() + "', ");
+                sb.append("('").append(profile1.getEntityUrl()).append("', ");
+                sb.append("'").append(profile2.getEntityUrl()).append("', ");
                 sb.append("'" + "FN" + "', "); // false negative
-                sb.append("'" + profile1 + "', ");
-                sb.append("'" + profile2 + "'), ");
+                sb.append("'").append(profile1).append("', ");
+                sb.append("'").append(profile2).append("'), ");
             }
         }
 
@@ -1548,9 +1548,9 @@ public class ClustersPerformanceWriter {
             fMeasure = 0;
         }
 
-        sb.append("('" + precision + "', ");
-        sb.append("'" + recall + "', ");
-        sb.append("'" + fMeasure + "', ");
+        sb.append("('").append(precision).append("', ");
+        sb.append("'").append(recall).append("', ");
+        sb.append("'").append(fMeasure).append("', ");
         sb.append("'" + "NULL" + "', ");
         sb.append("'" + "NULL" + "'); ");
 

@@ -16,9 +16,9 @@
 package org.scify.jedai.datamodel;
 
 import com.esotericsoftware.minlog.Log;
+import org.scify.jedai.utilities.IConstants;
 
 import java.util.Iterator;
-import org.scify.jedai.utilities.IConstants;
 
 /**
  *
@@ -57,7 +57,7 @@ public class ComparisonIterator implements IConstants, Iterator<Comparison> {
             innerLoop = -1;
             innerLimit = -1;
             outerLoop = -1; // so that counting in function next() starts from 0
-            outerLimit = -1;;
+            outerLimit = -1;
         }
     }
 

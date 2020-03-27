@@ -17,8 +17,6 @@ import org.scify.jedai.datareader.groundtruthreader.IGroundTruthReader;
 import org.scify.jedai.datawriter.ClustersPerformanceWriter;
 import org.scify.jedai.entityclustering.IEntityClustering;
 import org.scify.jedai.entityclustering.UniqueMappingClustering;
-import org.scify.jedai.similarityjoins.tokenbased.FuzzySetJoin;
-import org.scify.jedai.similarityjoins.tokenbased.PPJoin;
 import org.scify.jedai.similarityjoins.tokenbased.PartEnumJoin;
 import org.scify.jedai.utilities.ClustersPerformance;
 import org.scify.jedai.utilities.datastructures.AbstractDuplicatePropagation;
@@ -42,9 +40,7 @@ public class TestSimJoins {
         System.out.println("\n\nInput Entity Profiles\t:\t" + profiles.size());
 
         final List<EntityProfile> newProfiles = new ArrayList<>();
-        for (int i = 0; i < profiles.size(); i++) {
-            final EntityProfile oldProfile = profiles.get(i);
-
+        for (final EntityProfile oldProfile : profiles) {
             String totalValue = getAggregateValues(oldProfile);
 
             EntityProfile newProfile = new EntityProfile(oldProfile.getEntityUrl());

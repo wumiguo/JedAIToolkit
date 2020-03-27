@@ -33,7 +33,6 @@ import org.scify.jedai.datamodel.joins.ListItemPPJ;
 
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -115,7 +114,7 @@ public class EdJoin extends AbstractCharacterBasedJoin {
             iterator.advance();
             packages.add(new IntPair(iterator.key(), iterator.value()));
         }
-        packages.sort((p1, p2) -> p1.getValue() - p2.getValue());
+        packages.sort(Comparator.comparingInt(IntPair::getValue));
 
         int noOfPackages = packages.size();
         for (int k = 0; k < noOfPackages; k++) {
@@ -185,7 +184,7 @@ public class EdJoin extends AbstractCharacterBasedJoin {
 
         attributeValues.clear();
         originalId = new int[noOfEntities];
-        idIdentifier.sort((s1, s2) -> s1.getKey().length() - s2.getKey().length());
+        idIdentifier.sort(Comparator.comparingInt(s -> s.getKey().length()));
         for (int i = 0; i < noOfEntities; i++) {
             final Pair<String, Integer> currentPair = idIdentifier.get(i);
             attributeValues.add(currentPair.getKey());
@@ -236,8 +235,7 @@ public class EdJoin extends AbstractCharacterBasedJoin {
             int prefix_length = get_prefix_length(tokens[k]);
 
             final TIntSet occurances = new TIntHashSet();
-            for (Iterator<Pair<Integer, Integer>> iter = tokens[k].iterator(); iter.hasNext();) {
-                Pair<Integer, Integer> token = iter.next();
+            for (Pair<Integer, Integer> token : tokens[k]) {
                 if (count++ >= prefix_length) {
                     break;
                 }
