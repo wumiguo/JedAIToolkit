@@ -20,15 +20,18 @@ import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.map.TIntIntMap;
 import gnu.trove.map.hash.TIntIntHashMap;
-import javafx.util.Pair;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.jena.atlas.json.JsonArray;
+import org.scify.jedai.configuration.gridsearch.DblGridSearchConfiguration;
+import org.scify.jedai.configuration.randomsearch.DblRandomSearchConfiguration;
 import org.scify.jedai.datamodel.Comparison;
 import org.scify.jedai.datamodel.EntityProfile;
 import org.scify.jedai.datamodel.joins.IntPair;
 
-import java.util.*;
-import org.apache.jena.atlas.json.JsonArray;
-import org.scify.jedai.configuration.gridsearch.DblGridSearchConfiguration;
-import org.scify.jedai.configuration.randomsearch.DblRandomSearchConfiguration;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
 
 /**
  *
@@ -68,13 +71,13 @@ public class Topk extends AbstractProgressiveJoin {
         final List<Pair<String, Integer>> idIdentifier = new ArrayList<>();
         for (EntityProfile profile : profilesD1) {
             final String nextValue = getAttributeValue(attributeNameD1, profile);
-            idIdentifier.add(new Pair<>(nextValue, counter++));
+            idIdentifier.add(new ImmutablePair<>(nextValue, counter++));
         }
 
         if (isCleanCleanER) {
             for (EntityProfile profile : profilesD2) {
                 final String nextValue = getAttributeValue(attributeNameD2, profile);
-                idIdentifier.add(new Pair<>(nextValue, counter++));
+                idIdentifier.add(new ImmutablePair<>(nextValue, counter++));
             }
         }
 

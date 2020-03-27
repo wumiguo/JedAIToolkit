@@ -21,15 +21,16 @@ import gnu.trove.map.TIntIntMap;
 import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.hash.TIntIntHashMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
-
-import java.util.ArrayList;
-import java.util.List;
-import javafx.util.Pair;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.scify.jedai.datamodel.Comparison;
 import org.scify.jedai.datamodel.EntityProfile;
 import org.scify.jedai.datamodel.SimilarityPairs;
 import org.scify.jedai.datamodel.joins.IntPair;
 import org.scify.jedai.datamodel.joins.ListItemPPJ;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -82,13 +83,13 @@ public class AllPairs extends AbstractTokenBasedJoin {
         final List<Pair<String, Integer>> idIdentifier = new ArrayList<>();
         for (EntityProfile profile : profilesD1) {
             final String nextValue = getAttributeValue(attributeNameD1, profile);
-            idIdentifier.add(new Pair<>(nextValue, counter++));
+            idIdentifier.add(new ImmutablePair<>(nextValue, counter++));
         }
 
         if (isCleanCleanER) {
             for (EntityProfile profile : profilesD2) {
                 final String nextValue = getAttributeValue(attributeNameD2, profile);
-                idIdentifier.add(new Pair<>(nextValue, counter++));
+                idIdentifier.add(new ImmutablePair<>(nextValue, counter++));
 
             }
         }

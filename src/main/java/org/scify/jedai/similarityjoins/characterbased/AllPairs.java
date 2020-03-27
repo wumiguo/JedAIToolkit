@@ -25,17 +25,18 @@ import gnu.trove.map.hash.TIntIntHashMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
-import java.util.ArrayList;
-import java.util.List;
-import javafx.util.Pair;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.scify.jedai.configuration.gridsearch.IntGridSearchConfiguration;
 import org.scify.jedai.configuration.randomsearch.IntRandomSearchConfiguration;
 import org.scify.jedai.datamodel.Comparison;
-
 import org.scify.jedai.datamodel.EntityProfile;
 import org.scify.jedai.datamodel.SimilarityPairs;
 import org.scify.jedai.datamodel.joins.IntListPair;
 import org.scify.jedai.datamodel.joins.IntPair;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -198,13 +199,13 @@ public class AllPairs extends AbstractCharacterBasedJoin {
         final List<Pair<String, Integer>> idIdentifier = new ArrayList<>();
         for (EntityProfile profile : profilesD1) {
             final String nextValue = getAttributeValue(attributeNameD1, profile);
-            idIdentifier.add(new Pair<>(nextValue, counter++));
+            idIdentifier.add(new ImmutablePair<>(nextValue, counter++));
         }
 
         if (isCleanCleanER) {
             for (EntityProfile profile : profilesD2) {
                 final String nextValue = getAttributeValue(attributeNameD2, profile);
-                idIdentifier.add(new Pair<>(nextValue, counter++));
+                idIdentifier.add(new ImmutablePair<>(nextValue, counter++));
             }
         }
 

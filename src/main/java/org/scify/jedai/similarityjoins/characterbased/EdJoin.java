@@ -23,7 +23,8 @@ import gnu.trove.map.hash.TIntIntHashMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
-import javafx.util.Pair;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.scify.jedai.datamodel.Comparison;
 import org.scify.jedai.datamodel.EntityProfile;
 import org.scify.jedai.datamodel.SimilarityPairs;
@@ -103,7 +104,7 @@ public class EdJoin extends AbstractCharacterBasedJoin {
             final String currentValue = attributeValues.get(k);
             for (int sp = 0; sp < currentValue.length() - q + 1; sp++) {
                 int token = djbHash(currentValue.substring(sp), q);
-                tokens[k].add(new Pair<>(token, sp));
+                tokens[k].add(new ImmutablePair<>(token, sp));
                 int cur = freqMap.get(token);
                 freqMap.put(token, cur + 1);
             }
@@ -129,7 +130,7 @@ public class EdJoin extends AbstractCharacterBasedJoin {
             final List<Pair<Integer, Integer>> token = tokens[k];
             for (int t = 0; t < token.size(); t++) {
                 int oldsecond = token.get(t).getValue();
-                token.set(t, new Pair(freqMap.get(token.get(t).getKey()), oldsecond));
+                token.set(t, new ImmutablePair<>(freqMap.get(token.get(t).getKey()), oldsecond));
             }
             token.sort(Comparator.comparingInt(Pair::getKey));
         }
@@ -172,13 +173,13 @@ public class EdJoin extends AbstractCharacterBasedJoin {
         final List<Pair<String, Integer>> idIdentifier = new ArrayList<>();
         for (EntityProfile profile : profilesD1) {
             final String nextValue = getAttributeValue(attributeNameD1, profile);
-            idIdentifier.add(new Pair<>(nextValue, counter++));
+            idIdentifier.add(new ImmutablePair<>(nextValue, counter++));
         }
 
         if (isCleanCleanER) {
             for (EntityProfile profile : profilesD2) {
                 final String nextValue = getAttributeValue(attributeNameD2, profile);
-                idIdentifier.add(new Pair<>(nextValue, counter++));
+                idIdentifier.add(new ImmutablePair<>(nextValue, counter++));
             }
         }
 
