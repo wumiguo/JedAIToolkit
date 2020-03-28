@@ -15,27 +15,15 @@
  */
 package org.scify.jedai.datareader.entityreader;
 
-import org.scify.jedai.datamodel.EntityProfile;
-
 import com.esotericsoftware.minlog.Log;
-
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.apache.jena.atlas.json.JsonArray;
 import org.apache.jena.atlas.json.JsonObject;
-import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.Property;
-import org.apache.jena.rdf.model.RDFNode;
-import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.rdf.model.Statement;
-import org.apache.jena.rdf.model.StmtIterator;
+import org.apache.jena.rdf.model.*;
 import org.apache.jena.riot.RDFDataMgr;
+import org.scify.jedai.datamodel.EntityProfile;
+
+import java.io.IOException;
+import java.util.*;
 
 /**
  *
@@ -82,9 +70,7 @@ public class EntityRDFReader extends AbstractEntityReader {
     public String getMethodConfiguration() {
         final StringBuilder sb = new StringBuilder();
         sb.append("{");
-        attributesToExclude.forEach((attributeName) -> {
-            sb.append(attributeName).append(",");
-        });
+        attributesToExclude.forEach((attributeName) -> sb.append(attributeName).append(","));
         sb.append("}");
     
         return getParameterName(0) + "=" + inputFilePath + "\t"

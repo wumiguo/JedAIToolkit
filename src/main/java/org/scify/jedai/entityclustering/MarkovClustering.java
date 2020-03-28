@@ -15,18 +15,17 @@
  */
 package org.scify.jedai.entityclustering;
 
-import org.scify.jedai.datamodel.Comparison;
-import org.scify.jedai.datamodel.EquivalenceCluster;
-import org.scify.jedai.datamodel.SimilarityPairs;
-
-import java.util.Iterator;
-
 import org.apache.jena.atlas.json.JsonArray;
 import org.apache.jena.atlas.json.JsonObject;
 import org.scify.jedai.configuration.gridsearch.DblGridSearchConfiguration;
 import org.scify.jedai.configuration.gridsearch.IntGridSearchConfiguration;
 import org.scify.jedai.configuration.randomsearch.DblRandomSearchConfiguration;
 import org.scify.jedai.configuration.randomsearch.IntRandomSearchConfiguration;
+import org.scify.jedai.datamodel.Comparison;
+import org.scify.jedai.datamodel.EquivalenceCluster;
+import org.scify.jedai.datamodel.SimilarityPairs;
+
+import java.util.Iterator;
 
 /**
  *
@@ -311,8 +310,8 @@ public class MarkovClustering extends AbstractEntityClustering {
         int n1 = a[0].length;
         for (int j = 0; j < n1; j++) {
             double sumCol = 0.0;
-            for (int i = 0; i < m1; i++) {
-                sumCol += a[i][j];
+            for (double[] doubles : a) {
+                sumCol += doubles[j];
             }
 
             for (int i = 0; i < m1; i++) {

@@ -21,7 +21,7 @@ package org.scify.jedai.configuration.gridsearch;
  */
 public interface IGridSearchConfiguration {
     
-    public Object getNumberedValue(int iterationNumber);
+    Object getNumberedValue(int iterationNumber);
     
-    public int getNumberOfConfigurations();
+    int getNumberOfConfigurations();
 }

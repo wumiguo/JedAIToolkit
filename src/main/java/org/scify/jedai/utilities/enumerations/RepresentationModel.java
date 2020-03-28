@@ -136,7 +136,6 @@ public enum RepresentationModel {
                 PretrainedVectors.resetGlobalValues(datasetId);
                 break;
             default:
-                ;
         }
     }
 }

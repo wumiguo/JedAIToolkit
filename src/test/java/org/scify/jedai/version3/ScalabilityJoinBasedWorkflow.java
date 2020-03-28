@@ -15,15 +15,8 @@
  */
 package org.scify.jedai.version3;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
 import org.apache.log4j.BasicConfigurator;
-import org.scify.jedai.datamodel.Attribute;
-import org.scify.jedai.datamodel.EntityProfile;
-import org.scify.jedai.datamodel.EquivalenceCluster;
-import org.scify.jedai.datamodel.IdDuplicates;
-import org.scify.jedai.datamodel.SimilarityPairs;
+import org.scify.jedai.datamodel.*;
 import org.scify.jedai.datareader.entityreader.EntitySerializationReader;
 import org.scify.jedai.datareader.entityreader.IEntityReader;
 import org.scify.jedai.datareader.groundtruthreader.GtSerializationReader;
@@ -32,6 +25,10 @@ import org.scify.jedai.entityclustering.ConnectedComponentsClustering;
 import org.scify.jedai.similarityjoins.tokenbased.PPJoin;
 import org.scify.jedai.utilities.ClustersPerformance;
 import org.scify.jedai.utilities.datastructures.UnilateralDuplicatePropagation;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 /**
  *
@@ -45,8 +42,7 @@ public class ScalabilityJoinBasedWorkflow {
         System.out.println("\n\nInput Entity Profiles\t:\t" + profiles.size());
 
         final List<EntityProfile> flatProfiles = new ArrayList<>();
-        for (int i = 0; i < profiles.size(); i++) {
-            final EntityProfile profile1 = profiles.get(i);
+        for (final EntityProfile profile1 : profiles) {
             String totalValue = getAggregateValues(profile1);
 
             final EntityProfile newProfile = new EntityProfile(profile1.getEntityUrl());

@@ -17,6 +17,7 @@
 package org.scify.jedai.datamodel;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
  *
@@ -44,10 +45,10 @@ public class Attribute implements Serializable {
             return false;
         }
         final Attribute other = (Attribute) obj;
-        if ((this.name == null) ? (other.name != null) : !this.name.equals(other.name)) {
+        if (!Objects.equals(this.name, other.name)) {
             return false;
         }
-        if ((this.value == null) ? (other.value != null) : !this.value.equals(other.value)) {
+        if (!Objects.equals(this.value, other.value)) {
             return false;
         }
         return true;

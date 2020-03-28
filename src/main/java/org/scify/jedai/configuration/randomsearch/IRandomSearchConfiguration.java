@@ -21,8 +21,8 @@ package org.scify.jedai.configuration.randomsearch;
  */
 public interface IRandomSearchConfiguration {
     
-    public Object getNextRandomValue();
+    Object getNextRandomValue();
     
-    public Object getNumberedRandom(int iterationNumber);
+    Object getNumberedRandom(int iterationNumber);
     
 }

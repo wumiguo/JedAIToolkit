@@ -16,14 +16,14 @@
 package org.scify.jedai.prioritization;
 
 import gnu.trove.iterator.TIntIterator;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import org.apache.jena.atlas.json.JsonArray;
 import org.apache.jena.atlas.json.JsonObject;
 import org.scify.jedai.datamodel.Comparison;
 import org.scify.jedai.utilities.comparators.DecComparisonWeightComparator;
 import org.scify.jedai.utilities.enumerations.ProgressiveWeightingScheme;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -73,7 +73,7 @@ public class LocalProgressiveSortedNeighborhood extends AbstractSimilarityBasedP
             }
         }
 
-        Collections.sort(windowComparisons, new DecComparisonWeightComparator());
+        windowComparisons.sort(new DecComparisonWeightComparator());
         compIterator = windowComparisons.iterator();
     }
 

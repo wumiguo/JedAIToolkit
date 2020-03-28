@@ -16,11 +16,11 @@
 package org.scify.jedai.prioritization.utilities;
 
 
+import org.scify.jedai.blockbuilding.SortedNeighborhoodBlocking;
+
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-
-import org.scify.jedai.blockbuilding.SortedNeighborhoodBlocking;
 
 /**
  *
@@ -41,7 +41,7 @@ public class SortedEntities extends SortedNeighborhoodBlocking {
     @Override
     protected void parseIndex() {
         final Set<String> blockingKeysSet = invertedIndexD1.keySet();
-        final String[] sortedTerms = blockingKeysSet.toArray(new String[blockingKeysSet.size()]);
+        final String[] sortedTerms = blockingKeysSet.toArray(new String[0]);
         Arrays.sort(sortedTerms);
 
         sortedEntityIds = getSortedEntities(sortedTerms);
@@ -53,7 +53,7 @@ public class SortedEntities extends SortedNeighborhoodBlocking {
         blockingKeysSet.addAll(invertedIndexD1.keySet());
         blockingKeysSet.addAll(invertedIndexD2.keySet());
         
-        final String[] sortedTerms = blockingKeysSet.toArray(new String[blockingKeysSet.size()]);
+        final String[] sortedTerms = blockingKeysSet.toArray(new String[0]);
         Arrays.sort(sortedTerms);
 
         sortedEntityIds = getMixedSortedEntities(sortedTerms);

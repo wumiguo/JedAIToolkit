@@ -17,7 +17,6 @@
 package org.scify.jedai.similarityjoins.fuzzysets;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
@@ -30,7 +29,7 @@ public class InputReader {
     public Map<String, List<Set<String>>> importCollectionFromFile(String file, int setCol, int tokenCol,
             String columnDelimiter, String tokenDelimiter, int header, int maxLines) {
 
-        Map<String, List<Set<String>>> collection = new LinkedHashMap<String, List<Set<String>>>();
+        Map<String, List<Set<String>>> collection = new LinkedHashMap<>();
 
         BufferedReader br;
         int lines = 0;
@@ -53,11 +52,11 @@ public class InputReader {
                     columns = line.split(columnDelimiter);
 
                     set = columns[setCol];
-                    tokens = new HashSet<String>(Arrays.asList(columns[tokenCol].split(tokenDelimiter)));
+                    tokens = new HashSet<>(Arrays.asList(columns[tokenCol].split(tokenDelimiter)));
 
                     elements = collection.get(set);
                     if (elements == null) {
-                        elements = new ArrayList<Set<String>>();
+                        elements = new ArrayList<>();
                     }
                     elements.add(tokens);
                     collection.put(set, elements);
@@ -71,8 +70,6 @@ public class InputReader {
             }
 
             br.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }

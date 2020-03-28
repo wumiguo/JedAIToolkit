@@ -15,24 +15,22 @@
  */
 package org.scify.jedai.blockprocessing.blockcleaning;
 
-import org.scify.jedai.blockprocessing.AbstractBlockProcessing;
-import org.scify.jedai.datamodel.AbstractBlock;
-import org.scify.jedai.datamodel.BilateralBlock;
-import org.scify.jedai.datamodel.UnilateralBlock;
-import org.scify.jedai.utilities.comparators.IncBlockCardinalityComparator;
 import com.esotericsoftware.minlog.Log;
 import gnu.trove.iterator.TIntIterator;
 import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TIntArrayList;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import org.apache.jena.atlas.json.JsonArray;
 import org.apache.jena.atlas.json.JsonObject;
+import org.scify.jedai.blockprocessing.AbstractBlockProcessing;
 import org.scify.jedai.configuration.gridsearch.DblGridSearchConfiguration;
 import org.scify.jedai.configuration.randomsearch.DblRandomSearchConfiguration;
+import org.scify.jedai.datamodel.AbstractBlock;
+import org.scify.jedai.datamodel.BilateralBlock;
+import org.scify.jedai.datamodel.UnilateralBlock;
+import org.scify.jedai.utilities.comparators.IncBlockCardinalityComparator;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -299,6 +297,6 @@ public class BlockFiltering extends AbstractBlockProcessing {
     }
 
     protected void sortBlocks(List<AbstractBlock> blocks) {
-        Collections.sort(blocks, new IncBlockCardinalityComparator());
+        blocks.sort(new IncBlockCardinalityComparator());
     }
 }

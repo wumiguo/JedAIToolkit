@@ -92,8 +92,8 @@ public class FuzzySetJoin extends AbstractTokenBasedJoin {
             }
 
             String[] split = s.split(" ");
-            for (int sp = 0; sp < split.length; sp++) {
-                records1[i].add(split[sp]);
+            for (String value : split) {
+                records1[i].add(value);
             }
             Set<String> asSet = new HashSet<>(records1[i]);
             List<Set<String>> asList = new ArrayList<>();

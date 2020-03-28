@@ -26,5 +26,5 @@ import java.util.List;
 
 public interface IEntityReader {
     
-    public List<EntityProfile> getEntityProfiles();
+    List<EntityProfile> getEntityProfiles();
 }

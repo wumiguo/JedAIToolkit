@@ -28,8 +28,8 @@ import org.scify.jedai.utilities.IDocumentation;
 
 public interface IEntityClustering extends IConfiguration, IDocumentation {
  
-    public EquivalenceCluster[] getDuplicates(SimilarityPairs simPairs);
+    EquivalenceCluster[] getDuplicates(SimilarityPairs simPairs);
     
-    public void setSimilarityThreshold(double th);
+    void setSimilarityThreshold(double th);
    
 }

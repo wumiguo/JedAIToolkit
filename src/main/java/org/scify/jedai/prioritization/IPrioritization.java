@@ -15,8 +15,6 @@
  */
 package org.scify.jedai.prioritization;
 
-import java.util.Iterator;
-import java.util.List;
 import org.scify.jedai.configuration.IConfiguration;
 import org.scify.jedai.datamodel.AbstractBlock;
 import org.scify.jedai.datamodel.Comparison;
@@ -24,15 +22,18 @@ import org.scify.jedai.datamodel.EntityProfile;
 import org.scify.jedai.utilities.IConstants;
 import org.scify.jedai.utilities.IDocumentation;
 
+import java.util.Iterator;
+import java.util.List;
+
 /**
  *
  * @author gap2
  */
 public interface IPrioritization extends IConfiguration, IConstants, IDocumentation, Iterator<Comparison> {
     
-    public void developBlockBasedSchedule(List<AbstractBlock> blocks);
+    void developBlockBasedSchedule(List<AbstractBlock> blocks);
     
-    public void developEntityBasedSchedule(List<EntityProfile> entitiesD1);
+    void developEntityBasedSchedule(List<EntityProfile> entitiesD1);
     
-    public void developEntityBasedSchedule(List<EntityProfile> entitiesD1, List<EntityProfile> entitiesD2);
+    void developEntityBasedSchedule(List<EntityProfile> entitiesD1, List<EntityProfile> entitiesD2);
 }

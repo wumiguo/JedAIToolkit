@@ -15,21 +15,15 @@
  */
 package org.scify.jedai.entitymatching;
 
-import org.scify.jedai.datamodel.AbstractBlock;
-import org.scify.jedai.datamodel.Attribute;
-import org.scify.jedai.datamodel.Comparison;
-import org.scify.jedai.datamodel.EntityProfile;
-import org.scify.jedai.datamodel.SimilarityPairs;
+import com.esotericsoftware.minlog.Log;
+import org.apache.jena.atlas.json.JsonArray;
+import org.apache.jena.atlas.json.JsonObject;
+import org.scify.jedai.datamodel.*;
 import org.scify.jedai.textmodels.ITextModel;
 import org.scify.jedai.utilities.enumerations.RepresentationModel;
 import org.scify.jedai.utilities.enumerations.SimilarityMetric;
 
-import com.esotericsoftware.minlog.Log;
-
 import java.util.List;
-
-import org.apache.jena.atlas.json.JsonArray;
-import org.apache.jena.atlas.json.JsonObject;
 
 /**
  *
@@ -88,7 +82,7 @@ public class ProfileMatcher extends AbstractEntityMatching {
     @Override
     public SimilarityPairs executeComparisons(List<AbstractBlock> blocks) {
         final SimilarityPairs simPairs = new SimilarityPairs(profilesD2 != null, blocks);
-        blocks.stream().map((block) -> block.getComparisonIterator()).forEachOrdered((iterator) -> {
+        blocks.stream().map(AbstractBlock::getComparisonIterator).forEachOrdered((iterator) -> {
             while (iterator.hasNext()) {
                 final Comparison currentComparison = iterator.next();
                 double similarity = executeComparison(currentComparison);

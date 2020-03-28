@@ -30,6 +30,7 @@ import org.scify.jedai.datamodel.joins.IntPair;
 import org.scify.jedai.datamodel.joins.ListItemPPJ;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -94,7 +95,7 @@ public class AllPairs extends AbstractTokenBasedJoin {
             }
         }
 
-        idIdentifier.sort((s1, s2) -> s1.getKey().split(" ").length - s2.getKey().split(" ").length);
+        idIdentifier.sort(Comparator.comparingInt(s -> s.getKey().split(" ").length));
 
         attributeValues.clear();
         originalId = new int[noOfEntities];
@@ -114,8 +115,8 @@ public class AllPairs extends AbstractTokenBasedJoin {
             }
 
             String[] split = s.split(" ");
-            for (int sp = 0; sp < split.length; sp++) {
-                int token = djbHash(split[sp]);
+            for (String value : split) {
+                int token = djbHash(value);
                 records[sIndex].add(token);
             }
             records[sIndex].sort();

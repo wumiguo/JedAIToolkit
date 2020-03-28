@@ -25,6 +25,7 @@ import org.scify.jedai.datamodel.SimilarityPairs;
 import org.scify.jedai.datamodel.joins.Category;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -35,7 +36,7 @@ public class PartEnumJoin extends AbstractTokenBasedJoin {
 
     private int MAX_LEN = 3300;
     private int MAX_CATEGORY = 100;
-    private Category helper[];
+    private Category[] helper;
     private long cand_num;
     private long res_num;
     private List<Comparison> executedComparisons;
@@ -108,7 +109,7 @@ public class PartEnumJoin extends AbstractTokenBasedJoin {
             }
         }
 
-        idIdentifier.sort((s1, s2) -> s1.getKey().split(" ").length - s2.getKey().split(" ").length);
+        idIdentifier.sort(Comparator.comparingInt(s -> s.getKey().split(" ").length));
 
         attributeValues.clear();
         originalId = new int[noOfEntities];
@@ -128,8 +129,8 @@ public class PartEnumJoin extends AbstractTokenBasedJoin {
             }
 
             String[] split = s.split(" ");
-            for (int sp = 0; sp < split.length; sp++) {
-                int token = djbHash(split[sp]);
+            for (String value : split) {
+                int token = djbHash(value);
                 records[sIndex].add(token);
             }
             records[sIndex].sort();

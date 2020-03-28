@@ -30,6 +30,7 @@ import org.scify.jedai.datamodel.SimilarityPairs;
 import org.scify.jedai.datamodel.joins.PIndex;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -104,7 +105,7 @@ public class PassJoin extends AbstractCharacterBasedJoin {
         matrixDimension2 = 2 * threshold + 1;
 
         dict.clear();
-        idIdentifier.sort((s1, s2) -> s1.getKey().length() - s2.getKey().length());
+        idIdentifier.sort(Comparator.comparingInt(s -> s.getKey().length()));
         originalId = new int[N];
         for (int i = 0; i < N; i++) {
             final Pair<String, Integer> currentPair = idIdentifier.get(i);

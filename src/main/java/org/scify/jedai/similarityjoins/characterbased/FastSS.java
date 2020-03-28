@@ -90,11 +90,7 @@ public class FastSS extends AbstractCharacterBasedJoin {
 
     private List<Comparison> insertIndex(String attributeValue) {
         final TIntList delPos1 = new TIntArrayList(delPos);
-        List<IntListPair> list = stringHashIndex.get(attributeValue);
-        if (list == null) {
-            list = new ArrayList<>();
-            stringHashIndex.put(attributeValue, list);
-        }
+        List<IntListPair> list = stringHashIndex.computeIfAbsent(attributeValue, k -> new ArrayList<>());
 
         final List<Comparison> executedComparisons = new ArrayList<>();
         for (IntListPair p : list) {

@@ -17,7 +17,6 @@ package org.scify.jedai.prioritization;
 
 import com.esotericsoftware.minlog.Log;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import org.scify.jedai.prioritization.utilities.ProgressiveCEP;
 import java.util.List;
@@ -101,7 +100,7 @@ public class ProgressiveGlobalTopComparisons extends AbstractHashBasedPrioritiza
             }
         }
         final List<Comparison> sortedTopComparisons = new ArrayList<>(topComparisons);
-        Collections.sort(sortedTopComparisons, new DecComparisonWeightComparator());
+        sortedTopComparisons.sort(new DecComparisonWeightComparator());
         return sortedTopComparisons.iterator();
     }
 }

@@ -15,13 +15,14 @@
  */
 package org.scify.jedai.schemaclustering;
 
-import java.util.List;
 import org.apache.log4j.BasicConfigurator;
 import org.scify.jedai.datamodel.AttributeClusters;
 import org.scify.jedai.datamodel.EntityProfile;
 import org.scify.jedai.datareader.entityreader.EntitySerializationReader;
 import org.scify.jedai.utilities.enumerations.RepresentationModel;
 import org.scify.jedai.utilities.enumerations.SimilarityMetric;
+
+import java.util.List;
 
 /**
  *
@@ -35,9 +36,9 @@ public class TestAllMethodsDirtyER {
         String mainDir = "D:\\Data\\JedAIdata\\datasets\\dirtyErDatasets\\";
         final String[] datasets = {"census", "cddb", "cora"};
 
-        for (int i = 0; i < datasets.length; i++) {
-            System.out.println("\n\n\n\n\nCurrent dataset\t:\t" + datasets[i]);
-            final EntitySerializationReader inReaderD1 = new EntitySerializationReader(mainDir + datasets[i] + "Profiles");
+        for (String dataset : datasets) {
+            System.out.println("\n\n\n\n\nCurrent dataset\t:\t" + dataset);
+            final EntitySerializationReader inReaderD1 = new EntitySerializationReader(mainDir + dataset + "Profiles");
             final List<EntityProfile> profiles = inReaderD1.getEntityProfiles();
             System.out.println("Profiles D1\t:\t" + profiles.size());
 

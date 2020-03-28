@@ -16,19 +16,17 @@
 package org.scify.jedai.prioritization.utilities;
 
 import com.esotericsoftware.minlog.Log;
+import gnu.trove.iterator.TIntIterator;
+import org.scify.jedai.blockprocessing.comparisoncleaning.CardinalityNodePruning;
 import org.scify.jedai.datamodel.AbstractBlock;
 import org.scify.jedai.datamodel.Comparison;
+import org.scify.jedai.utilities.comparators.DecComparisonWeightComparator;
 import org.scify.jedai.utilities.enumerations.WeightingScheme;
 
-import gnu.trove.iterator.TIntIterator;
-
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import org.scify.jedai.blockprocessing.comparisoncleaning.CardinalityNodePruning;
-import org.scify.jedai.utilities.comparators.DecComparisonWeightComparator;
 
 /**
  *
@@ -53,7 +51,7 @@ public class ProgressiveCNP extends CardinalityNodePruning {
     
     public List<Comparison> getTopComparisons() {
         final List<Comparison> sortedTopComparisons = new ArrayList<>(topComparisons);
-        Collections.sort(sortedTopComparisons, new DecComparisonWeightComparator());
+        sortedTopComparisons.sort(new DecComparisonWeightComparator());
         return sortedTopComparisons;
     }
 

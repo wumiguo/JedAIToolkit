@@ -35,7 +35,7 @@ public class IndexConstructor {
         int[] tuple;
 
         for (int i = 0; i < tmpIdx.length; i++) {
-            tmpIdx[i] = new ArrayList<int[]>();
+            tmpIdx[i] = new ArrayList<>();
         }
 
         for (int i = 0; i < collection.length; i++) {
@@ -64,7 +64,7 @@ public class IndexConstructor {
         @SuppressWarnings("unchecked")
         TIntObjectMap<TIntList>[] idx = new TIntObjectHashMap[numTokens];
         for (int i = 0; i < idx.length; i++) {
-            idx[i] = new TIntObjectHashMap<TIntList>();
+            idx[i] = new TIntObjectHashMap<>();
         }
 
         // populate the index

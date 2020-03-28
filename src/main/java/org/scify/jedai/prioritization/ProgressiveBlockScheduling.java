@@ -16,18 +16,17 @@
 package org.scify.jedai.prioritization;
 
 import com.esotericsoftware.minlog.Log;
-import org.scify.jedai.prioritization.utilities.BlockcentricEntityIndex;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import org.scify.jedai.datamodel.AbstractBlock;
 import org.scify.jedai.datamodel.Comparison;
 import org.scify.jedai.datamodel.ComparisonIterator;
 import org.scify.jedai.datamodel.DecomposedBlock;
+import org.scify.jedai.prioritization.utilities.BlockcentricEntityIndex;
 import org.scify.jedai.utilities.comparators.DecComparisonWeightComparator;
 import org.scify.jedai.utilities.comparators.IncBlockCardinalityComparator;
 import org.scify.jedai.utilities.enumerations.WeightingScheme;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -54,8 +53,8 @@ public class ProgressiveBlockScheduling extends AbstractHashBasedPrioritization 
             System.exit(-1);
         }
 
-        Collections.sort(blocks, new IncBlockCardinalityComparator());
-        blocksArray = blocks.toArray(new AbstractBlock[blocks.size()]);
+        blocks.sort(new IncBlockCardinalityComparator());
+        blocksArray = blocks.toArray(new AbstractBlock[0]);
         isDecomposedBlock = blocksArray[0] instanceof DecomposedBlock;
         if (!isDecomposedBlock) {
             entityIndex = new BlockcentricEntityIndex(blocks, wScheme);
@@ -80,7 +79,7 @@ public class ProgressiveBlockScheduling extends AbstractHashBasedPrioritization 
             }
             topComparisons.add(comparison);
         }
-        Collections.sort(topComparisons, new DecComparisonWeightComparator());
+        topComparisons.sort(new DecComparisonWeightComparator());
         compIterator = topComparisons.iterator();
     }
 

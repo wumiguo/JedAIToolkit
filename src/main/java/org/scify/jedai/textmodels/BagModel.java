@@ -71,7 +71,7 @@ public abstract class BagModel extends AbstractModel {
         }
         
         if (normalized) {
-            double maxEntropy = Math.log10(noOfTotalTerms) / Math.log10(2.0d);;
+            double maxEntropy = Math.log10(noOfTotalTerms) / Math.log10(2.0d);
             return entropy / maxEntropy;
         } 
             

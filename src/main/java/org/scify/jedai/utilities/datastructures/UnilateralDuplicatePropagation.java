@@ -53,9 +53,9 @@ public class UnilateralDuplicatePropagation extends AbstractDuplicatePropagation
         }
 
         final List<EquivalenceCluster> clustersList = new ArrayList<>();
-        for (int i = 0; i < clustersArray.length; i++) {
-            if (clustersArray[i] != null) {
-                clustersList.add(clustersArray[i]);
+        for (EquivalenceCluster equivalenceCluster : clustersArray) {
+            if (equivalenceCluster != null) {
+                clustersList.add(equivalenceCluster);
             }
         }
         return clustersList;

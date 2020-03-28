@@ -34,7 +34,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
-import org.scify.jedai.similarityjoins.tokenbased.PPJoin;
 
 /**
  *
@@ -48,9 +47,7 @@ public class TestSimJoinsWithDirtyERdatasets {
         System.out.println("\n\nInput Entity Profiles\t:\t" + profiles.size());
 
         final List<EntityProfile> newProfiles = new ArrayList<>();
-        for (int i = 0; i < profiles.size(); i++) {
-            final EntityProfile oldProfile = profiles.get(i);
-
+        for (final EntityProfile oldProfile : profiles) {
             String totalValue = getAggregateValues(oldProfile);
 
             EntityProfile newProfile = new EntityProfile(oldProfile.getEntityUrl());
@@ -65,9 +62,7 @@ public class TestSimJoinsWithDirtyERdatasets {
         System.out.println("\n\nInput Entity Profiles\t:\t" + profiles.size());
 
         final List<EntityProfile> newProfiles = new ArrayList<>();
-        for (int i = 0; i < profiles.size(); i++) {
-            final EntityProfile oldProfile = profiles.get(i);
-
+        for (final EntityProfile oldProfile : profiles) {
             String totalValue = getAggregateValues(oldProfile);
 
             EntityProfile newProfile = new EntityProfile(oldProfile.getEntityUrl());

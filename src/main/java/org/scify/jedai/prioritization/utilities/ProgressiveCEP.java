@@ -16,14 +16,14 @@
 package org.scify.jedai.prioritization.utilities;
 
 import com.esotericsoftware.minlog.Log;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import org.scify.jedai.blockprocessing.comparisoncleaning.CardinalityEdgePruning;
 import org.scify.jedai.datamodel.AbstractBlock;
 import org.scify.jedai.datamodel.Comparison;
 import org.scify.jedai.utilities.comparators.DecComparisonWeightComparator;
 import org.scify.jedai.utilities.enumerations.WeightingScheme;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -53,7 +53,7 @@ public class ProgressiveCEP extends CardinalityEdgePruning {
     protected List<AbstractBlock> pruneEdges() {
         setTopKEdges();
         topComparisons = new ArrayList<>(topKEdges);
-        Collections.sort(topComparisons, new DecComparisonWeightComparator());
+        topComparisons.sort(new DecComparisonWeightComparator());
         return null;
     }
 
