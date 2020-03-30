@@ -1,17 +1,17 @@
 /*
-* Copyright [2016-2020] [George Papadakis (gpapadis@yahoo.gr)]
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-*    http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
+ * Copyright [2016-2020] [George Papadakis (gpapadis@yahoo.gr)]
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.scify.jedai.similarityjoins.characterbased;
 
@@ -110,7 +110,7 @@ public class EdJoin extends AbstractCharacterBasedJoin {
         }
 
         final List<IntPair> packages = new ArrayList<>();
-        for (TIntIntIterator iterator = freqMap.iterator(); iterator.hasNext();) {
+        for (TIntIntIterator iterator = freqMap.iterator(); iterator.hasNext(); ) {
             iterator.advance();
             packages.add(new IntPair(iterator.key(), iterator.value()));
         }
@@ -224,7 +224,7 @@ public class EdJoin extends AbstractCharacterBasedJoin {
                 int distance = getEditDistance(attributeValues.get(x), attributeValues.get(y), threshold);
                 if (distance <= threshold) {
                     final Comparison currentComp = getComparison(originalId[x], originalId[y]);
-                    currentComp.setUtilityMeasure(1 - distance / threshold);
+                    currentComp.setUtilityMeasure(1 - (double) distance / threshold);
                     executedComparisons.add(currentComp);
                 }
             }
@@ -267,7 +267,7 @@ public class EdJoin extends AbstractCharacterBasedJoin {
                 index.put(token.getValue(), item);
             }
 
-            for (TIntIterator setIterator = occurances.iterator(); setIterator.hasNext();) {
+            for (TIntIterator setIterator = occurances.iterator(); setIterator.hasNext(); ) {
                 int cand = setIterator.next();
                 if (isCleanCleanER) {
                     if (originalId[k] < datasetDelimiter && originalId[cand] < datasetDelimiter) { // both belong to dataset 1
