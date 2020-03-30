@@ -15,25 +15,17 @@
  */
 package org.scify.jedai.datareader.entityreader;
 
+import com.esotericsoftware.minlog.Log;
+import org.apache.jena.atlas.json.JsonArray;
+import org.apache.jena.atlas.json.JsonObject;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
-
 import org.scify.jedai.datamodel.EntityProfile;
 
-import com.esotericsoftware.minlog.Log;
-
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.apache.jena.atlas.json.JsonArray;
-import org.apache.jena.atlas.json.JsonObject;
+import java.util.*;
 
 /**
  *
@@ -76,9 +68,7 @@ public class EntityXMLreader extends AbstractEntityReader {
     public String getMethodConfiguration() {
         final StringBuilder sb = new StringBuilder();
         sb.append("{");
-        attributesToExclude.forEach((attributeName) -> {
-            sb.append(attributeName).append(",");
-        });
+        attributesToExclude.forEach((attributeName) -> sb.append(attributeName).append(","));
         sb.append("}");
 
         return getParameterName(0) + "=" + inputFilePath + "\t"
@@ -156,9 +146,7 @@ public class EntityXMLreader extends AbstractEntityReader {
         final Element classElement = document.getRootElement();
 
         final List<Element> dblpRoot = classElement.getChildren();
-        for (int profCounter = 0; profCounter < dblpRoot.size(); profCounter++) {
-            final Element profile = dblpRoot.get(profCounter);
-            
+        for (final Element profile : dblpRoot) {
             final String profName = profile.getName();
             EntityProfile entityProfile = urlToEntity.get(profName);
             if (entityProfile == null) {
@@ -166,10 +154,9 @@ public class EntityXMLreader extends AbstractEntityReader {
                 urlToEntity.put(profName, entityProfile);
                 entityProfiles.add(entityProfile);
             }
-            
+
             final List<Element> profAttributes = profile.getChildren();
-            for (int attCounter = 0; attCounter < profAttributes.size(); attCounter++) {
-                final Element attr = profAttributes.get(attCounter);
+            for (final Element attr : profAttributes) {
                 String attName = attr.getName();
                 if (attributesToExclude.contains(attName)) {
                     continue;

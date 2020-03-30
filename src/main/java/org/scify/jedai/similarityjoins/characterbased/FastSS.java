@@ -1,17 +1,17 @@
 /*
-* Copyright [2016-2020] [George Papadakis (gpapadis@yahoo.gr)]
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-*    http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
+ * Copyright [2016-2020] [George Papadakis (gpapadis@yahoo.gr)]
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.scify.jedai.similarityjoins.characterbased;
 
@@ -19,14 +19,14 @@ import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 import org.scify.jedai.datamodel.Comparison;
-
 import org.scify.jedai.datamodel.EntityProfile;
 import org.scify.jedai.datamodel.SimilarityPairs;
 import org.scify.jedai.datamodel.joins.IntListPair;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 /**
  *
@@ -90,11 +90,7 @@ public class FastSS extends AbstractCharacterBasedJoin {
 
     private List<Comparison> insertIndex(String attributeValue) {
         final TIntList delPos1 = new TIntArrayList(delPos);
-        List<IntListPair> list = stringHashIndex.get(attributeValue);
-        if (list == null) {
-            list = new ArrayList<>();
-            stringHashIndex.put(attributeValue, list);
-        }
+        List<IntListPair> list = stringHashIndex.computeIfAbsent(attributeValue, k -> new ArrayList<>());
 
         final List<Comparison> executedComparisons = new ArrayList<>();
         for (IntListPair p : list) {
@@ -120,7 +116,7 @@ public class FastSS extends AbstractCharacterBasedJoin {
             if (ed <= threshold) {
                 checkedFlag.add(p.getKey());
                 final Comparison currentComp = getComparison(id, p.getKey());
-                currentComp.setUtilityMeasure(1 - ed / threshold);
+                currentComp.setUtilityMeasure(1 - (double) ed / threshold);
                 executedComparisons.add(currentComp);
             }
         }

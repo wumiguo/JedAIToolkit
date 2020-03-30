@@ -16,11 +16,6 @@
 package org.scify.jedai.prioritization;
 
 import gnu.trove.iterator.TIntIterator;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.PriorityQueue;
-import java.util.Queue;
 import org.apache.jena.atlas.json.JsonArray;
 import org.apache.jena.atlas.json.JsonObject;
 import org.scify.jedai.configuration.gridsearch.IntGridSearchConfiguration;
@@ -30,7 +25,11 @@ import org.scify.jedai.datamodel.EntityProfile;
 import org.scify.jedai.utilities.comparators.DecComparisonWeightComparator;
 import org.scify.jedai.utilities.comparators.IncComparisonWeightComparator;
 import org.scify.jedai.utilities.enumerations.ProgressiveWeightingScheme;
-import org.scify.jedai.utilities.enumerations.WeightingScheme;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.PriorityQueue;
+import java.util.Queue;
 
 /**
  * @author gap2
@@ -105,7 +104,7 @@ public class GlobalProgressiveSortedNeighborhood extends AbstractSimilarityBased
         }
 
         final List<Comparison> topComparisons = new ArrayList<>(topComps);
-        Collections.sort(topComparisons, new DecComparisonWeightComparator());
+        topComparisons.sort(new DecComparisonWeightComparator());
         compIterator = topComparisons.iterator();
     }
 

@@ -24,15 +24,15 @@ import org.scify.jedai.utilities.IConstants;
  */
 public interface ITextModel extends IConstants {
 
-    public double getEntropy(boolean normalized);
+    double getEntropy(boolean normalized);
 
-    public String getInstanceName();
+    String getInstanceName();
 
-    public Set<String> getSignatures();
+    Set<String> getSignatures();
 
-    public double getSimilarity(ITextModel oModel);
+    double getSimilarity(ITextModel oModel);
 
-    public void finalizeModel();
+    void finalizeModel();
 
-    public void updateModel(String text);
+    void updateModel(String text);
 }

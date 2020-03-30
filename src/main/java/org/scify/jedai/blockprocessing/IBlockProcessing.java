@@ -15,12 +15,12 @@
  */
 package org.scify.jedai.blockprocessing;
 
+import org.scify.jedai.configuration.IConfiguration;
 import org.scify.jedai.datamodel.AbstractBlock;
+import org.scify.jedai.utilities.IConstants;
 import org.scify.jedai.utilities.IDocumentation;
 
 import java.util.List;
-import org.scify.jedai.configuration.IConfiguration;
-import org.scify.jedai.utilities.IConstants;
 
 /**
  *
@@ -28,6 +28,6 @@ import org.scify.jedai.utilities.IConstants;
  */
 public interface IBlockProcessing extends IConfiguration, IConstants, IDocumentation {
 
-    public List<AbstractBlock> refineBlocks(List<AbstractBlock> blocks);
+    List<AbstractBlock> refineBlocks(List<AbstractBlock> blocks);
     
 }

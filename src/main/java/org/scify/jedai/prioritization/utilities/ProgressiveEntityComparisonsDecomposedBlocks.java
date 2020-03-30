@@ -15,18 +15,14 @@
  */
 package org.scify.jedai.prioritization.utilities;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
 import org.scify.jedai.datamodel.AbstractBlock;
 import org.scify.jedai.datamodel.Comparison;
 import org.scify.jedai.datamodel.ComparisonIterator;
 import org.scify.jedai.datamodel.VertexWeight;
 import org.scify.jedai.utilities.comparators.DecComparisonWeightComparator;
 import org.scify.jedai.utilities.comparators.DecVertexWeightComparator;
+
+import java.util.*;
 
 /**
  *
@@ -98,19 +94,16 @@ public class ProgressiveEntityComparisonsDecomposedBlocks extends AbstractDecomp
             }
         }
 
-        final Set<Comparison> topComparisons = new HashSet<>();
-        for (Comparison c : topComparisonPerEntity) {
-            topComparisons.add(c);
-        }
+        final Set<Comparison> topComparisons = new HashSet<>(Arrays.asList(topComparisonPerEntity));
         final List<Comparison> sortedTopComparisons = new ArrayList<>(topComparisons);
-        Collections.sort(sortedTopComparisons, new DecComparisonWeightComparator());
+        sortedTopComparisons.sort(new DecComparisonWeightComparator());
         compIterator = sortedTopComparisons.iterator();
 
         final List<VertexWeight> sortedEntities = new ArrayList<>();
         for (int i = 0; i < noOfEntities; i++) {
             sortedEntities.add(new VertexWeight(i, totalWeightPerEntity[i], comparisonsPerEntity[i], null));
         }
-        Collections.sort(sortedEntities, new DecVertexWeightComparator());
+        sortedEntities.sort(new DecVertexWeightComparator());
         entityIterator = sortedEntities.iterator();
     }
 

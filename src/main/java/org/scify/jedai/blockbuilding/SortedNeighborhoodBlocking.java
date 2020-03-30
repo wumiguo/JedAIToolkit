@@ -15,24 +15,22 @@
  */
 package org.scify.jedai.blockbuilding;
 
-import org.scify.jedai.datamodel.BilateralBlock;
-import org.scify.jedai.datamodel.UnilateralBlock;
-
 import gnu.trove.iterator.TIntIterator;
 import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
+import org.apache.jena.atlas.json.JsonArray;
+import org.apache.jena.atlas.json.JsonObject;
+import org.scify.jedai.configuration.gridsearch.IntGridSearchConfiguration;
+import org.scify.jedai.configuration.randomsearch.IntRandomSearchConfiguration;
+import org.scify.jedai.datamodel.BilateralBlock;
+import org.scify.jedai.datamodel.UnilateralBlock;
 
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
-
-import org.apache.jena.atlas.json.JsonArray;
-import org.apache.jena.atlas.json.JsonObject;
-import org.scify.jedai.configuration.gridsearch.IntGridSearchConfiguration;
-import org.scify.jedai.configuration.randomsearch.IntRandomSearchConfiguration;
 
 /**
  *
@@ -162,7 +160,7 @@ public class SortedNeighborhoodBlocking extends StandardBlocking {
     @Override
     protected void parseIndex() {
         final Set<String> blockingKeysSet = invertedIndexD1.keySet();
-        final String[] sortedTerms = blockingKeysSet.toArray(new String[blockingKeysSet.size()]);
+        final String[] sortedTerms = blockingKeysSet.toArray(new String[0]);
         Arrays.sort(sortedTerms);
 
         final int[] allEntityIds = getSortedEntities(sortedTerms);
@@ -187,7 +185,7 @@ public class SortedNeighborhoodBlocking extends StandardBlocking {
         blockingKeysSet.addAll(invertedIndexD1.keySet());
         blockingKeysSet.addAll(invertedIndexD2.keySet());
         
-        final String[] sortedTerms = blockingKeysSet.toArray(new String[blockingKeysSet.size()]);
+        final String[] sortedTerms = blockingKeysSet.toArray(new String[0]);
         Arrays.sort(sortedTerms);
 
         final int[] allEntityIds = getMixedSortedEntities(sortedTerms);

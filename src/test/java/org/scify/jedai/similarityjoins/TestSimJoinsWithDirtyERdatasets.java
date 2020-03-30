@@ -25,7 +25,7 @@ import org.scify.jedai.datareader.groundtruthreader.IGroundTruthReader;
 import org.scify.jedai.datawriter.ClustersPerformanceWriter;
 import org.scify.jedai.entityclustering.ConnectedComponentsClustering;
 import org.scify.jedai.entityclustering.IEntityClustering;
-import org.scify.jedai.similarityjoins.tokenbased.Topk;
+import org.scify.jedai.similarityjoins.tokenbased.FuzzySetJoin;
 import org.scify.jedai.utilities.ClustersPerformance;
 import org.scify.jedai.utilities.datastructures.AbstractDuplicatePropagation;
 import org.scify.jedai.utilities.datastructures.UnilateralDuplicatePropagation;
@@ -47,9 +47,7 @@ public class TestSimJoinsWithDirtyERdatasets {
         System.out.println("\n\nInput Entity Profiles\t:\t" + profiles.size());
 
         final List<EntityProfile> newProfiles = new ArrayList<>();
-        for (int i = 0; i < profiles.size(); i++) {
-            final EntityProfile oldProfile = profiles.get(i);
-
+        for (final EntityProfile oldProfile : profiles) {
             String totalValue = getAggregateValues(oldProfile);
 
             EntityProfile newProfile = new EntityProfile(oldProfile.getEntityUrl());
@@ -64,9 +62,7 @@ public class TestSimJoinsWithDirtyERdatasets {
         System.out.println("\n\nInput Entity Profiles\t:\t" + profiles.size());
 
         final List<EntityProfile> newProfiles = new ArrayList<>();
-        for (int i = 0; i < profiles.size(); i++) {
-            final EntityProfile oldProfile = profiles.get(i);
-
+        for (final EntityProfile oldProfile : profiles) {
             String totalValue = getAggregateValues(oldProfile);
 
             EntityProfile newProfile = new EntityProfile(oldProfile.getEntityUrl());
@@ -94,7 +90,7 @@ public class TestSimJoinsWithDirtyERdatasets {
     public static void main(String[] args) throws FileNotFoundException {
         BasicConfigurator.configure();
 
-        double jaccardThreshold = 0.50000;
+        double jaccardThreshold = 0.45;
 
         String entitiesFilePath = "data" + File.separator + "dirtyErDatasets" + File.separator + "coraProfiles";
         String groundTruthFilePath = "data" + File.separator + "dirtyErDatasets" + File.separator + "coraIdDuplicates";
@@ -122,7 +118,7 @@ public class TestSimJoinsWithDirtyERdatasets {
         System.out.println("Existing Duplicates\t:\t" + duplicatePropagation.getDuplicates().size());
 
         //PPJoin join = new PPJoin(jaccardThreshold);
-        Topk join = new Topk(jaccardThreshold, 13000);
+        FuzzySetJoin join = new FuzzySetJoin(jaccardThreshold);
         SimilarityPairs simPairs = join.executeFiltering("all", profiles);
         double time1 = System.currentTimeMillis();
 

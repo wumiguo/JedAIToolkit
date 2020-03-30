@@ -22,8 +22,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.jgrapht.Graphs;
-import org.jgrapht.UndirectedGraph;
-import org.jgrapht.alg.MinSourceSinkCut;
+import org.jgrapht.alg.flow.EdmondsKarpMFImpl;
 import org.jgrapht.graph.DefaultDirectedWeightedGraph;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.DefaultWeightedEdge;
@@ -41,10 +40,10 @@ public class GomoryHuTree<V, E> {
 
     public GomoryHuTree(SimpleWeightedGraph<V, E> graph) {
         this.graph = graph;
-        this.graph.getEdgeFactory();
+//        this.graph.getEdgeFactory(); // TODO: is this necessary?
     }
 
-    private DefaultDirectedWeightedGraph<V, DefaultWeightedEdge> makeDirectedCopy(UndirectedGraph<V, E> graph) {
+    private DefaultDirectedWeightedGraph<V, DefaultWeightedEdge> makeDirectedCopy(SimpleWeightedGraph<V, E> graph) {
         final DefaultDirectedWeightedGraph<V, DefaultWeightedEdge> copy = new DefaultDirectedWeightedGraph<>(DefaultWeightedEdge.class);
 
         Graphs.addAllVertices(copy, graph.vertexSet());
@@ -73,14 +72,14 @@ public class GomoryHuTree<V, E> {
 
         final DefaultDirectedWeightedGraph<V, DefaultWeightedEdge> returnGraphClone = new DefaultDirectedWeightedGraph<>(DefaultWeightedEdge.class);
         final SimpleGraph<Integer, DefaultEdge> returnGraph = new SimpleGraph<>(DefaultEdge.class);
-        final MinSourceSinkCut<V, DefaultWeightedEdge> minSourceSinkCut = new MinSourceSinkCut<>(directedGraph);
+        final EdmondsKarpMFImpl<V, DefaultWeightedEdge> minSourceSinkCut = new EdmondsKarpMFImpl<>(directedGraph);
         
         final Iterator<V> itVertices = directedGraph.vertexSet().iterator();
         itVertices.next();
         while (itVertices.hasNext()) {
             V vertex = itVertices.next();
             V predecessor = predecessors.get(vertex);
-            minSourceSinkCut.computeMinCut(vertex, predecessor);
+            double flowValue = minSourceSinkCut.calculateMinCut(vertex, predecessor); // TODO: is this right?
 
             returnGraphClone.addVertex(vertex);
             returnGraphClone.addVertex(predecessor);
@@ -89,7 +88,7 @@ public class GomoryHuTree<V, E> {
             returnGraph.addVertex(Integer.parseInt(predecessor + ""));
             
             final Set<V> sourcePartition = minSourceSinkCut.getSourcePartition();
-            double flowValue = minSourceSinkCut.getCutWeight();
+//            double flowValue = minSourceSinkCut.getCutWeight();
             DefaultWeightedEdge e = (DefaultWeightedEdge) returnGraphClone.addEdge(vertex, predecessor);
             returnGraph.addEdge(Integer.parseInt(vertex + ""), Integer.parseInt(predecessor + ""));
             returnGraphClone.setEdgeWeight(e, flowValue);

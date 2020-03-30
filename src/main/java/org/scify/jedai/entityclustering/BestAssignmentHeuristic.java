@@ -20,9 +20,6 @@ import org.scify.jedai.datamodel.Comparison;
 import org.scify.jedai.datamodel.EquivalenceCluster;
 import org.scify.jedai.datamodel.SimilarityPairs;
 
-import gnu.trove.set.TIntSet;
-import gnu.trove.set.hash.TIntHashSet;
-
 import java.util.Iterator;
 import java.util.Random;
 
@@ -30,15 +27,11 @@ import java.util.Random;
  *
  * @author Manos
  */
-public class BestAssignmentHeuristic extends AbstractEntityClustering {
-
-    private final TIntSet matchedIds; //the ids of entities that have been already matched
+public class BestAssignmentHeuristic extends AbstractCcerEntityClustering {
 
     protected double[][] matrix; // inverted similarity matrix (cost matrix)
 
     private int[] selectedColumn;
-
-    private double cost;
 
     private int numMoves;
 
@@ -48,50 +41,13 @@ public class BestAssignmentHeuristic extends AbstractEntityClustering {
 
     public BestAssignmentHeuristic(double simTh) {
         super(simTh);
-
-        matchedIds = new TIntHashSet();
-    }
-
-    public void init(double[][] matrix) {
-        this.matrix = matrix;
-        this.selectedColumn = new int[matrix.length];
-        this.numMoves = 9999999;
-        getInitialSolution();
-    }
-
-    public int[] getSolution() {
-        return selectedColumn;
-
-    }
-
-    public void setNumMoves(int numMoves) {
-        this.numMoves = numMoves;
-    }
-
-    private void getInitialSolution() {
-        cost = 0;
-        for (int i = 0; i < matrix.length; i++) {
-            selectedColumn[i] = i;
-            cost += matrix[i][i];
-        }
-    }
-
-    private void swapColumns(int row1, int row2) {
-        int col1 = selectedColumn[row1];
-        int col2 = selectedColumn[row2];
-        double D = matrix[row1][col2] + matrix[row2][col1] - (matrix[row1][col1] + matrix[row2][col2]);
-        if (acceptSwap(D)) {
-            selectedColumn[row1] = col2;
-            selectedColumn[row2] = col1;
-            cost += D;
-        }
     }
 
     private boolean acceptSwap(double D) {
         return (D < 0.0);
     }
 
-    public void execute() {
+    private void execute() {
         Random rand = new Random();
         int numRows = matrix.length;
         for (int i = 0; i < numMoves; i++) {
@@ -104,21 +60,11 @@ public class BestAssignmentHeuristic extends AbstractEntityClustering {
         }
     }
 
-    public double[][] getNegative(double[][] initMatrix) {
-        int N = initMatrix.length;
-        double[][] negMatrix = new double[N][N];
-        for (int i = 0; i < initMatrix.length; i++) {
-            for (int j = 0; j < initMatrix[i].length; j++) {
-                negMatrix[i][j] = 1.0 - initMatrix[i][j];
-            }
-        }
-        return negMatrix;
-    }
-
     @Override
     public EquivalenceCluster[] getDuplicates(SimilarityPairs simPairs) {
         Log.info("Input comparisons\t:\t" + simPairs.getNoOfComparisons());
         
+        matchedIds.clear();
         if (simPairs.getNoOfComparisons() == 0) {
             return new EquivalenceCluster[0];
         }
@@ -164,6 +110,12 @@ public class BestAssignmentHeuristic extends AbstractEntityClustering {
         return getConnectedComponents();
     }
 
+    private void getInitialSolution() {
+        for (int i = 0; i < matrix.length; i++) {
+            selectedColumn[i] = i;
+        }
+    }
+    
     @Override
     public String getMethodInfo() {
         return getMethodName() + ": it creates clusters after heuristically solving the assignment problem. ";
@@ -173,22 +125,41 @@ public class BestAssignmentHeuristic extends AbstractEntityClustering {
     public String getMethodName() {
         return "Assignment Problem Heuristic Clustering";
     }
-
-    @Override
-    public void setNextRandomConfiguration() {
-        matchedIds.clear();
-        super.setNextRandomConfiguration();
+    
+    private double[][] getNegative(double[][] initMatrix) {
+        int N = initMatrix.length;
+        double[][] negMatrix = new double[N][N];
+        for (int i = 0; i < initMatrix.length; i++) {
+            for (int j = 0; j < initMatrix[i].length; j++) {
+                negMatrix[i][j] = 1.0 - initMatrix[i][j];
+            }
+        }
+        return negMatrix;
     }
 
-    @Override
-    public void setNumberedGridConfiguration(int iterationNumber) {
-        matchedIds.clear();
-        super.setNumberedGridConfiguration(iterationNumber);
+    private int[] getSolution() {
+        return selectedColumn;
+    }
+    
+    public void init(double[][] matrix) {
+        this.matrix = matrix;
+        this.selectedColumn = new int[matrix.length];
+        this.numMoves = 9999999;
+        getInitialSolution();
+    }
+    
+    public void setNumMoves(int numMoves) {
+        this.numMoves = numMoves;
+    }
+    
+    private void swapColumns(int row1, int row2) {
+        int col1 = selectedColumn[row1];
+        int col2 = selectedColumn[row2];
+        double D = matrix[row1][col2] + matrix[row2][col1] - (matrix[row1][col1] + matrix[row2][col2]);
+        if (acceptSwap(D)) {
+            selectedColumn[row1] = col2;
+            selectedColumn[row2] = col1;
+        }
     }
 
-    @Override
-    public void setNumberedRandomConfiguration(int iterationNumber) {
-        matchedIds.clear();
-        super.setNumberedRandomConfiguration(iterationNumber);
-    }
 }

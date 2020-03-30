@@ -80,17 +80,17 @@ public class BlocksPerformance {
 
         int noOfBlocks1 = blocks1.length;
         int noOfBlocks2 = blocks2.length;
-        for (int i = 0; i < noOfBlocks1; i++) {
-            for (int j = 0; j < noOfBlocks2; j++) {
-                if (blocks2[j] < blocks1[i]) {
+        for (int item : blocks1) {
+            for (int value : blocks2) {
+                if (value < item) {
                     continue;
                 }
 
-                if (blocks1[i] < blocks2[j]) {
+                if (item < value) {
                     break;
                 }
 
-                if (blocks1[i] == blocks2[j]) {
+                if (item == value) {
                     return true;
                 }
             }

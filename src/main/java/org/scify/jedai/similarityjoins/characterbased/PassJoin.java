@@ -22,14 +22,16 @@ import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
-import java.util.ArrayList;
-import java.util.List;
-import javafx.util.Pair;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.scify.jedai.datamodel.Comparison;
-
 import org.scify.jedai.datamodel.EntityProfile;
 import org.scify.jedai.datamodel.SimilarityPairs;
 import org.scify.jedai.datamodel.joins.PIndex;
+
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 
 /**
  *
@@ -85,7 +87,7 @@ public class PassJoin extends AbstractCharacterBasedJoin {
 
             MaxDictLen = Math.max(MaxDictLen, nextValue.length());
             MinDictLen = Math.min(MinDictLen, nextValue.length());
-            idIdentifier.add(new Pair<>(nextValue, counter++));
+            idIdentifier.add(new ImmutablePair<>(nextValue, counter++));
         }
 
         if (isCleanCleanER) {
@@ -94,7 +96,7 @@ public class PassJoin extends AbstractCharacterBasedJoin {
 
                 MaxDictLen = Math.max(MaxDictLen, nextValue.length());
                 MinDictLen = Math.min(MinDictLen, nextValue.length());
-                idIdentifier.add(new Pair<>(nextValue, counter++));
+                idIdentifier.add(new ImmutablePair<>(nextValue, counter++));
             }
         }
 
@@ -103,7 +105,7 @@ public class PassJoin extends AbstractCharacterBasedJoin {
         matrixDimension2 = 2 * threshold + 1;
 
         dict.clear();
-        idIdentifier.sort((s1, s2) -> s1.getKey().length() - s2.getKey().length());
+        idIdentifier.sort(Comparator.comparingInt(s -> s.getKey().length()));
         originalId = new int[N];
         for (int i = 0; i < N; i++) {
             final Pair<String, Integer> currentPair = idIdentifier.get(i);

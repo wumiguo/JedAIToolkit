@@ -15,8 +15,6 @@
  */
 package org.scify.jedai.configuration;
 
-import java.io.File;
-import java.util.List;
 import org.apache.log4j.BasicConfigurator;
 import org.scify.jedai.blockbuilding.IBlockBuilding;
 import org.scify.jedai.blockbuilding.StandardBlocking;
@@ -41,6 +39,9 @@ import org.scify.jedai.utilities.datastructures.AbstractDuplicatePropagation;
 import org.scify.jedai.utilities.datastructures.BilateralDuplicatePropagation;
 import org.scify.jedai.utilities.enumerations.WeightingScheme;
 
+import java.io.File;
+import java.util.List;
+
 /**
  *
  * @author GAP2
@@ -51,7 +52,7 @@ public class OptimizeDirtyMoviesDataset {
 
     static double getTotalComparisons(List<AbstractBlock> blocks) {
         double originalComparisons = 0;
-        originalComparisons = blocks.stream().map((block) -> block.getNoOfComparisons()).reduce(originalComparisons, (accumulator, _item) -> accumulator + _item);
+        originalComparisons = blocks.stream().map(AbstractBlock::getNoOfComparisons).reduce(originalComparisons, Double::sum);
         System.out.println("Original comparisons\t:\t" + originalComparisons);
         return originalComparisons;
     }

@@ -1,37 +1,35 @@
 /*
-* Copyright [2016-2020] [George Papadakis (gpapadis@yahoo.gr)]
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-*    http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
+ * Copyright [2016-2020] [George Papadakis (gpapadis@yahoo.gr)]
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.scify.jedai.blockprocessing.comparisoncleaning;
-
-import org.scify.jedai.datamodel.AbstractBlock;
-import org.scify.jedai.datamodel.BilateralBlock;
-import org.scify.jedai.datamodel.Comparison;
-import org.scify.jedai.datamodel.UnilateralBlock;
-import org.scify.jedai.utilities.enumerations.WeightingScheme;
 
 import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
-
-import java.util.List;
-
 import org.apache.commons.math3.stat.inference.ChiSquareTest;
 import org.apache.jena.atlas.json.JsonArray;
 import org.apache.jena.atlas.json.JsonObject;
+import org.scify.jedai.datamodel.AbstractBlock;
+import org.scify.jedai.datamodel.BilateralBlock;
+import org.scify.jedai.datamodel.Comparison;
+import org.scify.jedai.datamodel.UnilateralBlock;
 import org.scify.jedai.utilities.IConstants;
+import org.scify.jedai.utilities.enumerations.WeightingScheme;
+
+import java.util.List;
 
 /**
  *
@@ -54,7 +52,7 @@ public abstract class AbstractMetablocking extends AbstractComparisonCleaning im
     protected final TIntList retainedNeighbors;
     protected final TIntList retainedNeighborsWeights;
     protected WeightingScheme weightingScheme;
-    
+
     public AbstractMetablocking(WeightingScheme wScheme) {
         super();
         neighbors = new TIntArrayList();
@@ -96,7 +94,7 @@ public abstract class AbstractMetablocking extends AbstractComparisonCleaning im
     protected int discretizeComparisonWeight(double weight) {
         return (int) (weight * DISCRETIZATION_FACTOR);
     }
-    
+
     protected Comparison getComparison(int entityId, int neighborId) {
         if (!cleanCleanER) {
             if (entityId < neighborId) {
@@ -135,7 +133,7 @@ public abstract class AbstractMetablocking extends AbstractComparisonCleaning im
         final JsonObject obj1 = new JsonObject();
         obj1.put("class", "org.scify.jedai.utilities.enumerations.WeightingScheme");
         obj1.put("name", getParameterName(0));
-        obj1.put("defaultValue", "org.scify.jedai.utilities.enumerations.WeightingScheme.CBS");
+        obj1.put("defaultValue", "org.scify.jedai.utilities.enumerations.WeightingScheme.JS");
         obj1.put("minValue", "-");
         obj1.put("maxValue", "-");
         obj1.put("stepValue", "-");
@@ -173,7 +171,7 @@ public abstract class AbstractMetablocking extends AbstractComparisonCleaning im
             case CBS:
                 return counters[neighborId];
             case ECBS:
-                return counters[neighborId] * Math.log10(noOfBlocks / entityIndex.getNoOfEntityBlocks(entityId, 0)) * Math.log10(noOfBlocks / entityIndex.getNoOfEntityBlocks(neighborId, 0));
+                return counters[neighborId] * Math.log10((double) noOfBlocks / entityIndex.getNoOfEntityBlocks(entityId, 0)) * Math.log10((double) noOfBlocks / entityIndex.getNoOfEntityBlocks(neighborId, 0));
             case JS:
                 return counters[neighborId] / (entityIndex.getNoOfEntityBlocks(entityId, 0) + entityIndex.getNoOfEntityBlocks(neighborId, 0) - counters[neighborId]);
             case EJS:

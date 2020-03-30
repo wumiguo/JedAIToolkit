@@ -28,7 +28,7 @@ public class PositionIndex implements Serializable {
     private final int[][] entityPositions;
 
     public PositionIndex(int entities, int[] sortedEntities) {
-        noOfEntities = entities;;
+        noOfEntities = entities;
 
         int[] counters = new int[noOfEntities];
         for (int entityId : sortedEntities) {

@@ -15,28 +15,20 @@
  */
 package org.scify.jedai.entitymatching;
 
-import org.scify.jedai.datamodel.AbstractBlock;
-import org.scify.jedai.datamodel.Attribute;
-import org.scify.jedai.datamodel.Comparison;
-import org.scify.jedai.datamodel.EntityProfile;
-import org.scify.jedai.datamodel.SimilarityEdge;
-import org.scify.jedai.datamodel.SimilarityPairs;
+import com.esotericsoftware.minlog.Log;
+import org.apache.jena.atlas.json.JsonArray;
+import org.apache.jena.atlas.json.JsonObject;
+import org.jgrapht.graph.DefaultWeightedEdge;
+import org.jgrapht.graph.SimpleDirectedWeightedGraph;
+import org.scify.jedai.datamodel.*;
+import org.scify.jedai.textmodels.ITextModel;
 import org.scify.jedai.utilities.comparators.DecSimilarityEdgeComparator;
 import org.scify.jedai.utilities.enumerations.RepresentationModel;
 import org.scify.jedai.utilities.enumerations.SimilarityMetric;
-import org.scify.jedai.textmodels.ITextModel;
-
-import com.esotericsoftware.minlog.Log;
 
 import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Queue;
-import org.apache.jena.atlas.json.JsonArray;
-import org.apache.jena.atlas.json.JsonObject;
-
-import org.jgrapht.WeightedGraph;
-import org.jgrapht.graph.DefaultWeightedEdge;
-import org.jgrapht.graph.SimpleDirectedWeightedGraph;
 
 /**
  *
@@ -91,7 +83,7 @@ public class GroupLinkage extends AbstractEntityMatching {
     @Override
     public double executeComparison(Comparison comparison) {
         final Queue<SimilarityEdge> similarityQueue = getSimilarityEdges(comparison);
-        final WeightedGraph<String, DefaultWeightedEdge> similarityGraph = getSimilarityGraph(similarityQueue);
+        final SimpleDirectedWeightedGraph<String, DefaultWeightedEdge> similarityGraph = getSimilarityGraph(similarityQueue);
         int verticesNum = entityModelsD1[comparison.getEntityId1()].length;
         if (isCleanCleanER) {
             verticesNum += entityModelsD2[comparison.getEntityId2()].length;
@@ -105,7 +97,7 @@ public class GroupLinkage extends AbstractEntityMatching {
     @Override
     public SimilarityPairs executeComparisons(List<AbstractBlock> blocks) {
         final SimilarityPairs simPairs = new SimilarityPairs(profilesD2 != null, blocks);
-        blocks.stream().map((block) -> block.getComparisonIterator()).forEachOrdered((iterator) -> {
+        blocks.stream().map(AbstractBlock::getComparisonIterator).forEachOrdered((iterator) -> {
             while (iterator.hasNext()) {
                 final Comparison currentComparison = iterator.next();
                 double similarity = executeComparison(currentComparison);
@@ -234,7 +226,7 @@ public class GroupLinkage extends AbstractEntityMatching {
         }
     }
 
-    private double getSimilarity(WeightedGraph<String, DefaultWeightedEdge> simGraph, int verticesNum) {
+    private double getSimilarity(SimpleDirectedWeightedGraph<String, DefaultWeightedEdge> simGraph, int verticesNum) {
         double nominator = 0;
         double denominator = (double) verticesNum; //m1+m2
         for (DefaultWeightedEdge e : simGraph.edgeSet()) {
@@ -268,8 +260,8 @@ public class GroupLinkage extends AbstractEntityMatching {
         return SEqueue;
     }
 
-    private WeightedGraph<String, DefaultWeightedEdge> getSimilarityGraph(Queue<SimilarityEdge> seQueue) {
-        final WeightedGraph<String, DefaultWeightedEdge> graph = new SimpleDirectedWeightedGraph<>(DefaultWeightedEdge.class);
+    private SimpleDirectedWeightedGraph<String, DefaultWeightedEdge> getSimilarityGraph(Queue<SimilarityEdge> seQueue) {
+        final SimpleDirectedWeightedGraph<String, DefaultWeightedEdge> graph = new SimpleDirectedWeightedGraph<>(DefaultWeightedEdge.class);
         while (seQueue.size() > 0) {
             SimilarityEdge se = seQueue.remove();
             int i = se.getModel1Pos();

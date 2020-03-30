@@ -17,7 +17,6 @@ package org.scify.jedai.prioritization;
 
 import com.esotericsoftware.minlog.Log;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import org.scify.jedai.prioritization.utilities.ProgressiveCEP;
 import java.util.List;
@@ -84,7 +83,7 @@ public class ProgressiveGlobalTopComparisons extends AbstractHashBasedPrioritiza
         return compIterator.next();
     }
 
-    private Iterator<Comparison> processDecomposedBlocks(List<AbstractBlock> blocks) {
+    protected Iterator<Comparison> processDecomposedBlocks(List<AbstractBlock> blocks) {
         double minimumWeight = -1;
         final Queue<Comparison> topComparisons = new PriorityQueue<>((int) (2 * comparisonsBudget), new IncComparisonWeightComparator());
         for (AbstractBlock block : blocks) {
@@ -101,7 +100,7 @@ public class ProgressiveGlobalTopComparisons extends AbstractHashBasedPrioritiza
             }
         }
         final List<Comparison> sortedTopComparisons = new ArrayList<>(topComparisons);
-        Collections.sort(sortedTopComparisons, new DecComparisonWeightComparator());
+        sortedTopComparisons.sort(new DecComparisonWeightComparator());
         return sortedTopComparisons.iterator();
     }
 }

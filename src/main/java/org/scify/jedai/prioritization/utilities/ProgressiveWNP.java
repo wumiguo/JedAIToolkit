@@ -17,7 +17,6 @@ package org.scify.jedai.prioritization.utilities;
 
 import gnu.trove.iterator.TIntIterator;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -44,7 +43,7 @@ public class ProgressiveWNP extends WeightedNodePruning {
 
     public List<Comparison> getSortedTopComparisons() {
         final List<Comparison> sortedTopComparisons = new ArrayList<>(topComparisons);
-        Collections.sort(sortedTopComparisons, new DecComparisonWeightComparator());
+        sortedTopComparisons.sort(new DecComparisonWeightComparator());
         topComparisons = null;
         return sortedTopComparisons;
     }
@@ -73,7 +72,7 @@ public class ProgressiveWNP extends WeightedNodePruning {
                 setThreshold(i);
             }
         }
-        Collections.sort(sortedEntities,  new DecVertexWeightComparator());
+        sortedEntities.sort(new DecVertexWeightComparator());
     }
 
     @Override

@@ -102,7 +102,7 @@ public class SortedList<T> extends ArrayList<T> {
         boolean result = false;
         if (paramCollection.size() > 4) {
             result = super.addAll(paramCollection);
-            Collections.sort(this, comparator);
+            this.sort(comparator);
         }
         else {
             for (T paramT:paramCollection) {
@@ -135,6 +135,6 @@ public class SortedList<T> extends ArrayList<T> {
      */
     public void setComparator(Comparator<? super T> comparator) {
         this.comparator = comparator;
-        Collections.sort(this, comparator);
+        this.sort(comparator);
     }
 }

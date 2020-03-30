@@ -51,7 +51,7 @@ public class StepByStepRandomConfigurationCCER {
 
     static double getTotalComparisons(List<AbstractBlock> blocks) {
         double originalComparisons = 0;
-        originalComparisons = blocks.stream().map((block) -> block.getNoOfComparisons()).reduce(originalComparisons, (accumulator, _item) -> accumulator + _item);
+        originalComparisons = blocks.stream().map(AbstractBlock::getNoOfComparisons).reduce(originalComparisons, Double::sum);
         System.out.println("Original comparisons\t:\t" + originalComparisons);
         return originalComparisons;
     }

@@ -17,12 +17,10 @@ import java.util.*;
   <sources_dir>/JedAIToolkit/jedai-core/src/main/resources/embeddings/weights.txt
 
   Expected file format is:
-  <dimension>,<separator>
   element1<separator>value1<separator>value2....
   .....
 
   e.g.
-  4,,
   town,2.1,4.0,6.22,8.9
   car,8.0,7.11,6.41,4.44
   .....
@@ -39,7 +37,7 @@ import java.util.*;
 
 public abstract class PretrainedVectors extends VectorSpaceModel {
 
-    char dataSeparator;
+    char dataSeparator = ' ';
     static Double[] unkownVector;
     static boolean weightsLoaded = false;
     static Map<String, Double[]> elementMap;
@@ -57,9 +55,47 @@ public abstract class PretrainedVectors extends VectorSpaceModel {
     }
 
     /**
-     * Load pretrained embedding weights.
+     * Load pretrained embedding weights autoresolving the embedding dimension
      */
-   private void loadWeights(){
+    private void loadWeights() {
+        if (weightsLoaded) return;
+        ClassLoader classLoader = getClass().getClassLoader();
+        //String fileName = classLoader.getResource("embeddings/weights-full.txt").getFile();
+        String fileName = Objects.requireNonNull(classLoader.getResource("embeddings/weights.txt")).getFile();
+        elementMap = new HashMap<>();
+
+        try {
+            BufferedReader br = new BufferedReader(new FileReader(fileName));
+
+            CSVReader reader = new CSVReader(new FileReader(fileName), dataSeparator, CSVParser.NULL_CHARACTER, 0);
+
+            String[] components;
+            int counter = 0;
+            while ((components = reader.readNext()) != null) {
+                counter++;
+                if (counter > 1) {
+                    if (components.length != dimension + 1)
+                        throw new IOException(String.format("Mismatch in embedding vector #%d length : %d.",
+                                counter, components.length));
+                } else {
+                    dimension = components.length - 1;
+                }
+                Double[] value = new Double[dimension];
+                for (int i = 1; i <= dimension; ++i) {
+                    value[i - 1] = Double.parseDouble(components[i]);
+                }
+                elementMap.put(components[0], value);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.exit(-1);
+        }
+    }
+
+    /**
+     * Load pretrained embedding weights supplied with a metadata header.
+     */
+   private void loadWeightsWithHeader(){
        if (weightsLoaded) return;
        ClassLoader classLoader = getClass().getClassLoader();
        //String fileName = classLoader.getResource("embeddings/weights-full.txt").getFile();

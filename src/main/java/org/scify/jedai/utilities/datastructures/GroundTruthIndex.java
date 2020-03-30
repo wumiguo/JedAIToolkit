@@ -74,24 +74,24 @@ public class GroundTruthIndex {
         int noOfBlocks1 = blocks1.length;
         int noOfBlocks2 = blocks2.length;
         final TIntList indices = new TIntArrayList();
-        for (int i = 0; i < noOfBlocks1; i++) {
-            for (int j = 0; j < noOfBlocks2; j++) {
-                if (blocks2[j] < blocks1[i]) {
+        for (int item : blocks1) {
+            for (int value : blocks2) {
+                if (value < item) {
                     continue;
                 }
 
-                if (blocks1[i] < blocks2[j]) {
+                if (item < value) {
                     break;
                 }
 
-                if (blocks1[i] == blocks2[j]) {
+                if (item == value) {
                     if (!firstCommonIndex) {
                         firstCommonIndex = true;
-                        if (blocks1[i] != blockIndex) {
+                        if (item != blockIndex) {
                             return null;
                         }
                     }
-                    indices.add(blocks1[i]);
+                    indices.add(item);
                 }
             }
         }
@@ -119,21 +119,21 @@ public class GroundTruthIndex {
         int noOfBlocks1 = blocks1.length;
         int noOfBlocks2 = blocks2.length;
         boolean firstCommonIndex = false;
-        for (int i = 0; i < noOfBlocks1; i++) {
-            for (int j = 0; j < noOfBlocks2; j++) {
-                if (blocks2[j] < blocks1[i]) {
+        for (int item : blocks1) {
+            for (int value : blocks2) {
+                if (value < item) {
                     continue;
                 }
 
-                if (blocks1[i] < blocks2[j]) {
+                if (item < value) {
                     break;
                 }
 
-                if (blocks1[i] == blocks2[j]) {
+                if (item == value) {
                     commonBlocks++;
                     if (!firstCommonIndex) {
                         firstCommonIndex = true;
-                        if (blocks1[i] != blockIndex) {
+                        if (item != blockIndex) {
                             return -1;
                         }
                     }
@@ -168,18 +168,18 @@ public class GroundTruthIndex {
 
         int noOfBlocks1 = blocks1.length;
         int noOfBlocks2 = blocks2.length;
-        for (int i = 0; i < noOfBlocks1; i++) {
-            for (int j = 0; j < noOfBlocks2; j++) {
-                if (blocks2[j] < blocks1[i]) {
+        for (int item : blocks1) {
+            for (int value : blocks2) {
+                if (value < item) {
                     continue;
                 }
 
-                if (blocks1[i] < blocks2[j]) {
+                if (item < value) {
                     break;
                 }
 
-                if (blocks1[i] == blocks2[j]) {
-                    indices.add(blocks1[i]);
+                if (item == value) {
+                    indices.add(item);
                 }
             }
         }
@@ -197,17 +197,17 @@ public class GroundTruthIndex {
         int commonBlocks = 0;
         int noOfBlocks1 = blocks1.length;
         int noOfBlocks2 = blocks2.length;
-        for (int i = 0; i < noOfBlocks1; i++) {
-            for (int j = 0; j < noOfBlocks2; j++) {
-                if (blocks2[j] < blocks1[i]) {
+        for (int item : blocks1) {
+            for (int value : blocks2) {
+                if (value < item) {
                     continue;
                 }
 
-                if (blocks1[i] < blocks2[j]) {
+                if (item < value) {
                     break;
                 }
 
-                if (blocks1[i] == blocks2[j]) {
+                if (item == value) {
                     commonBlocks++;
                 }
             }
@@ -321,18 +321,18 @@ public class GroundTruthIndex {
 
         int noOfBlocks1 = blocks1.length;
         int noOfBlocks2 = blocks2.length;
-        for (int i = 0; i < noOfBlocks1; i++) {
-            for (int j = 0; j < noOfBlocks2; j++) {
-                if (blocks2[j] < blocks1[i]) {
+        for (int item : blocks1) {
+            for (int value : blocks2) {
+                if (value < item) {
                     continue;
                 }
 
-                if (blocks1[i] < blocks2[j]) {
+                if (item < value) {
                     break;
                 }
 
-                if (blocks1[i] == blocks2[j]) {
-                    return blocks1[i] != blockIndex;
+                if (item == value) {
+                    return item != blockIndex;
                 }
             }
         }

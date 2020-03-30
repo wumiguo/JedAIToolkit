@@ -25,7 +25,6 @@ import gnu.trove.iterator.TIntIterator;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Queue;
@@ -59,9 +58,7 @@ public class CardinalityEdgePruning extends WeightedEdgePruning {
         final int[] weights = new int[comparisons.size()];
         
         int index = 0;
-        final Iterator<Comparison> iterator = comparisons.iterator();
-        while (iterator.hasNext()) {
-            Comparison comparison = iterator.next();
+        for (Comparison comparison : comparisons) {
             entityIds1[index] = comparison.getEntityId1();
             entityIds2[index] = comparison.getEntityId2();
             weights[index] = discretizeComparisonWeight(comparison.getUtilityMeasure());

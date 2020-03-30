@@ -74,9 +74,7 @@ public class EntityHDTRDFReader extends AbstractEntityReader {
     public String getMethodConfiguration() {
         final StringBuilder sb = new StringBuilder();
         sb.append("{");
-        attributesToExclude.forEach((attributeName) -> {
-            sb.append(attributeName).append(",");
-        });
+        attributesToExclude.forEach((attributeName) -> sb.append(attributeName).append(","));
         sb.append("}");
 
         return getParameterName(0) + "=" + inputFilePath + "\t"

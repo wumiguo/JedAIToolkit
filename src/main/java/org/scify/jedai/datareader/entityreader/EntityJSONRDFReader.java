@@ -71,9 +71,7 @@ public class EntityJSONRDFReader extends AbstractEntityReader {
     public String getMethodConfiguration() {
         final StringBuilder sb = new StringBuilder();
         sb.append("{");
-        attributesToExclude.forEach((attributeName) -> {
-            sb.append(attributeName).append(",");
-        });
+        attributesToExclude.forEach((attributeName) -> sb.append(attributeName).append(","));
         sb.append("}");
 
         return getParameterName(0) + "=" + inputFilePath + "\t"
@@ -160,21 +158,21 @@ public class EntityJSONRDFReader extends AbstractEntityReader {
             {Subject: "Sydney", Predicate: "located_in", Object: "Australia"},
             ......
          */
-        for (int i = 0; i < jarr.size(); i++) {
+        for (org.apache.jena.atlas.json.JsonValue jsonValue : jarr) {
 
-            final CharSequence predicate = jarr.get(i).getAsObject().get("Predicate").toString();
+            final CharSequence predicate = jsonValue.getAsObject().get("Predicate").toString();
             final String pred = predicate.toString();
             if (attributesToExclude.contains(pred)) {
                 continue;
             }
 
-            final CharSequence subject = jarr.get(i).getAsObject().get("Subject").toString();
+            final CharSequence subject = jsonValue.getAsObject().get("Subject").toString();
             String sub = subject.toString();
             if (!prefix.equals("")) {
                 sub = sub.replace(prefix, "");
             }
 
-            final CharSequence object = jarr.get(i).getAsObject().get("Object").toString();
+            final CharSequence object = jsonValue.getAsObject().get("Object").toString();
             final String obj = object.toString();
 
             //if already exists a profile for the subject, simply add po as <Att>-<Value>

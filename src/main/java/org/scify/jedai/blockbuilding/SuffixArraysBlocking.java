@@ -15,18 +15,16 @@
  */
 package org.scify.jedai.blockbuilding;
 
-import org.scify.jedai.datamodel.AbstractBlock;
-import org.scify.jedai.datamodel.EntityProfile;
-
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-
 import org.apache.jena.atlas.json.JsonArray;
 import org.apache.jena.atlas.json.JsonObject;
 import org.scify.jedai.configuration.gridsearch.IntGridSearchConfiguration;
 import org.scify.jedai.configuration.randomsearch.IntRandomSearchConfiguration;
+import org.scify.jedai.datamodel.AbstractBlock;
+import org.scify.jedai.datamodel.EntityProfile;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  *
@@ -61,12 +59,7 @@ public class SuffixArraysBlocking extends StandardBlocking {
     public List<AbstractBlock> getBlocks(List<EntityProfile> profilesD1,
             List<EntityProfile> profilesD2) {
         final List<AbstractBlock> purgedBlocks = super.getBlocks(profilesD1, profilesD2);
-        final Iterator<AbstractBlock> blocksIterator = purgedBlocks.iterator();
-        while (blocksIterator.hasNext()) {
-            if (maximumBlockSize < blocksIterator.next().getTotalBlockAssignments()) {
-                blocksIterator.remove();
-            }
-        }
+        purgedBlocks.removeIf(abstractBlock -> maximumBlockSize < abstractBlock.getTotalBlockAssignments());
         return purgedBlocks;
     }
 

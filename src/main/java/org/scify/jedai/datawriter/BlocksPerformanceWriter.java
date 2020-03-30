@@ -15,25 +15,23 @@
  */
 package org.scify.jedai.datawriter;
 
+import com.esotericsoftware.minlog.Log;
+import gnu.trove.set.TIntSet;
+import gnu.trove.set.hash.TIntHashSet;
+import org.apache.jena.update.UpdateExecutionFactory;
+import org.apache.jena.update.UpdateFactory;
+import org.apache.jena.update.UpdateProcessor;
+import org.apache.jena.update.UpdateRequest;
 import org.rdfhdt.hdt.enums.RDFNotation;
 import org.rdfhdt.hdt.exceptions.ParserException;
 import org.rdfhdt.hdt.hdt.HDT;
 import org.rdfhdt.hdt.hdt.HDTManager;
 import org.rdfhdt.hdt.options.HDTSpecification;
+import org.scify.jedai.blockprocessing.comparisoncleaning.ComparisonPropagation;
+import org.scify.jedai.datamodel.*;
 import org.scify.jedai.utilities.datastructures.AbstractDuplicatePropagation;
 import org.scify.jedai.utilities.datastructures.GroundTruthIndex;
-import org.scify.jedai.datamodel.AbstractBlock;
-import org.scify.jedai.datamodel.BilateralBlock;
-import org.scify.jedai.datamodel.Comparison;
-import org.scify.jedai.datamodel.ComparisonIterator;
-import org.scify.jedai.datamodel.DecomposedBlock;
-import org.scify.jedai.datamodel.IdDuplicates;
-import org.scify.jedai.datamodel.UnilateralBlock;
 
-import com.esotericsoftware.minlog.Log;
-
-import gnu.trove.set.TIntSet;
-import gnu.trove.set.hash.TIntHashSet;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -43,13 +41,6 @@ import java.sql.DriverManager;
 import java.sql.Statement;
 import java.util.List;
 import java.util.Properties;
-
-import org.apache.jena.update.UpdateExecutionFactory;
-import org.apache.jena.update.UpdateFactory;
-import org.apache.jena.update.UpdateProcessor;
-import org.apache.jena.update.UpdateRequest;
-import org.scify.jedai.blockprocessing.comparisoncleaning.ComparisonPropagation;
-import org.scify.jedai.datamodel.EntityProfile;
 
 /**
  *
@@ -154,17 +145,17 @@ public class BlocksPerformanceWriter {
 
         int noOfBlocks1 = blocks1.length;
         int noOfBlocks2 = blocks2.length;
-        for (int i = 0; i < noOfBlocks1; i++) {
-            for (int j = 0; j < noOfBlocks2; j++) {
-                if (blocks2[j] < blocks1[i]) {
+        for (int item : blocks1) {
+            for (int value : blocks2) {
+                if (value < item) {
                     continue;
                 }
 
-                if (blocks1[i] < blocks2[j]) {
+                if (item < value) {
                     break;
                 }
 
-                if (blocks1[i] == blocks2[j]) {
+                if (item == value) {
                     return true;
                 }
             }
@@ -1006,15 +997,15 @@ public class BlocksPerformanceWriter {
 
                 counter0++;
 
-                sb.append("<obj/" + "record/" + block.toString() + "> ");
+                sb.append("<obj/" + "record/").append(block.toString()).append("> ");
                 sb.append("<url1> ");
-                sb.append("\"" + profile1.getEntityUrl().replace("&", "") + "" + "\".\n");
+                sb.append("\"").append(profile1.getEntityUrl().replace("&", "")).append("\".\n");
 
-                sb.append("<obj/" + "record/" + block.toString() + "> ");
+                sb.append("<obj/" + "record/").append(block.toString()).append("> ");
                 sb.append("<url2> ");
-                sb.append("\"" + profile2.getEntityUrl().replace("&", "") + "" + "\".\n");
+                sb.append("\"").append(profile2.getEntityUrl().replace("&", "")).append("\".\n");
 
-                sb.append("<obj/" + "record/" + block.toString() + "> ");
+                sb.append("<obj/" + "record/").append(block.toString()).append("> ");
                 sb.append("<pairType> ");
                 if (originalDuplicates == newDuplicates) {
                     sb.append("\"" + "FP" + "\".\n");//false positive
@@ -1022,13 +1013,13 @@ public class BlocksPerformanceWriter {
                     sb.append("\"" + "TP" + "\".\n"); // true positive
                 }
 
-                sb.append("<obj/" + "record/" + block.toString() + "> ");
+                sb.append("<obj/" + "record/").append(block.toString()).append("> ");
                 sb.append("<Profile1> ");
-                sb.append("\"" + (profile1 + "").replace("&", "") + "\".\n");
+                sb.append("\"").append((profile1 + "").replace("&", "")).append("\".\n");
 
-                sb.append("<obj/" + "record/" + block.toString() + "> ");
+                sb.append("<obj/" + "record/").append(block.toString()).append("> ");
                 sb.append("<Profile2> ");
-                sb.append("\"" + (profile2 + "").replace("&", "") + "\".\n");
+                sb.append("\"").append((profile2 + "").replace("&", "")).append("\".\n");
 
                 //execute query every 1000 steps
                 if (counter0 % 1000 == 0) {
@@ -1064,25 +1055,25 @@ public class BlocksPerformanceWriter {
 
             counter1++;
 
-            sb.append("<obj/" + "record/" + duplicatesPair.toString() + "> ");
+            sb.append("<obj/" + "record/").append(duplicatesPair.toString()).append("> ");
             sb.append("<url1> ");
-            sb.append("\"" + profile1.getEntityUrl().replace("&", "") + "" + "\".\n");
+            sb.append("\"").append(profile1.getEntityUrl().replace("&", "")).append("\".\n");
 
-            sb.append("<obj/" + "record/" + duplicatesPair.toString() + "> ");
+            sb.append("<obj/" + "record/").append(duplicatesPair.toString()).append("> ");
             sb.append("<url2> ");
-            sb.append("\"" + profile2.getEntityUrl().replace("&", "") + "" + "\".\n");
+            sb.append("\"").append(profile2.getEntityUrl().replace("&", "")).append("\".\n");
 
-            sb.append("<obj/" + "record/" + duplicatesPair.toString() + "> ");
+            sb.append("<obj/" + "record/").append(duplicatesPair.toString()).append("> ");
             sb.append("<pairType> ");
             sb.append("\"" + "FN" + "\".\n"); // false negative
 
-            sb.append("<obj/" + "record/" + duplicatesPair.toString() + "> ");
+            sb.append("<obj/" + "record/").append(duplicatesPair.toString()).append("> ");
             sb.append("<Profile1> ");
-            sb.append("\"" + (profile1 + "").replace("&", "") + "\".\n");
+            sb.append("\"").append((profile1 + "").replace("&", "")).append("\".\n");
 
-            sb.append("<obj/" + "record/" + duplicatesPair.toString() + "> ");
+            sb.append("<obj/" + "record/").append(duplicatesPair.toString()).append("> ");
             sb.append("<Profile2> ");
-            sb.append("\"" + (profile2 + "").replace("&", "") + "\".\n");
+            sb.append("\"").append((profile2 + "").replace("&", "")).append("\".\n");
 
             //execute query every 1000 steps
             if (counter1 % 1000 == 0) {
@@ -1121,15 +1112,15 @@ public class BlocksPerformanceWriter {
 
         sb.append("<obj/" + "record/" + "STATS" + "> ");
         sb.append("<PairsQuality> ");
-        sb.append("\"" + pq + "\".\n");
+        sb.append("\"").append(pq).append("\".\n");
 
         sb.append("<obj/" + "record/" + "STATS" + "> ");
         sb.append("<PairsCompletentess> ");
-        sb.append("\"" + pc + "\".\n");
+        sb.append("\"").append(pc).append("\".\n");
 
         sb.append("<obj/" + "record/" + "STATS" + "> ");
         sb.append("<F-Measure> ");
-        sb.append("\"" + fMeasure + "\".\n");
+        sb.append("\"").append(fMeasure).append("\".\n");
 
         sb.append("}\n }");
         String sparqlQueryString = sb.toString();
@@ -1170,16 +1161,16 @@ public class BlocksPerformanceWriter {
                 abstractDP.isSuperfluous(currentComparison.getEntityId1(), currentComparison.getEntityId2());
                 final int newDuplicates = abstractDP.getNoOfDuplicates();
 
-                sb.append("('" + profile1.getEntityUrl() + "', ");
-                sb.append("'" + profile2.getEntityUrl() + "', ");
+                sb.append("('").append(profile1.getEntityUrl()).append("', ");
+                sb.append("'").append(profile2.getEntityUrl()).append("', ");
 
                 if (originalDuplicates == newDuplicates) {
                     sb.append("'" + "FP" + "', "); //false positive
                 } else { // originalDuplicates < newDuplicates
                     sb.append("'" + "TP" + "', "); //true positive
                 }
-                sb.append("'" + profile1 + "', ");
-                sb.append("'" + profile2 + "'), ");
+                sb.append("'").append(profile1).append("', ");
+                sb.append("'").append(profile2).append("'), ");
             }
         }
 
@@ -1187,11 +1178,11 @@ public class BlocksPerformanceWriter {
             final EntityProfile profile1 = profilesD1.get(duplicatesPair.getEntityId1());
             final EntityProfile profile2 = isCleanCleanER ? profilesD2.get(duplicatesPair.getEntityId2()) : profilesD1.get(duplicatesPair.getEntityId2());
 
-            sb.append("('" + profile1.getEntityUrl() + "', ");
-            sb.append("'" + profile2.getEntityUrl() + "', ");
+            sb.append("('").append(profile1.getEntityUrl()).append("', ");
+            sb.append("'").append(profile2.getEntityUrl()).append("', ");
             sb.append("'" + "FN" + "', "); // false negative
-            sb.append("'" + profile1 + "', ");
-            sb.append("'" + profile2 + "'), ");
+            sb.append("'").append(profile1).append("', ");
+            sb.append("'").append(profile2).append("'), ");
         }
 
         detectedDuplicates = abstractDP.getNoOfDuplicates();
@@ -1203,9 +1194,9 @@ public class BlocksPerformanceWriter {
             fMeasure = 0;
         }
 
-        sb.append("('" + pq + "', ");
-        sb.append("'" + pc + "', ");
-        sb.append("'" + fMeasure + "', ");
+        sb.append("('").append(pq).append("', ");
+        sb.append("'").append(pc).append("', ");
+        sb.append("'").append(fMeasure).append("', ");
         sb.append("'" + "NULL" + "', ");
         sb.append("'" + "NULL" + "'); ");
 
@@ -1308,11 +1299,11 @@ public class BlocksPerformanceWriter {
             final EntityProfile profile1 = profilesD1.get(duplicatesPair.getEntityId1());
             final EntityProfile profile2 = isCleanCleanER ? profilesD2.get(duplicatesPair.getEntityId2()) : profilesD1.get(duplicatesPair.getEntityId2());
 
-            sb.append("('" + profile1.getEntityUrl() + "', ");
-            sb.append("'" + profile2.getEntityUrl() + "', ");
+            sb.append("('").append(profile1.getEntityUrl()).append("', ");
+            sb.append("'").append(profile2.getEntityUrl()).append("', ");
             sb.append("'" + "FN" + "', "); // false negative
-            sb.append("'" + profile1 + "', ");
-            sb.append("'" + profile2 + "'), ");
+            sb.append("'").append(profile1).append("', ");
+            sb.append("'").append(profile2).append("'), ");
         }
 
         String dbquery = sb.toString();
@@ -1664,25 +1655,25 @@ public class BlocksPerformanceWriter {
             final EntityProfile profile1 = profilesD1.get(duplicatesPair.getEntityId1());
             final EntityProfile profile2 = isCleanCleanER ? profilesD2.get(duplicatesPair.getEntityId2()) : profilesD1.get(duplicatesPair.getEntityId2());
 
-            sb.append("<obj/" + "record/" + duplicatesPair.toString() + "> ");
+            sb.append("<obj/" + "record/").append(duplicatesPair.toString()).append("> ");
             sb.append("<url1> ");
-            sb.append("\"" + profile1.getEntityUrl().replace("&", "") + "" + "\".\n");
+            sb.append("\"").append(profile1.getEntityUrl().replace("&", "")).append("\".\n");
 
-            sb.append("<obj/" + "record/" + duplicatesPair.toString() + "> ");
+            sb.append("<obj/" + "record/").append(duplicatesPair.toString()).append("> ");
             sb.append("<url2> ");
-            sb.append("\"" + profile2.getEntityUrl().replace("&", "") + "" + "\".\n");
+            sb.append("\"").append(profile2.getEntityUrl().replace("&", "")).append("\".\n");
 
-            sb.append("<obj/" + "record/" + duplicatesPair.toString() + "> ");
+            sb.append("<obj/" + "record/").append(duplicatesPair.toString()).append("> ");
             sb.append("<pairType> ");
             sb.append("\"" + "FN" + "\".\n"); // false negative
 
-            sb.append("<obj/" + "record/" + duplicatesPair.toString() + "> ");
+            sb.append("<obj/" + "record/").append(duplicatesPair.toString()).append("> ");
             sb.append("<Profile1> ");
-            sb.append("\"" + (profile1 + "").replace("&", "") + "\".\n");
+            sb.append("\"").append((profile1 + "").replace("&", "")).append("\".\n");
 
-            sb.append("<obj/" + "record/" + duplicatesPair.toString() + "> ");
+            sb.append("<obj/" + "record/").append(duplicatesPair.toString()).append("> ");
             sb.append("<Profile2> ");
-            sb.append("\"" + (profile2 + "").replace("&", "") + "\".\n");
+            sb.append("\"").append((profile2 + "").replace("&", "")).append("\".\n");
 
             //execute query every 1000 steps
             if (counter % 1000 == 0) {

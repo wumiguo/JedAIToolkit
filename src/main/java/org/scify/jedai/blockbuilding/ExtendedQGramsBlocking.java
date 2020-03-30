@@ -15,15 +15,15 @@
  */
 package org.scify.jedai.blockbuilding;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import org.apache.jena.atlas.json.JsonArray;
 import org.apache.jena.atlas.json.JsonObject;
 import org.scify.jedai.configuration.gridsearch.DblGridSearchConfiguration;
 import org.scify.jedai.configuration.randomsearch.DblRandomSearchConfiguration;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  *
@@ -81,14 +81,11 @@ public class ExtendedQGramsBlocking extends QGramsBlocking {
         final Set<String> combinationsExclusiveX = getCombinationsFor(remainingElements, sublistLength);
         final Set<String> combinationsInclusiveX = getCombinationsFor(remainingElements, sublistLength - 1);
 
-        final Set<String> resultingCombinations = new HashSet<>();
-        resultingCombinations.addAll(combinationsExclusiveX);
+        final Set<String> resultingCombinations = new HashSet<>(combinationsExclusiveX);
         if (combinationsInclusiveX.isEmpty()) {
             resultingCombinations.add(lastSublist);
         } else {
-            combinationsInclusiveX.stream().forEach((combination) -> {
-                resultingCombinations.add(combination + lastSublist);
-            });
+            combinationsInclusiveX.stream().forEach((combination) -> resultingCombinations.add(combination + lastSublist));
         }
         return resultingCombinations;
     }
