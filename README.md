@@ -6,7 +6,7 @@ Please check our [technical report](https://github.com/scify/JedAIToolkit/blob/m
 
 The code for running JedAI on **Apache Spark** is available [here](https://github.com/scify/JedAI-Spark). 
 
-The new web application for running JedAI is available [here](https://github.com/GiorgosMandi/JedAI-WebApp).
+The **Web Application** for running JedAI is available [here](https://github.com/GiorgosMandi/JedAI-WebApp).
 
 JedAI is also available as a **Docker image** [here](https://hub.docker.com/repository/docker/gmandi/jedai-webapp). See below for more details.
 
