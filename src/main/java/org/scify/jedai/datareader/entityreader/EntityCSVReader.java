@@ -36,7 +36,7 @@ public class EntityCSVReader extends AbstractEntityReader {
 
     private boolean attributeNamesInFirstRow;
     private int idIndex;
-    private String separator;
+    private char separator;
     private String[] attributeNames;
     private final Set<Integer> attributesToExclude;
 
@@ -45,7 +45,7 @@ public class EntityCSVReader extends AbstractEntityReader {
         attributeNamesInFirstRow = false;
         attributeNames = null;
         idIndex = -1;
-        separator = ",";
+        separator = ',';
         attributesToExclude = new HashSet<>();
     }
 
@@ -61,7 +61,7 @@ public class EntityCSVReader extends AbstractEntityReader {
         }
 
         try (final BufferedReader br = new BufferedReader(new FileReader(inputFilePath));
-             final CSVReader csvReader = new CSVReader(br)) {
+             final CSVReader csvReader = new CSVReader(br, separator)) {
 
             // Get first line
             final String[] firstRecord = csvReader.readNext();
@@ -282,7 +282,7 @@ public class EntityCSVReader extends AbstractEntityReader {
         attributesToExclude.add(idIndex);
     }
 
-    public void setSeparator(String separator) {
+    public void setSeparator(char separator) {
         this.separator = separator;
     }
 }
