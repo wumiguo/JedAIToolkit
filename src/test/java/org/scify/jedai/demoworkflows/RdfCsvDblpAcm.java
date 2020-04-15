@@ -15,30 +15,31 @@
  */
 package org.scify.jedai.demoworkflows;
 
-import org.scify.jedai.demoworkflows.groundtruth.GtDblpRdfAcmCsvReader;
+import org.apache.log4j.BasicConfigurator;
 import org.scify.jedai.blockbuilding.IBlockBuilding;
 import org.scify.jedai.blockbuilding.StandardBlocking;
+import org.scify.jedai.blockprocessing.IBlockProcessing;
 import org.scify.jedai.blockprocessing.blockcleaning.BlockFiltering;
 import org.scify.jedai.blockprocessing.comparisoncleaning.CardinalityNodePruning;
-import org.scify.jedai.blockprocessing.IBlockProcessing;
 import org.scify.jedai.datamodel.AbstractBlock;
 import org.scify.jedai.datamodel.EntityProfile;
 import org.scify.jedai.datamodel.EquivalenceCluster;
 import org.scify.jedai.datamodel.SimilarityPairs;
 import org.scify.jedai.datareader.entityreader.EntityCSVReader;
 import org.scify.jedai.datareader.entityreader.EntityRDFReader;
+import org.scify.jedai.demoworkflows.groundtruth.GtDblpRdfAcmCsvReader;
 import org.scify.jedai.entityclustering.ConnectedComponentsClustering;
 import org.scify.jedai.entityclustering.IEntityClustering;
 import org.scify.jedai.entitymatching.IEntityMatching;
 import org.scify.jedai.entitymatching.ProfileMatcher;
 import org.scify.jedai.utilities.BlocksPerformance;
 import org.scify.jedai.utilities.ClustersPerformance;
+import org.scify.jedai.utilities.PrintToFile;
 import org.scify.jedai.utilities.datastructures.AbstractDuplicatePropagation;
 import org.scify.jedai.utilities.datastructures.BilateralDuplicatePropagation;
-import org.scify.jedai.utilities.PrintToFile;
+
 import java.io.FileNotFoundException;
 import java.util.List;
-import org.apache.log4j.BasicConfigurator;
 
 /**
  *
@@ -63,7 +64,7 @@ public class RdfCsvDblpAcm {
         EntityCSVReader csvEntityReader = new EntityCSVReader(mainDirectory + "ACM.csv");
         csvEntityReader.setAttributeNamesInFirstRow(true);
         csvEntityReader.setIdIndex(0);
-        csvEntityReader.setSeparator(",");
+        csvEntityReader.setSeparator(',');
         List<EntityProfile> csvACM = csvEntityReader.getEntityProfiles();
         System.out.println("RDF ACM Entity Profiles\t:\t" + csvACM.size());
 
