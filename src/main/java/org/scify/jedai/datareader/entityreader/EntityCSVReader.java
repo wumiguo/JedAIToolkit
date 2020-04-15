@@ -15,11 +15,13 @@
  */
 package org.scify.jedai.datareader.entityreader;
 
+import com.esotericsoftware.minlog.Log;
+import com.opencsv.CSVReader;
+import org.apache.jena.atlas.json.JsonArray;
+import org.apache.jena.atlas.json.JsonObject;
 import org.scify.jedai.datamodel.EntityProfile;
 
-import com.esotericsoftware.minlog.Log;
 import java.io.BufferedReader;
-
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Arrays;
@@ -27,18 +29,14 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.jena.atlas.json.JsonArray;
-import org.apache.jena.atlas.json.JsonObject;
-
 /**
- *
  * @author G.A.P. II
  */
 public class EntityCSVReader extends AbstractEntityReader {
-    
+
     private boolean attributeNamesInFirstRow;
     private int idIndex;
-    private String separator;
+    private char separator;
     private String[] attributeNames;
     private final Set<Integer> attributesToExclude;
 
@@ -47,7 +45,7 @@ public class EntityCSVReader extends AbstractEntityReader {
         attributeNamesInFirstRow = false;
         attributeNames = null;
         idIndex = -1;
-        separator = ",";
+        separator = ',';
         attributesToExclude = new HashSet<>();
     }
 
@@ -62,28 +60,27 @@ public class EntityCSVReader extends AbstractEntityReader {
             return null;
         }
 
-        try {
-            //creating reader
-            final BufferedReader br = new BufferedReader(new FileReader(inputFilePath));
+        try (final BufferedReader br = new BufferedReader(new FileReader(inputFilePath));
+             final CSVReader csvReader = new CSVReader(br, separator)) {
 
-            //getting first line
-            String line = br.readLine();
-            if (line == null) {
+            // Get first line
+            final String[] firstRecord = csvReader.readNext();
+
+            if (firstRecord == null) {
                 Log.error("Empty file given as input.");
                 return null;
             }
-            
-            final String[] firstLine = line.split(separator);
-            int noOfAttributes = firstLine.length;
+
+            int noOfAttributes = firstRecord.length;
             if (noOfAttributes - 1 < idIndex) {
                 Log.error("Id index does not correspond to a valid column index! Counting starts from 0.");
                 return null;
             }
 
-            //setting attribute names
+            // Setting attribute names
             int entityCounter = 0;
             if (attributeNamesInFirstRow) {
-                attributeNames = Arrays.copyOf(firstLine, noOfAttributes);
+                attributeNames = Arrays.copyOf(firstRecord, noOfAttributes);
             } else { // no attribute names in csv file
                 attributeNames = new String[noOfAttributes];
                 for (int i = 0; i < noOfAttributes; i++) {
@@ -91,32 +88,33 @@ public class EntityCSVReader extends AbstractEntityReader {
                 }
 
                 entityCounter++; //first line corresponds to entity
-                readEntity(entityCounter, firstLine);
+                readEntity(entityCounter, firstRecord);
             }
 
             //read entity profiles
-            String[] nextLine;
-            while ((line = br.readLine()) != null) {
+            String[] nextRecord;
+            while ((nextRecord = csvReader.readNext()) != null) {
                 entityCounter++;
 
-                nextLine = line.split(separator);
-                if (nextLine.length < attributeNames.length - 1) {
-                    Log.warn("Line with missing attribute names : " + line);
+                if (nextRecord.length < attributeNames.length - 1) {
+                    Log.warn("Line with missing attribute names : " + Arrays.toString(nextRecord));
                     continue;
                 }
-                if (attributeNames.length < nextLine.length ) {
-                    Log.warn("Line with missing more attributes : " + line);
+                if (attributeNames.length < nextRecord.length) {
+                    Log.warn("Line with missing more attributes : " + Arrays.toString(nextRecord));
                     continue;
                 }
 
-                readEntity(entityCounter, nextLine);
+                readEntity(entityCounter, nextRecord);
             }
-            
+
             return entityProfiles;
-        } catch (IOException ex) {
-            Log.error("Error in entities reading!", ex);
+
+        } catch (IOException e) {
+            Log.error("Error in entities reading!", e);
             return null;
         }
+
     }
 
     @Override
@@ -249,7 +247,7 @@ public class EntityCSVReader extends AbstractEntityReader {
         }
     }
 
-    private void readEntity(int index, String[] currentLine) throws IOException {
+    private void readEntity(int index, String[] currentLine) {
         String entityId;
         if (idIndex < 0) {
             entityId = "id" + index;
@@ -284,7 +282,7 @@ public class EntityCSVReader extends AbstractEntityReader {
         attributesToExclude.add(idIndex);
     }
 
-    public void setSeparator(String separator) {
+    public void setSeparator(char separator) {
         this.separator = separator;
     }
 }

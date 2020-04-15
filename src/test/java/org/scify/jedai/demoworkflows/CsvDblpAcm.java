@@ -15,14 +15,13 @@
  */
 package org.scify.jedai.demoworkflows;
 
-import java.io.File;
-
+import org.apache.log4j.BasicConfigurator;
 import org.rdfhdt.hdt.exceptions.ParserException;
 import org.scify.jedai.blockbuilding.IBlockBuilding;
 import org.scify.jedai.blockbuilding.StandardBlocking;
+import org.scify.jedai.blockprocessing.IBlockProcessing;
 import org.scify.jedai.blockprocessing.blockcleaning.BlockFiltering;
 import org.scify.jedai.blockprocessing.comparisoncleaning.CardinalityNodePruning;
-import org.scify.jedai.blockprocessing.IBlockProcessing;
 import org.scify.jedai.datamodel.AbstractBlock;
 import org.scify.jedai.datamodel.EntityProfile;
 import org.scify.jedai.datamodel.EquivalenceCluster;
@@ -39,9 +38,10 @@ import org.scify.jedai.utilities.BlocksPerformance;
 import org.scify.jedai.utilities.ClustersPerformance;
 import org.scify.jedai.utilities.datastructures.AbstractDuplicatePropagation;
 import org.scify.jedai.utilities.datastructures.BilateralDuplicatePropagation;
+
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import org.apache.log4j.BasicConfigurator;
 
 /**
  *
@@ -57,14 +57,14 @@ public class CsvDblpAcm {
         EntityCSVReader csvEntityReader = new EntityCSVReader(mainDirectory + "DBLP2.csv");
         csvEntityReader.setAttributeNamesInFirstRow(true);
         csvEntityReader.setIdIndex(0);
-        csvEntityReader.setSeparator(",");
+        csvEntityReader.setSeparator(',');
         List<EntityProfile> csvDBLP = csvEntityReader.getEntityProfiles();
         System.out.println("CSV DBLP Entity Profiles\t:\t" + csvDBLP.size());
         
         csvEntityReader = new EntityCSVReader(mainDirectory + "ACM.csv");
         csvEntityReader.setAttributeNamesInFirstRow(true);
         csvEntityReader.setIdIndex(0);
-        csvEntityReader.setSeparator(",");
+        csvEntityReader.setSeparator(',');
         List<EntityProfile> csvACM = csvEntityReader.getEntityProfiles();
         System.out.println("CSV ACM Entity Profiles\t:\t" + csvACM.size());
 

@@ -41,7 +41,7 @@ public class TestAllMethodsDirtyER {
         testJedaiEntityReader = new EntityCSVReader(mainDirectory + "testJedai.txt");
         testJedaiEntityReader.setAttributeNamesInFirstRow(false);
         //csvEntityReader.setIdIndex(0);
-        testJedaiEntityReader.setSeparator(";");
+        testJedaiEntityReader.setSeparator(';');
         List<EntityProfile> csvACM = testJedaiEntityReader.getEntityProfiles();
 
         //System.out.println("CSV ACM Entity Profiles\t:\t" + csvACM.size());

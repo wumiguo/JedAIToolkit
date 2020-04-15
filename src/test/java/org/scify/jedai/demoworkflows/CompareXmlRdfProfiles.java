@@ -15,16 +15,17 @@
  */
 package org.scify.jedai.demoworkflows;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import org.apache.log4j.BasicConfigurator;
 import org.scify.jedai.datamodel.Attribute;
 import org.scify.jedai.datamodel.EntityProfile;
 import org.scify.jedai.datareader.entityreader.EntityCSVReader;
 import org.scify.jedai.datareader.entityreader.EntityRDFReader;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -48,7 +49,7 @@ public class CompareXmlRdfProfiles {
         EntityCSVReader csvEntityReader = new EntityCSVReader(mainDirectory + "ACM.csv");
         csvEntityReader.setAttributeNamesInFirstRow(true);
         csvEntityReader.setIdIndex(0);
-        csvEntityReader.setSeparator(",");
+        csvEntityReader.setSeparator(',');
         List<EntityProfile> csvDBLP = csvEntityReader.getEntityProfiles();
         System.out.println("CSV DBLP Entity Profiles\t:\t" + csvDBLP.size());
 

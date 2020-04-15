@@ -102,7 +102,7 @@ public class TestSimJoinsWithDirtyERdatasets {
         testJedaiEntityReader = new EntityCSVReader(mainDirectory + "testJedaiACMdplp.txt");
         testJedaiEntityReader.setAttributeNamesInFirstRow(false);
         //csvEntityReader.setIdIndex(0);
-        testJedaiEntityReader.setSeparator(";");
+        testJedaiEntityReader.setSeparator(';');
         List<EntityProfile> csvACM = testJedaiEntityReader.getEntityProfiles();
 
         //List<EntityProfile> profiles = getDatasetAggregateValues(entitiesFilePath);

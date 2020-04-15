@@ -16,11 +16,12 @@
 
 package org.scify.jedai.datareader;
 
+import org.apache.log4j.BasicConfigurator;
 import org.scify.jedai.datamodel.Attribute;
 import org.scify.jedai.datamodel.EntityProfile;
 import org.scify.jedai.datareader.entityreader.EntityCSVReader;
+
 import java.util.List;
-import org.apache.log4j.BasicConfigurator;
 
 /**
  *
@@ -34,7 +35,7 @@ public class TestEntityCSVReader {
         String filePath = "/home/gap2/data/JedAIdata/datasets/dirtyErDatasets/dblp/articles.csv";
         EntityCSVReader csvReader = new EntityCSVReader(filePath);
         csvReader.setAttributeNamesInFirstRow(true);
-        csvReader.setSeparator(";");
+        csvReader.setSeparator(';');
 //        csvReader.setAttributesToExclude(new int[]{1});
         csvReader.setIdIndex(0);
         List<EntityProfile> profiles = csvReader.getEntityProfiles();
