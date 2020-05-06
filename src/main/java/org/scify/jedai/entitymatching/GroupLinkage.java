@@ -144,7 +144,7 @@ public class GroupLinkage extends AbstractEntityMatching {
         RepresentationModel.resetGlobalValues(datasetId, representationModel);
         for (EntityProfile profile : profiles) {
             int validAttributes = 0;
-            validAttributes = profile.getAttributes().stream().filter((attribute) -> (!attribute.getValue().isEmpty())).map((_item) -> 1).reduce(validAttributes, Integer::sum);
+            validAttributes = profile.getAttributes().stream().filter((attribute) -> (!attribute.getValue().isEmpty())).mapToInt(_item -> 1).sum();
 
             int counter = 0;
             ModelsList[entityCounter] = new ITextModel[validAttributes];
