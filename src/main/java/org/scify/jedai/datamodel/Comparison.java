@@ -65,6 +65,10 @@ public class Comparison implements Serializable {
         return entityId2;
     }
     
+    /**
+     * Returns the measure of the weight or similarity between two entities. Higher utility measures
+     * correspond to greater weight or stronger similarity.
+     */
     public double getUtilityMeasure() {
         return utilityMeasure;
     }
@@ -81,6 +85,7 @@ public class Comparison implements Serializable {
         return cleanCleanER;
     }
     
+    /** @see #getUtilityMeasure() */
     public void setUtilityMeasure(double utilityMeasure) {
         this.utilityMeasure = utilityMeasure;
     }

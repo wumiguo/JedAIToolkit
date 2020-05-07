@@ -21,10 +21,12 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
+ * The representation of a single entity or record. An entity is comprised of one or more
+ * {@link #getAttributes() Attribute} name/value pairs and a {@link #getEntityUrl() URL} which 
+ * uniquely identifies each entity.
  *
  * @author G.A.P. II
  */
-
 public class EntityProfile implements Serializable {
 
     private static final long serialVersionUID = 122354534453243447L;
@@ -34,7 +36,7 @@ public class EntityProfile implements Serializable {
 
     public EntityProfile(String url) {
         entityUrl = url;
-        attributes = new HashSet();
+        attributes = new HashSet<>();
     }
 
     public void addAttribute(String propertyName, String propertyValue) {

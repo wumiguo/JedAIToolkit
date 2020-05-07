@@ -29,7 +29,7 @@ public class SimilarityPairs implements IConstants, Serializable {
 
     private final boolean isCleanCleanER;
     private int currentIndex;
-    private final double[] similarities;
+    private final float[] similarities;
     private final int[] entityIds1;
     private final int[] entityIds2;
 
@@ -38,7 +38,7 @@ public class SimilarityPairs implements IConstants, Serializable {
         isCleanCleanER = ccer;
         entityIds1 = new int[comparisons];
         entityIds2 = new int[comparisons];
-        similarities = new double[comparisons];
+        similarities = new float[comparisons];
     }
     
     public SimilarityPairs(boolean ccer, List<AbstractBlock> blocks) {
@@ -47,13 +47,13 @@ public class SimilarityPairs implements IConstants, Serializable {
         double totalComparisons = countComparisons(blocks);
         entityIds1 = new int[(int) totalComparisons];
         entityIds2 = new int[(int) totalComparisons];
-        similarities = new double[(int) totalComparisons];
+        similarities = new float[(int) totalComparisons];
     }
 
     public void addComparison(Comparison comparison) {
         entityIds1[currentIndex] = comparison.getEntityId1();
         entityIds2[currentIndex] = comparison.getEntityId2();
-        similarities[currentIndex++] = comparison.getUtilityMeasure();
+        similarities[currentIndex++] = (float) comparison.getUtilityMeasure();
     }
 
     private double countComparisons(List<AbstractBlock> blocks) {
@@ -86,7 +86,7 @@ public class SimilarityPairs implements IConstants, Serializable {
         return new PairIterator(this);
     }
 
-    public double[] getSimilarities() {
+    public float[] getSimilarities() {
         return similarities;
     }
 
