@@ -121,7 +121,7 @@ public class TestDirtyERBaseline {
             for (Comparison comparison : allComparisons) {
                 counter++;
 
-                double similarity = em.executeComparison(comparison);
+                float similarity = em.executeComparison(comparison);
                 comparison.setUtilityMeasure(similarity);
 //                Double originalSim = comparisonWeight.get(comparison);
 //                if (originalSim == null) {

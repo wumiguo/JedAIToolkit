@@ -54,25 +54,25 @@ public abstract class GraphModel extends AbstractModel {
     }
 
     @Override
-    public double getSimilarity(ITextModel oModel) {
+    public float getSimilarity(ITextModel oModel) {
         final GraphSimilarity graphSimilarity = COMPARATOR.getSimilarityBetween(this.getGraphModel(), ((GraphModel) oModel).getGraphModel());
         switch (simMetric) {
             case GRAPH_CONTAINMENT_SIMILARITY:
-                return graphSimilarity.ContainmentSimilarity;
+                return (float)graphSimilarity.ContainmentSimilarity;
             case GRAPH_NORMALIZED_VALUE_SIMILARITY:
                 if (0 < graphSimilarity.SizeSimilarity) {
-                    return graphSimilarity.ValueSimilarity / graphSimilarity.SizeSimilarity;
+                    return (float)(graphSimilarity.ValueSimilarity / graphSimilarity.SizeSimilarity);
                 }
             case GRAPH_VALUE_SIMILARITY:
-                return graphSimilarity.ValueSimilarity;
+                return (float)graphSimilarity.ValueSimilarity;
             case GRAPH_OVERALL_SIMILARITY:
                 double overallSimilarity = graphSimilarity.ContainmentSimilarity;
                 overallSimilarity += graphSimilarity.ValueSimilarity;
                 if (0 < graphSimilarity.SizeSimilarity) {
                     overallSimilarity += graphSimilarity.ValueSimilarity / graphSimilarity.SizeSimilarity;
-                    return overallSimilarity / 3;
+                    return (float)(overallSimilarity / 3);
                 }
-                return overallSimilarity / 2;
+                return (float)(overallSimilarity / 2);
             default:
                 Log.error("The given similarity metric is incompatible with the n-gram graphs representation model!");
                 System.exit(-1);

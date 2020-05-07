@@ -30,7 +30,7 @@ public interface ITextModel extends IConstants {
 
     Set<String> getSignatures();
 
-    double getSimilarity(ITextModel oModel);
+    float getSimilarity(ITextModel oModel);
 
     void finalizeModel();
 

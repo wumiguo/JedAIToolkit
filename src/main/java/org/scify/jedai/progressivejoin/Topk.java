@@ -42,7 +42,7 @@ public class Topk extends AbstractProgressiveJoin {
 
     private int[] originalId;
 
-    protected double threshold;
+    protected float threshold;
 
     protected final DblGridSearchConfiguration gridThreshold;
     protected final DblRandomSearchConfiguration randomThreshold;
@@ -50,7 +50,7 @@ public class Topk extends AbstractProgressiveJoin {
     private final List<String> attributeValues;
     private TIntList[] records;
 
-    public Topk(double thr, int budget) {
+    public Topk(float thr, int budget) {
         super(budget);
         threshold = thr;
         attributeValues = new ArrayList<>();
@@ -152,12 +152,12 @@ public class Topk extends AbstractProgressiveJoin {
         ssj.setRecords(recordsForTopk);
         ssj.topkGlobal(comparisonsBudget);
         
-        ArrayList<Object[]> results = ssj.getResults();
+        ArrayList<Comparison> results = ssj.getResults();
         final List<Comparison> executedComparisons = new ArrayList<>();
 
-        for (Object[] res : results) {
-            int id1 = Integer.parseInt((String) res[0]);
-            int id2 = Integer.parseInt((String) res[1]);
+        for (Comparison res : results) {
+            int id1 = res.getEntityId1();
+            int id2 = res.getEntityId2();
             if (id1 == id2) {
                 continue;
             }
@@ -166,10 +166,9 @@ public class Topk extends AbstractProgressiveJoin {
                     continue;
                 }
             }
-            double jaccardSim = (double) res[2];
-            if (jaccardSim >= threshold) {
+            if (res.getUtilityMeasure() >= threshold) {
                 final Comparison currentComp = getComparison(id1, id2);
-                currentComp.setUtilityMeasure(jaccardSim);
+                currentComp.setUtilityMeasure(res.getUtilityMeasure());
                 executedComparisons.add(currentComp);
             }
         }

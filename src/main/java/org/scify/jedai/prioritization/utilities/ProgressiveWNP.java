@@ -79,10 +79,10 @@ public class ProgressiveWNP extends WeightedNodePruning {
     protected void setThreshold(int entityId) {
         threshold = 0;
         int maxCompId = -1;
-        double maxWeight = -1;
+        float maxWeight = -1;
         for (TIntIterator iterator = validEntities.iterator(); iterator.hasNext();) {
             int neighborId = iterator.next();
-            double currentWeight = getWeight(entityId, neighborId);
+            float currentWeight = getWeight(entityId, neighborId);
             if (maxWeight < currentWeight) {
                 maxCompId = neighborId;
                 maxWeight = currentWeight;

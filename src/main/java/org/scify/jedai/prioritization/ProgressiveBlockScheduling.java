@@ -71,7 +71,7 @@ public class ProgressiveBlockScheduling extends AbstractHashBasedPrioritization 
         while (iterator.hasNext()) {
             final Comparison comparison = iterator.next();
             if (!isDecomposedBlock) {
-                double weight = entityIndex.getWeight(blockCounter, comparison);
+                float weight = entityIndex.getWeight(blockCounter, comparison);
                 if (weight < 0) {
                     continue;
                 }

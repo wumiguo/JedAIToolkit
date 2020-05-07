@@ -81,7 +81,7 @@ public class GroupLinkage extends AbstractEntityMatching {
     }
     
     @Override
-    public double executeComparison(Comparison comparison) {
+    public float executeComparison(Comparison comparison) {
         final Queue<SimilarityEdge> similarityQueue = getSimilarityEdges(comparison);
         final SimpleDirectedWeightedGraph<String, DefaultWeightedEdge> similarityGraph = getSimilarityGraph(similarityQueue);
         int verticesNum = entityModelsD1[comparison.getEntityId1()].length;
@@ -100,7 +100,7 @@ public class GroupLinkage extends AbstractEntityMatching {
         blocks.stream().map(AbstractBlock::getComparisonIterator).forEachOrdered((iterator) -> {
             while (iterator.hasNext()) {
                 final Comparison currentComparison = iterator.next();
-                double similarity = executeComparison(currentComparison);
+                float similarity = executeComparison(currentComparison);
                 if (0 < similarity) {
                     currentComparison.setUtilityMeasure(similarity);
                     simPairs.addComparison(currentComparison);
@@ -226,14 +226,14 @@ public class GroupLinkage extends AbstractEntityMatching {
         }
     }
 
-    private double getSimilarity(SimpleDirectedWeightedGraph<String, DefaultWeightedEdge> simGraph, int verticesNum) {
-        double nominator = 0;
-        double denominator = (double) verticesNum; //m1+m2
+    private float getSimilarity(SimpleDirectedWeightedGraph<String, DefaultWeightedEdge> simGraph, int verticesNum) {
+        float numerator = 0;
+        float denominator = verticesNum; //m1+m2
         for (DefaultWeightedEdge e : simGraph.edgeSet()) {
-            nominator += simGraph.getEdgeWeight(e);
+            numerator += simGraph.getEdgeWeight(e);
             denominator -= 1.0;
         }
-        return nominator / denominator;
+        return numerator / denominator;
     }
 
     private Queue<SimilarityEdge> getSimilarityEdges(Comparison comparison) {

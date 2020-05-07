@@ -160,7 +160,7 @@ public class PartEnumJoin extends AbstractTokenBasedJoin {
         return count;
     }
 
-    private double verify(TIntList a, TIntList b) {
+    private float verify(TIntList a, TIntList b) {
         double factor = categoryTHRESHOLD / (1 + categoryTHRESHOLD);
         int require_overlap = (int) Math.ceil(factor * (a.size() + b.size()) - 1e-6);
         int real_overlap = check_overlap(a, b, require_overlap);
@@ -168,7 +168,7 @@ public class PartEnumJoin extends AbstractTokenBasedJoin {
         if (real_overlap == -1) {
             return -1;
         }
-        return (real_overlap / (double) (a.size() + b.size() - real_overlap));
+        return (real_overlap / (float) (a.size() + b.size() - real_overlap));
     }
 
     void perform_join(int k, int id, boolean[] checked_flag) {
@@ -228,7 +228,7 @@ public class PartEnumJoin extends AbstractTokenBasedJoin {
                         cand_num++;
                         //System.out.println("cand "+cand_id);
                         checked_flag[candidate.get(cand_id)] = true;
-                        double jacsim = verify(records[cand_id], records[id]);
+                        float jacsim = verify(records[cand_id], records[id]);
                         if (jacsim >= threshold) {
                             res_num++;
                             final Comparison currentComp = getComparison(originalId[cand_id], originalId[id]);

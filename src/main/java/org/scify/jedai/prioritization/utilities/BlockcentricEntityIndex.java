@@ -267,7 +267,7 @@ public class BlockcentricEntityIndex implements Serializable {
         return validEntities2;
     }
 
-    public double getWeight(int blockIndex, Comparison comparison) {
+    public float getWeight(int blockIndex, Comparison comparison) {
         switch (wScheme) {
             case ARCS:
                 final TIntList commonIndices = getCommonBlockIndices(blockIndex, comparison);
@@ -275,7 +275,7 @@ public class BlockcentricEntityIndex implements Serializable {
                     return -1;
                 }
 
-                double totalWeight = 0;
+                float totalWeight = 0;
                 for (TIntIterator tIterator = commonIndices.iterator(); tIterator.hasNext();) {
                     totalWeight += 1.0 / comparisonsPerBlock[tIterator.next()];
                 }
@@ -283,25 +283,25 @@ public class BlockcentricEntityIndex implements Serializable {
             case CBS:
                 return getNoOfCommonBlocks(blockIndex, comparison);
             case ECBS:
-                double commonBlocks = getNoOfCommonBlocks(blockIndex, comparison);
+                int commonBlocks = getNoOfCommonBlocks(blockIndex, comparison);
                 if (commonBlocks < 0) {
                     return commonBlocks;
                 }
-                return commonBlocks * Math.log10(totalBlocks / getNoOfEntityBlocks(comparison.getEntityId1(), 0)) * Math.log10(totalBlocks / getNoOfEntityBlocks(comparison.getEntityId2(), comparison.isCleanCleanER() ? 1 : 0));
+                return (float)(commonBlocks * Math.log10(totalBlocks / getNoOfEntityBlocks(comparison.getEntityId1(), 0)) * Math.log10(totalBlocks / getNoOfEntityBlocks(comparison.getEntityId2(), comparison.isCleanCleanER() ? 1 : 0)));
             case JS:
-                double commonBlocksJS = getNoOfCommonBlocks(blockIndex, comparison);
+                float commonBlocksJS = getNoOfCommonBlocks(blockIndex, comparison);
                 if (commonBlocksJS < 0) {
                     return commonBlocksJS;
                 }
                 return commonBlocksJS / (getNoOfEntityBlocks(comparison.getEntityId1(), 0) + getNoOfEntityBlocks(comparison.getEntityId2(), comparison.isCleanCleanER() ? 1 : 0) - commonBlocksJS);
             case EJS:
-                double commonBlocksEJS = getNoOfCommonBlocks(blockIndex, comparison);
+                float commonBlocksEJS = getNoOfCommonBlocks(blockIndex, comparison);
                 if (commonBlocksEJS < 0) {
                     return commonBlocksEJS;
                 }
 
                 double probability = commonBlocksEJS / (getNoOfEntityBlocks(comparison.getEntityId1(), 0) + getNoOfEntityBlocks(comparison.getEntityId2(), comparison.isCleanCleanER() ? 1 : 0) - commonBlocksEJS);
-                return probability * Math.log10(validComparisons / comparisonsPerEntity[comparison.getEntityId1()]) * Math.log10(validComparisons / comparisonsPerEntity[comparison.isCleanCleanER() ? comparison.getEntityId2() + datasetLimit : comparison.getEntityId2()]);
+                return (float) (probability * Math.log10(validComparisons / comparisonsPerEntity[comparison.getEntityId1()]) * Math.log10(validComparisons / comparisonsPerEntity[comparison.isCleanCleanER() ? comparison.getEntityId2() + datasetLimit : comparison.getEntityId2()]));
         }
 
         return -1;

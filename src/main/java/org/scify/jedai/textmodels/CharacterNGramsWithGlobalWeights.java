@@ -49,11 +49,11 @@ public class CharacterNGramsWithGlobalWeights extends CharacterNGrams {
         }
     }
 
-    protected double getARCSSimilarity(CharacterNGramsWithGlobalWeights oModel) {
+    protected float getARCSSimilarity(CharacterNGramsWithGlobalWeights oModel) {
         final Set<String> commonKeys = new HashSet(itemsFrequency.keySet());
         commonKeys.retainAll(oModel.getItemsFrequency().keySet());
 
-        double similarity = 0;
+        float similarity = 0;
         if (datasetId == DATASET_1 && datasetId == oModel.getDatasetId()) { // Dirty ER
             for (String key : commonKeys) {
                 double frequency = DOC_FREQ[DATASET_1].get(key);
@@ -85,7 +85,7 @@ public class CharacterNGramsWithGlobalWeights extends CharacterNGrams {
         return Math.log10(NO_OF_DOCUMENTS[datasetId] / (1 + frequency));
     }
 
-    protected double getSigmaSimilarity(CharacterNGramsWithGlobalWeights oModel) {
+    protected float getSigmaSimilarity(CharacterNGramsWithGlobalWeights oModel) {
         double totalTerms2 = oModel.getNoOfTotalTerms();
         final TObjectIntMap<String> itemVector2 = oModel.getItemsFrequency();
 
@@ -107,11 +107,11 @@ public class CharacterNGramsWithGlobalWeights extends CharacterNGrams {
                            itemVector2.get(key) / totalTerms2 * oModel.getIdfWeight(key);
         }
 
-        return numerator / denominator;
+        return (float)(numerator / denominator);
     }
 
     @Override
-    public double getSimilarity(ITextModel oModel) {
+    public float getSimilarity(ITextModel oModel) {
         switch (simMetric) {
             case ARCS_SIMILARITY:
                 return getARCSSimilarity((CharacterNGramsWithGlobalWeights) oModel);
@@ -128,7 +128,7 @@ public class CharacterNGramsWithGlobalWeights extends CharacterNGrams {
         }
     }
 
-    protected double getTfIdfCosineSimilarity(CharacterNGramsWithGlobalWeights oModel) {
+    protected float getTfIdfCosineSimilarity(CharacterNGramsWithGlobalWeights oModel) {
         double totalTerms2 = oModel.getNoOfTotalTerms();
         final TObjectIntMap<String> itemVector2 = oModel.getItemsFrequency();
 
@@ -143,10 +143,10 @@ public class CharacterNGramsWithGlobalWeights extends CharacterNGrams {
         }
 
         double denominator = getVectorMagnitude() * oModel.getVectorMagnitude();
-        return numerator / denominator;
+        return (float)(numerator / denominator);
     }
 
-    protected double getTfIdfGeneralizedJaccardSimilarity(CharacterNGramsWithGlobalWeights oModel) {
+    protected float getTfIdfGeneralizedJaccardSimilarity(CharacterNGramsWithGlobalWeights oModel) {
         double totalTerms2 = oModel.getNoOfTotalTerms();
         final TObjectIntMap<String> itemVector2 = oModel.getItemsFrequency();
 
@@ -168,7 +168,7 @@ public class CharacterNGramsWithGlobalWeights extends CharacterNGrams {
                                     itemVector2.get(key) / totalTerms2 * oModel.getIdfWeight(key));
         }
 
-        return numerator / denominator;
+        return (float)(numerator / denominator);
     }
 
     @Override

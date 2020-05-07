@@ -73,10 +73,10 @@ public class ProgressiveCNP extends CardinalityNodePruning {
         }
 
         topKEdges.clear();
-        minimumWeight = Double.MIN_VALUE;
+        minimumWeight = Float.MIN_VALUE;
         for (TIntIterator iterator = validEntities.iterator(); iterator.hasNext();) {
             int neighborId = iterator.next();
-            double weight = getWeight(entityId, neighborId);
+            float weight = getWeight(entityId, neighborId);
             if (minimumWeight <= weight) {
                 final Comparison comparison = getComparison(entityId, neighborId);
                 comparison.setUtilityMeasure(weight);

@@ -224,7 +224,7 @@ public class EdJoin extends AbstractCharacterBasedJoin {
                 int distance = getEditDistance(attributeValues.get(x), attributeValues.get(y), threshold);
                 if (distance <= threshold) {
                     final Comparison currentComp = getComparison(originalId[x], originalId[y]);
-                    currentComp.setUtilityMeasure(1 - (double) distance / threshold);
+                    currentComp.setUtilityMeasure(1 - (float) distance / threshold);
                     executedComparisons.add(currentComp);
                 }
             }
@@ -284,7 +284,7 @@ public class EdJoin extends AbstractCharacterBasedJoin {
                     continue;
                 }
 
-                double distance = getEditDistance(attributeValues.get(k), attributeValues.get(cand), threshold);
+                float distance = getEditDistance(attributeValues.get(k), attributeValues.get(cand), threshold);
                 if (distance <= threshold) {
                     int id1 = Math.min(originalId[k], originalId[cand]);
                     int id2 = Math.max(originalId[k], originalId[cand]);
@@ -323,7 +323,7 @@ public class EdJoin extends AbstractCharacterBasedJoin {
                         continue;
                     }
                 }
-                double distance = getEditDistance(attributeValues.get(k), attributeValues.get(bound), threshold);
+                float distance = getEditDistance(attributeValues.get(k), attributeValues.get(bound), threshold);
                 if (distance <= threshold) {
                     int id1 = Math.min(originalId[k], originalId[bound]);
                     int id2 = Math.max(originalId[k], originalId[bound]);

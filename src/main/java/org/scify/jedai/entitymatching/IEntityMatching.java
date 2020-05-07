@@ -30,7 +30,7 @@ import java.util.List;
  */
 public interface IEntityMatching extends IConfiguration, IConstants, IDocumentation {
     
-    double executeComparison(Comparison comparison);
+    float executeComparison(Comparison comparison);
     
     SimilarityPairs executeComparisons(List<AbstractBlock> blocks);
 }

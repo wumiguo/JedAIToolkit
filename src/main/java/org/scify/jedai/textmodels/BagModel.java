@@ -43,7 +43,7 @@ public abstract class BagModel extends AbstractModel {
     public void finalizeModel() {
     }
     
-    protected double getEnhancedJaccardSimilarity(BagModel oModel) {
+    protected float getEnhancedJaccardSimilarity(BagModel oModel) {
         TObjectIntMap<String> itemVector1 = itemsFrequency;
         TObjectIntMap<String> itemVector2 = oModel.getItemsFrequency();
         if (itemVector2.size() < itemVector1.size()) {
@@ -51,14 +51,14 @@ public abstract class BagModel extends AbstractModel {
             itemVector2 = itemsFrequency;
         }
 
-        double numerator = 0.0;
+        float numerator = 0.0f;
         for (TObjectIntIterator<String> iterator = itemVector1.iterator(); iterator.hasNext();) {
             iterator.advance();
             numerator += Math.min(iterator.value(), itemVector2.get(iterator.key()));
         }
 
         double denominator = noOfTotalTerms + oModel.getNoOfTotalTerms() - numerator;
-        return numerator / denominator;
+        return numerator / (float)denominator;
     }
     
     @Override
@@ -82,12 +82,12 @@ public abstract class BagModel extends AbstractModel {
         return itemsFrequency;
     }
 
-    protected double getJaccardSimilarity(BagModel oModel) {
+    protected float getJaccardSimilarity(BagModel oModel) {
         final Set<String> commonKeys = new HashSet<>(itemsFrequency.keySet());
         commonKeys.retainAll(oModel.getItemsFrequency().keySet());
 
-        double numerator = commonKeys.size();
-        double denominator = itemsFrequency.size() + oModel.getItemsFrequency().size() - numerator;
+        int numerator = commonKeys.size();
+        int denominator = itemsFrequency.size() + oModel.getItemsFrequency().size() - numerator;
         return numerator / denominator;
     }
 
@@ -101,7 +101,7 @@ public abstract class BagModel extends AbstractModel {
     }
 
     @Override
-    public double getSimilarity(ITextModel oModel) {
+    public float getSimilarity(ITextModel oModel) {
         switch (simMetric) {
             case COSINE_SIMILARITY:
                 return getTfCosineSimilarity((BagModel) oModel);
@@ -118,7 +118,7 @@ public abstract class BagModel extends AbstractModel {
         }
     }
 
-    protected double getTfCosineSimilarity(BagModel oModel) {
+    protected float getTfCosineSimilarity(BagModel oModel) {
         double totalTerms2 = oModel.getNoOfTotalTerms();
 
         TObjectIntMap<String> itemVector1 = itemsFrequency;
@@ -128,17 +128,17 @@ public abstract class BagModel extends AbstractModel {
             itemVector2 = itemsFrequency;
         }
 
-        double numerator = 0.0;
+        float numerator = 0.0f;
         for (TObjectIntIterator<String> iterator = itemVector1.iterator(); iterator.hasNext();) {
             iterator.advance();
             numerator += iterator.value() * itemVector2.get(iterator.key()) / noOfTotalTerms / totalTerms2;
         }
 
         double denominator = getVectorMagnitude() * oModel.getVectorMagnitude();
-        return numerator / denominator;
+        return (float)(numerator / denominator);
     }
 
-    protected double getTfGeneralizedJaccardSimilarity(BagModel oModel) {
+    protected float getTfGeneralizedJaccardSimilarity(BagModel oModel) {
         double totalTerms1 = noOfTotalTerms;
         double totalTerms2 = oModel.getNoOfTotalTerms();
         TObjectIntMap<String> itemVector1 = itemsFrequency;
@@ -164,7 +164,7 @@ public abstract class BagModel extends AbstractModel {
             denominator += Math.max(itemVector1.get(key) / totalTerms1, itemVector2.get(key) / totalTerms2);
         }
         
-        return numerator / denominator;
+        return (float)(numerator / denominator);
     }
 
     protected double getVectorMagnitude() {

@@ -114,7 +114,7 @@ public class FuzzySetJoin extends AbstractTokenBasedJoin {
     private List<Comparison> performJoin() {
         FuzzySetSimJoin fssj = new FuzzySetSimJoin();
 //		List<int[]> matchingPairs = fssj.join(input1, input2, simThreshold);
-        HashMap<String, Double> matchingPairs = fssj.join(collection1, collection2, threshold);
+        HashMap<String, Float> matchingPairs = fssj.join(collection1, collection2, threshold);
         LinkedHashMap<String, ArrayList<String>> recordsForTopk = new LinkedHashMap<>();
         int cnter = 0;
         final List<Comparison> executedComparisons = new ArrayList<>();
@@ -123,7 +123,7 @@ public class FuzzySetJoin extends AbstractTokenBasedJoin {
             String[] res = allres.split("_");
             int id1 = Integer.parseInt(res[0]);
             int id2 = Integer.parseInt(res[1]);
-            double jaccardSim = matchingPairs.get(allres);
+            float jaccardSim = matchingPairs.get(allres);
             //System.out.println(id1+" "+id2+" "+jaccardSim+" "+isCleanCleanER+" "+datasetDelimiter);
 
             if (isCleanCleanER) {
