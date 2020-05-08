@@ -30,7 +30,7 @@ public class Comparison implements Serializable {
     private final boolean cleanCleanER;
     private final int entityId1;
     private final int entityId2;
-    private double utilityMeasure;
+    private float utilityMeasure;
 
     public Comparison (boolean ccER, int id1, int id2) {
         cleanCleanER = ccER;
@@ -69,7 +69,7 @@ public class Comparison implements Serializable {
      * Returns the measure of the weight or similarity between two entities. Higher utility measures
      * correspond to greater weight or stronger similarity.
      */
-    public double getUtilityMeasure() {
+    public float getUtilityMeasure() {
         return utilityMeasure;
     }
     
@@ -86,7 +86,7 @@ public class Comparison implements Serializable {
     }
     
     /** @see #getUtilityMeasure() */
-    public void setUtilityMeasure(double utilityMeasure) {
+    public void setUtilityMeasure(float utilityMeasure) {
         this.utilityMeasure = utilityMeasure;
     }
     

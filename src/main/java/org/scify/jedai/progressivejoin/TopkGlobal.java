@@ -17,21 +17,24 @@
 package org.scify.jedai.progressivejoin;
 
 import java.util.*;
+import org.scify.jedai.datamodel.Comparison;
 
 /**
  *
  * @author mthanos
  */
 public class TopkGlobal {
-
-    private final ArrayList<Object[]> results;
+    private final List<Comparison> results;
     private final JaccardTopK similarity;
     private final LinkedHashMap<Integer, ArrayList<Integer>> records;
 
     private boolean[] isindataset1;
     private boolean iscleancleanEr;
 
-    public TopkGlobal(LinkedHashMap<Integer, ArrayList<Integer>> records, JaccardTopK similarity, ArrayList<Object[]> results) {
+    /**
+     * @param results the results from {@link #run()} will be added into this list
+     */
+    public TopkGlobal(LinkedHashMap<Integer, ArrayList<Integer>> records, JaccardTopK similarity, List<Comparison> results) {
         this.records = records;
         this.similarity = similarity;
         this.results = results;
@@ -54,12 +57,11 @@ public class TopkGlobal {
         });
         records.forEach((recordid, tokens) -> events.add(new Object[] {recordid, 0, 1.0}));
 
-        // <simval, recordid1, recordid2>
-        SortedList<Object[]> tmpresults = new SortedList<>((o1, o2) -> {
-            if ((Double)o1[0] > (Double)o2[0])
-                return -1;
-            else if (Math.abs((Double) o1[0]-(Double) o2[0])<1E-13)
+        SortedList<Comparison> tmpresults = new SortedList<>((o1, o2) -> {
+            if (Math.abs(o1.getUtilityMeasure() - o2.getUtilityMeasure()) < 1E-13)
                 return 0;
+            else if (o1.getUtilityMeasure() > o2.getUtilityMeasure())
+                return -1;
             else
                 return 1;
         });
@@ -117,12 +119,14 @@ public class TopkGlobal {
                         int[] verified = Verify.verifiy_sim(record, indexedrecord, minoverlap, 1,
                                 (int)curevent[1] + 1, indrecordpair[1] + 1);
 
-                        double sim_val = similarity.computesim(reclen, indreclen, verified[0]);
+                        float sim_val = similarity.computesim(reclen, indreclen, verified[0]);
 
                         if (verified[1] < maxrecprobepos && verified[2] < maxindrecprobepos)
                             testonce.add(testpair);
 
-                        tmpresults.add(new Object[]{sim_val, recordid, indrecid});
+                        Comparison c = new Comparison(iscleancleanEr, recordid, indrecid);
+                        c.setUtilityMeasure(sim_val);
+                        tmpresults.add(c);
                         thres = getThres(tmpresults, similarity.k);
                     }
                 }
@@ -151,10 +155,10 @@ public class TopkGlobal {
 //        System.out.println("SSJ Result Count: " + results.size());
     }
 
-    private double getThres(SortedList<Object[]> tmpresults, int k) {
+    private float getThres(SortedList<Comparison> tmpresults, int k) {
         if (tmpresults.size() >= k)
-            return (double)tmpresults.get(k-1)[0];
-        return 0.0;
+            return tmpresults.get(k-1).getUtilityMeasure();
+        return 0.0f;
     }
 
 

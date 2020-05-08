@@ -77,12 +77,12 @@ public class LocalProgressiveSortedNeighborhood extends AbstractSimilarityBasedP
         compIterator = windowComparisons.iterator();
     }
 
-    protected double getWeight(int entityId1, int entityId2) {
+    protected float getWeight(int entityId1, int entityId2) {
         switch (pwScheme) {
             case ACF:
                 return counters[entityId2];
             case NCF:
-                double denominator = positionIndex.getEntityPositions(entityId1).length + positionIndex.getEntityPositions(entityId2).length - counters[entityId2];
+                float denominator = positionIndex.getEntityPositions(entityId1).length + positionIndex.getEntityPositions(entityId2).length - counters[entityId2];
                 return counters[entityId2] / denominator;
         }
         return -1;

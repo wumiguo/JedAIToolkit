@@ -138,7 +138,7 @@ public class TestProgressiveCleanCleanER {
 //            Collections.shuffle(randomComparisons);
 //            
 //            for (Comparison c1 : randomComparisons) {
-                double similarity = em.executeComparison(c1);
+                float similarity = em.executeComparison(c1);
 //                if (0 < similarity) {
 //                    counter++;
                 c1.setUtilityMeasure(similarity);

@@ -45,7 +45,7 @@ public abstract class AbstractMetablocking extends AbstractComparisonCleaning im
     protected double blockAssingments;
     protected double distinctComparisons;
     protected double[] comparisonsPerEntity;
-    protected double[] counters;
+    protected float[] counters;
 
     protected ChiSquareTest chiSquaredTest;
     protected final TIntList neighbors;
@@ -70,7 +70,7 @@ public abstract class AbstractMetablocking extends AbstractComparisonCleaning im
 
     @Override
     protected List<AbstractBlock> applyMainProcessing() {
-        counters = new double[noOfEntities];
+        counters = new float[noOfEntities];
 
         blockAssingments = 0;
         if (cleanCleanER) {
@@ -164,19 +164,19 @@ public abstract class AbstractMetablocking extends AbstractComparisonCleaning im
         }
     }
 
-    protected double getWeight(int entityId, int neighborId) {
+    protected float getWeight(int entityId, int neighborId) {
         switch (weightingScheme) {
             case ARCS:
                 return counters[neighborId];
             case CBS:
                 return counters[neighborId];
             case ECBS:
-                return counters[neighborId] * Math.log10((double) noOfBlocks / entityIndex.getNoOfEntityBlocks(entityId, 0)) * Math.log10((double) noOfBlocks / entityIndex.getNoOfEntityBlocks(neighborId, 0));
+                return (float) (counters[neighborId] * Math.log10((double) noOfBlocks / entityIndex.getNoOfEntityBlocks(entityId, 0)) * Math.log10((double) noOfBlocks / entityIndex.getNoOfEntityBlocks(neighborId, 0)));
             case JS:
                 return counters[neighborId] / (entityIndex.getNoOfEntityBlocks(entityId, 0) + entityIndex.getNoOfEntityBlocks(neighborId, 0) - counters[neighborId]);
             case EJS:
-                double probability = counters[neighborId] / (entityIndex.getNoOfEntityBlocks(entityId, 0) + entityIndex.getNoOfEntityBlocks(neighborId, 0) - counters[neighborId]);
-                return probability * Math.log10(distinctComparisons / comparisonsPerEntity[entityId]) * Math.log10(distinctComparisons / comparisonsPerEntity[neighborId]);
+                float probability = counters[neighborId] / (entityIndex.getNoOfEntityBlocks(entityId, 0) + entityIndex.getNoOfEntityBlocks(neighborId, 0) - counters[neighborId]);
+                return (float)(probability * Math.log10(distinctComparisons / comparisonsPerEntity[entityId]) * Math.log10(distinctComparisons / comparisonsPerEntity[neighborId]));
             case PEARSON_X2:
                 long[] v = new long[2];
                 v[0] = (long) counters[neighborId];
@@ -186,7 +186,7 @@ public abstract class AbstractMetablocking extends AbstractComparisonCleaning im
                 v_[0] = entityIndex.getNoOfEntityBlocks(neighborId, 0) - v[0];
                 v_[1] = (int) (noOfBlocks - (v[0] + v[1] + v_[0]));
 
-                return chiSquaredTest.chiSquare(new long[][]{v, v_});
+                return (float) chiSquaredTest.chiSquare(new long[][]{v, v_});
         }
         return -1;
     }

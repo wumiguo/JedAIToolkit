@@ -134,7 +134,7 @@ public class TestProgressiveDirtyER {
 //                System.out.println(c1);
 //                comparisons.add(c1);
 
-                double similarity = em.executeComparison(c1);
+                float similarity = em.executeComparison(c1);
 //                if (0 < similarity) {
                 c1.setUtilityMeasure(similarity);
                 sims.addComparison(c1);

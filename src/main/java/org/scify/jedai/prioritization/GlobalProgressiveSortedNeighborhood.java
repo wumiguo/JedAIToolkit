@@ -87,7 +87,7 @@ public class GlobalProgressiveSortedNeighborhood extends AbstractSimilarityBased
                 int neighborId = iterator.next();
                 flags[neighborId] = -1;
 
-                double weight = getWeight(entityId, neighborId);
+                float weight = getWeight(entityId, neighborId);
                 if (weight < minimumWeight) {
                     continue;
                 }
@@ -108,10 +108,10 @@ public class GlobalProgressiveSortedNeighborhood extends AbstractSimilarityBased
         compIterator = topComparisons.iterator();
     }
 
-    protected double getWeight(int entityId1, int entityId2) {
+    protected float getWeight(int entityId1, int entityId2) {
         switch (pwScheme) {
             case NCF:
-                double denominator = positionIndex.getEntityPositions(entityId1).length + positionIndex.getEntityPositions(entityId2).length - counters[entityId2];
+                float denominator = positionIndex.getEntityPositions(entityId1).length + positionIndex.getEntityPositions(entityId2).length - counters[entityId2];
                 return counters[entityId2] / denominator;
             default: //ACF, ID
                 return counters[entityId2];

@@ -20,7 +20,7 @@ public abstract class VectorSpaceModel extends AbstractModel {
     }
 
     @Override
-    public double getSimilarity(ITextModel oModel) {
+    public float getSimilarity(ITextModel oModel) {
         switch (simMetric) {
             case COSINE_SIMILARITY:
                 return getCosineSimilarity((VectorSpaceModel) oModel);
@@ -36,7 +36,7 @@ public abstract class VectorSpaceModel extends AbstractModel {
      * @param oModel the other VS model
      * @return the cosine similarity value
      */
-    public double getCosineSimilarity(VectorSpaceModel oModel){
+    public float getCosineSimilarity(VectorSpaceModel oModel){
         // get vectors
         Double[] v1 = getVector();
         Double[] v2 = oModel.getVector();
@@ -48,7 +48,7 @@ public abstract class VectorSpaceModel extends AbstractModel {
             norm1 += Math.pow(v1[i], 2);
             norm2 += Math.pow(v2[i], 2);
         }
-        return dot / (Math.sqrt(norm1) * Math.sqrt(norm2));
+        return (float)(dot / (Math.sqrt(norm1) * Math.sqrt(norm2)));
 
     }
 

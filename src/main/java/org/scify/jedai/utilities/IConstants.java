@@ -25,5 +25,5 @@ public interface IConstants {
     int DATASET_2 = 1;
     int MAX_COMPARISONS = Integer.MAX_VALUE - 2;
     
-    double DISCRETIZATION_FACTOR = Math.pow(10, 8);
+    int DISCRETIZATION_FACTOR = 100_000_000;
 }

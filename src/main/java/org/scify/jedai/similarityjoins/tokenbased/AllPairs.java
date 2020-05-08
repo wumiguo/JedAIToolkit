@@ -196,7 +196,7 @@ public class AllPairs extends AbstractTokenBasedJoin {
 
                 int realOverlap = getOverlap(k, cand, requireOverlaps[noOfCandidates]);
                 if (realOverlap != -1) {
-                    double jaccardSim = calcSimilarity(records[k].size(), noOfCandidates, realOverlap);
+                    float jaccardSim = calcSimilarity(records[k].size(), noOfCandidates, realOverlap);
                     if (jaccardSim >= threshold) {
                         final Comparison currentComp = getComparison(originalId[k], originalId[cand]);
                         currentComp.setUtilityMeasure(jaccardSim); // is this correct?

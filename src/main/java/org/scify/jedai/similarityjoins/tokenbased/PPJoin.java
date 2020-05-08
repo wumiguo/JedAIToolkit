@@ -247,7 +247,7 @@ public class PPJoin extends AbstractTokenBasedJoin {
                 if (realOverlap != -1) {
 
 
-                    double jaccardSim = calcSimilarity(currentSize, candidateSize, realOverlap);
+                    float jaccardSim = calcSimilarity(currentSize, candidateSize, realOverlap);
 
                     if (jaccardSim >= threshold) {
 

@@ -61,7 +61,7 @@ public class ProgressiveEntityComparisons extends WeightedNodePruning {
         for (TIntIterator entityIterator = validEntities.iterator(); entityIterator.hasNext();) {
             int neighborId = entityIterator.next();
             if (!checkedEntity[neighborId]) {
-                double weight = getWeight(entityId, neighborId);
+                float weight = getWeight(entityId, neighborId);
                 if (weight < 0) {
                     continue;
                 }

@@ -35,7 +35,7 @@ import java.util.Queue;
  */
 public class CardinalityEdgePruning extends WeightedEdgePruning {
 
-    protected double minimumWeight;
+    protected float minimumWeight;
     
     protected Queue<Comparison> topKEdges;
 
@@ -88,7 +88,7 @@ public class CardinalityEdgePruning extends WeightedEdgePruning {
     }
 
     protected void setTopKEdges() {
-        minimumWeight = Double.MIN_VALUE;
+        minimumWeight = Float.MIN_VALUE;
         topKEdges = new PriorityQueue<>((int) (2 * threshold), new IncComparisonWeightComparator());
 
         int limit = cleanCleanER ? datasetLimit : noOfEntities;
@@ -115,7 +115,7 @@ public class CardinalityEdgePruning extends WeightedEdgePruning {
     protected void verifyValidEntities(int entityId) {
         for (TIntIterator iterator = validEntities.iterator(); iterator.hasNext();) {
             int neighborId = iterator.next();
-            double weight = getWeight(entityId, neighborId);
+            float weight = getWeight(entityId, neighborId);
             if (!(weight < minimumWeight)) {
                 final Comparison comparison = getComparison(entityId, neighborId);
                 comparison.setUtilityMeasure(weight);

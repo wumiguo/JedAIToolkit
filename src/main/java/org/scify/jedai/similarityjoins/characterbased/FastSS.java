@@ -116,7 +116,7 @@ public class FastSS extends AbstractCharacterBasedJoin {
             if (ed <= threshold) {
                 checkedFlag.add(p.getKey());
                 final Comparison currentComp = getComparison(id, p.getKey());
-                currentComp.setUtilityMeasure(1 - (double) ed / threshold);
+                currentComp.setUtilityMeasure(1 - (float) ed / threshold);
                 executedComparisons.add(currentComp);
             }
         }

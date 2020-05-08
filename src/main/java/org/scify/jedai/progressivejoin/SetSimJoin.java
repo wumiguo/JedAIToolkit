@@ -18,6 +18,7 @@ package org.scify.jedai.progressivejoin;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import org.scify.jedai.datamodel.Comparison;
 
 /**
  *
@@ -26,10 +27,9 @@ import java.util.LinkedHashMap;
 public class SetSimJoin {
 
     private LinkedHashMap<String, ArrayList<Integer>> records;
-    private ArrayList<Object[]> results;
+    private ArrayList<Comparison> results;
 
     private LinkedHashMap<Integer, ArrayList<Integer>> records_internal;
-    private ArrayList<Object[]> results_internal;
     private HashMap<Integer, String> mapper;
 
     private boolean isCleanCleanER;
@@ -40,7 +40,6 @@ public class SetSimJoin {
     public SetSimJoin() {
         results = new ArrayList<>();
         records_internal = new LinkedHashMap<>();
-        results_internal = new ArrayList<>();
         mapper = new HashMap<>();
     }
 
@@ -61,19 +60,18 @@ public class SetSimJoin {
         } else {
             mapRecords();
         }
-        TopkGlobal topk = new TopkGlobal(records_internal, new JaccardTopK(k), results_internal);
+        TopkGlobal topk = new TopkGlobal(records_internal, new JaccardTopK(k), results);
         topk.setIscleancleanEr(isCleanCleanER);
         topk.setIsindataset1(isindataset1);
 
         topk.run();
-        mapResults();
     }
 
     public void setRecords(LinkedHashMap<String, ArrayList<Integer>> records) {
         this.records = records;
     }
 
-    public ArrayList<Object[]> getResults() {
+    public ArrayList<Comparison> getResults() {
         return results;
     }
 
@@ -93,10 +91,6 @@ public class SetSimJoin {
             records_internal.put(internalid[0], value);
             mapper.put(internalid[0]++, key);
         });
-    }
-
-    private void mapResults() {
-        results_internal.forEach(e -> results.add(new Object[]{mapper.get(e[1]), mapper.get(e[2]), e[0]}));
     }
 
     public boolean isCleanCleanER() {

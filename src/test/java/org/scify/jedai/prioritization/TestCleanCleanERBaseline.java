@@ -116,7 +116,7 @@ public class TestCleanCleanERBaseline {
 
             Collections.shuffle(allComparisons);
             for (Comparison comparison : allComparisons) {
-                double similarity = em.executeComparison(comparison);
+                float similarity = em.executeComparison(comparison);
                 comparison.setUtilityMeasure(similarity);
                 sims.addComparison(comparison);
 

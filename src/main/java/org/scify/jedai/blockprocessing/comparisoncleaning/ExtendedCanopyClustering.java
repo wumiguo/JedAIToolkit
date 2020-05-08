@@ -162,14 +162,14 @@ public class ExtendedCanopyClustering extends CardinalityNodePruning {
         }
 
         topKEdges.clear();
-        minimumWeight = Double.MIN_VALUE;
+        minimumWeight = Float.MIN_VALUE;
         for (TIntIterator iterator = validEntities.iterator(); iterator.hasNext();) {
             int neighborId = iterator.next();
             if (excludedEntities.contains(neighborId)) {
                 continue;
             }
             
-            double weight = getWeight(entityId, neighborId);
+            float weight = getWeight(entityId, neighborId);
             if (!(weight < minimumWeight)) {
                 final Comparison comparison = new Comparison(cleanCleanER, -1, neighborId);
                 comparison.setUtilityMeasure(weight);

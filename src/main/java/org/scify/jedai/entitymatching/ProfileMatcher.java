@@ -71,7 +71,7 @@ public class ProfileMatcher extends AbstractEntityMatching {
     }
 
     @Override
-    public double executeComparison(Comparison comparison) {
+    public float executeComparison(Comparison comparison) {
         if (isCleanCleanER) {
             return entityModelsD1[comparison.getEntityId1()].getSimilarity(entityModelsD2[comparison.getEntityId2()]);
         }
@@ -85,7 +85,7 @@ public class ProfileMatcher extends AbstractEntityMatching {
         blocks.stream().map(AbstractBlock::getComparisonIterator).forEachOrdered((iterator) -> {
             while (iterator.hasNext()) {
                 final Comparison currentComparison = iterator.next();
-                double similarity = executeComparison(currentComparison);
+                float similarity = executeComparison(currentComparison);
                 if (0 < similarity) {
                     currentComparison.setUtilityMeasure(similarity);
                     simPairs.addComparison(currentComparison);

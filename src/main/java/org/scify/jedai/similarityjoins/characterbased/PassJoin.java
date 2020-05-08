@@ -191,7 +191,7 @@ public class PassJoin extends AbstractCharacterBasedJoin {
                                     checkedIds.add(cand);
                                 }
                                 if (partId == threshold || getEditDistance(currentCandidate, currentString, threshold - partId, currentPI.getLo() + currentPI.getPartLen(), currentPI.getStPos() + currentPI.getPartLen()) <= threshold - partId) {
-                                    double distance = getEditDistance(currentCandidate, currentString, threshold);
+                                    float distance = getEditDistance(currentCandidate, currentString, threshold);
                                     if (distance <= threshold) {
                                         checkedIds.add(cand);
 

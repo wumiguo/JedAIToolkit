@@ -41,8 +41,8 @@ public abstract class AbstractTokenBasedJoin extends AbstractSimilarityJoin {
         randomThreshold = new DblRandomSearchConfiguration(1.0, 0.01);
     }
     
-    protected double calcSimilarity(int l1, int l2, double overlap) {
-        return overlap / (l1 + l2 - overlap) + 1e-6;
+    protected float calcSimilarity(int l1, int l2, float overlap) {
+        return overlap / (l1 + l2 - overlap) + 1e-6f;
     }
     
     protected int djbHash(String str) {
