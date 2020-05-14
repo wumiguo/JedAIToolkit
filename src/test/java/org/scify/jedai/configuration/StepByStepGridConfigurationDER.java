@@ -47,9 +47,9 @@ import java.util.List;
  */
 public class StepByStepGridConfigurationDER {
 
-    static double getTotalComparisons(List<AbstractBlock> blocks) {
-        double originalComparisons = 0;
-        originalComparisons = blocks.stream().map(AbstractBlock::getNoOfComparisons).reduce(originalComparisons, Double::sum);
+    static float getTotalComparisons(List<AbstractBlock> blocks) {
+        float originalComparisons = 0;
+        originalComparisons = blocks.stream().map(AbstractBlock::getNoOfComparisons).reduce(originalComparisons, Float::sum);
         System.out.println("Original comparisons\t:\t" + originalComparisons);
         return originalComparisons;
     }
@@ -87,9 +87,9 @@ public class StepByStepGridConfigurationDER {
             matchingWorkflowName.append("->").append(ec.getMethodName());
 
             // local optimization of Block Building 
-            double bestA = 0;
+            float bestA = 0;
             int bestIteration = 0;
-            double originalComparisons = ((double) profiles.size()) * (profiles.size()-1.0) / 2.0;
+            float originalComparisons = ((float) profiles.size()) * (profiles.size()-1.0f) / 2.0f;
             for (int j = 0; j < bb.getNumberOfGridConfigurations(); j++) {
                 bb.setNumberedGridConfiguration(j);
                 final List<AbstractBlock> originalBlocks = bb.getBlocks(profiles);
@@ -99,9 +99,9 @@ public class StepByStepGridConfigurationDER {
                 
                 final BlocksPerformance blp = new BlocksPerformance(originalBlocks, duplicatePropagation);
                 blp.setStatistics();
-                double recall = blp.getPc();
-                double rr = 1 - blp.getAggregateCardinality() / originalComparisons;
-                double a = rr * recall;
+                float recall = blp.getPc();
+                float rr = 1 - blp.getAggregateCardinality() / originalComparisons;
+                float a = rr * recall;
                 if (bestA < a) {
                     bestIteration = j;
                     bestA = a;
@@ -130,9 +130,9 @@ public class StepByStepGridConfigurationDER {
 
                 blp = new BlocksPerformance(purgedBlocks, duplicatePropagation);
                 blp.setStatistics();
-                double recall = blp.getPc();
-                double rr = 1 - blp.getAggregateCardinality() / originalComparisons;
-                double a = rr * recall;
+                float recall = blp.getPc();
+                float rr = 1 - blp.getAggregateCardinality() / originalComparisons;
+                float a = rr * recall;
                 if (bestA < a) {
                     bestIteration = j;
                     bestA = a;
@@ -160,9 +160,9 @@ public class StepByStepGridConfigurationDER {
 
                 blp = new BlocksPerformance(filteredBlocks, duplicatePropagation);
                 blp.setStatistics();
-                double recall = blp.getPc();
-                double rr = 1 - blp.getAggregateCardinality() / originalComparisons;
-                double a = rr * recall;
+                float recall = blp.getPc();
+                float rr = 1 - blp.getAggregateCardinality() / originalComparisons;
+                float a = rr * recall;
                 if (bestA < a) {
                     bestIteration = j;
                     bestA = a;
@@ -190,9 +190,9 @@ public class StepByStepGridConfigurationDER {
 
                 blp = new BlocksPerformance(finalBlocks, duplicatePropagation);
                 blp.setStatistics();
-                double recall = blp.getPc();
-                double rr = 1 - blp.getAggregateCardinality() / originalComparisons;
-                double a = rr * recall;
+                float recall = blp.getPc();
+                float rr = 1 - blp.getAggregateCardinality() / originalComparisons;
+                float a = rr * recall;
                 if (bestA < a) {
                     bestIteration = j;
                     bestA = a;
@@ -210,7 +210,7 @@ public class StepByStepGridConfigurationDER {
             // local optimization of Matching & Clustering
             int bestInnerIteration = 0;
             int bestOuterIteration = 0;
-            double bestFMeasure = 0;
+            float bestFMeasure = 0;
             for (int j = 0; j < em.getNumberOfGridConfigurations(); j++) {
                 em.setNumberedGridConfiguration(j);
                 final SimilarityPairs sims = em.executeComparisons(finalBlocks);
@@ -222,7 +222,7 @@ public class StepByStepGridConfigurationDER {
                     final ClustersPerformance clp = new ClustersPerformance(clusters, duplicatePropagation);
                     clp.setStatistics();
 //                    clp.printStatistics(0, "", "");
-                    double fMeasure = clp.getFMeasure();
+                    float fMeasure = clp.getFMeasure();
                     if (bestFMeasure < fMeasure) {
                         bestInnerIteration = k;
                         bestOuterIteration = j;
@@ -234,7 +234,7 @@ public class StepByStepGridConfigurationDER {
             System.out.println("\nBest Outer Iteration\t:\t" + bestOuterIteration);
             System.out.println("Best FMeasure\t:\t" + bestFMeasure);
 
-            double time1 = System.currentTimeMillis();
+            float time1 = System.currentTimeMillis();
 
             em.setNumberedGridConfiguration(bestOuterIteration);
             final SimilarityPairs sims = em.executeComparisons(finalBlocks);
@@ -242,7 +242,7 @@ public class StepByStepGridConfigurationDER {
             ec.setNumberedGridConfiguration(bestInnerIteration);
             final EquivalenceCluster[] clusters = ec.getDuplicates(sims);
 
-            double time2 = System.currentTimeMillis();
+            float time2 = System.currentTimeMillis();
 
             final StringBuilder matchingWorkflowConf = new StringBuilder();
             matchingWorkflowConf.append(bb.getMethodConfiguration());

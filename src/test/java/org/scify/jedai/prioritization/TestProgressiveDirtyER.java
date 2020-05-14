@@ -52,7 +52,7 @@ public class TestProgressiveDirtyER {
     public static void main(String[] args) {
         BasicConfigurator.configure();
 
-        double[] bestThresholds = {0.75, 0.45};
+        float[] bestThresholds = {0.75f, 0.45f};
         RepresentationModel[] bestModels = {RepresentationModel.CHARACTER_BIGRAM_GRAPHS, RepresentationModel.CHARACTER_BIGRAMS_TF_IDF};
         SimilarityMetric[] bestMetrics = {SimilarityMetric.GRAPH_OVERALL_SIMILARITY, SimilarityMetric.GENERALIZED_JACCARD_SIMILARITY};
 
@@ -82,7 +82,7 @@ public class TestProgressiveDirtyER {
             IBlockProcessing comparisonCleaningMethod = new CardinalityNodePruning(WeightingScheme.JS);
             List<AbstractBlock> cnpBlocks = comparisonCleaningMethod.refineBlocks(blocks);
 //
-            double totalComparisons = 0;
+            float totalComparisons = 0;
 //            final Set<Comparison> distinctComparisons = new HashSet<>();
             for (AbstractBlock block : cnpBlocks) {
                 totalComparisons += block.getNoOfComparisons();
@@ -109,7 +109,7 @@ public class TestProgressiveDirtyER {
             ClustersPerformance clp = new ClustersPerformance(clusters, duplicatePropagation);
             clp.setStatistics();
             clp.printStatistics(0, "", "");
-            double originalRecall = clp.getRecall();
+            float originalRecall = clp.getRecall();
 
 //            final IPrioritization prioritization = new ProgressiveBlockScheduling((int) totalComparisons, WeightingScheme.ARCS);
 //            final IPrioritization prioritization = new ProgressiveEntityScheduling((int) totalComparisons, WeightingScheme.ARCS);
@@ -153,7 +153,7 @@ public class TestProgressiveDirtyER {
 
                 clp = new ClustersPerformance(clusters, duplicatePropagation);
                 clp.setStatistics();
-                double currentRecall = clp.getRecall();
+                float currentRecall = clp.getRecall();
                 System.out.println("Current recall\t:\t" + currentRecall);
                 if (originalRecall <= currentRecall) {
                     clp.printStatistics(0, "", "");

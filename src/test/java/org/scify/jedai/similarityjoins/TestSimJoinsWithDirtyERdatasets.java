@@ -90,7 +90,7 @@ public class TestSimJoinsWithDirtyERdatasets {
     public static void main(String[] args) throws FileNotFoundException {
         BasicConfigurator.configure();
 
-        double jaccardThreshold = 0.45;
+        float jaccardThreshold = 0.45f;
 
         String entitiesFilePath = "data" + File.separator + "dirtyErDatasets" + File.separator + "coraProfiles";
         String groundTruthFilePath = "data" + File.separator + "dirtyErDatasets" + File.separator + "coraIdDuplicates";
@@ -120,7 +120,7 @@ public class TestSimJoinsWithDirtyERdatasets {
         //PPJoin join = new PPJoin(jaccardThreshold);
         FuzzySetJoin join = new FuzzySetJoin(jaccardThreshold);
         SimilarityPairs simPairs = join.executeFiltering("all", profiles);
-        double time1 = System.currentTimeMillis();
+        float time1 = System.currentTimeMillis();
 
         final IEntityClustering ec = new ConnectedComponentsClustering(jaccardThreshold);
         final EquivalenceCluster[] clusters = ec.getDuplicates(simPairs);

@@ -53,12 +53,10 @@ public class BestConfigurationBlockingBasedWorkflowCcer {
 
 //        int datasetId = Integer.parseInt(args[0]);
 //        int[] bestConfigurationId = {17, 322, 1007, 787, 790, 369, 780};
-
-        double[] clusteringThreshold = {0.90, 0.30, 0.05, 0.55, 0.60, 0.45, 0.10};
+        float[] clusteringThreshold = {0.90f, 0.30f, 0.05f, 0.55f, 0.60f, 0.45f, 0.10f};
         RepresentationModel[] repModel = {RepresentationModel.CHARACTER_BIGRAMS, RepresentationModel.CHARACTER_BIGRAMS_TF_IDF, RepresentationModel.TOKEN_BIGRAMS_TF_IDF, RepresentationModel.TOKEN_UNIGRAMS_TF_IDF, RepresentationModel.TOKEN_UNIGRAMS_TF_IDF, RepresentationModel.CHARACTER_TRIGRAMS_TF_IDF, RepresentationModel.TOKEN_UNIGRAMS_TF_IDF};
         SimilarityMetric[] simMetric = {SimilarityMetric.COSINE_SIMILARITY, SimilarityMetric.COSINE_SIMILARITY, SimilarityMetric.COSINE_SIMILARITY, SimilarityMetric.SIGMA_SIMILARITY, SimilarityMetric.COSINE_SIMILARITY, SimilarityMetric.SIGMA_SIMILARITY, SimilarityMetric.COSINE_SIMILARITY};
-        
-//        String mainDir = "/home/gpapadakis/data/allDatasets/";
+
         String mainDir = "/home/gap2/data/JedAIdata/datasets/cleanCleanErDatasets/";
         String[] datasetsD1 = {"restaurant1Profiles", "abtProfiles", "amazonProfiles", "dblpProfiles", "walmartProfiles", "dblpProfiles2", "imdbProfiles"};
         String[] datasetsD2 = {"restaurant2Profiles", "buyProfiles", "gpProfiles", "acmProfiles", "amazonProfiles2", "scholarProfiles", "dbpediaProfiles"};
@@ -67,57 +65,57 @@ public class BestConfigurationBlockingBasedWorkflowCcer {
 
         for (int datasetId = 0; datasetId < groundtruthDirs.length; datasetId++) {
             System.out.println("\n\n\nCurrent dataset\t:\t" + datasetsD1[datasetId]);
-            
-        IEntityReader eReader1 = new EntitySerializationReader(mainDir + datasetsD1[datasetId]);
-        List<EntityProfile> profiles1 = eReader1.getEntityProfiles();
-        System.out.println("Input Entity Profiles\t:\t" + profiles1.size());
 
-        IEntityReader eReader2 = new EntitySerializationReader(mainDir + datasetsD2[datasetId]);
-        List<EntityProfile> profiles2 = eReader2.getEntityProfiles();
-        System.out.println("Input Entity Profiles\t:\t" + profiles2.size());
+            IEntityReader eReader1 = new EntitySerializationReader(mainDir + datasetsD1[datasetId]);
+            List<EntityProfile> profiles1 = eReader1.getEntityProfiles();
+            System.out.println("Input Entity Profiles\t:\t" + profiles1.size());
 
-        IGroundTruthReader gtReader = new GtSerializationReader(mainDir + groundtruthDirs[datasetId]);
-        final AbstractDuplicatePropagation duplicatePropagation = new BilateralDuplicatePropagation(gtReader.getDuplicatePairs(null));
-        System.out.println("Existing Duplicates\t:\t" + duplicatePropagation.getDuplicates().size());
+            IEntityReader eReader2 = new EntitySerializationReader(mainDir + datasetsD2[datasetId]);
+            List<EntityProfile> profiles2 = eReader2.getEntityProfiles();
+            System.out.println("Input Entity Profiles\t:\t" + profiles2.size());
+
+            IGroundTruthReader gtReader = new GtSerializationReader(mainDir + groundtruthDirs[datasetId]);
+            final AbstractDuplicatePropagation duplicatePropagation = new BilateralDuplicatePropagation(gtReader.getDuplicatePairs(null));
+            System.out.println("Existing Duplicates\t:\t" + duplicatePropagation.getDuplicates().size());
 
 //        final IEntityClustering ec = new UniqueMappingClustering();
 //        final IEntityMatching em = new ProfileMatcher(profiles1, profiles2);
 //        em.setNumberedGridConfiguration(bestConfigurationId[datasetId] / ec.getNumberOfGridConfigurations());
 //        ec.setNumberedGridConfiguration(bestConfigurationId[datasetId] % ec.getNumberOfGridConfigurations());
-        
-        long time1 = System.currentTimeMillis();
 
-        IBlockBuilding blockBuildingMethod = new StandardBlocking();
-        List<AbstractBlock> blocks = blockBuildingMethod.getBlocks(profiles1, profiles2);
+            long time1 = System.currentTimeMillis();
 
-        IBlockProcessing blockCleaningMethod1 = new ComparisonsBasedBlockPurging(1.00);
-        blocks = blockCleaningMethod1.refineBlocks(blocks);
+            IBlockBuilding blockBuildingMethod = new StandardBlocking();
+            List<AbstractBlock> blocks = blockBuildingMethod.getBlocks(profiles1, profiles2);
 
-        IBlockProcessing blockCleaningMethod2 = new BlockFiltering();
-        blocks = blockCleaningMethod2.refineBlocks(blocks);
+            IBlockProcessing blockCleaningMethod1 = new ComparisonsBasedBlockPurging(1.00f);
+            blocks = blockCleaningMethod1.refineBlocks(blocks);
 
-        IBlockProcessing comparisonCleaningMethod = new CardinalityNodePruning();
-        blocks = comparisonCleaningMethod.refineBlocks(blocks);
+            IBlockProcessing blockCleaningMethod2 = new BlockFiltering();
+            blocks = blockCleaningMethod2.refineBlocks(blocks);
 
-        long time2 = System.currentTimeMillis();
+            IBlockProcessing comparisonCleaningMethod = new CardinalityNodePruning();
+            blocks = comparisonCleaningMethod.refineBlocks(blocks);
 
-        final IEntityMatching em = new ProfileMatcher(profiles1, profiles2, repModel[datasetId], simMetric[datasetId]);
-        final SimilarityPairs sims = em.executeComparisons(blocks);
+            long time2 = System.currentTimeMillis();
 
-        final IEntityClustering ec = new UniqueMappingClustering(clusteringThreshold[datasetId]);
-        final EquivalenceCluster[] clusters = ec.getDuplicates(sims);
+            final IEntityMatching em = new ProfileMatcher(profiles1, profiles2, repModel[datasetId], simMetric[datasetId]);
+            final SimilarityPairs sims = em.executeComparisons(blocks);
 
-        long time3 = System.currentTimeMillis();
+            final IEntityClustering ec = new UniqueMappingClustering(clusteringThreshold[datasetId]);
+            final EquivalenceCluster[] clusters = ec.getDuplicates(sims);
 
-        final BlocksPerformance blStats = new BlocksPerformance(blocks, duplicatePropagation);
-        blStats.setStatistics();
-        blStats.printStatistics(time2 - time1, "", "");
+            long time3 = System.currentTimeMillis();
 
-        final ClustersPerformance clp = new ClustersPerformance(clusters, duplicatePropagation);
-        clp.setStatistics();
-        clp.printStatistics(time3 - time1, "", "");
+            final BlocksPerformance blStats = new BlocksPerformance(blocks, duplicatePropagation);
+            blStats.setStatistics();
+            blStats.printStatistics(time2 - time1, "", "");
 
-        System.out.println("Running time\t:\t" + (time3 - time1));
+            final ClustersPerformance clp = new ClustersPerformance(clusters, duplicatePropagation);
+            clp.setStatistics();
+            clp.printStatistics(time3 - time1, "", "");
+
+            System.out.println("Running time\t:\t" + (time3 - time1));
         }
     }
 }

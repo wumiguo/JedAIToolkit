@@ -72,8 +72,8 @@ public class TestGroupLinkage {
             long start = System.nanoTime();
             for (RepresentationModel model : RepresentationModel.values()) {
                 if (model.equals(RepresentationModel.PRETRAINED_WORD_VECTORS)) {
-                    GroupLinkage gp = new GroupLinkage(0.1, profiles1, model, SimilarityMetric.getModelDefaultSimMetric(model));
-                    gp.setSimilarityThreshold(0.1);
+                    GroupLinkage gp = new GroupLinkage(0.1f, profiles1, model, SimilarityMetric.getModelDefaultSimMetric(model));
+                    gp.setSimilarityThreshold(0.1f);
                     SimilarityPairs simPairs = gp.executeComparisons(blocks);
 
                     for (int i = 0; i < simPairs.getNoOfComparisons(); i++) {

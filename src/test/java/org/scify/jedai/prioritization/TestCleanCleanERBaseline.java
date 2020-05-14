@@ -55,7 +55,7 @@ public class TestCleanCleanERBaseline {
     public static void main(String[] args) {
         BasicConfigurator.configure();
 
-        double[] clusteringThreshold = {0.90, 0.30, 0.05, 0.55, 0.60, 0.45, 0.10};
+        float[] clusteringThreshold = {0.90f, 0.30f, 0.05f, 0.55f, 0.60f, 0.45f, 0.10f};
         RepresentationModel[] repModel = {RepresentationModel.CHARACTER_BIGRAMS, RepresentationModel.CHARACTER_BIGRAMS_TF_IDF, RepresentationModel.TOKEN_BIGRAMS_TF_IDF, RepresentationModel.TOKEN_UNIGRAMS_TF_IDF, RepresentationModel.TOKEN_UNIGRAMS_TF_IDF, RepresentationModel.CHARACTER_TRIGRAMS_TF_IDF, RepresentationModel.TOKEN_UNIGRAMS_TF_IDF};
         SimilarityMetric[] simMetric = {SimilarityMetric.COSINE_SIMILARITY, SimilarityMetric.COSINE_SIMILARITY, SimilarityMetric.COSINE_SIMILARITY, SimilarityMetric.SIGMA_SIMILARITY, SimilarityMetric.COSINE_SIMILARITY, SimilarityMetric.SIGMA_SIMILARITY, SimilarityMetric.COSINE_SIMILARITY};
 
@@ -65,7 +65,7 @@ public class TestCleanCleanERBaseline {
         String[] groundtruthDirs = {"restaurantsIdDuplicates", "abtBuyIdDuplicates", "amazonGpIdDuplicates", "dblpAcmIdDuplicates", "amazonWalmartIdDuplicates",
             "dblpScholarIdDuplicates", "moviesIdDuplicates"};
 
-        for (int i = 0; i < groundtruthDirs.length; i++) {
+        for (int i = 3; i < 4/*groundtruthDirs.length*/; i++) {
             IEntityReader eReader1 = new EntitySerializationReader(mainDir + datasetsD1[i]);
             List<EntityProfile> profiles1 = eReader1.getEntityProfiles();
             System.out.println("Input Entity Profiles\t:\t" + profiles1.size());
@@ -82,7 +82,7 @@ public class TestCleanCleanERBaseline {
             List<AbstractBlock> blocks = blockBuildingMethod.getBlocks(profiles1, profiles2);
             System.out.println("Original blocks\t:\t" + blocks.size());
 
-            IBlockProcessing blockCleaningMethod1 = new ComparisonsBasedBlockPurging(1.00);
+            IBlockProcessing blockCleaningMethod1 = new ComparisonsBasedBlockPurging(1.00f);
             blocks = blockCleaningMethod1.refineBlocks(blocks);
 
             IBlockProcessing blockCleaningMethod2 = new BlockFiltering();
@@ -109,7 +109,7 @@ public class TestCleanCleanERBaseline {
             ClustersPerformance clp = new ClustersPerformance(clusters, duplicatePropagation);
             clp.setStatistics();
             clp.printStatistics(0, "", "");
-            double originalRecall = clp.getRecall();
+            float originalRecall = clp.getRecall();
 
             final IEntityMatching em = new ProfileMatcher(profiles1, profiles2, repModel[i], simMetric[i]);
             SimilarityPairs sims = new SimilarityPairs(true, (int) allComparisons.size());
@@ -125,7 +125,7 @@ public class TestCleanCleanERBaseline {
 
                 clp = new ClustersPerformance(clusters, duplicatePropagation);
                 clp.setStatistics();
-                double currentRecall = clp.getRecall();
+                float currentRecall = clp.getRecall();
                 System.out.println("Current recall\t:\t" + currentRecall);
                 if (originalRecall <= currentRecall) {
                     clp.printStatistics(0, "", "");

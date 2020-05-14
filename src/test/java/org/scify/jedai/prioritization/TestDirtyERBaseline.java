@@ -55,7 +55,7 @@ public class TestDirtyERBaseline {
     public static void main(String[] args) {
         BasicConfigurator.configure();
 
-        double[] bestThresholds = {0.75, 0.45};
+        float[] bestThresholds = {0.75f, 0.45f};
         RepresentationModel[] bestModels = {RepresentationModel.CHARACTER_BIGRAM_GRAPHS, RepresentationModel.CHARACTER_BIGRAMS_TF_IDF};
         SimilarityMetric[] bestMetrics = {SimilarityMetric.GRAPH_OVERALL_SIMILARITY, SimilarityMetric.GENERALIZED_JACCARD_SIMILARITY};
 
@@ -110,7 +110,7 @@ public class TestDirtyERBaseline {
             ClustersPerformance clp = new ClustersPerformance(clusters, duplicatePropagation);
             clp.setStatistics();
             clp.printStatistics(0, "", "");
-            double originalRecall = clp.getRecall();
+            float originalRecall = clp.getRecall();
 
             final IEntityMatching em = new ProfileMatcher(profiles, bestModels[i], bestMetrics[i]);
             SimilarityPairs sims = new SimilarityPairs(false, (int) allComparisons.size());
@@ -140,7 +140,7 @@ public class TestDirtyERBaseline {
 
                 clp = new ClustersPerformance(clusters, duplicatePropagation);
                 clp.setStatistics();
-                double currentRecall = clp.getRecall();
+                float currentRecall = clp.getRecall();
                 System.out.println("Current recall\t:\t" + counter + "\t" + currentRecall);
                 if (originalRecall <= currentRecall) {
                     clp.printStatistics(0, "", "");

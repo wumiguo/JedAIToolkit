@@ -99,7 +99,7 @@ public class HolisticGridConfigurationCCER {
             int bestLoop3 = 0;
             int bestLoop4 = 0;
             int bestLoop5 = 0;
-            double bestFMeasure = 0;
+            float bestFMeasure = 0;
             for (int loop0 = 0; loop0 < bb.getNumberOfGridConfigurations(); loop0++) {
                 bb.setNumberedGridConfiguration(loop0);
                 final List<AbstractBlock> originalBlocks = bb.getBlocks(profiles1, profiles2);
@@ -139,7 +139,7 @@ public class HolisticGridConfigurationCCER {
                                     final ClustersPerformance clp = new ClustersPerformance(clusters, duplicatePropagation);
                                     clp.setStatistics();
 //                                    clp.printStatistics(0, "", "");
-                                    double fMeasure = clp.getFMeasure();
+                                    float fMeasure = clp.getFMeasure();
                                     if (bestFMeasure < fMeasure) {
                                         bestLoop0 = loop0;
                                         bestLoop1 = loop1;
@@ -164,7 +164,7 @@ public class HolisticGridConfigurationCCER {
             System.out.println("\nBest Loop 5\t:\t" + bestLoop5);
             System.out.println("Best FMeasure\t:\t" + bestFMeasure);
 
-            double time1 = System.currentTimeMillis();
+            float time1 = System.currentTimeMillis();
 
             bb.setNumberedRandomConfiguration(bestLoop0);
             final List<AbstractBlock> blocks = bb.getBlocks(profiles1, profiles2);
@@ -184,7 +184,7 @@ public class HolisticGridConfigurationCCER {
             ec.setNumberedGridConfiguration(bestLoop5);
             final EquivalenceCluster[] clusters = ec.getDuplicates(sims);
 
-            double time2 = System.currentTimeMillis();
+            float time2 = System.currentTimeMillis();
 
             final StringBuilder matchingWorkflowConf = new StringBuilder();
             matchingWorkflowConf.append(bb.getMethodConfiguration());

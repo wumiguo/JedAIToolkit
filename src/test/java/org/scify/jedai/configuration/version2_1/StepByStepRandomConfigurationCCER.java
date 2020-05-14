@@ -49,9 +49,9 @@ import org.scify.jedai.utilities.enumerations.WeightingScheme;
  */
 public class StepByStepRandomConfigurationCCER {
 
-    private final static double[] PURGING_FACTOR = {0.021, 0.022, 0.005, 0.009};
-    private final static double[] FILTERING_RATIO = {0.375, 0.503, 0.252, 0.429};
-    private final static double[] SIM_THRESHOLD = {0.369, 0.167, 0.408, 0.440};
+    private final static float[] PURGING_FACTOR = {0.021f, 0.022f, 0.005f, 0.009f};
+    private final static float[] FILTERING_RATIO = {0.375f, 0.503f, 0.252f, 0.429f};
+    private final static float[] SIM_THRESHOLD = {0.369f, 0.167f, 0.408f, 0.440f};
     private final static WeightingScheme[] WEIGHTING_SCHEME = {WeightingScheme.EJS, WeightingScheme.ECBS,
         WeightingScheme.EJS, WeightingScheme.EJS};
     private final static RepresentationModel[] REP_MODEL = {RepresentationModel.CHARACTER_TRIGRAMS_TF_IDF,
@@ -117,7 +117,7 @@ public class StepByStepRandomConfigurationCCER {
         matchingWorkflowConf.append("\n").append(em.getMethodConfiguration());
         matchingWorkflowConf.append("\n").append(ec.getMethodConfiguration());
 
-        double time1 = System.currentTimeMillis();
+        float time1 = System.currentTimeMillis();
 
         final List<AbstractBlock> blocks = bb.getBlocks(profiles1, profiles2);
         final List<AbstractBlock> purgedBlocks = bp1.refineBlocks(blocks);
@@ -126,7 +126,7 @@ public class StepByStepRandomConfigurationCCER {
         final SimilarityPairs sims = em.executeComparisons(finalBlocks);
         final EquivalenceCluster[] clusters = ec.getDuplicates(sims);
 
-        double time2 = System.currentTimeMillis();
+        float time2 = System.currentTimeMillis();
 
         final ClustersPerformance clp = new ClustersPerformance(clusters, duplicatePropagation);
         clp.setStatistics();

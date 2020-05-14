@@ -50,9 +50,9 @@ public class OptimizeDirtyMoviesDataset {
 
     private final static int NO_OF_TRIALS = 100;
 
-    static double getTotalComparisons(List<AbstractBlock> blocks) {
-        double originalComparisons = 0;
-        originalComparisons = blocks.stream().map(AbstractBlock::getNoOfComparisons).reduce(originalComparisons, Double::sum);
+    static float getTotalComparisons(List<AbstractBlock> blocks) {
+        float originalComparisons = 0;
+        originalComparisons = blocks.stream().map(AbstractBlock::getNoOfComparisons).reduce(originalComparisons, Float::sum);
         System.out.println("Original comparisons\t:\t" + originalComparisons);
         return originalComparisons;
     }
@@ -101,7 +101,7 @@ public class OptimizeDirtyMoviesDataset {
 
 //        // local optimization of Matching & Clustering            
         int bestIteration = 0;
-        double bestFMeasure = 0;
+        float bestFMeasure = 0;
         for (int j = 0; j < NO_OF_TRIALS; j++) {
             em.setNextRandomConfiguration();
             final SimilarityPairs sims = em.executeComparisons(finalBlocks);
@@ -111,7 +111,7 @@ public class OptimizeDirtyMoviesDataset {
 
             final ClustersPerformance clp = new ClustersPerformance(clusters, duplicatePropagation);
             clp.setStatistics();
-            double fMeasure = clp.getFMeasure();
+            float fMeasure = clp.getFMeasure();
             if (bestFMeasure < fMeasure) {
                 bestIteration = j;
                 bestFMeasure = fMeasure;
@@ -120,7 +120,7 @@ public class OptimizeDirtyMoviesDataset {
         System.out.println("\nBest Iteration\t:\t" + bestIteration);
         System.out.println("Best FMeasure\t:\t" + bestFMeasure);
 
-        double time1 = System.currentTimeMillis();
+        float time1 = System.currentTimeMillis();
 
         em.setNumberedRandomConfiguration(bestIteration);
         final SimilarityPairs sims = em.executeComparisons(finalBlocks);
@@ -128,7 +128,7 @@ public class OptimizeDirtyMoviesDataset {
         ec.setNumberedRandomConfiguration(bestIteration);
         final EquivalenceCluster[] clusters = ec.getDuplicates(sims);
 
-        double time2 = System.currentTimeMillis();
+        float time2 = System.currentTimeMillis();
 
         final StringBuilder matchingWorkflowConf = new StringBuilder();
         matchingWorkflowConf.append(bb.getMethodConfiguration());

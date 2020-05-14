@@ -52,7 +52,7 @@ public class DetailedDBPediaPerformance {
     public static void main(String[] args) {
         BasicConfigurator.configure();
 
-        double[] clusteringThreshold = {0.45, 0.1};
+        float[] clusteringThreshold = {0.45f, 0.1f};
         RepresentationModel[] rModel = {RepresentationModel.TOKEN_UNIGRAMS_TF_IDF, RepresentationModel.CHARACTER_FOURGRAMS_TF_IDF};
         SimilarityMetric[] simMetric = {SimilarityMetric.SIGMA_SIMILARITY, SimilarityMetric.COSINE_SIMILARITY};
 
@@ -82,7 +82,7 @@ public class DetailedDBPediaPerformance {
         List<AbstractBlock> blocks = blockBuildingMethod.getBlocks(profiles1, profiles2);
         System.out.println("Original blocks\t:\t" + blocks.size());
 
-        IBlockProcessing blockCleaningMethod1 = new ComparisonsBasedBlockPurging(1.000);
+        IBlockProcessing blockCleaningMethod1 = new ComparisonsBasedBlockPurging(1.000f);
         blocks = blockCleaningMethod1.refineBlocks(blocks);
 
         IBlockProcessing blockCleaningMethod2 = new BlockFiltering();

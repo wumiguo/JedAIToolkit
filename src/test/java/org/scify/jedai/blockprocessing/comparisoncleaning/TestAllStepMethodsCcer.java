@@ -61,25 +61,25 @@ public class TestAllStepMethodsCcer {
 
         System.out.println("\n\nCurrent blocking metohd\t:\t" + BlockBuildingMethod.STANDARD_BLOCKING);
             
-        double time1 = System.currentTimeMillis();
+        float time1 = System.currentTimeMillis();
         IBlockBuilding blockBuildingMethod = BlockBuildingMethod.getDefaultConfiguration(BlockBuildingMethod.STANDARD_BLOCKING);
         List<AbstractBlock> blocks = blockBuildingMethod.getBlocks(profilesD1, profilesD2);
 
         IBlockProcessing blockCleaningMethod = BlockCleaningMethod.getDefaultConfiguration(BlockCleaningMethod.BLOCK_FILTERING);
         List<AbstractBlock> newBlocks = blockCleaningMethod.refineBlocks(blocks);
         
-        double time2 = System.currentTimeMillis();
+        float time2 = System.currentTimeMillis();
         BlocksPerformance blStats = new BlocksPerformance(blocks, duplicatePropagation);
         blStats.setStatistics();
         blStats.printStatistics(time2 - time1, blockBuildingMethod.getMethodConfiguration(), blockBuildingMethod.getMethodName());
 
         for (ComparisonCleaningMethod coclMethod : ComparisonCleaningMethod.values()) {
-            double time3 = System.currentTimeMillis();
+            float time3 = System.currentTimeMillis();
 
             IBlockProcessing comparisonCleaningMethod = ComparisonCleaningMethod.getDefaultConfiguration(coclMethod);
             List<AbstractBlock> localBlocks = comparisonCleaningMethod.refineBlocks(newBlocks);
             
-            double time4 = System.currentTimeMillis();
+            float time4 = System.currentTimeMillis();
             
             StringBuilder workflowConf = new StringBuilder(blockBuildingMethod.getMethodConfiguration());
             StringBuilder workflowName = new StringBuilder(blockBuildingMethod.getMethodName());

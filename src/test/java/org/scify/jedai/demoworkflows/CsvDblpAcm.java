@@ -78,7 +78,7 @@ public class CsvDblpAcm {
         StringBuilder workflowConf = new StringBuilder();
         StringBuilder workflowName = new StringBuilder();
 
-        double time1 = System.currentTimeMillis();
+        float time1 = System.currentTimeMillis();
 
         IBlockBuilding tokenBlocking = new StandardBlocking();
         List<AbstractBlock> blocks = tokenBlocking.getBlocks(csvDBLP, csvACM);
@@ -95,7 +95,7 @@ public class CsvDblpAcm {
         workflowConf.append("\n").append(comparisonCleaning.getMethodConfiguration());
         workflowName.append("->").append(comparisonCleaning.getMethodName());
                 
-        double time2 = System.currentTimeMillis();
+        float time2 = System.currentTimeMillis();
 
         BlocksPerformance blStats = new BlocksPerformance(ccBlocks, duplicatePropagation);
         blStats.setStatistics();
@@ -106,7 +106,7 @@ public class CsvDblpAcm {
         blw.printDetailedResultsToJSONrdf(csvDBLP, csvACM, mainDirectory + "foundMatchesJSON.json");
         blw.debugToJSONrdf(csvDBLP, csvACM, mainDirectory + "debugJSON.json");*/
 
-        double time3 = System.currentTimeMillis();
+        float time3 = System.currentTimeMillis();
         
         IEntityMatching entityMatching = new ProfileMatcher(csvDBLP, csvACM);
         SimilarityPairs simPairs = entityMatching.executeComparisons(blocks);
@@ -118,7 +118,7 @@ public class CsvDblpAcm {
         workflowConf.append("\n").append(entityClusttering.getMethodConfiguration());
         workflowName.append("->").append(entityClusttering.getMethodName());
 
-        double time4 = System.currentTimeMillis();
+        float time4 = System.currentTimeMillis();
 
         ClustersPerformance clp = new ClustersPerformance(entityClusters, duplicatePropagation);
         clp.setStatistics();

@@ -55,64 +55,63 @@ public class DefaultConfigurationBlockingBasedWorkflowDer {
 //        int datasetId = Integer.parseInt(args[0]);
 //        int defaultConfiguration = 221;
 
-        double clusteringThreshold = 0.65;
+        float clusteringThreshold = 0.65f;
         RepresentationModel repModel = RepresentationModel.CHARACTER_BIGRAM_GRAPHS;
         SimilarityMetric simMetric = SimilarityMetric.GRAPH_VALUE_SIMILARITY;
-        
-//        String mainDir = "/home/gpapadakis/data/derDatasets/";
+
         String mainDir = "/home/gap2/data/JedAIdata/datasets/dirtyErDatasets/";
         String[] profilesFile = {"cddbProfiles", "coraProfiles"};
         String[] groundtruthFile = {"cddbIdDuplicates", "coraIdDuplicates"};
 
-        for (int datasetId = 1; datasetId < groundtruthFile.length; datasetId++) {
+        for (int datasetId = 0; datasetId < groundtruthFile.length; datasetId++) {
             System.out.println("\n\n\nCurrent dataset\t:\t" + profilesFile[datasetId]);
-            
-        IEntityReader eReader = new EntitySerializationReader(mainDir + profilesFile[datasetId]);
-        List<EntityProfile> profiles = eReader.getEntityProfiles();
-        System.out.println("Input Entity Profiles\t:\t" + profiles.size());
 
-        IGroundTruthReader gtReader = new GtSerializationReader(mainDir + groundtruthFile[datasetId]);
-        final AbstractDuplicatePropagation duplicatePropagation = new UnilateralDuplicatePropagation(gtReader.getDuplicatePairs(null));
-        System.out.println("Existing Duplicates\t:\t" + duplicatePropagation.getDuplicates().size());
+            IEntityReader eReader = new EntitySerializationReader(mainDir + profilesFile[datasetId]);
+            List<EntityProfile> profiles = eReader.getEntityProfiles();
+            System.out.println("Input Entity Profiles\t:\t" + profiles.size());
 
-        long time1 = System.currentTimeMillis();
+            IGroundTruthReader gtReader = new GtSerializationReader(mainDir + groundtruthFile[datasetId]);
+            final AbstractDuplicatePropagation duplicatePropagation = new UnilateralDuplicatePropagation(gtReader.getDuplicatePairs(null));
+            System.out.println("Existing Duplicates\t:\t" + duplicatePropagation.getDuplicates().size());
 
-        IBlockBuilding blockBuildingMethod = new StandardBlocking();
-        List<AbstractBlock> blocks = blockBuildingMethod.getBlocks(profiles);
+            long time1 = System.currentTimeMillis();
 
-        IBlockProcessing blockCleaningMethod1 = new ComparisonsBasedBlockPurging(false);
-        blocks = blockCleaningMethod1.refineBlocks(blocks);
+            final IBlockBuilding blockBuildingMethod = new StandardBlocking();
+            List<AbstractBlock> blocks = blockBuildingMethod.getBlocks(profiles);
 
-        IBlockProcessing blockCleaningMethod2 = new BlockFiltering();
-        blocks = blockCleaningMethod2.refineBlocks(blocks);
+            final IBlockProcessing blockCleaningMethod1 = new ComparisonsBasedBlockPurging(false);
+            blocks = blockCleaningMethod1.refineBlocks(blocks);
 
-        IBlockProcessing comparisonCleaningMethod = new CardinalityNodePruning(WeightingScheme.JS);
-        blocks = comparisonCleaningMethod.refineBlocks(blocks);
+            final IBlockProcessing blockCleaningMethod2 = new BlockFiltering();
+            blocks = blockCleaningMethod2.refineBlocks(blocks);
+
+            final IBlockProcessing comparisonCleaningMethod = new CardinalityNodePruning(WeightingScheme.JS);
+            blocks = comparisonCleaningMethod.refineBlocks(blocks);
 
 //        final IEntityClustering ec = new ConnectedComponentsClustering();
 //        ec.setNumberedGridConfiguration(defaultConfiguration % ec.getNumberOfGridConfigurations());
 //        final IEntityMatching em = new ProfileMatcher(profiles);
 //        em.setNumberedGridConfiguration(defaultConfiguration / ec.getNumberOfGridConfigurations());
 
-        long time2 = System.currentTimeMillis();
+            long time2 = System.currentTimeMillis();
 
-        final IEntityMatching em = new ProfileMatcher(profiles, repModel, simMetric);
-        final SimilarityPairs sims = em.executeComparisons(blocks);
+            final IEntityMatching em = new ProfileMatcher(profiles, repModel, simMetric);
+            final SimilarityPairs sims = em.executeComparisons(blocks);
 
-        final IEntityClustering ec = new ConnectedComponentsClustering(clusteringThreshold);
-        final EquivalenceCluster[] clusters = ec.getDuplicates(sims);
+            final IEntityClustering ec = new ConnectedComponentsClustering(clusteringThreshold);
+            final EquivalenceCluster[] clusters = ec.getDuplicates(sims);
 
-        long time3 = System.currentTimeMillis();
+            long time3 = System.currentTimeMillis();
 
-        final BlocksPerformance blStats = new BlocksPerformance(blocks, duplicatePropagation);
-        blStats.setStatistics();
-        blStats.printStatistics(time2 - time1, "", "");
+            final BlocksPerformance blStats = new BlocksPerformance(blocks, duplicatePropagation);
+            blStats.setStatistics();
+            blStats.printStatistics(time2 - time1, "", "");
 
-        final ClustersPerformance clp = new ClustersPerformance(clusters, duplicatePropagation);
-        clp.setStatistics();
-        clp.printStatistics(time3 - time1, "", "");
+            final ClustersPerformance clp = new ClustersPerformance(clusters, duplicatePropagation);
+            clp.setStatistics();
+            clp.printStatistics(time3 - time1, "", "");
 
-        System.out.println("Running time\t:\t" + (time3 - time1));
+            System.out.println("Running time\t:\t" + (time3 - time1));
         }
     }
 }

@@ -88,7 +88,7 @@ public class ScalabilityJoinBasedWorkflow {
 
         long time1 = System.currentTimeMillis();
 
-        double simThreshold = 0.40;
+        float simThreshold = 0.40f;
         PPJoin ppjoin = new PPJoin(simThreshold);
         SimilarityPairs simPairs = ppjoin.executeFiltering("all", profiles);
 

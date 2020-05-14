@@ -17,11 +17,13 @@
 package org.scify.jedai.datareader;
 
 import org.apache.log4j.BasicConfigurator;
-import org.scify.jedai.datamodel.Attribute;
 import org.scify.jedai.datamodel.EntityProfile;
 import org.scify.jedai.datareader.entityreader.EntityCSVReader;
 
 import java.util.List;
+import java.util.Set;
+import org.scify.jedai.datamodel.IdDuplicates;
+import org.scify.jedai.datareader.groundtruthreader.GtCSVReader;
 
 /**
  *
@@ -32,20 +34,28 @@ public class TestEntityCSVReader {
     public static void main(String[] args) {
         BasicConfigurator.configure();
         
-        String filePath = "/home/gap2/data/JedAIdata/datasets/dirtyErDatasets/dblp/articles.csv";
-        EntityCSVReader csvReader = new EntityCSVReader(filePath);
+        String mainDirectory = "/home/gap2/Downloads/DBLP-ACM/";
+        EntityCSVReader csvReader = new EntityCSVReader(mainDirectory + "DBLP2.csv");
         csvReader.setAttributeNamesInFirstRow(true);
-        csvReader.setSeparator(';');
+        csvReader.setSeparator(',');
 //        csvReader.setAttributesToExclude(new int[]{1});
         csvReader.setIdIndex(0);
-        List<EntityProfile> profiles = csvReader.getEntityProfiles();
-        for (EntityProfile profile : profiles) {
-            System.out.println("\n\n" + profile.getEntityUrl());
-            for (Attribute attribute : profile.getAttributes()) {
-                System.out.println(attribute.toString());
-            }
-        }
-        csvReader.storeSerializedObject(profiles, "/home/gap2/data/JedAIdata/datasets/dirtyErDatasets/dblp/dblp");
-//        csvReader.convertToRDFfile(profiles, "C:/Users/Manos/workspaceMars/JedAIgitFinal/JedAIgitFinal/datasets/converter/DBLP2toRDFxml.xml", "http://w3/");
+        List<EntityProfile> profilesD1 = csvReader.getEntityProfiles();
+        System.out.println("Entities from Dataset 1\t:\t" + profilesD1.size());
+
+        csvReader = new EntityCSVReader(mainDirectory + "ACM.csv");
+        csvReader.setAttributeNamesInFirstRow(true);
+        csvReader.setSeparator(',');
+//        csvReader.setAttributesToExclude(new int[]{1});
+        csvReader.setIdIndex(0);
+        List<EntityProfile> profilesD2 = csvReader.getEntityProfiles();
+        System.out.println("Entities from Dataset 2\t:\t" + profilesD2.size());
+        
+        GtCSVReader gtCsvReader = new GtCSVReader(mainDirectory + "DBLP-ACM_perfectMapping.csv");
+        gtCsvReader.setIgnoreFirstRow(true);
+        gtCsvReader.setSeparator(",");
+        Set<IdDuplicates> duplicates = gtCsvReader.getDuplicatePairs(profilesD1, profilesD2);
+        
+        System.out.println("Duplicates\t:\t" + duplicates.size());
     }
 }

@@ -49,9 +49,9 @@ public class StepByStepRandomConfigurationCCER {
 
     private final static int NO_OF_TRIALS = 100;
 
-    static double getTotalComparisons(List<AbstractBlock> blocks) {
-        double originalComparisons = 0;
-        originalComparisons = blocks.stream().map(AbstractBlock::getNoOfComparisons).reduce(originalComparisons, Double::sum);
+    static float getTotalComparisons(List<AbstractBlock> blocks) {
+        float originalComparisons = 0;
+        originalComparisons = blocks.stream().map(AbstractBlock::getNoOfComparisons).reduce(originalComparisons, Float::sum);
         System.out.println("Original comparisons\t:\t" + originalComparisons);
         return originalComparisons;
     }
@@ -104,9 +104,9 @@ public class StepByStepRandomConfigurationCCER {
             matchingWorkflowName.append("->").append(ec.getMethodName());
 
             // local optimization of Block Building
-            double bestA = 0;
+            float bestA = 0;
             int bestIteration = 0;
-            double originalComparisons = ((double) profiles1.size()) * profiles2.size();
+            float originalComparisons = ((float) profiles1.size()) * profiles2.size();
             for (int j = 0; j < NO_OF_TRIALS; j++) {
                 bb.setNextRandomConfiguration();
                 final List<AbstractBlock> originalBlocks = bb.getBlocks(profiles1, profiles2);
@@ -116,9 +116,9 @@ public class StepByStepRandomConfigurationCCER {
 
                 final BlocksPerformance blp = new BlocksPerformance(originalBlocks, duplicatePropagation);
                 blp.setStatistics();
-                double recall = blp.getPc();
-                double rr = 1 - blp.getAggregateCardinality() / originalComparisons;
-                double a = rr * recall;
+                float recall = blp.getPc();
+                float rr = 1 - blp.getAggregateCardinality() / originalComparisons;
+                float a = rr * recall;
                 if (bestA < a) {
                     bestIteration = j;
                     bestA = a;
@@ -146,9 +146,9 @@ public class StepByStepRandomConfigurationCCER {
 
                 blp = new BlocksPerformance(purgedBlocks, duplicatePropagation);
                 blp.setStatistics();
-                double recall = blp.getPc();
-                double rr = 1 - blp.getAggregateCardinality() / originalComparisons;
-                double a = rr * recall;
+                float recall = blp.getPc();
+                float rr = 1 - blp.getAggregateCardinality() / originalComparisons;
+                float a = rr * recall;
                 if (bestA < a) {
                     bestIteration = j;
                     bestA = a;
@@ -176,9 +176,9 @@ public class StepByStepRandomConfigurationCCER {
 
                 blp = new BlocksPerformance(filteredBlocks, duplicatePropagation);
                 blp.setStatistics();
-                double recall = blp.getPc();
-                double rr = 1 - blp.getAggregateCardinality() / originalComparisons;
-                double a = rr * recall;
+                float recall = blp.getPc();
+                float rr = 1 - blp.getAggregateCardinality() / originalComparisons;
+                float a = rr * recall;
                 if (bestA < a) {
                     bestIteration = j;
                     bestA = a;
@@ -206,9 +206,9 @@ public class StepByStepRandomConfigurationCCER {
 
                 blp = new BlocksPerformance(finalBlocks, duplicatePropagation);
                 blp.setStatistics();
-                double recall = blp.getPc();
-                double rr = 1 - blp.getAggregateCardinality() / originalComparisons;
-                double a = rr * recall;
+                float recall = blp.getPc();
+                float rr = 1 - blp.getAggregateCardinality() / originalComparisons;
+                float a = rr * recall;
                 if (bestA < a) {
                     bestIteration = j;
                     bestA = a;
@@ -225,7 +225,7 @@ public class StepByStepRandomConfigurationCCER {
 
             // local optimization of Matching & Clustering            
             bestIteration = 0;
-            double bestFMeasure = 0;
+            float bestFMeasure = 0;
             for (int j = 0; j < NO_OF_TRIALS; j++) {
                 em.setNextRandomConfiguration();
                 final SimilarityPairs sims = em.executeComparisons(finalBlocks);
@@ -235,7 +235,7 @@ public class StepByStepRandomConfigurationCCER {
 
                 final ClustersPerformance clp = new ClustersPerformance(clusters, duplicatePropagation);
                 clp.setStatistics();
-                double fMeasure = clp.getFMeasure();
+                float fMeasure = clp.getFMeasure();
                 if (bestFMeasure < fMeasure) {
                     bestIteration = j;
                     bestFMeasure = fMeasure;
@@ -244,7 +244,7 @@ public class StepByStepRandomConfigurationCCER {
             System.out.println("\nBest Iteration\t:\t" + bestIteration);
             System.out.println("Best FMeasure\t:\t" + bestFMeasure);
 
-            double time1 = System.currentTimeMillis();
+            float time1 = System.currentTimeMillis();
 
             em.setNumberedRandomConfiguration(bestIteration);
             final SimilarityPairs sims = em.executeComparisons(finalBlocks);
@@ -252,7 +252,7 @@ public class StepByStepRandomConfigurationCCER {
             ec.setNumberedRandomConfiguration(bestIteration);
             final EquivalenceCluster[] clusters = ec.getDuplicates(sims);
 
-            double time2 = System.currentTimeMillis();
+            float time2 = System.currentTimeMillis();
 
             final StringBuilder matchingWorkflowConf = new StringBuilder();
             matchingWorkflowConf.append(bb.getMethodConfiguration());

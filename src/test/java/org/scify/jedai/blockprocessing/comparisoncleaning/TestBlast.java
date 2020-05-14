@@ -40,8 +40,8 @@ public class TestBlast {
         BasicConfigurator.configure();
 
         String fileName = "/home/gap2/data/JedAIdata/blocks/dblpAcm/sb";
-        double bpRatio = 0.004;
-        double bfRatio = 0.5000000000000003;
+        float bpRatio = 0.004f;
+        float bfRatio = 0.5000000000000003f;
 
         final EntitySerializationReader inReader = new EntitySerializationReader(null);
         final List<AbstractBlock> blocks = (List<AbstractBlock>) inReader.loadSerializedObject(fileName);
@@ -59,7 +59,7 @@ public class TestBlast {
         BlocksPerformance blockStats = new BlocksPerformance(filteredBlocks, adp);
         blockStats.setStatistics();
         blockStats.printStatistics(0, "", "");
-        final double originalPC = blockStats.getPc();
+        final float originalPC = blockStats.getPc();
         System.out.println("Original PC\t:\t" + originalPC);
 
 //        final BLAST blast = new BLAST();
@@ -68,7 +68,7 @@ public class TestBlast {
         blockStats = new BlocksPerformance(newBlocks, adp);
         blockStats.setStatistics();
         blockStats.printStatistics(0, "", "");
-        final double newPC = blockStats.getPc();
+        final float newPC = blockStats.getPc();
         System.out.println("New PC\t:\t" + newPC);
     }
 }

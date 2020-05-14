@@ -58,7 +58,7 @@ public class DBPediaJoinBasedWorkflow {
         final AbstractDuplicatePropagation duplicatePropagation = new BilateralDuplicatePropagation(gtReader.getDuplicatePairs(null));
         System.out.println("Existing Duplicates\t:\t" + duplicatePropagation.getDuplicates().size());
 
-        for (double simThreshold = 0.7; simThreshold < 0.99; simThreshold += 0.1) {
+        for (float simThreshold = 0.7f; simThreshold < 0.99; simThreshold += 0.1) {
             long time1 = System.currentTimeMillis();
 //            AllPairs join = new AllPairs(simThreshold[datasetId]);
             PPJoin join = new PPJoin(simThreshold);

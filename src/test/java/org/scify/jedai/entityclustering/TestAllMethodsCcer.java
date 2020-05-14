@@ -64,7 +64,7 @@ public class TestAllMethodsCcer {
         System.out.println("Existing Duplicates\t:\t" + duplicatePropagation.getDuplicates().size());
         BlockBuildingMethod blockingWorkflow = BlockBuildingMethod.STANDARD_BLOCKING;
 
-        double time1 = System.currentTimeMillis();
+        float time1 = System.currentTimeMillis();
 
         IBlockBuilding blockBuildingMethod = BlockBuildingMethod.getDefaultConfiguration(blockingWorkflow);
         List<AbstractBlock> blocks = blockBuildingMethod.getBlocks(profilesD1, profilesD2);
@@ -89,7 +89,7 @@ public class TestAllMethodsCcer {
             blockingWorkflowName.append("->").append(comparisonCleaningMethod.getMethodName());
         }
 
-        double time2 = System.currentTimeMillis();
+        float time2 = System.currentTimeMillis();
 
         BlocksPerformance blp = new BlocksPerformance(blocks, duplicatePropagation);
 //        blp.printFalseNegatives(profilesD1, profilesD2, "data" + File.separator + "falseNegatives.csv");
@@ -98,25 +98,25 @@ public class TestAllMethodsCcer {
 
         for (EntityMatchingMethod emMethod : EntityMatchingMethod.values()) {
 
-            double time3 = System.currentTimeMillis();
+            float time3 = System.currentTimeMillis();
 
             IEntityMatching em = EntityMatchingMethod.getDefaultConfiguration(profilesD1, profilesD2, emMethod);
             SimilarityPairs simPairs = em.executeComparisons(blocks);
 
-            double time4 = System.currentTimeMillis();
+            float time4 = System.currentTimeMillis();
 
             for (EntityClusteringCcerMethod ecMethod : EntityClusteringCcerMethod.values()) {
             	
             	//if (ecMethod.toString().contains("UNIQUE")) continue;
             	//System.out.println("meth "+ecMethod.toString());
             	
-                double time5 = System.currentTimeMillis();
+                float time5 = System.currentTimeMillis();
 
                 IEntityClustering ec = EntityClusteringCcerMethod.getDefaultConfiguration(ecMethod);
-                ec.setSimilarityThreshold(0.25);
+                ec.setSimilarityThreshold(0.25f);
                 EquivalenceCluster[] entityClusters = ec.getDuplicates(simPairs);
 
-                double time6 = System.currentTimeMillis();
+                float time6 = System.currentTimeMillis();
 
                 StringBuilder matchingWorkflowConf = new StringBuilder();
                 StringBuilder matchingWorkflowName = new StringBuilder();

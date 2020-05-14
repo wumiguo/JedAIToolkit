@@ -78,7 +78,7 @@ public class DBPediaBlockingBasedWorkflow {
         List<AbstractBlock> blocks = blockBuildingMethod.getBlocks(profiles1, profiles2);
         System.out.println("Original blocks\t:\t" + blocks.size());
 
-        IBlockProcessing blockCleaningMethod1 = new ComparisonsBasedBlockPurging(1.000);
+        IBlockProcessing blockCleaningMethod1 = new ComparisonsBasedBlockPurging(1.000f);
         blocks = blockCleaningMethod1.refineBlocks(blocks);
 
         IBlockProcessing blockCleaningMethod2 = new BlockFiltering();

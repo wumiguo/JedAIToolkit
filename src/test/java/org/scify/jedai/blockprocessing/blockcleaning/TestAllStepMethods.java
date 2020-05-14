@@ -54,22 +54,22 @@ public class TestAllStepMethods {
 
         System.out.println("\n\nCurrent blocking metohd\t:\t" + BlockBuildingMethod.STANDARD_BLOCKING);
             
-        double time1 = System.currentTimeMillis();
+        float time1 = System.currentTimeMillis();
         IBlockBuilding blockBuildingMethod = BlockBuildingMethod.getDefaultConfiguration(BlockBuildingMethod.STANDARD_BLOCKING);
         List<AbstractBlock> blocks = blockBuildingMethod.getBlocks(profiles, null);
 
-        double time2 = System.currentTimeMillis();
+        float time2 = System.currentTimeMillis();
         BlocksPerformance blStats = new BlocksPerformance(blocks, duplicatePropagation);
         blStats.setStatistics();
         blStats.printStatistics(time2 - time1, blockBuildingMethod.getMethodConfiguration(), blockBuildingMethod.getMethodName());
 
         for (BlockCleaningMethod blclMethod : BlockCleaningMethod.values()) {
-            double time3 = System.currentTimeMillis();
+            float time3 = System.currentTimeMillis();
 
             IBlockProcessing blockCleaningMethod = BlockCleaningMethod.getDefaultConfiguration(blclMethod);
             List<AbstractBlock> localBlocks = blockCleaningMethod.refineBlocks(blocks);
             
-            double time4 = System.currentTimeMillis();
+            float time4 = System.currentTimeMillis();
             
             StringBuilder workflowConf = new StringBuilder(blockBuildingMethod.getMethodConfiguration());
             StringBuilder workflowName = new StringBuilder(blockBuildingMethod.getMethodName());

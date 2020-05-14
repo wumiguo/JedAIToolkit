@@ -49,9 +49,9 @@ import org.scify.jedai.utilities.enumerations.WeightingScheme;
  */
 public class HolisticRandomConfigurationCCER {
 
-    private final static double[] PURGING_FACTOR = {0.056, 0.078, 0.020, 0.148};
-    private final static double[] FILTERING_RATIO = {0.906, 0.674, 0.524, 0.690};
-    private final static double[] SIM_THRESHOLD = {0.487, 0.073, 0.520, 0.107};
+    private final static float[] PURGING_FACTOR = {0.056f, 0.078f, 0.020f, 0.148f};
+    private final static float[] FILTERING_RATIO = {0.906f, 0.674f, 0.524f, 0.690f};
+    private final static float[] SIM_THRESHOLD = {0.487f, 0.073f, 0.520f, 0.107f};
     private final static WeightingScheme[] WEIGHTING_SCHEME = {WeightingScheme.ECBS,
         WeightingScheme.JS, WeightingScheme.CBS, WeightingScheme.ECBS};
     private final static RepresentationModel[] REP_MODEL = {RepresentationModel.CHARACTER_BIGRAMS_TF_IDF,
@@ -117,7 +117,7 @@ public class HolisticRandomConfigurationCCER {
         matchingWorkflowConf.append("\n").append(em.getMethodConfiguration());
         matchingWorkflowConf.append("\n").append(ec.getMethodConfiguration());
 
-        double time1 = System.currentTimeMillis();
+        float time1 = System.currentTimeMillis();
 
         final List<AbstractBlock> blocks = bb.getBlocks(profiles1, profiles2);
         final List<AbstractBlock> purgedBlocks = bp1.refineBlocks(blocks);
@@ -126,7 +126,7 @@ public class HolisticRandomConfigurationCCER {
         final SimilarityPairs sims = em.executeComparisons(finalBlocks);
         final EquivalenceCluster[] clusters = ec.getDuplicates(sims);
 
-        double time2 = System.currentTimeMillis();
+        float time2 = System.currentTimeMillis();
 
         final ClustersPerformance clp = new ClustersPerformance(clusters, duplicatePropagation);
         clp.setStatistics();

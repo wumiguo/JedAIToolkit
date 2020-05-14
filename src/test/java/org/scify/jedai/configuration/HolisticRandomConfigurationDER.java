@@ -80,9 +80,9 @@ public class HolisticRandomConfigurationDER {
             matchingWorkflowName.append("->").append(ec.getMethodName());
 
             int bestIteration = 0;
-            double bestFMeasure = 0;
+            float bestFMeasure = 0;
             for (int j = 0; j < NO_OF_TRIALS; j++) {
-                double time1 = System.currentTimeMillis();
+                float time1 = System.currentTimeMillis();
 
                 bb.setNextRandomConfiguration();
                 final List<AbstractBlock> blocks = bb.getBlocks(profiles);
@@ -111,7 +111,7 @@ public class HolisticRandomConfigurationDER {
                 ec.setNextRandomConfiguration();
                 final EquivalenceCluster[] clusters = ec.getDuplicates(sims);
 
-                double time2 = System.currentTimeMillis();
+                float time2 = System.currentTimeMillis();
 
                 final StringBuilder matchingWorkflowConf = new StringBuilder();
                 matchingWorkflowConf.append(bb.getMethodConfiguration());
@@ -125,7 +125,7 @@ public class HolisticRandomConfigurationDER {
                 clp.setStatistics();
                 clp.printStatistics(time2 - time1, matchingWorkflowName.toString(), matchingWorkflowConf.toString());
 
-                double fMeasure = clp.getFMeasure();
+                float fMeasure = clp.getFMeasure();
                 if (bestFMeasure < fMeasure) {
                     bestIteration = j;
                     bestFMeasure = fMeasure;
@@ -135,7 +135,7 @@ public class HolisticRandomConfigurationDER {
             System.out.println("\nBest Iteration\t:\t" + bestIteration);
             System.out.println("Best FMeasure\t:\t" + bestFMeasure);
 
-            double time1 = System.currentTimeMillis();
+            float time1 = System.currentTimeMillis();
 
             bb.setNumberedRandomConfiguration(bestIteration);
             final List<AbstractBlock> blocks = bb.getBlocks(profiles);
@@ -155,7 +155,7 @@ public class HolisticRandomConfigurationDER {
             ec.setNumberedRandomConfiguration(bestIteration);
             final EquivalenceCluster[] clusters = ec.getDuplicates(sims);
 
-            double time2 = System.currentTimeMillis();
+            float time2 = System.currentTimeMillis();
 
             final StringBuilder matchingWorkflowConf = new StringBuilder();
             matchingWorkflowConf.append(bb.getMethodConfiguration());

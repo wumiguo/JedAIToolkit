@@ -58,7 +58,7 @@ public class TestAllMethodsCcer {
         System.out.println("Existing Duplicates\t:\t" + duplicatePropagation.getDuplicates().size());
         
         for (BlockBuildingMethod blbuMethod : BlockBuildingMethod.values()) {
-            double time1 = System.currentTimeMillis();
+            float time1 = System.currentTimeMillis();
             
             StringBuilder workflowConf = new StringBuilder();
             StringBuilder workflowName = new StringBuilder();
@@ -86,7 +86,7 @@ public class TestAllMethodsCcer {
                 workflowName.append("->").append(comparisonCleaningMethod.getMethodName());
             }
             
-            double time2 = System.currentTimeMillis();
+            float time2 = System.currentTimeMillis();
             
             BlocksPerformance blStats = new BlocksPerformance(blocks, duplicatePropagation);
             blStats.setStatistics();

@@ -55,64 +55,63 @@ public class BestConfigurationBlockingBasedWorkflowDer {
 //        int datasetId = 1;//Integer.parseInt(args[0]);
 //        int[] bestConfigurationId = {204, 806};
 
-        double[] bestThresholds = {0.75, 0.45};
+        float[] bestThresholds = {0.75f, 0.45f};
         RepresentationModel[] bestModels = {RepresentationModel.CHARACTER_BIGRAM_GRAPHS, RepresentationModel.TOKEN_UNIGRAMS_TF_IDF};
         SimilarityMetric[] bestMetrics = {SimilarityMetric.GRAPH_OVERALL_SIMILARITY, SimilarityMetric.GENERALIZED_JACCARD_SIMILARITY};
-        
-//        String mainDir = "/home/gpapadakis/data/derDatasets/";
+
         String mainDir = "/home/gap2/data/JedAIdata/datasets/dirtyErDatasets/";
         String[] profilesFile = {"cddbProfiles", "coraProfiles"};
         String[] groundtruthFile = {"cddbIdDuplicates", "coraIdDuplicates"};
 
-        for (int datasetId = 1; datasetId < groundtruthFile.length; datasetId++) {
+        for (int datasetId = 0; datasetId < groundtruthFile.length; datasetId++) {
             System.out.println("\n\n\nCurrent dataset\t:\t" + profilesFile[datasetId]);
-            
-        IEntityReader eReader = new EntitySerializationReader(mainDir + profilesFile[datasetId]);
-        List<EntityProfile> profiles = eReader.getEntityProfiles();
-        System.out.println("Input Entity Profiles\t:\t" + profiles.size());
 
-        IGroundTruthReader gtReader = new GtSerializationReader(mainDir + groundtruthFile[datasetId]);
-        final AbstractDuplicatePropagation duplicatePropagation = new UnilateralDuplicatePropagation(gtReader.getDuplicatePairs(null));
-        System.out.println("Existing Duplicates\t:\t" + duplicatePropagation.getDuplicates().size());
+            IEntityReader eReader = new EntitySerializationReader(mainDir + profilesFile[datasetId]);
+            List<EntityProfile> profiles = eReader.getEntityProfiles();
+            System.out.println("Input Entity Profiles\t:\t" + profiles.size());
 
-        long time1 = System.currentTimeMillis();
-        
-        IBlockBuilding blockBuildingMethod = new StandardBlocking();
-        List<AbstractBlock> blocks = blockBuildingMethod.getBlocks(profiles);
+            IGroundTruthReader gtReader = new GtSerializationReader(mainDir + groundtruthFile[datasetId]);
+            final AbstractDuplicatePropagation duplicatePropagation = new UnilateralDuplicatePropagation(gtReader.getDuplicatePairs(null));
+            System.out.println("Existing Duplicates\t:\t" + duplicatePropagation.getDuplicates().size());
 
-        IBlockProcessing blockCleaningMethod1 = new ComparisonsBasedBlockPurging(false);
-        blocks = blockCleaningMethod1.refineBlocks(blocks);
+            long time1 = System.currentTimeMillis();
 
-        IBlockProcessing blockCleaningMethod2 = new BlockFiltering();
-        blocks = blockCleaningMethod2.refineBlocks(blocks);
+            IBlockBuilding blockBuildingMethod = new StandardBlocking();
+            List<AbstractBlock> blocks = blockBuildingMethod.getBlocks(profiles);
 
-        IBlockProcessing comparisonCleaningMethod = new CardinalityNodePruning(WeightingScheme.JS);
-        blocks = comparisonCleaningMethod.refineBlocks(blocks);
-        
+            IBlockProcessing blockCleaningMethod1 = new ComparisonsBasedBlockPurging(false);
+            blocks = blockCleaningMethod1.refineBlocks(blocks);
+
+            IBlockProcessing blockCleaningMethod2 = new BlockFiltering();
+            blocks = blockCleaningMethod2.refineBlocks(blocks);
+
+            IBlockProcessing comparisonCleaningMethod = new CardinalityNodePruning(WeightingScheme.JS);
+            blocks = comparisonCleaningMethod.refineBlocks(blocks);
+
 //        final IEntityClustering ec = new ConnectedComponentsClustering();
 //        final IEntityMatching em = new ProfileMatcher(profiles);
 //        em.setNumberedGridConfiguration(bestConfigurationId[datasetId] / ec.getNumberOfGridConfigurations());
 //        ec.setNumberedGridConfiguration(bestConfigurationId[datasetId] % ec.getNumberOfGridConfigurations());
-        
-        long time2 = System.currentTimeMillis();
-        
-        final IEntityMatching em = new ProfileMatcher(profiles, bestModels[datasetId], bestMetrics[datasetId]);
-        final SimilarityPairs sims = em.executeComparisons(blocks);
 
-        final IEntityClustering ec = new ConnectedComponentsClustering(bestThresholds[datasetId]);
-        final EquivalenceCluster[] clusters = ec.getDuplicates(sims);
+            long time2 = System.currentTimeMillis();
 
-        long time3 = System.currentTimeMillis();
-        
-        final BlocksPerformance blStats = new BlocksPerformance(blocks, duplicatePropagation);
-        blStats.setStatistics();
-        blStats.printStatistics(time2 - time1, "", "");
+            final IEntityMatching em = new ProfileMatcher(profiles, bestModels[datasetId], bestMetrics[datasetId]);
+            final SimilarityPairs sims = em.executeComparisons(blocks);
 
-        final ClustersPerformance clp = new ClustersPerformance(clusters, duplicatePropagation);
-        clp.setStatistics();
-        clp.printStatistics(time3 - time1, "", "");
+            final IEntityClustering ec = new ConnectedComponentsClustering(bestThresholds[datasetId]);
+            final EquivalenceCluster[] clusters = ec.getDuplicates(sims);
 
-        System.out.println("Running time\t:\t" + (time3 - time1));
+            long time3 = System.currentTimeMillis();
+
+            final BlocksPerformance blStats = new BlocksPerformance(blocks, duplicatePropagation);
+            blStats.setStatistics();
+            blStats.printStatistics(time2 - time1, "", "");
+
+            final ClustersPerformance clp = new ClustersPerformance(clusters, duplicatePropagation);
+            clp.setStatistics();
+            clp.printStatistics(time3 - time1, "", "");
+
+            System.out.println("Running time\t:\t" + (time3 - time1));
         }
     }
 }

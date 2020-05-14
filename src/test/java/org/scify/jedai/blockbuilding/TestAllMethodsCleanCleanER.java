@@ -70,14 +70,14 @@ public class TestAllMethodsCleanCleanER {
             System.out.println("Existing Duplicates\t:\t" + duplicatePropagation.getDuplicates().size());
 
             for (BlockBuildingMethod blbuMethod : BlockBuildingMethod.values()) {
-                double time1 = System.currentTimeMillis();
+                float time1 = System.currentTimeMillis();
 
                 System.out.println("\n\nCurrent blocking metohd\t:\t" + blbuMethod);
                 IBlockBuilding blockBuildingMethod = BlockBuildingMethod.getDefaultConfiguration(blbuMethod);
 
                 System.out.println("Block Building...");
                 List<AbstractBlock> blocks = blockBuildingMethod.getBlocks(profiles1, profiles2);
-                double time2 = System.currentTimeMillis();
+                float time2 = System.currentTimeMillis();
 
                 BlocksPerformance blStats = new BlocksPerformance(blocks, duplicatePropagation);
                 blStats.setStatistics();

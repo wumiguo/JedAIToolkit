@@ -70,7 +70,7 @@ public class TestSimJoins {
         /*String file1 = null, file2 = null, outFile = null, statsFile = null, columnDelimiter = null,
                 tokenDelimiter = null;
         int setCol = 0, tokenCol = 1, header = 1, maxLines = -1;
-        double simThreshold = 1;
+        float simThreshold = 1;
 
         try (InputStream input = new FileInputStream("C:\\Users\\Manos\\Documents\\UOA\\silkmoth-java\\silkmoth-java.git\\config.properties")) {
             Properties prop = new Properties();
@@ -120,7 +120,7 @@ public class TestSimJoins {
         BasicConfigurator.configure();
 
         int datasetId = 3;//Integer.parseInt(args[0]);
-        double jaccardThreshold = 0.3;
+        float jaccardThreshold = 0.3f;
 
         String mainDir = "C:\\Users\\Manos\\Documents\\UOA\\JedAIforAssembla\\JedAItk\\data\\cleanCleanErDatasets\\";
         String[] datasetsD1 = {"restaurant1Profiles", "abtProfiles", "amazonProfiles", "dblpProfiles", "walmartProfiles", "dblpProfiles2", "imdbProfiles"};

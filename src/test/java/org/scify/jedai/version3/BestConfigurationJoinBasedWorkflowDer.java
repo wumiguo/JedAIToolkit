@@ -15,10 +15,8 @@
  */
 package org.scify.jedai.version3;
 
-import java.util.ArrayList;
 import java.util.List;
 import org.apache.log4j.BasicConfigurator;
-import org.scify.jedai.datamodel.Attribute;
 import org.scify.jedai.datamodel.EntityProfile;
 import org.scify.jedai.datamodel.EquivalenceCluster;
 import org.scify.jedai.datamodel.SimilarityPairs;
@@ -39,61 +37,44 @@ import org.scify.jedai.utilities.datastructures.UnilateralDuplicatePropagation;
  */
 public class BestConfigurationJoinBasedWorkflowDer {
 
-    private static List<EntityProfile> cleanEntities(String attributeName, List<EntityProfile> fatEntities) {
-        final List<EntityProfile> slimEntities = new ArrayList<>();
-        for (EntityProfile profile : fatEntities) {
-            EntityProfile newProfile = new EntityProfile(profile.getEntityUrl());
-            for (Attribute attribute : profile.getAttributes()) {
-                if (attribute.getName().equals(attributeName)) {
-                    newProfile.addAttribute(attribute.getName(), attribute.getValue());
-                }
-            }
-            slimEntities.add(newProfile);
-        }
-        return slimEntities;
-    }
-
     public static void main(String[] args) {
         BasicConfigurator.configure();
 
-//        int datasetId = Integer.parseInt(args[0]);
-        
-        double[] simThreshold = {0.70, 0.80};
-
-        for (int datasetId = 0; datasetId < simThreshold.length; datasetId++) {
-//        String mainDir = "/home/gpapadakis/data/derDatasets/";
         String mainDir = "/home/gap2/data/JedAIdata/datasets/dirtyErDatasets/";
         String[] profilesFile = {"coraProfiles", "cddbProfiles"};
-        String[] attributeNames= {"title", "track08"};
+        String[] attributeNames = {"title", "track08"};
         String[] groundtruthFile = {"coraIdDuplicates", "cddbIdDuplicates"};
-        
-        System.out.println("\n\n\n\n\nCurrent dataset\t:\t" + groundtruthFile[datasetId]);
 
-        final IEntityReader eReader1 = new EntitySerializationReader(mainDir + profilesFile[datasetId]);
-        final List<EntityProfile> profiles = eReader1.getEntityProfiles();
-//        final List<EntityProfile> profiles = cleanEntities(attributeNames[datasetId], eReader1.getEntityProfiles());
-        System.out.println("\n\nInput Entity Profiles\t:\t" + profiles.size());
+//        int datasetId = Integer.parseInt(args[0]);
+        float[] simThreshold = {0.70f, 0.80f};
 
-        IGroundTruthReader gtReader = new GtSerializationReader(mainDir + groundtruthFile[datasetId]);
-        final AbstractDuplicatePropagation duplicatePropagation = new UnilateralDuplicatePropagation(gtReader.getDuplicatePairs(null));
-        System.out.println("Existing Duplicates\t:\t" + duplicatePropagation.getDuplicates().size());
+        for (int datasetId = 0; datasetId < simThreshold.length; datasetId++) {
+            System.out.println("\n\n\n\n\nCurrent dataset\t:\t" + groundtruthFile[datasetId]);
 
-        long time1 = System.currentTimeMillis();
+            final IEntityReader eReader1 = new EntitySerializationReader(mainDir + profilesFile[datasetId]);
+            final List<EntityProfile> profiles = eReader1.getEntityProfiles();
+            System.out.println("\n\nInput Entity Profiles\t:\t" + profiles.size());
+
+            IGroundTruthReader gtReader = new GtSerializationReader(mainDir + groundtruthFile[datasetId]);
+            final AbstractDuplicatePropagation duplicatePropagation = new UnilateralDuplicatePropagation(gtReader.getDuplicatePairs(null));
+            System.out.println("Existing Duplicates\t:\t" + duplicatePropagation.getDuplicates().size());
+
+            long time1 = System.currentTimeMillis();
 //            AllPairs join = new AllPairs(simThreshold[datasetId]);
-        PPJoin join = new PPJoin(simThreshold[datasetId]);
-        SimilarityPairs simPairs = join.executeFiltering(attributeNames[datasetId], profiles);
-        System.out.println(simPairs.getNoOfComparisons());
+            PPJoin join = new PPJoin(simThreshold[datasetId]);
+            SimilarityPairs simPairs = join.executeFiltering(attributeNames[datasetId], profiles);
+            System.out.println(simPairs.getNoOfComparisons());
 
-        final IEntityClustering ec = new ConnectedComponentsClustering(simThreshold[datasetId]);
-        final EquivalenceCluster[] clusters = ec.getDuplicates(simPairs);
+            final IEntityClustering ec = new ConnectedComponentsClustering(simThreshold[datasetId]);
+            final EquivalenceCluster[] clusters = ec.getDuplicates(simPairs);
 
-        long time2 = System.currentTimeMillis();
+            long time2 = System.currentTimeMillis();
 
-        final ClustersPerformance clp = new ClustersPerformance(clusters, duplicatePropagation);
-        clp.setStatistics();
-        clp.printStatistics(0, "", "");
+            final ClustersPerformance clp = new ClustersPerformance(clusters, duplicatePropagation);
+            clp.setStatistics();
+            clp.printStatistics(0, "", "");
 
-        System.out.println("Running time\t:\t" + (time2 - time1));
+            System.out.println("Running time\t:\t" + (time2 - time1));
         }
     }
 }

@@ -41,10 +41,8 @@ public class BestConfigurationJoinBasedWorkflowCcer {
         BasicConfigurator.configure();
 
 //        int datasetId = Integer.parseInt(args[0]);
-        double[] simThreshold = {0.90, 0.4, 0.45, 0.8, 0.9, 0.8, 0.45};
+        float[] simThreshold = {0.90f, 0.4f, 0.45f, 0.8f, 0.9f, 0.8f, 0.45f};
 
-        for (int datasetId = 0; datasetId < simThreshold.length; datasetId++) {
-//        String mainDir = "/home/gpapadakis/data/allDatasets/";
         String mainDir = "/home/gap2/data/JedAIdata/datasets/cleanCleanErDatasets/";
         String[] datasetsD1 = {"restaurant1Profiles", "abtProfiles", "amazonProfiles", "dblpProfiles", "walmartProfiles", "dblpProfiles2", "imdbProfiles"};
         String[] datasetsD2 = {"restaurant2Profiles", "buyProfiles", "gpProfiles", "acmProfiles", "amazonProfiles2", "scholarProfiles", "dbpediaProfiles"};
@@ -52,39 +50,38 @@ public class BestConfigurationJoinBasedWorkflowCcer {
             "dblpScholarIdDuplicates", "moviesIdDuplicates"};
         String[] attributeNamesD1 = {"http://www.okkam.org/ontology_restaurant1.owl#phone_number", "name", "title", "title", "modelno", "title", "title"};
         String[] attributeNamesD2 = {"http://www.okkam.org/ontology_restaurant2.owl#phone_number", "name", "title", "title", "modelno", "title", "title"};
-        
-        System.out.println("\n\n\n\n\nCurrent dataset\t:\t" + groundtruthDirs[datasetId]);
 
-        final IEntityReader eReader1 = new EntitySerializationReader(mainDir + datasetsD1[datasetId]);
-        final List<EntityProfile> profiles1 = eReader1.getEntityProfiles();
-//        final List<EntityProfile> profiles1 = cleanEntities(attributeNamesD1[datasetId], eReader1.getEntityProfiles());
-        System.out.println("\n\nInput Entity Profiles D1\t:\t" + profiles1.size());
+        for (int datasetId = 0; datasetId < simThreshold.length; datasetId++) {
+            System.out.println("\n\n\n\n\nCurrent dataset\t:\t" + groundtruthDirs[datasetId]);
 
-        final IEntityReader eReader2 = new EntitySerializationReader(mainDir + datasetsD2[datasetId]);
-        final List<EntityProfile> profiles2 = eReader2.getEntityProfiles();
-//        final List<EntityProfile> profiles2 = cleanEntities(attributeNamesD2[datasetId], eReader2.getEntityProfiles());
-        System.out.println("\n\nInput Entity Profiles D2\t:\t" + profiles2.size());
+            final IEntityReader eReader1 = new EntitySerializationReader(mainDir + datasetsD1[datasetId]);
+            final List<EntityProfile> profiles1 = eReader1.getEntityProfiles();
+            System.out.println("\n\nInput Entity Profiles D1\t:\t" + profiles1.size());
 
-        IGroundTruthReader gtReader = new GtSerializationReader(mainDir + groundtruthDirs[datasetId]);
-        final AbstractDuplicatePropagation duplicatePropagation = new BilateralDuplicatePropagation(gtReader.getDuplicatePairs(null));
-        System.out.println("Existing Duplicates\t:\t" + duplicatePropagation.getDuplicates().size());
+            final IEntityReader eReader2 = new EntitySerializationReader(mainDir + datasetsD2[datasetId]);
+            final List<EntityProfile> profiles2 = eReader2.getEntityProfiles();
+            System.out.println("\n\nInput Entity Profiles D2\t:\t" + profiles2.size());
 
-        long time1 = System.currentTimeMillis();
+            IGroundTruthReader gtReader = new GtSerializationReader(mainDir + groundtruthDirs[datasetId]);
+            final AbstractDuplicatePropagation duplicatePropagation = new BilateralDuplicatePropagation(gtReader.getDuplicatePairs(null));
+            System.out.println("Existing Duplicates\t:\t" + duplicatePropagation.getDuplicates().size());
+
+            long time1 = System.currentTimeMillis();
 //            AllPairs join = new AllPairs(simThreshold[datasetId]);
-        PPJoin join = new PPJoin(simThreshold[datasetId]);
-        SimilarityPairs simPairs = join.executeFiltering(attributeNamesD1[datasetId], attributeNamesD2[datasetId], profiles1, profiles2);
-        System.out.println(simPairs.getNoOfComparisons());
+            final PPJoin join = new PPJoin(simThreshold[datasetId]);
+            final SimilarityPairs simPairs = join.executeFiltering(attributeNamesD1[datasetId], attributeNamesD2[datasetId], profiles1, profiles2);
+            System.out.println(simPairs.getNoOfComparisons());
 
-        final IEntityClustering ec = new UniqueMappingClustering(simThreshold[datasetId]);
-        final EquivalenceCluster[] clusters = ec.getDuplicates(simPairs);
+            final IEntityClustering ec = new UniqueMappingClustering(simThreshold[datasetId]);
+            final EquivalenceCluster[] clusters = ec.getDuplicates(simPairs);
 
-        long time2 = System.currentTimeMillis();
+            long time2 = System.currentTimeMillis();
 
-        final ClustersPerformance clp = new ClustersPerformance(clusters, duplicatePropagation);
-        clp.setStatistics();
-        clp.printStatistics(0, "", "");
+            final ClustersPerformance clp = new ClustersPerformance(clusters, duplicatePropagation);
+            clp.setStatistics();
+            clp.printStatistics(0, "", "");
 
-        System.out.println("Running time\t:\t" + (time2 - time1));
+            System.out.println("Running time\t:\t" + (time2 - time1));
         }
     }
 }

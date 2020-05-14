@@ -60,7 +60,7 @@ public class TestAllMethodsDirtyER {
         //CBJ = new FastSS(5);
         //CBJ = new AllPairs(0.6);
         //CBJ = new PassJoin(5);
-        CBJ = new PPJoin(0.6);
+        CBJ = new PPJoin(0.6f);
         //CBJ = new AllPairs(0.6, "attribute1", csvACM);
 
         SimilarityPairs simPairs = CBJ.executeFiltering("attribute1", csvACM);
