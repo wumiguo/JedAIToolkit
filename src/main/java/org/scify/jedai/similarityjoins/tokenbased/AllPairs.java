@@ -29,9 +29,7 @@ import org.scify.jedai.datamodel.SimilarityPairs;
 import org.scify.jedai.datamodel.joins.IntPair;
 import org.scify.jedai.datamodel.joins.ListItemPPJ;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 /**
  *
@@ -95,8 +93,25 @@ public class AllPairs extends AbstractTokenBasedJoin {
             }
         }
 
-        idIdentifier.sort(Comparator.comparingInt(s -> s.getKey().split(" ").length));
+        if (this.SetVersion)
+        {
+            int[] setversionsizes = new int[idIdentifier.size()];
+            for (int i=0;i<idIdentifier.size();i++)
+            {
+                String togetSize = idIdentifier.get(i).getKey();
+                String[] split = togetSize.split(" ");
+                Set<String> settogetsize=  new HashSet<>();
+                for (String s:split) settogetsize.add(s);
+                setversionsizes[idIdentifier.get(i).getValue()] = settogetsize.size();
 
+            }
+            idIdentifier.sort((s1, s2) -> setversionsizes[s1.getValue()] - setversionsizes[s2.getValue()]);
+        }
+        else
+        {
+            idIdentifier.sort(Comparator.comparingInt(s -> s.getKey().split(" ").length));
+
+        }
         attributeValues.clear();
         originalId = new int[noOfEntities];
         records = new TIntList[noOfEntities];
@@ -117,6 +132,7 @@ public class AllPairs extends AbstractTokenBasedJoin {
             String[] split = s.split(" ");
             for (String value : split) {
                 int token = djbHash(value);
+                if (this.SetVersion&&(records[sIndex].contains(token))) continue; //case where Set is used instead of Bag
                 records[sIndex].add(token);
             }
             records[sIndex].sort();

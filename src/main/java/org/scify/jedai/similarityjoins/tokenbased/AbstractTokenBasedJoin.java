@@ -32,7 +32,8 @@ public abstract class AbstractTokenBasedJoin extends AbstractSimilarityJoin {
     
     protected final DblGridSearchConfiguration gridThreshold;
     protected final DblRandomSearchConfiguration randomThreshold;
-    
+    protected boolean SetVersion = false;
+
     AbstractTokenBasedJoin(float thr) {
         super();
         threshold = thr;
@@ -145,4 +146,9 @@ public abstract class AbstractTokenBasedJoin extends AbstractSimilarityJoin {
     public void setNumberedRandomConfiguration(int iterationNumber) {
         threshold = (Float) randomThreshold.getNumberedRandom(iterationNumber);
     }
+
+    public void setSetVersion(boolean setVersion) {
+        SetVersion = setVersion;
+    }
+
 }
