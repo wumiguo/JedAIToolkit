@@ -10,6 +10,8 @@ The **Web Application** for running JedAI is available [here](https://github.com
 
 JedAI is also available as a **Docker image** [here](https://hub.docker.com/repository/docker/gmandi/jedai-webapp). See below for more details.
 
+The latest version of JedAI-gui is available [here](jedai-ui.7z).
+
 # Java gEneric DAta Integration (JedAI) Toolkit
 JedAI constitutes an open source, high scalability toolkit that offers out-of-the-box solutions for any data integration task, e.g., Record Linkage, Entity Resolution and Link Discovery. At its core lies a set of *domain-independent*, *state-of-the-art* techniques that apply to both RDF and relational data. These techniques rely on an approximate, *schema-agnostic* functionality based on *(meta-)blocking* for high scalability. 
 
