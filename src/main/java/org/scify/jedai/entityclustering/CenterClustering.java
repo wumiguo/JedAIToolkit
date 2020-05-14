@@ -35,10 +35,10 @@ import java.util.Queue;
 public class CenterClustering extends AbstractEntityClustering {
 
     public CenterClustering() {
-        this(0.5);
+        this(0.5f);
     }
     
-    public CenterClustering(double simTh) {
+    public CenterClustering(float simTh) {
         super(simTh);
     }
 
@@ -46,8 +46,8 @@ public class CenterClustering extends AbstractEntityClustering {
     public EquivalenceCluster[] getDuplicates(SimilarityPairs simPairs) {
         initializeData(simPairs);
         
-        final double[] edgesWeight = new double[noOfEntities];
-        final double[] edgesAttached = new double[noOfEntities];
+        final float[] edgesWeight = new float[noOfEntities];
+        final float[] edgesAttached = new float[noOfEntities];
         final Queue<SimilarityEdge> SEqueue = new PriorityQueue<>(simPairs.getNoOfComparisons(), new DecSimilarityEdgeComparator());
 
         final Iterator<Comparison> iterator = simPairs.getPairIterator();
@@ -78,8 +78,8 @@ public class CenterClustering extends AbstractEntityClustering {
             boolean v2IsNonCenter = NonCenter.contains(v2);
 
             if (!(v1IsCenter || v2IsCenter || v1IsNonCenter || v2IsNonCenter)) {
-                double w1 = edgesWeight[v1] / edgesAttached[v1];
-                double w2 = edgesWeight[v2] / edgesAttached[v2];
+                float w1 = edgesWeight[v1] / edgesAttached[v1];
+                float w2 = edgesWeight[v2] / edgesAttached[v2];
                 if (w1 > w2) {
                     Center.add(v1);
                     NonCenter.add(v2);

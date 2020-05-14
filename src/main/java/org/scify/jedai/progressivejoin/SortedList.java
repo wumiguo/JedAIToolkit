@@ -30,7 +30,7 @@ import java.util.Comparator;
  * @param <T>
  */
 
-public class SortedList<T> extends ArrayList<T> {
+public final class SortedList<T> extends ArrayList<T> {
     /**
      * Needed for serialization.
      */

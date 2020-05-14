@@ -36,23 +36,23 @@ import java.util.Queue;
  */
 public class GroupLinkage extends AbstractEntityMatching {
 
-    protected double similarityThreshold;
+    protected float similarityThreshold;
     protected ITextModel[][] entityModelsD1;
     protected ITextModel[][] entityModelsD2;
 
     public GroupLinkage(List<EntityProfile> profiles) {
-        this(0.1, profiles, null, RepresentationModel.TOKEN_UNIGRAMS, SimilarityMetric.COSINE_SIMILARITY);
+        this(0.1f, profiles, null, RepresentationModel.TOKEN_UNIGRAMS, SimilarityMetric.COSINE_SIMILARITY);
     }
     
     public GroupLinkage(List<EntityProfile> profilesD1, List<EntityProfile> profilesD2) {
-        this(0.1, profilesD1, profilesD2, RepresentationModel.TOKEN_UNIGRAMS, SimilarityMetric.COSINE_SIMILARITY);
+        this(0.1f, profilesD1, profilesD2, RepresentationModel.TOKEN_UNIGRAMS, SimilarityMetric.COSINE_SIMILARITY);
     }
 
-    public GroupLinkage(double simThr, List<EntityProfile> profiles, RepresentationModel model, SimilarityMetric simMetric) {
+    public GroupLinkage(float simThr, List<EntityProfile> profiles, RepresentationModel model, SimilarityMetric simMetric) {
         this(simThr, profiles, null, model, simMetric);
     }
     
-    public GroupLinkage(double simThr, List<EntityProfile> profilesD1, List<EntityProfile> profilesD2, RepresentationModel model, SimilarityMetric simMetric) {
+    public GroupLinkage(float simThr, List<EntityProfile> profilesD1, List<EntityProfile> profilesD2, RepresentationModel model, SimilarityMetric simMetric) {
         super(profilesD1, profilesD2, model, simMetric);
         
         similarityThreshold = simThr;
@@ -143,8 +143,7 @@ public class GroupLinkage extends AbstractEntityMatching {
         final ITextModel[][] ModelsList = new ITextModel[profiles.size()][];
         RepresentationModel.resetGlobalValues(datasetId, representationModel);
         for (EntityProfile profile : profiles) {
-            int validAttributes = 0;
-            validAttributes = profile.getAttributes().stream().filter((attribute) -> (!attribute.getValue().isEmpty())).mapToInt(_item -> 1).sum();
+            int validAttributes = profile.getAttributes().stream().filter((attribute) -> (!attribute.getValue().isEmpty())).mapToInt(_item -> 1).sum();
 
             int counter = 0;
             ModelsList[entityCounter] = new ITextModel[validAttributes];
@@ -183,7 +182,7 @@ public class GroupLinkage extends AbstractEntityMatching {
         obj2.put("description", getParameterDescription(1));
 
         final JsonObject obj3 = new JsonObject();
-        obj3.put("class", "java.lang.Double");
+        obj3.put("class", "java.lang.Float");
         obj3.put("name", getParameterName(2));
         obj3.put("defaultValue", "0.5");
         obj3.put("minValue", "0.1");
@@ -250,7 +249,7 @@ public class GroupLinkage extends AbstractEntityMatching {
         final Queue<SimilarityEdge> SEqueue = new PriorityQueue<>(s1 * s2, new DecSimilarityEdgeComparator());
         for (int i = 0; i < s1; i++) {
             for (int j = 0; j < s2; j++) {
-                double sim = model1[i].getSimilarity(model2[j]);
+                float sim = model1[i].getSimilarity(model2[j]);
                 if (similarityThreshold < sim) {
                     SEqueue.add(new SimilarityEdge(i, j, sim));
                 }
@@ -279,7 +278,7 @@ public class GroupLinkage extends AbstractEntityMatching {
         return graph;
     }
 
-    public void setSimilarityThreshold(double p) {
+    public void setSimilarityThreshold(float p) {
         this.similarityThreshold = p;
     }    
 }

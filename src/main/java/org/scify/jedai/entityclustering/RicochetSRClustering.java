@@ -22,8 +22,8 @@ import org.scify.jedai.datamodel.VertexWeight;
 import org.scify.jedai.utilities.comparators.DecVertexWeightComparator;
 
 import gnu.trove.iterator.TIntIterator;
-import gnu.trove.map.TIntDoubleMap;
-import gnu.trove.map.hash.TIntDoubleHashMap;
+import gnu.trove.map.TIntFloatMap;
+import gnu.trove.map.hash.TIntFloatHashMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
@@ -41,10 +41,10 @@ import java.util.Queue;
 public class RicochetSRClustering extends AbstractEntityClustering {
 
     public RicochetSRClustering() {
-        this(0.5);
+        this(0.5f);
     }
 
-    public RicochetSRClustering(double simTh) {
+    public RicochetSRClustering(float simTh) {
         super(simTh);
     }
 
@@ -54,11 +54,11 @@ public class RicochetSRClustering extends AbstractEntityClustering {
         similarityGraph = null;
 
         final Queue<VertexWeight> VWqueue = new PriorityQueue<>(noOfEntities, new DecVertexWeightComparator());
-        final double[] edgesWeight = new double[noOfEntities];
+        final float[] edgesWeight = new float[noOfEntities];
         final int[] edgesAttached = new int[noOfEntities];
-        final List<TIntDoubleMap> connections = new ArrayList<>();
+        final List<TIntFloatMap> connections = new ArrayList<>();
         for (int i = 0; i < noOfEntities; i++) {
-            connections.add(i, new TIntDoubleHashMap());
+            connections.add(i, new TIntFloatHashMap());
         }
 
         final Iterator<Comparison> iterator = simPairs.getPairIterator();
@@ -91,7 +91,7 @@ public class RicochetSRClustering extends AbstractEntityClustering {
         final TIntSet NonCenter = new TIntHashSet();
         final TIntObjectHashMap<TIntSet> Clusters = new TIntObjectHashMap();
         final int[] clusterCenter = new int[noOfEntities];
-        final double[] simWithCenter = new double[noOfEntities]; // similarity with center
+        final float[] simWithCenter = new float[noOfEntities]; // similarity with center
 
         //Deal with the heaviest vertex first
         VertexWeight vw = VWqueue.remove();
@@ -101,8 +101,8 @@ public class RicochetSRClustering extends AbstractEntityClustering {
         TIntHashSet tinths = new TIntHashSet();
         tinths.add(v1);
         Clusters.put(v1, tinths);//initialize v1 Cluster with its own value        
-        simWithCenter[v1] = 1.0;
-        TIntDoubleMap connect = vw.Connections();
+        simWithCenter[v1] = 1.0f;
+        TIntFloatMap connect = vw.Connections();
         for (int v2 : connect.keys()) {
             NonCenter.add(v2);
             clusterCenter[v2] = v1;
@@ -120,8 +120,8 @@ public class RicochetSRClustering extends AbstractEntityClustering {
                 if (Center.contains(v2)) {
                     continue;
                 }
-                double sim = connect.get(v2);
-                double previousSim = simWithCenter[v2];
+                float sim = connect.get(v2);
+                float previousSim = simWithCenter[v2];
                 if ((sim <= previousSim)) {
                     continue;
                 }
@@ -173,12 +173,12 @@ public class RicochetSRClustering extends AbstractEntityClustering {
                 Center.remove(ctr);
                 Clusters.remove(ctr);
 
-                double max = 0.0;
+                float max = 0.0f;
                 int newCenter = v1;//in case there is no close similarity
                 for (TIntIterator eIterator = Center.iterator(); eIterator.hasNext();) {
                     int center = eIterator.next();
-                    final TIntDoubleMap currentConnections = connections.get(center);
-                    double newSim = currentConnections.get(ctr);
+                    final TIntFloatMap currentConnections = connections.get(center);
+                    float newSim = currentConnections.get(ctr);
                     if (0 < newSim) {
                         if (newSim > max) {
                             max = newSim;
@@ -201,7 +201,7 @@ public class RicochetSRClustering extends AbstractEntityClustering {
                 TIntHashSet tinthelp = new TIntHashSet();
                 tinthelp.add(i);
                 Clusters.put(i, tinthelp);//initialize v1 Cluster with its own value
-                simWithCenter[i] = 1.0;
+                simWithCenter[i] = 1.0f;
             }
         }
 

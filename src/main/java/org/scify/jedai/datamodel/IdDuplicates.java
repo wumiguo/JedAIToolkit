@@ -47,10 +47,7 @@ public class IdDuplicates implements Serializable {
         if (this.entityId1 != other.entityId1) {
             return false;
         }
-        if (this.entityId2 != other.entityId2) {
-            return false;
-        }
-        return true;
+        return this.entityId2 == other.entityId2;
     }
 
     @Override

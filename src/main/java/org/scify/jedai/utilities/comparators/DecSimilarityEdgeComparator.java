@@ -33,7 +33,7 @@ public class DecSimilarityEdgeComparator implements Comparator<SimilarityEdge> {
     */
     @Override
     public int compare(SimilarityEdge se1,SimilarityEdge se2) {
-        double test = se1.getSimilarity()-se2.getSimilarity(); 
+        float test = se1.getSimilarity()-se2.getSimilarity(); 
         if (test > 0) {
             return -1;
         }

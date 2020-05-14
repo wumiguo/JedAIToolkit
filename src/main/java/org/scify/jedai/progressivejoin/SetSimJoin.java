@@ -24,7 +24,7 @@ import org.scify.jedai.datamodel.Comparison;
  *
  * @author mthanos
  */
-public class SetSimJoin {
+public final class SetSimJoin {
 
     private LinkedHashMap<String, ArrayList<Integer>> records;
     private ArrayList<Comparison> results;

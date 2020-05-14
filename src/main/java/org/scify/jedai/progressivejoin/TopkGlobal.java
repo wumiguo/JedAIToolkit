@@ -13,7 +13,6 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
  */
-
 package org.scify.jedai.progressivejoin;
 
 import java.util.*;
@@ -24,6 +23,7 @@ import org.scify.jedai.datamodel.Comparison;
  * @author mthanos
  */
 public class TopkGlobal {
+
     private final List<Comparison> results;
     private final JaccardTopK similarity;
     private final LinkedHashMap<Integer, ArrayList<Integer>> records;
@@ -32,7 +32,10 @@ public class TopkGlobal {
     private boolean iscleancleanEr;
 
     /**
-     * @param results the results from {@link #run()} will be added into this list
+     * @param records
+     * @param similarity
+     * @param results the results from {@link #run()} will be added into this
+     * list
      */
     public TopkGlobal(LinkedHashMap<Integer, ArrayList<Integer>> records, JaccardTopK similarity, List<Comparison> results) {
         this.records = records;
@@ -42,28 +45,30 @@ public class TopkGlobal {
 
     public void run() {
         InvertedIndex ind = new InvertedIndex();
-        int candcount = 0;
+//        int candcount = 0;
 
         // <recordid, position, threshold>
         PriorityQueue<Object[]> events = new PriorityQueue<>((o1, o2) -> {
-            if ((Double)o1[2] > (Double)o2[2])
+            if ((Float) o1[2] > (Float) o2[2]) {
                 return -1;
-            else if (Math.abs((Double) o1[2]-(Double) o2[2])<1E-13 && (int)o1[0] > (int)o2[0])
+            } else if (Math.abs((Float) o1[2] - (Float) o2[2]) < 1E-13 && (int) o1[0] > (int) o2[0]) {
                 return -1;
-            else if (Math.abs((Double) o1[2]-(Double) o2[2])<1E-13 && (int)o1[0] == (int)o2[0])
+            } else if (Math.abs((Float) o1[2] - (Float) o2[2]) < 1E-13 && (int) o1[0] == (int) o2[0]) {
                 return 0;
-            else
+            } else {
                 return 1;
+            }
         });
-        records.forEach((recordid, tokens) -> events.add(new Object[] {recordid, 0, 1.0}));
+        records.forEach((recordid, tokens) -> events.add(new Object[]{recordid, 0, 1.0}));
 
         SortedList<Comparison> tmpresults = new SortedList<>((o1, o2) -> {
-            if (Math.abs(o1.getUtilityMeasure() - o2.getUtilityMeasure()) < 1E-13)
+            if (Math.abs(o1.getUtilityMeasure() - o2.getUtilityMeasure()) < 1E-13) {
                 return 0;
-            else if (o1.getUtilityMeasure() > o2.getUtilityMeasure())
+            } else if (o1.getUtilityMeasure() > o2.getUtilityMeasure()) {
                 return -1;
-            else
+            } else {
                 return 1;
+            }
         });
 
         // <recordid1, recordid2>
@@ -73,33 +78,35 @@ public class TopkGlobal {
 
         while (!events.isEmpty()) {
             Object[] curevent = events.poll();
-            int recordid = (int)curevent[0];
+            int recordid = (int) curevent[0];
 
-            double thres = getThres(tmpresults, similarity.k);
+            float thres = getThres(tmpresults, similarity.k);
             // stop if thresholds in result queue are all bigger than possible thresholds in event queue
-            if (thres > (double)curevent[2])
+            if (thres > (float) curevent[2]) {
                 break;
+            }
 
             ArrayList<Integer> record = records.get(recordid);
             int reclen = record.size();
-            Integer token = record.get((int)curevent[1]);
+            Integer token = record.get((int) curevent[1]);
 
             ListHead indheader = ind.getHeader(token);
             List<int[]> indlist = indheader.getInvlist();
 
-            for (ListIterator<int[]> iter = indlist.listIterator(); iter.hasNext(); ) {
+            for (ListIterator<int[]> iter = indlist.listIterator(); iter.hasNext();) {
                 int pos = iter.nextIndex();
                 int[] indrecordpair = iter.next();
                 int indrecid = indrecordpair[0];
-                if (iscleancleanEr)
-                {
-                    if (isindataset1[recordid]==isindataset1[indrecid]) continue;
+                if (iscleancleanEr) {
+                    if (isindataset1[recordid] == isindataset1[indrecid]) {
+                        continue;
+                    }
                 }
                 ArrayList<Integer> indexedrecord = records.get(indrecid);
                 int indreclen = indexedrecord.size();
 
                 // list shortening - SimilarityUpperBound-Access
-                if (similarity.upperbound_access(reclen, indreclen, (int)curevent[1], indrecordpair[1]) < thres) {
+                if (similarity.upperbound_access(reclen, indreclen, (int) curevent[1], indrecordpair[1]) < thres) {
                     indheader.cutoff_from(pos);
                     break;
                 }
@@ -109,20 +116,21 @@ public class TopkGlobal {
                     ArrayList<Integer> testpair = new ArrayList<>(Arrays.asList(Math.min(recordid, indrecid), Math.max(recordid, indrecid)));
                     if (!testonce.contains(testpair)) {
 
-                        candcount++;
-                        double maxrecprobepos = similarity.maxprefix(reclen, thres);
-                        double maxindrecprobepos = similarity.maxprefix(indreclen, thres);
+//                        candcount++;
+                        float maxrecprobepos = similarity.maxprefix(reclen, thres);
+                        float maxindrecprobepos = similarity.maxprefix(indreclen, thres);
 
                         int minoverlap = similarity.minoverlap(reclen, indreclen, thres);
 
                         // <sim_overlap, nextposrec, nextposindrec>
                         int[] verified = Verify.verifiy_sim(record, indexedrecord, minoverlap, 1,
-                                (int)curevent[1] + 1, indrecordpair[1] + 1);
+                                (int) curevent[1] + 1, indrecordpair[1] + 1);
 
                         float sim_val = similarity.computesim(reclen, indreclen, verified[0]);
 
-                        if (verified[1] < maxrecprobepos && verified[2] < maxindrecprobepos)
+                        if (verified[1] < maxrecprobepos && verified[2] < maxindrecprobepos) {
                             testonce.add(testpair);
+                        }
 
                         Comparison c = new Comparison(iscleancleanEr, recordid, indrecid);
                         c.setUtilityMeasure(sim_val);
@@ -132,21 +140,24 @@ public class TopkGlobal {
                 }
             }
 
-            if (tmpresults.size() >= similarity.k)
+            if (tmpresults.size() >= similarity.k) {
                 tmpresults.subList(similarity.k, tmpresults.size()).clear();
+            }
 
             // SimilarityUpperBound-Probe
-            thres = similarity.upperbound_probe(reclen, (int)curevent[1] + 1);
+            thres = similarity.upperbound_probe(reclen, (int) curevent[1] + 1);
 
-            if ((int)curevent[1] + 1 < reclen)
-                events.add(new Object[]{recordid, (int)curevent[1] + 1, thres});
+            if ((int) curevent[1] + 1 < reclen) {
+                events.add(new Object[]{recordid, (int) curevent[1] + 1, thres});
+            }
 
             if (do_index_insertion) {
-                double sim_upperbound_index = similarity.upperbound_index(reclen, (int)curevent[1]);
-                if (sim_upperbound_index > thres)
-                    ind.add(token, new int[] {recordid, (int)curevent[1]});
-                else
+                float sim_upperbound_index = similarity.upperbound_index(reclen, (int) curevent[1]);
+                if (sim_upperbound_index > thres) {
+                    ind.add(token, new int[]{recordid, (int) curevent[1]});
+                } else {
                     do_index_insertion = false;
+                }
             }
         }
 
@@ -156,15 +167,16 @@ public class TopkGlobal {
     }
 
     private float getThres(SortedList<Comparison> tmpresults, int k) {
-        if (tmpresults.size() >= k)
-            return tmpresults.get(k-1).getUtilityMeasure();
+        if (tmpresults.size() >= k) {
+            return tmpresults.get(k - 1).getUtilityMeasure();
+        }
         return 0.0f;
     }
-
 
     public void setIsindataset1(boolean[] isindataset1) {
         this.isindataset1 = isindataset1;
     }
+
     public void setIscleancleanEr(boolean iscleancleanEr) {
         this.iscleancleanEr = iscleancleanEr;
     }

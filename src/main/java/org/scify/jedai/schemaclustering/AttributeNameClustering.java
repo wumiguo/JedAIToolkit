@@ -29,7 +29,7 @@ public class AttributeNameClustering extends AbstractAttributeClustering {
         this(0, model, metric);
     }
 
-    public AttributeNameClustering(double a, RepresentationModel model, SimilarityMetric metric) {
+    public AttributeNameClustering(float a, RepresentationModel model, SimilarityMetric metric) {
         super(a, model, metric);
     }
     

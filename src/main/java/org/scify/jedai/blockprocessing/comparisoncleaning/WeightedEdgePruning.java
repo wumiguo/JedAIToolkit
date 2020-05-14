@@ -32,7 +32,7 @@ import org.scify.jedai.configuration.randomsearch.IntRandomSearchConfiguration;
  */
 public class WeightedEdgePruning extends AbstractMetablocking {
 
-    protected double noOfEdges;
+    protected float noOfEdges;
 
     protected final IntGridSearchConfiguration gridWScheme;
     protected final IntRandomSearchConfiguration randomWScheme;
@@ -45,8 +45,8 @@ public class WeightedEdgePruning extends AbstractMetablocking {
         super(scheme);
         nodeCentric = false;
         
-        gridWScheme = new IntGridSearchConfiguration(weightingScheme.values().length - 1, 0, 1);
-        randomWScheme = new IntRandomSearchConfiguration(weightingScheme.values().length, 0);
+        gridWScheme = new IntGridSearchConfiguration(WeightingScheme.values().length - 1, 0, 1);
+        randomWScheme = new IntRandomSearchConfiguration(WeightingScheme.values().length, 0);
     }
 
     @Override
@@ -83,7 +83,7 @@ public class WeightedEdgePruning extends AbstractMetablocking {
         }
 
         for (int blockIndex : associatedBlocks) {
-            double blockComparisons = cleanCleanER ? bBlocks[blockIndex].getNoOfComparisons() : uBlocks[blockIndex].getNoOfComparisons();
+            float blockComparisons = cleanCleanER ? bBlocks[blockIndex].getNoOfComparisons() : uBlocks[blockIndex].getNoOfComparisons();
             setNormalizedNeighborEntities(blockIndex, entityId);
             for (TIntIterator tIterator = neighbors.iterator(); tIterator.hasNext();) {
                 int neighborId = tIterator.next();
@@ -197,7 +197,7 @@ public class WeightedEdgePruning extends AbstractMetablocking {
         if (!cleanCleanER) {
             for (TIntIterator tIterator = validEntities.iterator(); tIterator.hasNext();) {
                 int neighborId = tIterator.next();
-                double weight = getWeight(entityId, neighborId);
+                float weight = getWeight(entityId, neighborId);
                 if (threshold <= weight) {
                     retainedNeighbors.add(neighborId);
                     retainedNeighborsWeights.add(discretizeComparisonWeight(weight));
@@ -208,7 +208,7 @@ public class WeightedEdgePruning extends AbstractMetablocking {
             if (entityId < datasetLimit) {
                 for (TIntIterator tIterator = validEntities.iterator(); tIterator.hasNext();) {
                     int neighborId = tIterator.next();
-                    double weight = getWeight(entityId, neighborId);
+                    float weight = getWeight(entityId, neighborId);
                     if (threshold <= weight) {
                         retainedNeighbors.add(neighborId - datasetLimit);
                         retainedNeighborsWeights.add(discretizeComparisonWeight(weight));
@@ -218,7 +218,7 @@ public class WeightedEdgePruning extends AbstractMetablocking {
             } else {
                 for (TIntIterator tIterator = validEntities.iterator(); tIterator.hasNext();) {
                     int neighborId = tIterator.next();
-                    double weight = getWeight(entityId, neighborId);
+                    float weight = getWeight(entityId, neighborId);
                     if (threshold <= weight) {
                         retainedNeighbors.add(neighborId);
                         retainedNeighborsWeights.add(discretizeComparisonWeight(weight));

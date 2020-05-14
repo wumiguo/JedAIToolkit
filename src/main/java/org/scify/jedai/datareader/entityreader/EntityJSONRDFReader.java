@@ -61,7 +61,7 @@ public class EntityJSONRDFReader extends AbstractEntityReader {
             Log.error("Error in entities reading!", ex);
             return null;
         } catch (NotFoundException e) {
-            e.printStackTrace();
+            Log.error(e.getMessage());
         }
 
         return entityProfiles;
@@ -153,40 +153,32 @@ public class EntityJSONRDFReader extends AbstractEntityReader {
 
         // JSON file example:
         /*{"triples":
-            [
-            {Subject: "OperaHouse", Predicate: "located_in", Object: "Sydney"},
-            {Subject: "Sydney", Predicate: "located_in", Object: "Australia"},
-            ......
+        [
+        {Subject: "OperaHouse", Predicate: "located_in", Object: "Sydney"},
+        {Subject: "Sydney", Predicate: "located_in", Object: "Australia"},
+        ......
          */
-        for (org.apache.jena.atlas.json.JsonValue jsonValue : jarr) {
-
+        jarr.forEach((jsonValue) -> {
             final CharSequence predicate = jsonValue.getAsObject().get("Predicate").toString();
             final String pred = predicate.toString();
-            if (attributesToExclude.contains(pred)) {
-                continue;
+            if (!(attributesToExclude.contains(pred))) {
+                final CharSequence subject = jsonValue.getAsObject().get("Subject").toString();
+                String sub = subject.toString();
+                if (!prefix.equals("")) {
+                    sub = sub.replace(prefix, "");
+                }   final CharSequence object = jsonValue.getAsObject().get("Object").toString();
+                final String obj = object.toString();
+                //if already exists a profile for the subject, simply add po as <Att>-<Value>
+                EntityProfile entityProfile = urlToEntity.get(sub);
+                if (entityProfile == null) {
+                    entityProfile = new EntityProfile(sub);
+                    entityProfiles.add(entityProfile);
+                    urlToEntity.put(sub, entityProfile);
+                }   if (!obj.isEmpty()) {
+                    entityProfile.addAttribute(pred, obj);
+                }
             }
-
-            final CharSequence subject = jsonValue.getAsObject().get("Subject").toString();
-            String sub = subject.toString();
-            if (!prefix.equals("")) {
-                sub = sub.replace(prefix, "");
-            }
-
-            final CharSequence object = jsonValue.getAsObject().get("Object").toString();
-            final String obj = object.toString();
-
-            //if already exists a profile for the subject, simply add po as <Att>-<Value>
-            EntityProfile entityProfile = urlToEntity.get(sub);
-            if (entityProfile == null) {
-                entityProfile = new EntityProfile(sub);
-                entityProfiles.add(entityProfile);
-                urlToEntity.put(sub, entityProfile);
-            }
-
-            if (!obj.isEmpty()) {
-                entityProfile.addAttribute(pred, obj);
-            }
-        }
+        });
 
     }
 

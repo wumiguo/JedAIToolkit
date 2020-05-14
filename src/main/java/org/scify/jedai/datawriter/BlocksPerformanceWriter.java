@@ -54,13 +54,13 @@ public class BlocksPerformanceWriter {
     private int noOfD2Entities;
     private int detectedDuplicates;
 
-    private double aggregateCardinality;
-    private double blockAssignments;
-    private double d1BlockAssignments;
-    private double d2BlockAssignments;
-    private double fMeasure;
-    private double pc;
-    private double pq;
+    private float aggregateCardinality;
+    private float blockAssignments;
+    private float d1BlockAssignments;
+    private float d2BlockAssignments;
+    private float fMeasure;
+    private float pc;
+    private float pq;
 
     private final AbstractDuplicatePropagation abstractDP;
     private final List<AbstractBlock> blocks;
@@ -164,27 +164,27 @@ public class BlocksPerformanceWriter {
         return false;
     }
 
-    public double getAggregateCardinality() {
+    public float getAggregateCardinality() {
         return aggregateCardinality;
     }
 
-    public double getBlockAssignments() {
+    public float getBlockAssignments() {
         return blockAssignments;
     }
 
-    public double getD1BlockAssignments() {
+    public float getD1BlockAssignments() {
         return d1BlockAssignments;
     }
 
-    public double getD2BlockAssignments() {
+    public float getD2BlockAssignments() {
         return d2BlockAssignments;
     }
 
-    public double getPc() {
+    public float getPc() {
         return pc;
     }
 
-    public double getPq() {
+    public float getPq() {
         return pq;
     }
 
@@ -239,7 +239,7 @@ public class BlocksPerformanceWriter {
         }
 
         detectedDuplicates = abstractDP.getNoOfDuplicates();
-        pc = ((double) abstractDP.getNoOfDuplicates()) / abstractDP.getExistingDuplicates();
+        pc = ((float) abstractDP.getNoOfDuplicates()) / abstractDP.getExistingDuplicates();
         pq = abstractDP.getNoOfDuplicates() / aggregateCardinality;
         if (0 < pc && 0 < pq) {
             fMeasure = 2 * pc * pq / (pc + pq);
@@ -249,7 +249,7 @@ public class BlocksPerformanceWriter {
     }
 
     private void getDuplicatesWithEntityIndex() {
-        double noOfDuplicates = 0;
+        float noOfDuplicates = 0;
         boolean cleanCleanER = blocks.get(0) instanceof BilateralBlock;
         for (IdDuplicates pairOfDuplicates : abstractDP.getDuplicates()) {
             if (areCooccurring(cleanCleanER, pairOfDuplicates)) {
@@ -340,7 +340,7 @@ public class BlocksPerformanceWriter {
         }
 
         detectedDuplicates = abstractDP.getNoOfDuplicates();
-        pc = ((double) abstractDP.getNoOfDuplicates()) / abstractDP.getExistingDuplicates();
+        pc = ((float) abstractDP.getNoOfDuplicates()) / abstractDP.getExistingDuplicates();
         pq = abstractDP.getNoOfDuplicates() / aggregateCardinality;
         if (0 < pc && 0 < pq) {
             fMeasure = 2 * pc * pq / (pc + pq);
@@ -406,7 +406,7 @@ public class BlocksPerformanceWriter {
         }
 
         detectedDuplicates = abstractDP.getNoOfDuplicates();
-        pc = ((double) abstractDP.getNoOfDuplicates()) / abstractDP.getExistingDuplicates();
+        pc = ((float) abstractDP.getNoOfDuplicates()) / abstractDP.getExistingDuplicates();
         pq = abstractDP.getNoOfDuplicates() / aggregateCardinality;
         if (0 < pc && 0 < pq) {
             fMeasure = 2 * pc * pq / (pc + pq);
@@ -518,7 +518,7 @@ public class BlocksPerformanceWriter {
         }
 
         detectedDuplicates = abstractDP.getNoOfDuplicates();
-        pc = ((double) abstractDP.getNoOfDuplicates()) / abstractDP.getExistingDuplicates();
+        pc = ((float) abstractDP.getNoOfDuplicates()) / abstractDP.getExistingDuplicates();
         pq = abstractDP.getNoOfDuplicates() / aggregateCardinality;
         if (0 < pc && 0 < pq) {
             fMeasure = 2 * pc * pq / (pc + pq);
@@ -652,7 +652,7 @@ public class BlocksPerformanceWriter {
         }
 
         detectedDuplicates = abstractDP.getNoOfDuplicates();
-        pc = ((double) abstractDP.getNoOfDuplicates()) / abstractDP.getExistingDuplicates();
+        pc = ((float) abstractDP.getNoOfDuplicates()) / abstractDP.getExistingDuplicates();
         pq = abstractDP.getNoOfDuplicates() / aggregateCardinality;
         if (0 < pc && 0 < pq) {
             fMeasure = 2 * pc * pq / (pc + pq);
@@ -778,7 +778,7 @@ public class BlocksPerformanceWriter {
         }
 
         detectedDuplicates = abstractDP.getNoOfDuplicates();
-        pc = ((double) abstractDP.getNoOfDuplicates()) / abstractDP.getExistingDuplicates();
+        pc = ((float) abstractDP.getNoOfDuplicates()) / abstractDP.getExistingDuplicates();
         pq = abstractDP.getNoOfDuplicates() / aggregateCardinality;
         if (0 < pc && 0 < pq) {
             fMeasure = 2 * pc * pq / (pc + pq);
@@ -929,7 +929,7 @@ public class BlocksPerformanceWriter {
         }
 
         detectedDuplicates = abstractDP.getNoOfDuplicates();
-        pc = ((double) abstractDP.getNoOfDuplicates()) / abstractDP.getExistingDuplicates();
+        pc = ((float) abstractDP.getNoOfDuplicates()) / abstractDP.getExistingDuplicates();
         pq = abstractDP.getNoOfDuplicates() / aggregateCardinality;
         if (0 < pc && 0 < pq) {
             fMeasure = 2 * pc * pq / (pc + pq);
@@ -1102,7 +1102,7 @@ public class BlocksPerformanceWriter {
         }
 
         detectedDuplicates = abstractDP.getNoOfDuplicates();
-        pc = ((double) abstractDP.getNoOfDuplicates()) / abstractDP.getExistingDuplicates();
+        pc = ((float) abstractDP.getNoOfDuplicates()) / abstractDP.getExistingDuplicates();
         pq = abstractDP.getNoOfDuplicates() / aggregateCardinality;
         if (0 < pc && 0 < pq) {
             fMeasure = 2 * pc * pq / (pc + pq);
@@ -1186,7 +1186,7 @@ public class BlocksPerformanceWriter {
         }
 
         detectedDuplicates = abstractDP.getNoOfDuplicates();
-        pc = ((double) abstractDP.getNoOfDuplicates()) / abstractDP.getExistingDuplicates();
+        pc = ((float) abstractDP.getNoOfDuplicates()) / abstractDP.getExistingDuplicates();
         pq = abstractDP.getNoOfDuplicates() / aggregateCardinality;
         if (0 < pc && 0 < pq) {
             fMeasure = 2 * pc * pq / (pc + pq);
@@ -1700,7 +1700,7 @@ public class BlocksPerformanceWriter {
         }
     }
 
-    public void printStatistics(double overheadTime, String methodConfiguration, String methodName) {
+    public void printStatistics(float overheadTime, String methodConfiguration, String methodName) {
         if (blocks.isEmpty()) {
             return;
         }

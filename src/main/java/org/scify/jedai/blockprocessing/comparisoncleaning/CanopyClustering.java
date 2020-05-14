@@ -37,20 +37,20 @@ import org.scify.jedai.datamodel.Comparison;
  */
 public class CanopyClustering extends CardinalityNodePruning {
 
-    protected final double inclusiveThreshold;
-    protected final double exclusiveThreshold;
+    protected final float inclusiveThreshold;
+    protected final float exclusiveThreshold;
     
     protected TIntSet excludedEntities;
 
     public CanopyClustering() {
-        this(0.5, 0.75, WeightingScheme.ARCS);
+        this(0.5f, 0.75f, WeightingScheme.ARCS);
     }
 
-    public CanopyClustering(double inThr, double outThr) {
+    public CanopyClustering(float inThr, float outThr) {
         this(inThr, outThr, WeightingScheme.ARCS);
     }
 
-    public CanopyClustering(double inThr, double outThr, WeightingScheme scheme) {
+    public CanopyClustering(float inThr, float outThr, WeightingScheme scheme) {
         super(scheme);
         nodeCentric = true;
         exclusiveThreshold = outThr;
@@ -90,7 +90,7 @@ public class CanopyClustering extends CardinalityNodePruning {
     @Override
     public JsonArray getParameterConfiguration() {
         final JsonObject obj1 = new JsonObject();
-        obj1.put("class", "java.lang.Double");
+        obj1.put("class", "java.lang.float");
         obj1.put("name", getParameterName(0));
         obj1.put("defaultValue", "0.5");
         obj1.put("minValue", "0.1");
@@ -99,7 +99,7 @@ public class CanopyClustering extends CardinalityNodePruning {
         obj1.put("description", getParameterDescription(0));
 
         final JsonObject obj2 = new JsonObject();
-        obj2.put("class", "java.lang.Double");
+        obj2.put("class", "java.lang.float");
         obj2.put("name", getParameterName(1));
         obj2.put("defaultValue", "0.75");
         obj2.put("minValue", "0.2");
@@ -179,7 +179,7 @@ public class CanopyClustering extends CardinalityNodePruning {
                 continue;
             }
 
-            double weight = getWeight(entityId, neighborId);
+            float weight = getWeight(entityId, neighborId);
             if (inclusiveThreshold < weight) {
                 if (exclusiveThreshold < weight) {
                     excludedEntities.add(neighborId);

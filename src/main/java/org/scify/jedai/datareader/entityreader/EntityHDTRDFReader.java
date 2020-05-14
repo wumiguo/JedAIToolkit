@@ -34,13 +34,14 @@ import java.util.*;
  */
 public class EntityHDTRDFReader extends AbstractEntityReader {
 
+    private String prefix;
     private final Set<String> attributesToExclude;
     private final Map<String, EntityProfile> urlToEntity;
-    private String prefix = "";
 
     public EntityHDTRDFReader(String filePath) {
         super(filePath);
 
+        prefix = "";
         urlToEntity = new HashMap<>();
         attributesToExclude = new HashSet<>();
         attributesToExclude.add("owl:sameAs");
@@ -64,7 +65,7 @@ public class EntityHDTRDFReader extends AbstractEntityReader {
             Log.error("Error in entities reading!", ex);
             return null;
         } catch (NotFoundException e) {
-            e.printStackTrace();
+            Log.error(e.getMessage());
         }
 
         return entityProfiles;
@@ -149,48 +150,46 @@ public class EntityHDTRDFReader extends AbstractEntityReader {
     }
 
     private void readModel(String inpFIle) throws IOException, NotFoundException {
-        //read each ntriples
-        //get spo, create a separate profile for each separate subject,
-        //with Attribute=predicate and Value=object
-        HDT hdt = HDTManager.loadHDT(inpFIle, null);
-
         // Search pattern: Empty string means "any"
-        final IteratorTripleString iter = hdt.search("", "", "");
+        try ( //read each ntriples
+                //get spo, create a separate profile for each separate subject,
+                //with Attribute=predicate and Value=object
+                HDT hdt = HDTManager.loadHDT(inpFIle, null)) {
+            // Search pattern: Empty string means "any"
+            final IteratorTripleString iter = hdt.search("", "", "");
+            //final StmtIterator iter = ts.m.listStatements();
+            while (iter.hasNext()) {
+                TripleString stmt = iter.next();
 
-        //final StmtIterator iter = ts.m.listStatements();
-        while (iter.hasNext()) {
-            TripleString stmt = iter.next();
+                final CharSequence predicate = stmt.getPredicate();
+                final String pred = predicate.toString();
+                if (attributesToExclude.contains(pred)) {
+                    continue;
+                }
 
-            final CharSequence predicate = stmt.getPredicate();
-            final String pred = predicate.toString();
-            if (attributesToExclude.contains(pred)) {
-                continue;
+                final CharSequence subject = stmt.getSubject();
+                String sub = subject.toString();
+                if (!prefix.equals("")) {
+                    sub = sub.replace(prefix, "");
+                }
+
+                final CharSequence object = stmt.getObject();
+                final String obj = object.toString();
+
+                //if already exists a profile for the subject, simply add po as <Att>-<Value>
+                EntityProfile entityProfile = urlToEntity.get(sub);
+                if (entityProfile == null) {
+                    entityProfile = new EntityProfile(sub);
+                    entityProfiles.add(entityProfile);
+                    urlToEntity.put(sub, entityProfile);
+                }
+
+                if (!obj.isEmpty()) {
+                    entityProfile.addAttribute(pred, obj);
+                }
             }
-
-            final CharSequence subject = stmt.getSubject();
-            String sub = subject.toString();
-            if (!prefix.equals("")) {
-                sub = sub.replace(prefix, "");
-            }
-
-            final CharSequence object = stmt.getObject();
-            final String obj = object.toString();
-
-            //if already exists a profile for the subject, simply add po as <Att>-<Value>
-            EntityProfile entityProfile = urlToEntity.get(sub);
-            if (entityProfile == null) {
-                entityProfile = new EntityProfile(sub);
-                entityProfiles.add(entityProfile);
-                urlToEntity.put(sub, entityProfile);
-            }
-
-            if (!obj.isEmpty()) {
-                entityProfile.addAttribute(pred, obj);
-            }
+            // IMPORTANT: Close hdt when no longer needed
         }
-
-        // IMPORTANT: Close hdt when no longer needed
-        hdt.close();
     }
 
     public void setAttributesToExclude(String[] attributesNamesToExclude) {

@@ -50,10 +50,10 @@ import org.scify.jedai.datamodel.IdDuplicates;
  */
 public class ClustersPerformanceWriter {
 
-    private double fMeasure;
-    private double precision;
-    private double recall;
-    private double totalMatches;
+    private float fMeasure;
+    private float precision;
+    private float recall;
+    private float totalMatches;
 
     private final AbstractDuplicatePropagation abstractDP;
     private final EquivalenceCluster[] entityClusters;
@@ -136,23 +136,23 @@ public class ClustersPerformanceWriter {
         return abstractDP.getExistingDuplicates();
     }
 
-    public double getFMeasure() {
+    public float getFMeasure() {
         return fMeasure;
     }
 
-    public double getPrecision() {
+    public float getPrecision() {
         return precision;
     }
 
-    public double getRecall() {
+    public float getRecall() {
         return recall;
     }
 
-    public double getTotalMatches() {
+    public float getTotalMatches() {
         return totalMatches;
     }
 
-    public void printStatistics(double overheadTime, String methodName, String methodConfiguration) {
+    public void printStatistics(float overheadTime, String methodName, String methodConfiguration) {
         System.out.println("\n\n\n**************************************************");
         System.out.println("Performance of : " + methodName);
         System.out.println("Configuration : " + methodConfiguration);
@@ -263,7 +263,7 @@ public class ClustersPerformanceWriter {
         } else {
             precision = 0;
         }
-        recall = ((double) abstractDP.getNoOfDuplicates()) / abstractDP.getExistingDuplicates();
+        recall = ((float) abstractDP.getNoOfDuplicates()) / abstractDP.getExistingDuplicates();
         if (0 < precision && 0 < recall) {
             fMeasure = 2 * precision * recall / (precision + recall);
         } else {
@@ -459,7 +459,7 @@ public class ClustersPerformanceWriter {
         } else {
             precision = 0;
         }
-        recall = ((double) abstractDP.getNoOfDuplicates()) / abstractDP.getExistingDuplicates();
+        recall = ((float) abstractDP.getNoOfDuplicates()) / abstractDP.getExistingDuplicates();
         if (0 < precision && 0 < recall) {
             fMeasure = 2 * precision * recall / (precision + recall);
         } else {
@@ -681,7 +681,7 @@ public class ClustersPerformanceWriter {
         } else {
             precision = 0;
         }
-        recall = ((double) abstractDP.getNoOfDuplicates()) / abstractDP.getExistingDuplicates();
+        recall = ((float) abstractDP.getNoOfDuplicates()) / abstractDP.getExistingDuplicates();
         if (0 < precision && 0 < recall) {
             fMeasure = 2 * precision * recall / (precision + recall);
         } else {
@@ -887,7 +887,7 @@ public class ClustersPerformanceWriter {
         } else {
             precision = 0;
         }
-        recall = ((double) abstractDP.getNoOfDuplicates()) / abstractDP.getExistingDuplicates();
+        recall = ((float) abstractDP.getNoOfDuplicates()) / abstractDP.getExistingDuplicates();
         if (0 < precision && 0 < recall) {
             fMeasure = 2 * precision * recall / (precision + recall);
         } else {
@@ -1201,7 +1201,7 @@ public class ClustersPerformanceWriter {
         } else {
             precision = 0;
         }
-        recall = ((double) abstractDP.getNoOfDuplicates()) / abstractDP.getExistingDuplicates();
+        recall = ((float) abstractDP.getNoOfDuplicates()) / abstractDP.getExistingDuplicates();
         if (0 < precision && 0 < recall) {
             fMeasure = 2 * precision * recall / (precision + recall);
         } else {
@@ -1410,7 +1410,7 @@ public class ClustersPerformanceWriter {
         } else {
             precision = 0;
         }
-        recall = ((double) abstractDP.getNoOfDuplicates()) / abstractDP.getExistingDuplicates();
+        recall = ((float) abstractDP.getNoOfDuplicates()) / abstractDP.getExistingDuplicates();
         if (0 < precision && 0 < recall) {
             fMeasure = 2 * precision * recall / (precision + recall);
         } else {
@@ -1541,7 +1541,7 @@ public class ClustersPerformanceWriter {
         } else {
             precision = 0;
         }
-        recall = ((double) abstractDP.getNoOfDuplicates()) / abstractDP.getExistingDuplicates();
+        recall = ((float) abstractDP.getNoOfDuplicates()) / abstractDP.getExistingDuplicates();
         if (0 < precision && 0 < recall) {
             fMeasure = 2 * precision * recall / (precision + recall);
         } else {
@@ -1620,7 +1620,7 @@ public class ClustersPerformanceWriter {
         } else {
             precision = 0;
         }
-        recall = ((double) abstractDP.getNoOfDuplicates()) / abstractDP.getExistingDuplicates();
+        recall = ((float) abstractDP.getNoOfDuplicates()) / abstractDP.getExistingDuplicates();
         if (0 < precision && 0 < recall) {
             fMeasure = 2 * precision * recall / (precision + recall);
         } else {

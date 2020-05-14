@@ -18,10 +18,9 @@ package org.scify.jedai.similarityjoins.fuzzysets;
 
 import gnu.trove.iterator.TIntIterator;
 import gnu.trove.list.TIntList;
-import gnu.trove.map.TIntDoubleMap;
+import gnu.trove.map.TIntFloatMap;
 import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.TObjectIntMap;
-import gnu.trove.map.hash.TIntDoubleHashMap;
 import gnu.trove.map.hash.TIntFloatHashMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
 import gnu.trove.map.hash.TObjectIntHashMap;
@@ -42,14 +41,14 @@ public class FuzzySetSimJoin {
             checkFilterTime = 0, nnFilterTime = 0, verificationTime = 0;
     int totalCheckFilterCandidates = 0, totalNNFilterCandidates = 0, totalMatches = 0;
     TObjectIntMap<String> tokenDict;
-    double[] elementBounds;
+    float[] elementBounds;
 
     /**
      * Computes the join between two collections
      */
     public HashMap<String, Float> join(Map<String, List<Set<String>>> input1, Map<String, List<Set<String>>> input2,
-            double simThreshold) {
-//		public List<int[]> join(Map<String, List<Set<String>>> input1, Map<String, List<Set<String>>> input2, double simThreshold) {
+            float simThreshold) {
+//		public List<int[]> join(Map<String, List<Set<String>>> input1, Map<String, List<Set<String>>> input2, float simThreshold) {
 
         /* TRANSFORM THE INPUT COLLECTIONS */
         transformationTime = System.nanoTime();
@@ -81,8 +80,8 @@ public class FuzzySetSimJoin {
     /**
      * Computes the join between two already transformed and indexed collections
      */
-    public HashMap<String, Float> join(int[][][] collection1, int[][][] collection2, double simThreshold) {
-//		public List<int[]> join(int[][][] collection1, int[][][] collection2, double simThreshold) {
+    public HashMap<String, Float> join(int[][][] collection1, int[][][] collection2, float simThreshold) {
+//		public List<int[]> join(int[][][] collection1, int[][][] collection2, float simThreshold) {
 
 //		List<int[]> matchingPairs = new ArrayList<int[]>();
         HashMap<String, Float> matchingPairs = new HashMap<>();
@@ -130,7 +129,7 @@ public class FuzzySetSimJoin {
     /**
      * Find matches for a given set
      */
-    private TIntFloatHashMap search(int[][] querySet, int[][][] collection, double simThreshold,
+    private TIntFloatHashMap search(int[][] querySet, int[][][] collection, float simThreshold,
             TIntObjectMap<TIntList>[] idx) {
 
         /* SIGNATURE GENERATION */
@@ -141,7 +140,7 @@ public class FuzzySetSimJoin {
 
         /* CANDIDATE SELECTION AND CHECK FILTER */
         startTime = System.nanoTime();
-        TIntObjectMap<TIntDoubleMap> checkFilterCandidates = applyCheckFilter(querySet, collection,
+        TIntObjectMap<TIntFloatMap> checkFilterCandidates = applyCheckFilter(querySet, collection,
                 unflattenedSignature, idx, simThreshold);
         // Util.printCheckFilterCandidates(checkFilterCandidates); // debugging
         checkFilterTime += System.nanoTime() - startTime;
@@ -167,7 +166,7 @@ public class FuzzySetSimJoin {
         return matches;
     }
 
-    private TIntSet[] computeUnflattenedSignature(int[][] querySet, double simThreshold,
+    private TIntSet[] computeUnflattenedSignature(int[][] querySet, float simThreshold,
             TIntObjectMap<TIntList>[] idx) {
 
         // initialize unflattened signature
@@ -177,8 +176,8 @@ public class FuzzySetSimJoin {
         }
 
         // Compute token scores
-        double score;
-        TIntDoubleMap tokenScores = new TIntDoubleHashMap();
+        float score;
+        TIntFloatMap tokenScores = new TIntFloatHashMap();
         // first compute values
         for (int[] ints : querySet) {
             for (int anInt : ints) {
@@ -205,12 +204,12 @@ public class FuzzySetSimJoin {
         }
 
         // set threshold and current bound
-        double thres = simThreshold * querySet.length;
-        double simUpperBound = querySet.length;
+        float thres = simThreshold * querySet.length;
+        float simUpperBound = querySet.length;
 
         // construct the signature
         int bestToken = -1;
-        double bestScore = Double.MAX_VALUE;
+        float bestScore = Float.MAX_VALUE;
         while (simUpperBound >= thres) {
             // choose the next best token
             for (int token : tokenScores.keys()) {
@@ -223,14 +222,14 @@ public class FuzzySetSimJoin {
 
             // remove it from the pool of tokens and reset best score
             tokenScores.remove(bestToken);
-            bestScore = Double.MAX_VALUE;
+            bestScore = Float.MAX_VALUE;
 
             // update the signature
             for (int i = 0; i < querySet.length; i++) {
                 for (int j = 0; j < querySet[i].length; j++) {
                     if (querySet[i][j] == bestToken) {
                         unflattenedSignature[i].add(bestToken);
-                        simUpperBound -= (1.0 / (double) querySet[i].length);
+                        simUpperBound -= (1.0 / (float) querySet[i].length);
                     }
                 }
             }
@@ -239,23 +238,23 @@ public class FuzzySetSimJoin {
         return unflattenedSignature;
     }
 
-    private TIntObjectMap<TIntDoubleMap> applyCheckFilter(int[][] querySet, int[][][] collection,
-            TIntSet[] unflattenedSignature, TIntObjectMap<TIntList>[] idx, double simThreshold) {
+    private TIntObjectMap<TIntFloatMap> applyCheckFilter(int[][] querySet, int[][][] collection,
+            TIntSet[] unflattenedSignature, TIntObjectMap<TIntList>[] idx, float simThreshold) {
 
-        TIntObjectMap<TIntDoubleMap> checkFilterCandidates = new TIntObjectHashMap<>();
+        TIntObjectMap<TIntFloatMap> checkFilterCandidates = new TIntObjectHashMap<>();
 
-        TIntDoubleMap cachedScores;
-        double sim;
+        TIntFloatMap cachedScores;
+        float sim;
 
         // compute bounds for length filter
-        double minLength = querySet.length * simThreshold;
-        double maxLength = querySet.length / simThreshold;
+        float minLength = querySet.length * simThreshold;
+        float maxLength = querySet.length / simThreshold;
 
         // compute the individual element bounds
-        elementBounds = new double[querySet.length];
+        elementBounds = new float[querySet.length];
         for (int i = 0; i < querySet.length; i++) {
-            elementBounds[i] = (double) (querySet[i].length - unflattenedSignature[i].size())
-                    / (double) querySet[i].length;
+            elementBounds[i] = (float) (querySet[i].length - unflattenedSignature[i].size())
+                    / (float) querySet[i].length;
         }
 
         // for each element of the query set
@@ -282,7 +281,7 @@ public class FuzzySetSimJoin {
                         if (sim >= elementBounds[i]) {
                             cachedScores = checkFilterCandidates.get(s);
                             if (cachedScores == null) {
-                                cachedScores = new TIntDoubleHashMap();
+                                cachedScores = new TIntFloatHashMap();
                                 cachedScores.put(i, sim);
                             } else if (sim > cachedScores.get(i)) {
                                 cachedScores.put(i, sim);
@@ -298,11 +297,11 @@ public class FuzzySetSimJoin {
     }
 
     private TIntSet applyNNFilter(int[][] querySet, int[][][] collection,
-            TIntObjectMap<TIntDoubleMap> checkFilterCandidates, double simThreshold) {
+            TIntObjectMap<TIntFloatMap> checkFilterCandidates, float simThreshold) {
 
         TIntSet nnFilterCandidates = new TIntHashSet();
 
-        double sim, maxSim, total;
+        float sim, maxSim, total;
         TIntSet matchedElements;
 
         candLoop:
@@ -341,7 +340,7 @@ public class FuzzySetSimJoin {
     }
 
     private TIntFloatHashMap verifyCandidates(int[][] querySet, int[][][] collection, TIntSet nnFilterCandidates,
-            double simThreshold) {
+            float simThreshold) {
 
         TIntSet matches = new TIntHashSet();
         TIntFloatHashMap matches2 = new TIntFloatHashMap();
@@ -361,7 +360,7 @@ public class FuzzySetSimJoin {
                 r_partition.add(r_v);
                 for (int id_ss = 0; id_ss < collection[id_s].length; id_ss++) {
                     String s_v = "s_" + id_ss;
-                    double sim = jaccard(querySet[id_r], collection[id_s][id_ss]);
+                    float sim = jaccard(querySet[id_r], collection[id_s][id_ss]);
                     g.addVertex(s_v);
                     s_partition.add(s_v);
                     DefaultWeightedEdge e = g.addEdge(r_v, s_v);
@@ -391,7 +390,7 @@ public class FuzzySetSimJoin {
 
     }
 
-    private static double jaccard(int[] r, int[] s) {
+    private static float jaccard(int[] r, int[] s) {
 
         TIntSet nr = new TIntHashSet(r);
         TIntSet ns = new TIntHashSet(s);
@@ -399,6 +398,6 @@ public class FuzzySetSimJoin {
         intersection.retainAll(ns);
         TIntSet union = new TIntHashSet(nr);
         union.addAll(ns);
-        return ((double) intersection.size()) / ((double) union.size());
+        return ((float) intersection.size()) / ((float) union.size());
     }
 }

@@ -26,7 +26,6 @@ import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.util.List;
 import org.scify.jedai.datamodel.EntityProfile;
-import org.scify.jedai.datamodel.IdDuplicates;
 
 /**
  *
@@ -34,10 +33,10 @@ import org.scify.jedai.datamodel.IdDuplicates;
  */
 public class ClustersPerformance {
 
-    private double fMeasure;
-    private double precision;
-    private double recall;
-    private double totalMatches;
+    private float fMeasure;
+    private float precision;
+    private float recall;
+    private float totalMatches;
 
     private final AbstractDuplicatePropagation abstractDP;
     private final EquivalenceCluster[] entityClusters;
@@ -60,23 +59,23 @@ public class ClustersPerformance {
         return abstractDP.getExistingDuplicates();
     }
 
-    public double getFMeasure() {
+    public float getFMeasure() {
         return fMeasure;
     }
 
-    public double getPrecision() {
+    public float getPrecision() {
         return precision;
     }
 
-    public double getRecall() {
+    public float getRecall() {
         return recall;
     }
 
-    public double getTotalMatches() {
+    public float getTotalMatches() {
         return totalMatches;
     }
 
-    public void printStatistics(double overheadTime, String methodName, String methodConfiguration) {
+    public void printStatistics(float overheadTime, String methodName, String methodConfiguration) {
         System.out.println("\n\n\n**************************************************");
         System.out.println("Performance of : " + methodName);
         System.out.println("Configuration : " + methodConfiguration);
@@ -132,7 +131,7 @@ public class ClustersPerformance {
                 sb.append("Profile 2:[").append(profile2).append("]").append("\n");
             }
 
-            for (IdDuplicates duplicatesPair : abstractDP.getFalseNegatives()) {
+            abstractDP.getFalseNegatives().forEach((duplicatesPair) -> {
                 final EntityProfile profile1 = profilesD1.get(duplicatesPair.getEntityId1());
                 final EntityProfile profile2 = profilesD2.get(duplicatesPair.getEntityId2());
 
@@ -141,7 +140,7 @@ public class ClustersPerformance {
                 sb.append("FN,"); // false negative
                 sb.append("Profile 1:[").append(profile1).append("]");
                 sb.append("Profile 2:[").append(profile2).append("]").append("\n");
-            }
+            });
         } else { // Dirty ER
             for (EquivalenceCluster cluster : entityClusters) {
                 final int[] duplicatesArray = cluster.getEntityIdsD1().toArray();
@@ -170,7 +169,7 @@ public class ClustersPerformance {
                 }
             }
 
-            for (IdDuplicates duplicatesPair : abstractDP.getFalseNegatives()) {
+            abstractDP.getFalseNegatives().forEach((duplicatesPair) -> {
                 final EntityProfile profile1 = profilesD1.get(duplicatesPair.getEntityId1());
                 final EntityProfile profile2 = profilesD1.get(duplicatesPair.getEntityId2());
 
@@ -179,7 +178,7 @@ public class ClustersPerformance {
                 sb.append("FN,"); // false negative
                 sb.append("Profile 1:[").append(profile1).append("]");
                 sb.append("Profile 2:[").append(profile2).append("]").append("\n");
-            }
+            });
         }
 
         if (0 < totalMatches) {
@@ -187,7 +186,7 @@ public class ClustersPerformance {
         } else {
             precision = 0;
         }
-        recall = ((double) abstractDP.getNoOfDuplicates()) / abstractDP.getExistingDuplicates();
+        recall = ((float) abstractDP.getNoOfDuplicates()) / abstractDP.getExistingDuplicates();
         if (0 < precision && 0 < recall) {
             fMeasure = 2 * precision * recall / (precision + recall);
         } else {
@@ -236,7 +235,7 @@ public class ClustersPerformance {
         } else {
             precision = 0;
         }
-        recall = ((double) abstractDP.getNoOfDuplicates()) / abstractDP.getExistingDuplicates();
+        recall = ((float) abstractDP.getNoOfDuplicates()) / abstractDP.getExistingDuplicates();
         if (0 < precision && 0 < recall) {
             fMeasure = 2 * precision * recall / (precision + recall);
         } else {

@@ -39,8 +39,8 @@ public abstract class AbstractHashBasedPrioritization extends AbstractPrioritiza
         super(budget);
         this.wScheme = wScheme;
         
-        gridWScheme = new IntGridSearchConfiguration(wScheme.values().length - 1, 0, 1);
-        randomWScheme = new IntRandomSearchConfiguration(wScheme.values().length, 0);
+        gridWScheme = new IntGridSearchConfiguration(WeightingScheme.values().length - 1, 0, 1);
+        randomWScheme = new IntRandomSearchConfiguration(WeightingScheme.values().length, 0);
     }
     
     @Override

@@ -54,9 +54,9 @@ public class Topk extends AbstractProgressiveJoin {
         super(budget);
         threshold = thr;
         attributeValues = new ArrayList<>();
-        
-        gridThreshold = new DblGridSearchConfiguration(1.0, 0.025, 0.025);
-        randomThreshold = new DblRandomSearchConfiguration(1.0, 0.01);
+
+        gridThreshold = new DblGridSearchConfiguration(1.0f, 0.025f, 0.025f);
+        randomThreshold = new DblRandomSearchConfiguration(1.0f, 0.01f);
     }
 
     @Override
@@ -93,7 +93,7 @@ public class Topk extends AbstractProgressiveJoin {
             originalId[i] = currentPair.getValue();
             records[i] = new TIntArrayList();
         }
-        
+
         final TIntIntMap freqMap = new TIntIntHashMap();
         for (int sIndex = 0; sIndex < noOfEntities; sIndex++) {
 
@@ -151,7 +151,7 @@ public class Topk extends AbstractProgressiveJoin {
         ssj.setDatasetDelimiter(datasetDelimiter);
         ssj.setRecords(recordsForTopk);
         ssj.topkGlobal(comparisonsBudget);
-        
+
         ArrayList<Comparison> results = ssj.getResults();
         final List<Comparison> executedComparisons = new ArrayList<>();
 

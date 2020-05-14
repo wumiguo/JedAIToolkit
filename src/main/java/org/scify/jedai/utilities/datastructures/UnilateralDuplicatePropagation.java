@@ -70,9 +70,9 @@ public class UnilateralDuplicatePropagation extends AbstractDuplicatePropagation
         }
 
         final UndirectedGraph similarityGraph = new UndirectedGraph(noOfEntities + 1);
-        for (IdDuplicates duplicatePair : detectedDuplicates) {
+        detectedDuplicates.forEach((duplicatePair) -> {
             similarityGraph.addEdge(duplicatePair.getEntityId1(), duplicatePair.getEntityId2());
-        }
+        });
 
         return getClusters(similarityGraph);
     }
@@ -98,9 +98,9 @@ public class UnilateralDuplicatePropagation extends AbstractDuplicatePropagation
         }
 
         final UndirectedGraph similarityGraph = new UndirectedGraph(noOfEntities + 1);
-        for (IdDuplicates duplicatePair : duplicates) {
+        duplicates.forEach((duplicatePair) -> {
             similarityGraph.addEdge(duplicatePair.getEntityId1(), duplicatePair.getEntityId2());
-        }
+        });
 
         return getClusters(similarityGraph);
     }

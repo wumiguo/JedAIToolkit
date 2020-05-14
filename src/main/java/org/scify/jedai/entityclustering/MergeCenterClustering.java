@@ -35,10 +35,10 @@ import java.util.Queue;
 public class MergeCenterClustering extends AbstractEntityClustering {
 
     public MergeCenterClustering() {
-        this(0.5);
+        this(0.5f);
     }
 
-    public MergeCenterClustering(double simTh) {
+    public MergeCenterClustering(float simTh) {
         super(simTh);
     }
     

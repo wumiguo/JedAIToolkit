@@ -24,15 +24,15 @@ import gnu.trove.map.TObjectIntMap;
  */
 public class AttributeClusters {
 
-    private final double[] clustersEntropy;
+    private final float[] clustersEntropy;
     private final TObjectIntMap<String> attributeToClusterId;
 
-    public AttributeClusters(double[] entropy, TObjectIntMap<String> mapping) {
+    public AttributeClusters(float[] entropy, TObjectIntMap<String> mapping) {
         clustersEntropy = entropy;
         attributeToClusterId = mapping;
     }
 
-    public double getClusterEntropy(int clusterId) {
+    public float getClusterEntropy(int clusterId) {
         return clustersEntropy[clusterId];
     }
 

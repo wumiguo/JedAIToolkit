@@ -34,22 +34,22 @@ import java.util.List;
  */
 public class PartEnumJoin extends AbstractTokenBasedJoin {
 
-    private int MAX_LEN = 3300;
-    private int MAX_CATEGORY = 100;
+    private final static int MAX_LEN = 3300;
+    private final static int MAX_CATEGORY = 100;
+    
     private Category[] helper;
     private long cand_num;
     private long res_num;
     private List<Comparison> executedComparisons;
 
-    int categoryN;
-    int categoryMETHOD;
-    double categoryTHRESHOLD;
+    private int categoryN;
+    private float categoryTHRESHOLD;
 
     private int[] originalId;
     private final List<String> attributeValues;
     private TIntList[] records;
 
-    public PartEnumJoin(double thr) {
+    public PartEnumJoin(float thr) {
         super(thr);
         attributeValues = new ArrayList<>();
     }
@@ -161,7 +161,7 @@ public class PartEnumJoin extends AbstractTokenBasedJoin {
     }
 
     private float verify(TIntList a, TIntList b) {
-        double factor = categoryTHRESHOLD / (1 + categoryTHRESHOLD);
+        float factor = categoryTHRESHOLD / (1 + categoryTHRESHOLD);
         int require_overlap = (int) Math.ceil(factor * (a.size() + b.size()) - 1e-6);
         int real_overlap = check_overlap(a, b, require_overlap);
 

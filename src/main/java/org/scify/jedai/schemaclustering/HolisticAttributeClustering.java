@@ -29,7 +29,7 @@ public class HolisticAttributeClustering extends AbstractAttributeClustering {
         this(0, model, metric);
     }
     
-    public HolisticAttributeClustering(double a, RepresentationModel model, SimilarityMetric metric) {
+    public HolisticAttributeClustering(float a, RepresentationModel model, SimilarityMetric metric) {
         super(a, model, metric);
     }
 

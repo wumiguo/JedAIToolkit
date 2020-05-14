@@ -20,7 +20,7 @@ public class PretrainedWordVectors extends PretrainedVectors{
 
 
     @Override
-    public double getEntropy(boolean normalized) {
+    public float getEntropy(boolean normalized) {
         return 0;
     }
 
@@ -33,7 +33,7 @@ public class PretrainedWordVectors extends PretrainedVectors{
         int localUpdates=0;
         final String[] tokens = text.toLowerCase().split("[\\W_]");
         for (String token : tokens){
-            if (this.elementMap.containsKey(token)){
+            if (PretrainedWordVectors.elementMap.containsKey(token)){
                 addVector(elementMap.get(token));
                 localUpdates ++;
             }

@@ -45,8 +45,8 @@ public class ReciprocalWeightedNodePruning extends WeightedNodePruning {
     }
 
     @Override
-    protected double getValidWeight(int entityId, int neighborId) {
-        double weight = getWeight(entityId, neighborId);
+    protected float getValidWeight(int entityId, int neighborId) {
+        float weight = getWeight(entityId, neighborId);
         boolean inNeighborhood1 = averageWeight[entityId] <= weight;
         boolean inNeighborhood2 = averageWeight[neighborId] <= weight;
         

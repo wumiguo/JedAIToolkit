@@ -31,7 +31,7 @@ public abstract class AbstractModel implements ITextModel, Serializable {
 
     protected final int datasetId;
     protected final int nSize;
-    protected static double[] NO_OF_DOCUMENTS = {0, 0};
+    protected static float[] NO_OF_DOCUMENTS = {0, 0};
     
     protected final RepresentationModel modelType;
     protected final SimilarityMetric simMetric;
@@ -58,7 +58,7 @@ public abstract class AbstractModel implements ITextModel, Serializable {
         return modelType;
     }
     
-    public static double getNoOfDocuments(int datasetId) {
+    public static float getNoOfDocuments(int datasetId) {
         return NO_OF_DOCUMENTS[datasetId];
     }
     

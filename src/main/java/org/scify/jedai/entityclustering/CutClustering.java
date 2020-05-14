@@ -42,7 +42,7 @@ import org.scify.jedai.configuration.randomsearch.DblRandomSearchConfiguration;
  */
 public class CutClustering extends AbstractEntityClustering {
 
-    protected double Acap;
+    protected float Acap;
     
     protected final DblGridSearchConfiguration gridAcap;
     protected final DblRandomSearchConfiguration randomAcap;
@@ -50,15 +50,15 @@ public class CutClustering extends AbstractEntityClustering {
     protected SimpleWeightedGraph weightedGraph;
 
     public CutClustering() {
-        this(0.3, 0.5);
+        this(0.3f, 0.5f);
     }
 
-    public CutClustering(double ac, double simTh) {
+    public CutClustering(float ac, float simTh) {
         super(simTh);
         Acap = ac;
         
-        gridAcap = new DblGridSearchConfiguration(0.95, 0.1, 0.05);
-        randomAcap = new DblRandomSearchConfiguration(0.99, 0.01);
+        gridAcap = new DblGridSearchConfiguration(0.95f, 0.1f, 0.05f);
+        randomAcap = new DblRandomSearchConfiguration(0.99f, 0.01f);
     }
 
     @Override
@@ -131,7 +131,7 @@ public class CutClustering extends AbstractEntityClustering {
     @Override
     public JsonArray getParameterConfiguration() {
         JsonObject obj1 = new JsonObject();
-        obj1.put("class", "java.lang.Double");
+        obj1.put("class", "java.lang.Float");
         obj1.put("name", getParameterName(0));
         obj1.put("defaultValue", "0.5");
         obj1.put("minValue", "0.1");
@@ -140,7 +140,7 @@ public class CutClustering extends AbstractEntityClustering {
         obj1.put("description", getParameterDescription(0));
 
         JsonObject obj2 = new JsonObject();
-        obj2.put("class", "java.lang.Double");
+        obj2.put("class", "java.lang.Float");
         obj2.put("name", getParameterName(1));
         obj2.put("defaultValue", "0.3");
         obj2.put("minValue", "0.1");
@@ -193,14 +193,14 @@ public class CutClustering extends AbstractEntityClustering {
         Log.info("Added " + noOfEntities + " nodes in the graph");
     }
 
-    public void setA(double Acap) {
+    public void setA(float Acap) {
         this.Acap = Acap;
     }
     
     @Override
     public void setNextRandomConfiguration() {
         super.setNextRandomConfiguration();
-        Acap = (Double) randomAcap.getNextRandomValue();
+        Acap = (Float) randomAcap.getNextRandomValue();
     }
 
     @Override
@@ -209,12 +209,12 @@ public class CutClustering extends AbstractEntityClustering {
         super.setNumberedGridConfiguration(thrIteration);
         
         int acapIteration = iterationNumber % gridAcap.getNumberOfConfigurations();
-        Acap = (Double) gridAcap.getNumberedValue(acapIteration);
+        Acap = (Float) gridAcap.getNumberedValue(acapIteration);
     }
     
     @Override
     public void setNumberedRandomConfiguration(int iterationNumber) {
         super.setNumberedRandomConfiguration(iterationNumber);
-        Acap = (Double) randomAcap.getNumberedRandom(iterationNumber);
+        Acap = (Float) randomAcap.getNumberedRandom(iterationNumber);
     }
 }

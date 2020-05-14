@@ -36,7 +36,7 @@ public abstract class AbstractEntityClustering implements IEntityClustering {
 
     protected boolean isCleanCleanER;
 
-    protected double threshold;
+    protected float threshold;
 
     protected int noOfEntities;
     protected int datasetLimit;
@@ -45,11 +45,11 @@ public abstract class AbstractEntityClustering implements IEntityClustering {
     protected final DblRandomSearchConfiguration randomThreshold;
     protected UndirectedGraph similarityGraph;
 
-    public AbstractEntityClustering(double simTh) {
+    public AbstractEntityClustering(float simTh) {
         threshold = simTh;
         
-        gridThreshold = new DblGridSearchConfiguration(1.00, 0.05, 0.05);
-        randomThreshold = new DblRandomSearchConfiguration(0.99, 0.01);
+        gridThreshold = new DblGridSearchConfiguration(1.00f, 0.05f, 0.05f);
+        randomThreshold = new DblRandomSearchConfiguration(0.99f, 0.01f);
     }
 
     protected EquivalenceCluster[] getConnectedComponents() {
@@ -107,7 +107,7 @@ public abstract class AbstractEntityClustering implements IEntityClustering {
     @Override
     public JsonArray getParameterConfiguration() {
         final JsonObject obj1 = new JsonObject();
-        obj1.put("class", "java.lang.Double");
+        obj1.put("class", "java.lang.Float");
         obj1.put("name", getParameterName(0));
         obj1.put("defaultValue", "0.1");
         obj1.put("minValue", "0.1");
@@ -161,21 +161,21 @@ public abstract class AbstractEntityClustering implements IEntityClustering {
 
     @Override
     public void setNextRandomConfiguration() {
-        threshold = (Double) randomThreshold.getNextRandomValue();
+        threshold = (Float) randomThreshold.getNextRandomValue();
     }
 
     @Override
     public void setNumberedGridConfiguration(int iterationNumber) {
-        threshold = (Double) gridThreshold.getNumberedValue(iterationNumber);
+        threshold = (Float) gridThreshold.getNumberedValue(iterationNumber);
     }
     
     @Override
     public void setNumberedRandomConfiguration(int iterationNumber) {
-        threshold = (Double) randomThreshold.getNumberedRandom(iterationNumber);
+        threshold = (Float) randomThreshold.getNumberedRandom(iterationNumber);
     }
     
     @Override
-    public void setSimilarityThreshold(double th) {
+    public void setSimilarityThreshold(float th) {
         threshold = th;
         Log.info("Similarity threshold : " + threshold);
     }

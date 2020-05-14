@@ -34,7 +34,7 @@ public class DecComparisonWeightComparator implements Comparator<Comparison> {
     
     @Override
     public int compare(Comparison o1, Comparison o2) {
-        double test = o1.getUtilityMeasure()-o2.getUtilityMeasure(); 
+        float test = o1.getUtilityMeasure()-o2.getUtilityMeasure(); 
         if (0 < test) {
             return -1;
         }

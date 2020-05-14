@@ -24,7 +24,7 @@ import org.scify.jedai.utilities.IConstants;
  */
 public interface ITextModel extends IConstants {
 
-    double getEntropy(boolean normalized);
+    float getEntropy(boolean normalized);
 
     String getInstanceName();
 

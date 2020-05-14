@@ -81,9 +81,9 @@ public class EntitySPARQLReader extends AbstractEntityReader {
     public String getMethodConfiguration() {
         final StringBuilder sb = new StringBuilder();
         sb.append("{");
-        for (String attributeName : attributesToExclude) {
+        attributesToExclude.forEach((attributeName) -> {
             sb.append(attributeName).append(",");
-        }
+        });
         sb.append("}");
 
         return getParameterName(0) + "=" + inputFilePath + "\t"

@@ -17,6 +17,9 @@ package org.scify.jedai.datareader.entityreader;
 
 import com.esotericsoftware.minlog.Log;
 import com.opencsv.CSVReader;
+import gnu.trove.iterator.TIntIterator;
+import gnu.trove.set.TIntSet;
+import gnu.trove.set.hash.TIntHashSet;
 import org.apache.jena.atlas.json.JsonArray;
 import org.apache.jena.atlas.json.JsonObject;
 import org.scify.jedai.datamodel.EntityProfile;
@@ -25,9 +28,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  * @author G.A.P. II
@@ -38,7 +39,7 @@ public class EntityCSVReader extends AbstractEntityReader {
     private int idIndex;
     private char separator;
     private String[] attributeNames;
-    private final Set<Integer> attributesToExclude;
+    private final TIntSet attributesToExclude;
 
     public EntityCSVReader(String filePath) {
         super(filePath);
@@ -46,7 +47,7 @@ public class EntityCSVReader extends AbstractEntityReader {
         attributeNames = null;
         idIndex = -1;
         separator = ',';
-        attributesToExclude = new HashSet<>();
+        attributesToExclude = new TIntHashSet();
     }
 
     @Override
@@ -121,7 +122,9 @@ public class EntityCSVReader extends AbstractEntityReader {
     public String getMethodConfiguration() {
         final StringBuilder sb = new StringBuilder();
         sb.append("{");
-        for (Integer attributeId : attributesToExclude) {
+        final TIntIterator iterator = attributesToExclude.iterator();
+        while (iterator.hasNext()) {
+            int attributeId = iterator.next();
             sb.append(attributeId).append(",");
         }
         sb.append("}");
@@ -192,7 +195,7 @@ public class EntityCSVReader extends AbstractEntityReader {
         obj4.put("description", getParameterDescription(3));
 
         final JsonObject obj5 = new JsonObject();
-        obj5.put("class", "java.util.Set<Integer>");
+        obj5.put("class", "gnu.trove.set.TIntSet");
         obj5.put("name", getParameterName(4));
         obj5.put("defaultValue", "-");
         obj5.put("minValue", "-");

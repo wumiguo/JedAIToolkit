@@ -26,9 +26,9 @@ public class SimilarityEdge {
 
     private final int model1pos;
     private final int model2pos;
-    private final double similarity;
+    private final float similarity;
 
-    public SimilarityEdge (int pos1, int pos2, double sim) {
+    public SimilarityEdge (int pos1, int pos2, float sim) {
     	model1pos = pos1;
     	model2pos = pos2;
     	similarity = sim;
@@ -42,7 +42,7 @@ public class SimilarityEdge {
         return model2pos;
     }
 
-    public double getSimilarity() {
+    public float getSimilarity() {
         return similarity;
     }
     

@@ -49,13 +49,13 @@ public class BlocksPerformance {
     private int noOfD2Entities;
     private int detectedDuplicates;
 
-    private double aggregateCardinality;
-    private double blockAssignments;
-    private double d1BlockAssignments;
-    private double d2BlockAssignments;
-    private double fMeasure;
-    private double pc;
-    private double pq;
+    private float aggregateCardinality;
+    private float blockAssignments;
+    private float d1BlockAssignments;
+    private float d2BlockAssignments;
+    private float fMeasure;
+    private float pc;
+    private float pq;
 
     private final AbstractDuplicatePropagation abstractDP;
     private final List<AbstractBlock> blocks;
@@ -77,9 +77,7 @@ public class BlocksPerformance {
         if (blocks2 == null) {
             return false;
         }
-
-        int noOfBlocks1 = blocks1.length;
-        int noOfBlocks2 = blocks2.length;
+        
         for (int item : blocks1) {
             for (int value : blocks2) {
                 if (value < item) {
@@ -99,55 +97,54 @@ public class BlocksPerformance {
         return false;
     }
 
-    public double getAggregateCardinality() {
+    public float getAggregateCardinality() {
         return aggregateCardinality;
     }
 
-    public double getBlockAssignments() {
+    public float getBlockAssignments() {
         return blockAssignments;
     }
 
-    public double getD1BlockAssignments() {
+    public float getD1BlockAssignments() {
         return d1BlockAssignments;
     }
 
-    public double getD2BlockAssignments() {
+    public float getD2BlockAssignments() {
         return d2BlockAssignments;
     }
 
     private void getBilateralBlockingCardinality() {
         d1BlockAssignments = 0;
         d2BlockAssignments = 0;
-        for (AbstractBlock block : blocks) {
-            BilateralBlock bilBlock = (BilateralBlock) block;
+        blocks.stream().map((block) -> (BilateralBlock) block).map((bilBlock) -> {
             d1BlockAssignments += bilBlock.getIndex1Entities().length;
+            return bilBlock;
+        }).forEachOrdered((bilBlock) -> {
             d2BlockAssignments += bilBlock.getIndex2Entities().length;
-        }
+        });
     }
 
     private void getDecomposedBlocksEntities() {
         final TIntSet entitiesD1 = new TIntHashSet((int) aggregateCardinality);
         if (isCleanCleanER) {
             final TIntSet entitiesD2 = new TIntHashSet((int) aggregateCardinality);
-            for (AbstractBlock block : blocks) {
-                final ComparisonIterator iterator = block.getComparisonIterator();
+            blocks.stream().map((block) -> block.getComparisonIterator()).forEachOrdered((iterator) -> {
                 while (iterator.hasNext()) {
                     Comparison comparison = iterator.next();
                     entitiesD1.add(comparison.getEntityId1());
                     entitiesD2.add(comparison.getEntityId2());
                 }
-            }
+            });
             noOfD1Entities = entitiesD1.size();
             noOfD2Entities = entitiesD2.size();
         } else {
-            for (AbstractBlock block : blocks) {
-                final ComparisonIterator iterator = block.getComparisonIterator();
+            blocks.stream().map((block) -> block.getComparisonIterator()).forEachOrdered((iterator) -> {
                 while (iterator.hasNext()) {
                     Comparison comparison = iterator.next();
                     entitiesD1.add(comparison.getEntityId1());
                     entitiesD1.add(comparison.getEntityId2());
                 }
-            }
+            });
             noOfD1Entities = entitiesD1.size();
         }
     }
@@ -158,26 +155,24 @@ public class BlocksPerformance {
 
     private void getDuplicatesOfDecomposedBlocks() {
         if (isCleanCleanER) {
-            for (AbstractBlock block : blocks) {
-                ComparisonIterator iterator = block.getComparisonIterator();
+            blocks.stream().map((block) -> block.getComparisonIterator()).forEachOrdered((iterator) -> {
                 while (iterator.hasNext()) {
                     final Comparison comp = iterator.next();
                     abstractDP.isSuperfluous(comp.getEntityId1(), comp.getEntityId2());
                 }
-            }
+            });
         } else {
-            for (AbstractBlock block : blocks) {
-                ComparisonIterator iterator = block.getComparisonIterator();
+            blocks.stream().map((block) -> block.getComparisonIterator()).forEachOrdered((iterator) -> {
                 while (iterator.hasNext()) {
                     final Comparison comp = iterator.next();
                     abstractDP.isSuperfluous(comp.getEntityId1(), comp.getEntityId2());
                     abstractDP.isSuperfluous(comp.getEntityId2(), comp.getEntityId1());
                 }
-            }
+            });
         }
 
         detectedDuplicates = abstractDP.getNoOfDuplicates();
-        pc = ((double) abstractDP.getNoOfDuplicates()) / abstractDP.getExistingDuplicates();
+        pc = ((float) abstractDP.getNoOfDuplicates()) / abstractDP.getExistingDuplicates();
         pq = abstractDP.getNoOfDuplicates() / aggregateCardinality;
         if (0 < pc && 0 < pq) {
             fMeasure = 2 * pc * pq / (pc + pq);
@@ -187,12 +182,8 @@ public class BlocksPerformance {
     }
 
     private void getDuplicatesWithEntityIndex() {
-        double noOfDuplicates = 0;
-        for (IdDuplicates pairOfDuplicates : abstractDP.getDuplicates()) {
-            if (areCooccurring(pairOfDuplicates)) {
-                noOfDuplicates++;
-            }
-        }
+        float noOfDuplicates = 0;
+        noOfDuplicates = abstractDP.getDuplicates().stream().filter((pairOfDuplicates) -> (areCooccurring(pairOfDuplicates))).map((_item) -> 1.0f).reduce(noOfDuplicates, (accumulator, _item) -> accumulator + 1);
 
         detectedDuplicates = (int) noOfDuplicates;
         pc = noOfDuplicates / abstractDP.getExistingDuplicates();
@@ -203,39 +194,39 @@ public class BlocksPerformance {
     private void getEntities() {
         if (blocks.get(0) instanceof UnilateralBlock) {
             final TIntSet distinctEntities = new TIntHashSet();
-            for (AbstractBlock block : blocks) {
-                final UnilateralBlock uBlock = (UnilateralBlock) block;
+            blocks.stream().map((block) -> (UnilateralBlock) block).forEachOrdered((uBlock) -> {
                 for (int entityId : uBlock.getEntities()) {
                     distinctEntities.add(entityId);
                 }
-            }
+            });
             noOfD1Entities = distinctEntities.size();
         } else {
             final TIntSet distinctEntitiesD1 = new TIntHashSet();
             final TIntSet distinctEntitiesD2 = new TIntHashSet();
-            for (AbstractBlock block : blocks) {
-                final BilateralBlock bBlock = (BilateralBlock) block;
+            blocks.stream().map((block) -> (BilateralBlock) block).map((bBlock) -> {
                 for (int entityId : bBlock.getIndex1Entities()) {
                     distinctEntitiesD1.add(entityId);
                 }
+                return bBlock;
+            }).forEachOrdered((bBlock) -> {
                 for (int entityId : bBlock.getIndex2Entities()) {
                     distinctEntitiesD2.add(entityId);
                 }
-            }
+            });
             noOfD1Entities = distinctEntitiesD1.size();
             noOfD2Entities = distinctEntitiesD2.size();
         }
     }
 
-    public double getFMeasure() {
+    public float getFMeasure() {
         return fMeasure;
     }
 
-    public double getPc() {
+    public float getPc() {
         return pc;
     }
 
-    public double getPq() {
+    public float getPq() {
         return pq;
     }
 
@@ -277,7 +268,7 @@ public class BlocksPerformance {
             }
         }
 
-        for (IdDuplicates duplicatesPair : abstractDP.getFalseNegatives()) {
+        abstractDP.getFalseNegatives().forEach((duplicatesPair) -> {
             final EntityProfile profile1 = profilesD1.get(duplicatesPair.getEntityId1());
             final EntityProfile profile2 = isCleanCleanER ? profilesD2.get(duplicatesPair.getEntityId2()) : profilesD1.get(duplicatesPair.getEntityId2());
 
@@ -286,10 +277,10 @@ public class BlocksPerformance {
             System.out.print("FN,"); // false negative
             System.out.print("Profile 1:[" + profile1 + "]");
             System.out.println("Profile 2:[" + profile2 + "]");
-        }
+        });
 
         detectedDuplicates = abstractDP.getNoOfDuplicates();
-        pc = ((double) abstractDP.getNoOfDuplicates()) / abstractDP.getExistingDuplicates();
+        pc = ((float) abstractDP.getNoOfDuplicates()) / abstractDP.getExistingDuplicates();
         pq = abstractDP.getNoOfDuplicates() / aggregateCardinality;
         if (0 < pc && 0 < pq) {
             fMeasure = 2 * pc * pq / (pc + pq);
@@ -327,7 +318,7 @@ public class BlocksPerformance {
             }
         }
 
-        for (IdDuplicates duplicatesPair : abstractDP.getFalseNegatives()) {
+        abstractDP.getFalseNegatives().forEach((duplicatesPair) -> {
             final EntityProfile profile1 = profilesD1.get(duplicatesPair.getEntityId1());
             final EntityProfile profile2 = isCleanCleanER ? profilesD2.get(duplicatesPair.getEntityId2()) : profilesD1.get(duplicatesPair.getEntityId2());
 
@@ -336,13 +327,13 @@ public class BlocksPerformance {
             sb.append("FN,"); // false negative
             sb.append("Profile 1:[").append(profile1).append("]");
             sb.append("Profile 2:[").append(profile2).append("]");
-        }
+        });
 
         pw.write(sb.toString());
         pw.close();
     }
 
-    public void printStatistics(double overheadTime, String methodConfiguration, String methodName) {
+    public void printStatistics(float overheadTime, String methodConfiguration, String methodName) {
         if (blocks.isEmpty()) {
             return;
         }
@@ -387,10 +378,12 @@ public class BlocksPerformance {
     private void setComparisonsCardinality() {
         aggregateCardinality = 0;
         blockAssignments = 0;
-        for (AbstractBlock block : blocks) {
+        blocks.stream().map((block) -> {
             aggregateCardinality += block.getNoOfComparisons();
+            return block;
+        }).forEachOrdered((block) -> {
             blockAssignments += block.getTotalBlockAssignments();
-        }
+        });
     }
 
     public void setStatistics() {

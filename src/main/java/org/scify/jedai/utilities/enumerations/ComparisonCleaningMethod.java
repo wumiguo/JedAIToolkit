@@ -50,7 +50,7 @@ public enum ComparisonCleaningMethod {
             case BLAST:
                 return new BLAST();
             case CANOPY_CLUSTERING:
-                return new CanopyClustering(0.7, 0.8);
+                return new CanopyClustering(0.7f, 0.8f);
             case CARDINALITY_EDGE_PRUNING:
                 return new CardinalityEdgePruning();
             case CARDINALITY_NODE_PRUNING:

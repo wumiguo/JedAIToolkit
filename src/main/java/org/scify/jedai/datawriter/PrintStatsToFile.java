@@ -35,6 +35,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 import java.util.Properties;
@@ -86,7 +87,7 @@ public class PrintStatsToFile {
         try {
             Class.forName("com.mysql.jdbc.Driver");
             return DriverManager.getConnection("jdbc:" + dbURL + "?user=" + dbuser + "&password=" + dbpassword);
-        } catch (Exception ex) {
+        } catch (ClassNotFoundException | SQLException ex) {
             Log.error("Error with database connection!", ex);
             return null;
         }
@@ -105,7 +106,7 @@ public class PrintStatsToFile {
                 props.setProperty("ssl", "true");
             }
             return DriverManager.getConnection("jdbc:" + dbURL, props);
-        } catch (Exception ex) {
+        } catch (SQLException ex) {
             Log.error("Error with database connection!", ex);
             return null;
         }
@@ -589,7 +590,7 @@ public class PrintStatsToFile {
 
             final Statement stmt = conn.createStatement();
             stmt.executeQuery(dbquery);//retrieve the appropriate table
-        } catch (Exception ex) {
+        } catch (IOException | SQLException ex) {
             Log.error("Error in db writing!", ex);
         }
     }

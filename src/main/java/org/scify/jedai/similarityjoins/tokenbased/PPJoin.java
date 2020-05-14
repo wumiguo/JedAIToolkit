@@ -46,7 +46,7 @@ public class PPJoin extends AbstractTokenBasedJoin {
     private final List<String> attributeValues;
     private TIntList[] records;
 
-    public PPJoin(double thr) {
+    public PPJoin(float thr) {
         super(thr);
         attributeValues = new ArrayList<>();
     }

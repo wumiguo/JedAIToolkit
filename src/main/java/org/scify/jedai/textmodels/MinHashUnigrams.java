@@ -41,10 +41,10 @@ public class MinHashUnigrams extends TokenNGramsWithGlobalWeights {
             DOC_FREQ[datasetId] = new TObjectIntHashMap<>();
         }
         
-        for (String term : termsList) {
+        termsList.forEach((term) -> {
             int vocabularySize = DOC_FREQ[DATASET_1].size();
             DOC_FREQ[DATASET_1].putIfAbsent(term, vocabularySize);
-        }
+        });
     }
 
     public static int getCorpusDimensionality() {
@@ -53,9 +53,9 @@ public class MinHashUnigrams extends TokenNGramsWithGlobalWeights {
     
     public Set<Integer> getTermIds() {
         final Set<Integer> termIds = new HashSet<>();
-        for (String term : termsList) {
+        termsList.forEach((term) -> {
             termIds.add(DOC_FREQ[DATASET_1].get(term));
-        }
+        });
         return termIds;
     }
     

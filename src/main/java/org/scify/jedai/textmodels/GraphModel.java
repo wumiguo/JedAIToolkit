@@ -40,7 +40,7 @@ public abstract class GraphModel extends AbstractModel {
     public void finalizeModel() {}
 
     @Override
-    public double getEntropy(boolean normalized) {
+    public float getEntropy(boolean normalized) {
         return 0;
     }
     
@@ -66,7 +66,7 @@ public abstract class GraphModel extends AbstractModel {
             case GRAPH_VALUE_SIMILARITY:
                 return (float)graphSimilarity.ValueSimilarity;
             case GRAPH_OVERALL_SIMILARITY:
-                double overallSimilarity = graphSimilarity.ContainmentSimilarity;
+                float overallSimilarity = (float) graphSimilarity.ContainmentSimilarity;
                 overallSimilarity += graphSimilarity.ValueSimilarity;
                 if (0 < graphSimilarity.SizeSimilarity) {
                     overallSimilarity += graphSimilarity.ValueSimilarity / graphSimilarity.SizeSimilarity;

@@ -28,25 +28,25 @@ import java.util.Iterator;
  */
 public class RowColumnClustering extends AbstractCcerEntityClustering {
 
-    protected double[][] matrix; // inverted similarity matrix (cost matrix)
+    protected float[][] matrix; // inverted similarity matrix (cost matrix)
 
     protected int[] selectedRow, selectedColumn, columnsFromSelectedRow;
 
-    protected double costRowScan, costColumnScan;
+    protected float costRowScan, costColumnScan;
 
     protected boolean[] isRowCovered, isColumnCovered;
 
     public RowColumnClustering() {
-        this(0.5);
+        this(0.5f);
     }
 
-    public RowColumnClustering(double simTh) {
+    public RowColumnClustering(float simTh) {
         super(simTh);
     }
 
     private int columnWithMin(int rowNumber) {
         int pos = -1;
-        double min = Double.MAX_VALUE;
+        float min = Float.MAX_VALUE;
         for (int col = 0; col < matrix[rowNumber].length; col++) {
             if (isColumnCovered[col]) {
                 continue;
@@ -85,7 +85,7 @@ public class RowColumnClustering extends AbstractCcerEntityClustering {
 
         final Iterator<Comparison> iterator = simPairs.getPairIterator();
         int matrixSize = Math.max(noOfEntities - datasetLimit, datasetLimit);
-        double[][] simMatrix = new double[matrixSize][matrixSize];
+        float[][] simMatrix = new float[matrixSize][matrixSize];
         while (iterator.hasNext()) {
             final Comparison comparison = iterator.next();
             if (threshold < comparison.getUtilityMeasure()) {
@@ -128,12 +128,12 @@ public class RowColumnClustering extends AbstractCcerEntityClustering {
     }
     
     //inverts the input to 1.0-simMatrix in order to apply the minimization problem
-    private double[][] getNegative(double[][] initMatrix) {
+    private float[][] getNegative(float[][] initMatrix) {
         int N = initMatrix.length;
-        double[][] negMatrix = new double[N][N];
+        float[][] negMatrix = new float[N][N];
         for (int i = 0; i < initMatrix.length; i++) {
             for (int j = 0; j < initMatrix[i].length; j++) {
-                negMatrix[i][j] = 1.0 - initMatrix[i][j];
+                negMatrix[i][j] = 1.0f - initMatrix[i][j];
             }
         }
         return negMatrix;
@@ -158,7 +158,7 @@ public class RowColumnClustering extends AbstractCcerEntityClustering {
         }
     }
     
-    private void init(double[][] matrix) {
+    private void init(float[][] matrix) {
         this.matrix = matrix;
 
         this.selectedColumn = new int[matrix.length];
@@ -171,7 +171,7 @@ public class RowColumnClustering extends AbstractCcerEntityClustering {
     
     private int rowWithMin(int columnNumber) {
         int pos = -1;
-        double min = Double.MAX_VALUE;
+        float min = Float.MAX_VALUE;
         for (int row = 0; row < matrix.length; row++) {
             if (isRowCovered[row]) {
                 continue;

@@ -28,17 +28,17 @@ import org.scify.jedai.similarityjoins.AbstractSimilarityJoin;
  */
 public abstract class AbstractTokenBasedJoin extends AbstractSimilarityJoin {
     
-    protected double threshold;
+    protected float threshold;
     
     protected final DblGridSearchConfiguration gridThreshold;
     protected final DblRandomSearchConfiguration randomThreshold;
     
-    AbstractTokenBasedJoin(double thr) {
+    AbstractTokenBasedJoin(float thr) {
         super();
         threshold = thr;
         
-        gridThreshold = new DblGridSearchConfiguration(1.0, 0.025, 0.025);
-        randomThreshold = new DblRandomSearchConfiguration(1.0, 0.01);
+        gridThreshold = new DblGridSearchConfiguration(1.0f, 0.025f, 0.025f);
+        randomThreshold = new DblRandomSearchConfiguration(1.0f, 0.01f);
     }
     
     protected float calcSimilarity(int l1, int l2, float overlap) {
@@ -75,7 +75,7 @@ public abstract class AbstractTokenBasedJoin extends AbstractSimilarityJoin {
     @Override
     public JsonArray getParameterConfiguration() {
         final JsonObject obj = new JsonObject();
-        obj.put("class", "java.lang.Double");
+        obj.put("class", "java.lang.Float");
         obj.put("name", getParameterName(0));
         obj.put("defaultValue", "0.8");
         obj.put("minValue", "0.025");
@@ -133,16 +133,16 @@ public abstract class AbstractTokenBasedJoin extends AbstractSimilarityJoin {
     
     @Override
     public void setNextRandomConfiguration() {
-        threshold = (Double) randomThreshold.getNextRandomValue();
+        threshold = (Float) randomThreshold.getNextRandomValue();
     }
 
     @Override
     public void setNumberedGridConfiguration(int iterationNumber) {
-        threshold = (Double) gridThreshold.getNumberedValue(iterationNumber);
+        threshold = (Float) gridThreshold.getNumberedValue(iterationNumber);
     }
 
     @Override
     public void setNumberedRandomConfiguration(int iterationNumber) {
-        threshold = (Double) randomThreshold.getNumberedRandom(iterationNumber);
+        threshold = (Float) randomThreshold.getNumberedRandom(iterationNumber);
     }
 }

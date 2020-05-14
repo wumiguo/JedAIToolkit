@@ -15,7 +15,7 @@
  */
 package org.scify.jedai.datamodel;
 
-import gnu.trove.map.TIntDoubleMap;
+import gnu.trove.map.TIntFloatMap;
 
 /**
  *
@@ -23,12 +23,12 @@ import gnu.trove.map.TIntDoubleMap;
  */
 public class VertexWeight {
 
-    private final double weight;
+    private final float weight;
     private final int noOfAdj;
     private final int pos; //id
-    private final TIntDoubleMap Connections;
+    private final TIntFloatMap Connections;
 
-    public VertexWeight(int pos, double weight, int noOfAdj, TIntDoubleMap Connections) {
+    public VertexWeight(int pos, float weight, int noOfAdj, TIntFloatMap Connections) {
         this.pos = pos;
         this.weight = weight;
         this.noOfAdj = noOfAdj;
@@ -39,7 +39,7 @@ public class VertexWeight {
         return this.pos;
     }
 
-    public double getWeight() {
+    public float getWeight() {
         return this.weight;
     }
 
@@ -47,7 +47,7 @@ public class VertexWeight {
         return this.noOfAdj;
     }
 
-    public TIntDoubleMap Connections() {
+    public TIntFloatMap Connections() {
         return this.Connections;
     }
 

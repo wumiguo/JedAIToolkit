@@ -29,21 +29,21 @@ import java.util.Random;
  */
 public class BestAssignmentHeuristic extends AbstractCcerEntityClustering {
 
-    protected double[][] matrix; // inverted similarity matrix (cost matrix)
+    protected float[][] matrix; // inverted similarity matrix (cost matrix)
 
     private int[] selectedColumn;
 
     private int numMoves;
 
     public BestAssignmentHeuristic() {
-        this(0.5);
+        this(0.5f);
     }
 
-    public BestAssignmentHeuristic(double simTh) {
+    public BestAssignmentHeuristic(float simTh) {
         super(simTh);
     }
 
-    private boolean acceptSwap(double D) {
+    private boolean acceptSwap(float D) {
         return (D < 0.0);
     }
 
@@ -76,7 +76,7 @@ public class BestAssignmentHeuristic extends AbstractCcerEntityClustering {
 
         final Iterator<Comparison> iterator = simPairs.getPairIterator();
         int matrixSize = Math.max(noOfEntities - datasetLimit, datasetLimit);
-        double[][] simMatrix = new double[matrixSize][matrixSize];
+        float[][] simMatrix = new float[matrixSize][matrixSize];
         while (iterator.hasNext()) {
             final Comparison comparison = iterator.next();
             if (threshold < comparison.getUtilityMeasure()) {
@@ -126,12 +126,12 @@ public class BestAssignmentHeuristic extends AbstractCcerEntityClustering {
         return "Assignment Problem Heuristic Clustering";
     }
     
-    private double[][] getNegative(double[][] initMatrix) {
+    private float[][] getNegative(float[][] initMatrix) {
         int N = initMatrix.length;
-        double[][] negMatrix = new double[N][N];
+        float[][] negMatrix = new float[N][N];
         for (int i = 0; i < initMatrix.length; i++) {
             for (int j = 0; j < initMatrix[i].length; j++) {
-                negMatrix[i][j] = 1.0 - initMatrix[i][j];
+                negMatrix[i][j] = 1.0f - initMatrix[i][j];
             }
         }
         return negMatrix;
@@ -141,7 +141,7 @@ public class BestAssignmentHeuristic extends AbstractCcerEntityClustering {
         return selectedColumn;
     }
     
-    public void init(double[][] matrix) {
+    public void init(float[][] matrix) {
         this.matrix = matrix;
         this.selectedColumn = new int[matrix.length];
         this.numMoves = 9999999;
@@ -155,7 +155,7 @@ public class BestAssignmentHeuristic extends AbstractCcerEntityClustering {
     private void swapColumns(int row1, int row2) {
         int col1 = selectedColumn[row1];
         int col2 = selectedColumn[row2];
-        double D = matrix[row1][col2] + matrix[row2][col1] - (matrix[row1][col1] + matrix[row2][col2]);
+        float D = matrix[row1][col2] + matrix[row2][col1] - (matrix[row1][col1] + matrix[row2][col2]);
         if (acceptSwap(D)) {
             selectedColumn[row1] = col2;
             selectedColumn[row2] = col1;

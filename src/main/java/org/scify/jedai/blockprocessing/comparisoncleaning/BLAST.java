@@ -45,9 +45,9 @@ public class BLAST extends WeightedNodePruning {
     }
     
     @Override
-    protected double getValidWeight(int entityId, int neighborId) {
-        double weight = getWeight(entityId, neighborId);
-        double edgeThreshold = (averageWeight[entityId] + averageWeight[neighborId]) / 4;
+    protected float getValidWeight(int entityId, int neighborId) {
+        float weight = getWeight(entityId, neighborId);
+        float edgeThreshold = (averageWeight[entityId] + averageWeight[neighborId]) / 4;
 
         if (edgeThreshold <= weight) {
             if (entityId < neighborId) {

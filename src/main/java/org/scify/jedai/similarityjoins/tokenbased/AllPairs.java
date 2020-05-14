@@ -43,7 +43,7 @@ public class AllPairs extends AbstractTokenBasedJoin {
     private final List<String> attributeValues;
     private TIntList[] records;
 
-    public AllPairs(double thr) {
+    public AllPairs(float thr) {
         super(thr);
         attributeValues = new ArrayList<>();
     }

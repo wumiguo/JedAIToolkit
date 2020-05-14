@@ -41,10 +41,10 @@ public class BlockcentricEntityIndex implements Serializable {
     private int validEntities2;
     private int[][] entityBlocks;
 
-    private double totalBlocks;
-    private double validComparisons;
-    private double[] comparisonsPerBlock;
-    private double[] comparisonsPerEntity;
+    private float totalBlocks;
+    private float validComparisons;
+    private float[] comparisonsPerBlock;
+    private float[] comparisonsPerEntity;
 
     private WeightingScheme wScheme;
 
@@ -172,14 +172,14 @@ public class BlockcentricEntityIndex implements Serializable {
 
     private void getStatistics(List<AbstractBlock> blocks) {
         totalBlocks = blocks.size();
-        comparisonsPerBlock = new double[(int) (totalBlocks + 1)];
+        comparisonsPerBlock = new float[(int) (totalBlocks + 1)];
         for (AbstractBlock block : blocks) {
             comparisonsPerBlock[block.getBlockIndex()] = block.getNoOfComparisons();
         }
 
         if (wScheme.equals(WeightingScheme.EJS)) {
             validComparisons = 0;
-            comparisonsPerEntity = new double[noOfEntities];
+            comparisonsPerEntity = new float[noOfEntities];
             for (AbstractBlock block : blocks) {
                 final ComparisonIterator iterator = block.getComparisonIterator();
                 while (iterator.hasNext()) {
@@ -300,7 +300,7 @@ public class BlockcentricEntityIndex implements Serializable {
                     return commonBlocksEJS;
                 }
 
-                double probability = commonBlocksEJS / (getNoOfEntityBlocks(comparison.getEntityId1(), 0) + getNoOfEntityBlocks(comparison.getEntityId2(), comparison.isCleanCleanER() ? 1 : 0) - commonBlocksEJS);
+                float probability = commonBlocksEJS / (getNoOfEntityBlocks(comparison.getEntityId1(), 0) + getNoOfEntityBlocks(comparison.getEntityId2(), comparison.isCleanCleanER() ? 1 : 0) - commonBlocksEJS);
                 return (float) (probability * Math.log10(validComparisons / comparisonsPerEntity[comparison.getEntityId1()]) * Math.log10(validComparisons / comparisonsPerEntity[comparison.isCleanCleanER() ? comparison.getEntityId2() + datasetLimit : comparison.getEntityId2()]));
         }
 

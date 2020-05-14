@@ -30,6 +30,6 @@ public interface IEntityClustering extends IConfiguration, IDocumentation {
  
     EquivalenceCluster[] getDuplicates(SimilarityPairs simPairs);
     
-    void setSimilarityThreshold(double th);
+    void setSimilarityThreshold(float th);
    
 }

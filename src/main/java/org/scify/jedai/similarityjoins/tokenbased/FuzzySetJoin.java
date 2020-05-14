@@ -36,7 +36,7 @@ public class FuzzySetJoin extends AbstractTokenBasedJoin {
     private final Map<String, List<Set<String>>> collection1;
     private final Map<String, List<Set<String>>> collection2;
 
-    public FuzzySetJoin(double thr) {
+    public FuzzySetJoin(float thr) {
         super(thr);
         collection1 = new LinkedHashMap<>();
         collection2 = new LinkedHashMap<>();
@@ -92,9 +92,7 @@ public class FuzzySetJoin extends AbstractTokenBasedJoin {
             }
 
             String[] split = s.split(" ");
-            for (String value : split) {
-                records1[i].add(value);
-            }
+            records1[i].addAll(Arrays.asList(split));
             Set<String> asSet = new HashSet<>(records1[i]);
             List<Set<String>> asList = new ArrayList<>();
             asList.add(asSet);

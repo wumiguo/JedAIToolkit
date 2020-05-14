@@ -13,7 +13,6 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
  */
-
 package org.scify.jedai.utilities.graph;
 
 import com.esotericsoftware.minlog.Log;
@@ -21,36 +20,40 @@ import gnu.trove.iterator.TIntIterator;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
 
-/******************************************************************************
- * 
- * A graph, implemented using an array of TIntSets.
- * No parallel edges and self-loops are allowed.
- * 
- ******************************************************************************/
-
+/**
+ * ****************************************************************************
+ *
+ * A graph, implemented using an array of TIntSets. No parallel edges and
+ * self-loops are allowed.
+ *
+ *****************************************************************************
+ */
 public class UndirectedGraph {
+
     private static final String NEWLINE = System.getProperty("line.separator");
 
     private final int V;
     private int E;
     private final TIntSet[] adj;
-    
+
     /**
-     * Initializes an empty graph with {@code V} vertices and 0 edges.
-     * param V the number of vertices
+     * Initializes an empty graph with {@code V} vertices and 0 edges. param V
+     * the number of vertices
      *
-     * @param  V number of vertices
+     * @param V number of vertices
      * @throws IllegalArgumentException if {@code V < 0}
      */
     public UndirectedGraph(int V) {
-        if (V < 0) throw new IllegalArgumentException("Number of vertices must be nonnegative");
+        if (V < 0) {
+            throw new IllegalArgumentException("Number of vertices must be nonnegative");
+        }
         this.V = V;
         this.E = 0;
         adj = new TIntSet[V];
         for (int v = 0; v < V; v++) {
             adj[v] = new TIntHashSet();
         }
-        
+
         Log.info("Created graph with " + V + " nodes");
     }
 
@@ -74,19 +77,21 @@ public class UndirectedGraph {
 
     // throw an IllegalArgumentException unless {@code 0 <= v < V}
     private void validateVertex(int v) {
-        if (v < 0 || v >= V)
-            throw new IllegalArgumentException("vertex " + v + " is not between 0 and " + (V-1));
+        if (v < 0 || v >= V) {
+            throw new IllegalArgumentException("vertex " + v + " is not between 0 and " + (V - 1));
+        }
     }
 
     /**
      * Adds the undirected edge v-w to this graph.
      *
-     * @param  v one vertex in the edge
-     * @param  w the other vertex in the edge
-     * @throws IllegalArgumentException unless both {@code 0 <= v < V} and {@code 0 <= w < V}
+     * @param v one vertex in the edge
+     * @param w the other vertex in the edge
+     * @throws IllegalArgumentException unless both {@code 0 <= v < V} and
+     * {@code 0 <= w < V}
      */
     public void addEdge(int v, int w) {
-        if (v == w) { 
+        if (v == w) {
             Log.warn("No self loops are allowed");
             return;
         }
@@ -97,11 +102,10 @@ public class UndirectedGraph {
         adj[w].add(v);
     }
 
-
     /**
      * Returns the vertices adjacent to vertex {@code v}.
      *
-     * @param  v the vertex
+     * @param v the vertex
      * @return the vertices adjacent to vertex {@code v}, as an iterable
      * @throws IllegalArgumentException unless {@code 0 <= v < V}
      */
@@ -113,7 +117,7 @@ public class UndirectedGraph {
     /**
      * Returns the degree of vertex {@code v}.
      *
-     * @param  v the vertex
+     * @param v the vertex
      * @return the degree of vertex {@code v}
      * @throws IllegalArgumentException unless {@code 0 <= v < V}
      */
@@ -122,12 +126,11 @@ public class UndirectedGraph {
         return adj[v].size();
     }
 
-
     /**
      * Returns a string representation of this graph.
      *
-     * @return the number of vertices <em>V</em>, followed by the number of edges <em>E</em>,
-     *         followed by the <em>V</em> adjacency lists
+     * @return the number of vertices <em>V</em>, followed by the number of
+     * edges <em>E</em>, followed by the <em>V</em> adjacency lists
      */
     @Override
     public String toString() {
@@ -135,7 +138,7 @@ public class UndirectedGraph {
         s.append(V).append(" vertices, ").append(E).append(" edges ").append(NEWLINE);
         for (int v = 0; v < V; v++) {
             s.append(v).append(": ");
-            for (TIntIterator nodeIterator = adj[v].iterator(); nodeIterator.hasNext(); ) {
+            for (TIntIterator nodeIterator = adj[v].iterator(); nodeIterator.hasNext();) {
                 int w = nodeIterator.next();
                 s.append(w).append(" ");
             }

@@ -42,25 +42,23 @@ public class BilateralDuplicatePropagation extends AbstractDuplicatePropagation 
     @Override
     public List<EquivalenceCluster> getDetectedEquivalenceClusters() {
         final List<EquivalenceCluster> eClusters = new ArrayList<>();
-        for (IdDuplicates duplicatePair : duplicates) {
-            if (entities1.contains(duplicatePair.getEntityId1())) {
-                final EquivalenceCluster cluster = new EquivalenceCluster();
-                cluster.getEntityIdsD1().add(duplicatePair.getEntityId1());
-                cluster.getEntityIdsD2().add(duplicatePair.getEntityId2());
-                eClusters.add(cluster);
-            }
-        }
+        duplicates.stream().filter((duplicatePair) -> (entities1.contains(duplicatePair.getEntityId1()))).map((duplicatePair) -> {
+            final EquivalenceCluster cluster = new EquivalenceCluster();
+            cluster.getEntityIdsD1().add(duplicatePair.getEntityId1());
+            cluster.getEntityIdsD2().add(duplicatePair.getEntityId2());
+            return cluster;
+        }).forEachOrdered((cluster) -> {
+            eClusters.add(cluster);
+        });
         return eClusters;
     }
 
     @Override
     public Set<IdDuplicates> getFalseNegatives() {
         final Set<IdDuplicates> falseNegatives = new HashSet<>();
-        for (IdDuplicates duplicatePair : duplicates) {
-            if (!entities1.contains(duplicatePair.getEntityId1())) {
-                falseNegatives.add(duplicatePair);
-            }
-        }
+        duplicates.stream().filter((duplicatePair) -> (!entities1.contains(duplicatePair.getEntityId1()))).forEachOrdered((duplicatePair) -> {
+            falseNegatives.add(duplicatePair);
+        });
         return falseNegatives;
     }
 
@@ -72,12 +70,14 @@ public class BilateralDuplicatePropagation extends AbstractDuplicatePropagation 
     @Override
     public List<EquivalenceCluster> getRealEquivalenceClusters() {
         final List<EquivalenceCluster> eClusters = new ArrayList<>();
-        for (IdDuplicates duplicatePair : duplicates) {
+        duplicates.stream().map((duplicatePair) -> {
             final EquivalenceCluster cluster = new EquivalenceCluster();
             cluster.getEntityIdsD1().add(duplicatePair.getEntityId1());
             cluster.getEntityIdsD2().add(duplicatePair.getEntityId2());
+            return cluster;
+        }).forEachOrdered((cluster) -> {
             eClusters.add(cluster);
-        }
+        });
         return eClusters;
     }
 

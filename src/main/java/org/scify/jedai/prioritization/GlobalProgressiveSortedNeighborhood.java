@@ -82,7 +82,7 @@ public class GlobalProgressiveSortedNeighborhood extends AbstractSimilarityBased
                 }
             }
 
-            double minimumWeight = -1;
+            float minimumWeight = -1;
             for (TIntIterator iterator = distinctNeighbors.iterator(); iterator.hasNext();) {
                 int neighborId = iterator.next();
                 flags[neighborId] = -1;

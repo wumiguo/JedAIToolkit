@@ -33,20 +33,20 @@ public class ExtendedQGramsBlocking extends QGramsBlocking {
 
     private final static int MAX_Q_GRAMS = 15;
 
-    private double threshold;
+    private float threshold;
 
     private final DblGridSearchConfiguration gridThreshold;
     private final DblRandomSearchConfiguration randomThreshold;
     
     public ExtendedQGramsBlocking() {
-        this(0.95, 6);
+        this(0.95f, 6);
     }
-     public ExtendedQGramsBlocking(double t, int n) {
+     public ExtendedQGramsBlocking(float t, int n) {
         super(n);
         threshold = t;
         
-        randomThreshold = new DblRandomSearchConfiguration(0.99, 0.8);
-        gridThreshold = new DblGridSearchConfiguration(0.95, 0.8, 0.05);
+        randomThreshold = new DblRandomSearchConfiguration(0.99f, 0.8f);
+        gridThreshold = new DblGridSearchConfiguration(0.95f, 0.8f, 0.05f);
     }
 
     @Override
@@ -131,7 +131,7 @@ public class ExtendedQGramsBlocking extends QGramsBlocking {
         obj1.put("description", getParameterDescription(0));
 
         final JsonObject obj2 = new JsonObject();
-        obj2.put("class", "java.lang.Double");
+        obj2.put("class", "java.lang.Float");
         obj2.put("name", getParameterName(1));
         obj2.put("defaultValue", "0.95");
         obj2.put("minValue", "0.8");
@@ -174,7 +174,7 @@ public class ExtendedQGramsBlocking extends QGramsBlocking {
     @Override
     public void setNextRandomConfiguration() {
         super.setNextRandomConfiguration();
-        threshold = (Double) randomThreshold.getNextRandomValue();
+        threshold = (Float) randomThreshold.getNextRandomValue();
     }
     
     @Override
@@ -183,12 +183,12 @@ public class ExtendedQGramsBlocking extends QGramsBlocking {
         nGramSize = (Integer) gridNGSize.getNumberedValue(ngSizeIteration);
         
         int thrIteration = iterationNumber - ngSizeIteration * gridThreshold.getNumberOfConfigurations();
-        threshold = (Double) gridThreshold.getNumberedValue(thrIteration);
+        threshold = (Float) gridThreshold.getNumberedValue(thrIteration);
     }
 
     @Override
     public void setNumberedRandomConfiguration(int iterationNumber) {
         super.setNumberedRandomConfiguration(iterationNumber);
-        threshold = (Double) randomThreshold.getNumberedRandom(iterationNumber);
+        threshold = (Float) randomThreshold.getNumberedRandom(iterationNumber);
     }
 }

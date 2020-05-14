@@ -63,14 +63,14 @@ public class ConnectedComponents {
         marked = new boolean[G.V()];
         id = new int[G.V()];
         size = new int[G.V()];
-        
+
         // to be able to iterate over each adjacency list, keeping track of which
         // vertex in each adjacency list needs to be explored next
         final TIntIterator[] adj = new TIntIterator[G.V()];
         for (int v = 0; v < G.V(); v++) {
             adj[v] = G.adj(v).iterator();
         }
-        
+
         for (int v = 0; v < G.V(); v++) {
             if (!marked[v]) {
                 nonRecursiveDFS(adj, v);
@@ -167,7 +167,7 @@ public class ConnectedComponents {
             throw new IllegalArgumentException("vertex " + v + " is not between 0 and " + (V - 1));
         }
     }
-    
+
 //    public static void main (String[] args) {
 //        UndirectedGraph ug = new UndirectedGraph(13);
 //        ug.addEdge(0, 5);

@@ -21,11 +21,11 @@ package org.scify.jedai.configuration.gridsearch;
  */
 public class DblGridSearchConfiguration implements IGridSearchConfiguration {
 
-    private final double maximumValue;
-    private final double minimumValue;
-    private final double step;
+    private final float maximumValue;
+    private final float minimumValue;
+    private final float step;
     
-    public DblGridSearchConfiguration(double max, double min, double s) {
+    public DblGridSearchConfiguration(float max, float min, float s) {
         step = s;
         maximumValue = max;
         minimumValue = min;

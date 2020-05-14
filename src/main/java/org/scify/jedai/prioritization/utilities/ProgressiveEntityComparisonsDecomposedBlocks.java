@@ -39,7 +39,7 @@ public class ProgressiveEntityComparisonsDecomposedBlocks extends AbstractDecomp
 
     private void analyzeComparisons(List<AbstractBlock> inputBlocks) {
         final int[] comparisonsPerEntity = new int[noOfEntities];
-        final double[] totalWeightPerEntity = new double[noOfEntities];
+        final float[] totalWeightPerEntity = new float[noOfEntities];
         final Comparison[] topComparisonPerEntity = new Comparison[noOfEntities];
         if (isCleanCleanER) {
             for (AbstractBlock block : inputBlocks) {

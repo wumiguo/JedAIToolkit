@@ -31,14 +31,14 @@ public class ProgressiveCNPDecomponsedBlocks extends AbstractDecomposedBlocksPro
 
     private final int maxComsPerEntity;
 
-    private double[] minimumWeight;
+    private float[] minimumWeight;
 
     private Queue<Comparison>[] topComsPerEntity;
 
     public ProgressiveCNPDecomponsedBlocks(int comparisonsBudget, List<AbstractBlock> inputBlocks) {
         super(inputBlocks);
         maxComsPerEntity = Math.max(1, 2 * comparisonsBudget / noOfEntities);
-        minimumWeight = new double[noOfEntities];
+        minimumWeight = new float[noOfEntities];
         for (int i = 0; i < minimumWeight[i]; i++) {
             minimumWeight[i] = -1;
         }

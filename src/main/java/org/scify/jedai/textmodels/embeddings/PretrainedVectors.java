@@ -38,13 +38,18 @@ import java.util.*;
 public abstract class PretrainedVectors extends VectorSpaceModel {
 
     char dataSeparator = ' ';
-    static Double[] unkownVector;
+    static float[] unkownVector;
     static boolean weightsLoaded = false;
-    static Map<String, Double[]> elementMap;
+    static Map<String, float[]> elementMap;
     int numElements;
 
     /**
      * Constructor
+     * @param dId
+     * @param n
+     * @param md
+     * @param sMetric
+     * @param iName
      */
     public PretrainedVectors(int dId, int n, RepresentationModel md, SimilarityMetric sMetric, String iName) {
         super(dId, n, md, sMetric, iName);
@@ -80,14 +85,14 @@ public abstract class PretrainedVectors extends VectorSpaceModel {
                 } else {
                     dimension = components.length - 1;
                 }
-                Double[] value = new Double[dimension];
+                float[] value = new float[dimension];
                 for (int i = 1; i <= dimension; ++i) {
-                    value[i - 1] = Double.parseDouble(components[i]);
+                    value[i - 1] = Float.parseFloat(components[i]);
                 }
                 elementMap.put(components[0], value);
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            Log.error("Problem loading embedding weights", e);
             System.exit(-1);
         }
     }
@@ -128,20 +133,18 @@ public abstract class PretrainedVectors extends VectorSpaceModel {
                if (components.length != dimension + 1)
                    throw new IOException(String.format("Mismatch in embedding vector #%d length : %d.",
                            counter, components.length));
-               Double [] value = new Double[dimension];
+               float [] value = new float[dimension];
                for (int i=1; i<=dimension; ++i){
-                   value[i-1] = Double.parseDouble(components[i]);
+                   value[i-1] = Float.parseFloat(components[i]);
                }
                elementMap.put(components[0], value);
            }
            Log.info(String.format("Done processing %d-line embedding mapping. {%s}",  counter, Calendar.getInstance().getTime().toString()));
        } catch (FileNotFoundException e) {
-           e.printStackTrace();
-           Log.error("No resource file found:" + fileName);
+           Log.error("No resource file found:" + fileName, e);
            System.exit(-1);
        } catch (IOException e) {
-           e.printStackTrace();
-           Log.error("IO exception when reading:" + fileName);
+           Log.error("IO exception when reading:" + fileName, e);
            System.exit(-1);
        }
 
@@ -151,11 +154,10 @@ public abstract class PretrainedVectors extends VectorSpaceModel {
 
     /**
      * Zero vector fetcher
+     * @return 
      */
-   protected Double[] getZeroVector(){
-        Double [] vector = new Double[dimension];
-        for(int i=0;i<dimension;++i) vector[i] = 0.0d;
-        return vector;
+   protected float[] getZeroVector(){
+        return new float[dimension];
    }
 
     /**
@@ -179,7 +181,7 @@ public abstract class PretrainedVectors extends VectorSpaceModel {
      * @param vector : the element vector
      */
 
-    void addVector(Double[] vector){
+    void addVector(float[] vector){
         for(int i=0;i<dimension;++i)
             aggregateVector[i] += vector[i];
         numElements++;

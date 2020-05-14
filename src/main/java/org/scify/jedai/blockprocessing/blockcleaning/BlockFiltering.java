@@ -38,7 +38,7 @@ import java.util.List;
  */
 public class BlockFiltering extends AbstractBlockProcessing {
 
-    protected double ratio;
+    protected float ratio;
 
     protected int entitiesD1;
     protected int entitiesD2;
@@ -51,58 +51,58 @@ public class BlockFiltering extends AbstractBlockProcessing {
     protected final DblRandomSearchConfiguration randomRatio;
 
     public BlockFiltering() {
-        this(0.8);
+        this(0.8f);
     }
 
-    public BlockFiltering(double r) {
+    public BlockFiltering(float r) {
         ratio = r;
 
-        gridRatio = new DblGridSearchConfiguration(1.0, 0.025, 0.025);
-        randomRatio = new DblRandomSearchConfiguration(1.0, 0.01);
+        gridRatio = new DblGridSearchConfiguration(1.0f, 0.025f, 0.025f);
+        randomRatio = new DblRandomSearchConfiguration(1.0f, 0.01f);
     }
 
     protected void countEntities(List<AbstractBlock> blocks) {
         entitiesD1 = Integer.MIN_VALUE;
         entitiesD2 = Integer.MIN_VALUE;
         if (blocks.get(0) instanceof BilateralBlock) {
-            for (AbstractBlock block : blocks) {
-                final BilateralBlock bilBlock = (BilateralBlock) block;
+            blocks.stream().map((block) -> (BilateralBlock) block).map((bilBlock) -> {
                 for (int id1 : bilBlock.getIndex1Entities()) {
                     if (entitiesD1 < id1 + 1) {
                         entitiesD1 = id1 + 1;
                     }
                 }
+                return bilBlock;
+            }).forEachOrdered((bilBlock) -> {
                 for (int id2 : bilBlock.getIndex2Entities()) {
                     if (entitiesD2 < id2 + 1) {
                         entitiesD2 = id2 + 1;
                     }
                 }
-            }
+            });
         } else if (blocks.get(0) instanceof UnilateralBlock) {
-            for (AbstractBlock block : blocks) {
-                final UnilateralBlock uniBlock = (UnilateralBlock) block;
+            blocks.stream().map((block) -> (UnilateralBlock) block).forEachOrdered((uniBlock) -> {
                 for (int id : uniBlock.getEntities()) {
                     if (entitiesD1 < id + 1) {
                         entitiesD1 = id + 1;
                     }
                 }
-            }
+            });
         }
     }
 
     protected void getBilateralLimits(List<AbstractBlock> blocks) {
         limitsD1 = new int[entitiesD1];
         limitsD2 = new int[entitiesD2];
-        for (AbstractBlock block : blocks) {
-            final BilateralBlock bilBlock = (BilateralBlock) block;
+        blocks.stream().map((block) -> (BilateralBlock) block).map((bilBlock) -> {
             for (int id1 : bilBlock.getIndex1Entities()) {
                 limitsD1[id1]++;
             }
-
+            return bilBlock;
+        }).forEachOrdered((bilBlock) -> {
             for (int id2 : bilBlock.getIndex2Entities()) {
                 limitsD2[id2]++;
             }
-        }
+        });
 
         for (int i = 0; i < limitsD1.length; i++) {
             limitsD1[i] = (int) Math.round(ratio * limitsD1[i]);
@@ -149,7 +149,7 @@ public class BlockFiltering extends AbstractBlockProcessing {
     @Override
     public JsonArray getParameterConfiguration() {
         final JsonObject obj = new JsonObject();
-        obj.put("class", "java.lang.Double");
+        obj.put("class", "java.lang.Float");
         obj.put("name", getParameterName(0));
         obj.put("defaultValue", "0.8");
         obj.put("minValue", "0.025");
@@ -186,12 +186,11 @@ public class BlockFiltering extends AbstractBlockProcessing {
     protected void getUnilateralLimits(List<AbstractBlock> blocks) {
         limitsD1 = new int[entitiesD1];
         limitsD2 = null;
-        for (AbstractBlock block : blocks) {
-            final UnilateralBlock uniBlock = (UnilateralBlock) block;
+        blocks.stream().map((block) -> (UnilateralBlock) block).forEachOrdered((uniBlock) -> {
             for (int id : uniBlock.getEntities()) {
                 limitsD1[id]++;
             }
-        }
+        });
 
         for (int i = 0; i < limitsD1.length; i++) {
             limitsD1[i] = (int) Math.round(ratio * limitsD1[i]);
@@ -220,22 +219,19 @@ public class BlockFiltering extends AbstractBlockProcessing {
 
     protected List<AbstractBlock> restructureBilateraBlocks(List<AbstractBlock> blocks) {
         final List<AbstractBlock> newBlocks = new ArrayList<>();
-        for (AbstractBlock block : blocks) {
-            final BilateralBlock oldBlock = (BilateralBlock) block;
+        blocks.stream().map((block) -> (BilateralBlock) block).forEachOrdered((oldBlock) -> {
             final TIntList retainedEntitiesD1 = new TIntArrayList();
             for (int entityId : oldBlock.getIndex1Entities()) {
                 if (counterD1[entityId] < limitsD1[entityId]) {
                     retainedEntitiesD1.add(entityId);
                 }
             }
-
             final TIntList retainedEntitiesD2 = new TIntArrayList();
             for (int entityId : oldBlock.getIndex2Entities()) {
                 if (counterD2[entityId] < limitsD2[entityId]) {
                     retainedEntitiesD2.add(entityId);
                 }
             }
-
             if (!retainedEntitiesD1.isEmpty() && !retainedEntitiesD2.isEmpty()) {
                 for (TIntIterator iterator1 = retainedEntitiesD1.iterator(); iterator1.hasNext();) {
                     counterD1[iterator1.next()]++;
@@ -246,7 +242,7 @@ public class BlockFiltering extends AbstractBlockProcessing {
                 }
                 newBlocks.add(new BilateralBlock(oldBlock.getEntropy(), retainedEntitiesD1.toArray(), retainedEntitiesD2.toArray()));
             }
-        }
+        });
 
         return newBlocks;
     }
@@ -261,39 +257,37 @@ public class BlockFiltering extends AbstractBlockProcessing {
 
     protected List<AbstractBlock> restructureUnilateraBlocks(List<AbstractBlock> blocks) {
         final List<AbstractBlock> newBlocks = new ArrayList<>();
-        for (AbstractBlock block : blocks) {
-            final UnilateralBlock oldBlock = (UnilateralBlock) block;
+        blocks.stream().map((block) -> (UnilateralBlock) block).forEachOrdered((oldBlock) -> {
             final TIntList retainedEntities = new TIntArrayList();
             for (int entityId : oldBlock.getEntities()) {
                 if (counterD1[entityId] < limitsD1[entityId]) {
                     retainedEntities.add(entityId);
                 }
             }
-
             if (1 < retainedEntities.size()) {
                 for (TIntIterator iterator = retainedEntities.iterator(); iterator.hasNext();) {
                     counterD1[iterator.next()]++;
                 }
                 newBlocks.add(new UnilateralBlock(oldBlock.getEntropy(), retainedEntities.toArray()));
             }
-        }
+        });
 
         return newBlocks;
     }
 
     @Override
     public void setNextRandomConfiguration() {
-        ratio = (Double) randomRatio.getNextRandomValue();
+        ratio = (Float) randomRatio.getNextRandomValue();
     }
 
     @Override
     public void setNumberedGridConfiguration(int iterationNumber) {
-        ratio = (Double) gridRatio.getNumberedValue(iterationNumber);
+        ratio = (Float) gridRatio.getNumberedValue(iterationNumber);
     }
 
     @Override
     public void setNumberedRandomConfiguration(int iterationNumber) {
-        ratio = (Double) randomRatio.getNumberedRandom(iterationNumber);
+        ratio = (Float) randomRatio.getNumberedRandom(iterationNumber);
     }
 
     protected void sortBlocks(List<AbstractBlock> blocks) {

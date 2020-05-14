@@ -30,8 +30,8 @@ public abstract class AbstractBlockBuilding implements IBlockBuilding {
 
     protected boolean isUsingEntropy;
 
-    protected double noOfEntitiesD1;
-    protected double noOfEntitiesD2;
+    protected float noOfEntitiesD1;
+    protected float noOfEntitiesD2;
 
     protected List<AbstractBlock> blocks;
     protected List<EntityProfile> entityProfilesD1;
@@ -96,14 +96,14 @@ public abstract class AbstractBlockBuilding implements IBlockBuilding {
         return readBlocks();
     }
 
-    public double getBruteForceComparisons() {
+    public float getBruteForceComparisons() {
         if (entityProfilesD2 == null) {
             return noOfEntitiesD1 * (noOfEntitiesD1 - 1) / 2;
         }
         return noOfEntitiesD1 * noOfEntitiesD2;
     }
 
-    public double getTotalNoOfEntities() {
+    public float getTotalNoOfEntities() {
         if (entityProfilesD2 == null) {
             return noOfEntitiesD1;
         }
@@ -114,14 +114,11 @@ public abstract class AbstractBlockBuilding implements IBlockBuilding {
         int counter = 0;
         for (EntityProfile profile : entities) {
             final Set<String> allKeys = new HashSet<>();
-            for (Attribute attribute : profile.getAttributes()) {
-                for (String key : getBlockingKeys(attribute.getValue().toLowerCase())) {
-                    String normalizedKey = key.trim();
-                    if (0 < normalizedKey.length()) {
-                        allKeys.add(normalizedKey);
-                    }
-                }
-            }
+            profile.getAttributes().forEach((attribute) -> {
+                getBlockingKeys(attribute.getValue().toLowerCase()).stream().map((key) -> key.trim()).filter((normalizedKey) -> (0 < normalizedKey.length())).forEachOrdered((normalizedKey) -> {
+                    allKeys.add(normalizedKey);
+                });
+            });
 
             for (String key : allKeys) {
                 TIntList entityList = index.get(key);
@@ -141,15 +138,12 @@ public abstract class AbstractBlockBuilding implements IBlockBuilding {
         int counter = 0;
         for (EntityProfile profile : entities) {
             final Set<String> allKeys = new HashSet<>();
-            for (Attribute attribute : profile.getAttributes()) {
+            profile.getAttributes().forEach((attribute) -> {
                 int clusterId = schemaClusters.getClusterId(attribute.getName());
-                for (String key : getBlockingKeys(attribute.getValue().toLowerCase())) {
-                    String normalizedKey = key.trim();
-                    if (0 < normalizedKey.length()) {
-                        allKeys.add(normalizedKey + CLUSTER_PREFIX + clusterId + CLUSTER_PREFIX + schemaClusters.getClusterEntropy(clusterId));
-                    }
-                }
-            }
+                getBlockingKeys(attribute.getValue().toLowerCase()).stream().map((key) -> key.trim()).filter((normalizedKey) -> (0 < normalizedKey.length())).forEachOrdered((normalizedKey) -> {
+                    allKeys.add(normalizedKey + CLUSTER_PREFIX + clusterId + CLUSTER_PREFIX + schemaClusters.getClusterEntropy(clusterId));
+                });
+            });
 
             for (String key : allKeys) {
                 TIntList entityList = index.get(key);
@@ -169,7 +163,7 @@ public abstract class AbstractBlockBuilding implements IBlockBuilding {
         } else {
             invertedIndexD1.forEach((key, value) -> {
                 final String[] entropyString = key.split(CLUSTER_SUFFIX);
-                double entropyValue = Double.parseDouble(entropyString[1]);
+                float entropyValue = Float.parseFloat(entropyString[1]);
                 blocks.add(new UnilateralBlock(entropyValue, value.toArray()));
             });
         }
@@ -188,7 +182,7 @@ public abstract class AbstractBlockBuilding implements IBlockBuilding {
                 final TIntList entityIdsD2 = invertedIndexD2.get(key);
                 if (entityIdsD2 != null && !entityIdsD2.isEmpty()) {
                     final String[] entropyString = key.split(CLUSTER_SUFFIX);
-                    double entropyValue = Double.parseDouble(entropyString[1]);
+                    float entropyValue = Float.parseFloat(entropyString[1]);
                     blocks.add(new BilateralBlock(entropyValue, value.toArray(), entityIdsD2.toArray()));
                 }
             });

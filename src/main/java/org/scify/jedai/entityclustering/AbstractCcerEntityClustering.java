@@ -26,7 +26,7 @@ public abstract class AbstractCcerEntityClustering extends AbstractEntityCluster
     
     protected final TIntSet matchedIds; //the ids of entities that have been already matched
     
-    public AbstractCcerEntityClustering(double simTh) {
+    public AbstractCcerEntityClustering(float simTh) {
         super(simTh);
         matchedIds = new TIntHashSet();
     }

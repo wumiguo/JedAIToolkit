@@ -16,8 +16,9 @@
 
 package org.scify.jedai.similarityjoins.fuzzysets;
 
+import com.esotericsoftware.minlog.Log;
 import gnu.trove.list.TIntList;
-import gnu.trove.map.TIntDoubleMap;
+import gnu.trove.map.TIntFloatMap;
 import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.TObjectIntMap;
 import gnu.trove.set.TIntSet;
@@ -31,6 +32,10 @@ public class Util {
 
     /**
      * Sorts a map by its values
+     * @param <K>
+     * @param <V>
+     * @param map
+     * @return 
      */
     public static <K extends Comparable<? super K>, V extends Comparable<? super V>> LinkedHashMap<K, V> sortByValue(
             Map<K, V> map) {
@@ -41,15 +46,17 @@ public class Util {
         list.sort(byValueThenByKey);
 
         LinkedHashMap<K, V> result = new LinkedHashMap<>();
-        for (Entry<K, V> entry : list) {
+        list.forEach((entry) -> {
             result.put(entry.getKey(), entry.getValue());
-        }
+        });
 
         return result;
     }
 
     /**
      * Prints a collection with string tokens
+     * @param collection
+     * @param maxN
      */
     public static void printCollection(Map<String, List<Set<String>>> collection, int maxN) {
 
@@ -84,6 +91,8 @@ public class Util {
 
     /**
      * Prints a collection with integer tokens
+     * @param collection
+     * @param maxN
      */
     public static void printCollection(int[][][] collection, int maxN) {
 
@@ -109,6 +118,8 @@ public class Util {
 
     /**
      * Prints a map of tokens
+     * @param tokenMap
+     * @param maxN
      */
     public static void printTokenMap(TObjectIntMap<String> tokenMap, int maxN) {
 
@@ -124,6 +135,10 @@ public class Util {
 
     /**
      * Prints a map
+     * @param <K>
+     * @param <V>
+     * @param map
+     * @param maxN
      */
     public static <K, V> void printMap(Map<K, V> map, int maxN) {
 
@@ -133,13 +148,15 @@ public class Util {
             if (counter > maxN) {
                 break;
             }
-            System.out.println(key + " : " + map.get(key));
+//            System.out.println(key + " : " + map.get(key));
         }
 
     }
 
     /**
      * Prints the contents of an inverted index
+     * @param idx
+     * @param maxN
      */
     public static void printInvertedIndex(int[][][] idx, int maxN) {
 
@@ -160,6 +177,8 @@ public class Util {
 
     /**
      * Prints the contents of an inverted index
+     * @param idx
+     * @param maxN
      */
     public static void printSetInvertedIndex(TIntObjectMap<TIntList>[] idx, int maxN) {
         for (int i = 0; i < idx.length; i++) {
@@ -179,6 +198,8 @@ public class Util {
 
     /**
      * Prints a list of matching pairs
+     * @param matchingPairs
+     * @param maxN
      */
     public static void printMatchingPairs(List<int[]> matchingPairs, int maxN) {
 
@@ -192,6 +213,7 @@ public class Util {
 
     /**
      * Prints the unflattened signature of a set
+     * @param unflattenedSignature
      */
     public static void printUnflattenedSignature(TIntSet[] unflattenedSignature) {
 
@@ -213,7 +235,7 @@ public class Util {
         System.out.println();
     }
 
-    public static void printCheckFilterCandidates(TIntObjectMap<TIntDoubleMap> checkFilterCandidates) {
+    public static void printCheckFilterCandidates(TIntObjectMap<TIntFloatMap> checkFilterCandidates) {
         for (int s : checkFilterCandidates.keys()) {
             System.out.print(s + "|");
             for (int e : checkFilterCandidates.get(s).keys()) {
@@ -224,7 +246,7 @@ public class Util {
     }
 
     //public static void writeMatchingPairs(List<int[]> matchingPairs, String outFile, String stats, String statsFile,
-    public static void writeMatchingPairs(HashMap<String, Double> matchingPairs, String outFile, String stats, String statsFile,
+    public static void writeMatchingPairs(HashMap<String, Float> matchingPairs, String outFile, String stats, String statsFile,
             String[] keys1, String[] keys2) {
         try {
             PrintWriter writer;
@@ -249,7 +271,7 @@ public class Util {
                 writer.close();
             }
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            Log.error("Error while writing matching pairs", e);
         }
     }
 }

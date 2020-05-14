@@ -72,20 +72,20 @@ public enum BlockBuildingMethod {
     public static IBlockProcessing getDefaultBlockCleaning(BlockBuildingMethod blbuMethod) {
         switch (blbuMethod) {
             case EXTENDED_Q_GRAMS_BLOCKING:
-                return new BlockFiltering(0.50);
+                return new BlockFiltering(0.50f);
             case EXTENDED_SORTED_NEIGHBORHOOD:
-                return new BlockFiltering(0.45);
+                return new BlockFiltering(0.45f);
             case EXTENDED_SUFFIX_ARRAYS:
                 return null;
             case Q_GRAMS_BLOCKING:
-                return new BlockFiltering(0.50);
+                return new BlockFiltering(0.50f);
             case SORTED_NEIGHBORHOOD:
                 return null;
             case SUFFIX_ARRAYS:
                 return null;
             case STANDARD_BLOCKING:
             default:
-                return new BlockFiltering(0.55);
+                return new BlockFiltering(0.55f);
         }
     }
 

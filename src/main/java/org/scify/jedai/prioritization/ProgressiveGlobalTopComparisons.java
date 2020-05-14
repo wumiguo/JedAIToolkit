@@ -84,7 +84,7 @@ public class ProgressiveGlobalTopComparisons extends AbstractHashBasedPrioritiza
     }
 
     protected Iterator<Comparison> processDecomposedBlocks(List<AbstractBlock> blocks) {
-        double minimumWeight = -1;
+        float minimumWeight = -1;
         final Queue<Comparison> topComparisons = new PriorityQueue<>((int) (2 * comparisonsBudget), new IncComparisonWeightComparator());
         for (AbstractBlock block : blocks) {
             final ComparisonIterator cIterator = block.getComparisonIterator();

@@ -32,6 +32,8 @@ import org.jgrapht.graph.SimpleWeightedGraph;
 /**
  *
  * @author manos
+ * @param <V>
+ * @param <E>
  */
 
 public class GomoryHuTree<V, E> {
@@ -40,19 +42,18 @@ public class GomoryHuTree<V, E> {
 
     public GomoryHuTree(SimpleWeightedGraph<V, E> graph) {
         this.graph = graph;
-//        this.graph.getEdgeFactory(); // TODO: is this necessary?
     }
 
     private DefaultDirectedWeightedGraph<V, DefaultWeightedEdge> makeDirectedCopy(SimpleWeightedGraph<V, E> graph) {
         final DefaultDirectedWeightedGraph<V, DefaultWeightedEdge> copy = new DefaultDirectedWeightedGraph<>(DefaultWeightedEdge.class);
 
         Graphs.addAllVertices(copy, graph.vertexSet());
-        for (E e : graph.edgeSet()) {
+        graph.edgeSet().forEach((e) -> {
             V v1 = graph.getEdgeSource(e);
             V v2 = graph.getEdgeTarget(e);
             Graphs.addEdge(copy, v1, v2, graph.getEdgeWeight(e));
             Graphs.addEdge(copy, v2, v1, graph.getEdgeWeight(e));
-        }
+        });
         
         return copy;
     }
@@ -79,7 +80,7 @@ public class GomoryHuTree<V, E> {
         while (itVertices.hasNext()) {
             V vertex = itVertices.next();
             V predecessor = predecessors.get(vertex);
-            double flowValue = minSourceSinkCut.calculateMinCut(vertex, predecessor); // TODO: is this right?
+            float flowValue = (float) minSourceSinkCut.calculateMinCut(vertex, predecessor); // TODO: is this right?
 
             returnGraphClone.addVertex(vertex);
             returnGraphClone.addVertex(predecessor);
@@ -88,17 +89,15 @@ public class GomoryHuTree<V, E> {
             returnGraph.addVertex(Integer.parseInt(predecessor + ""));
             
             final Set<V> sourcePartition = minSourceSinkCut.getSourcePartition();
-//            double flowValue = minSourceSinkCut.getCutWeight();
+//            float flowValue = minSourceSinkCut.getCutWeight();
             DefaultWeightedEdge e = (DefaultWeightedEdge) returnGraphClone.addEdge(vertex, predecessor);
             returnGraph.addEdge(Integer.parseInt(vertex + ""), Integer.parseInt(predecessor + ""));
             returnGraphClone.setEdgeWeight(e, flowValue);
 
-            for (V sourceVertex : graph.vertexSet()) {
-                if (predecessors.get(sourceVertex).equals(predecessor)
-                        && sourcePartition.contains(sourceVertex)) {
-                    predecessors.put(sourceVertex, vertex);
-                }
-            }
+            graph.vertexSet().stream().filter((sourceVertex) -> (predecessors.get(sourceVertex).equals(predecessor)
+                    && sourcePartition.contains(sourceVertex))).forEachOrdered((sourceVertex) -> {
+                        predecessors.put(sourceVertex, vertex);
+            });
         }
         
         return returnGraph;

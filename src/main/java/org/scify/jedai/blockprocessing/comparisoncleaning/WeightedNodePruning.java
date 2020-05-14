@@ -30,7 +30,7 @@ public class WeightedNodePruning extends WeightedEdgePruning {
 
     protected int firstId;
     protected int lastId;
-    protected double[] averageWeight;
+    protected float[] averageWeight;
 
     public WeightedNodePruning() {
         this(WeightingScheme.ARCS);
@@ -53,8 +53,8 @@ public class WeightedNodePruning extends WeightedEdgePruning {
         return "Weighted Node Pruning";
     }
 
-    protected double getValidWeight(int entityId, int neighborId) {
-        double weight = getWeight(entityId, neighborId);
+    protected float getValidWeight(int entityId, int neighborId) {
+        float weight = getWeight(entityId, neighborId);
         boolean inNeighborhood1 = averageWeight[entityId] <= weight;
         boolean inNeighborhood2 = averageWeight[neighborId] <= weight;
 
@@ -91,7 +91,7 @@ public class WeightedNodePruning extends WeightedEdgePruning {
 
     @Override
     protected void setThreshold() {
-        averageWeight = new double[noOfEntities];
+        averageWeight = new float[noOfEntities];
         if (weightingScheme.equals(WeightingScheme.ARCS)) {
             for (int i = 0; i < noOfEntities; i++) {
                 processArcsEntity(i);
@@ -122,7 +122,7 @@ public class WeightedNodePruning extends WeightedEdgePruning {
         if (!cleanCleanER) {
             for (TIntIterator tIterator = validEntities.iterator(); tIterator.hasNext();) {
                 int neighborId = tIterator.next();
-                double weight = getValidWeight(entityId, neighborId);
+                float weight = getValidWeight(entityId, neighborId);
                 if (0 <= weight) {
                     retainedNeighbors.add(neighborId);
                     retainedNeighborsWeights.add(discretizeComparisonWeight(weight));
@@ -133,7 +133,7 @@ public class WeightedNodePruning extends WeightedEdgePruning {
             if (entityId < datasetLimit) {
                 for (TIntIterator tIterator = validEntities.iterator(); tIterator.hasNext();) {
                     int neighborId = tIterator.next();
-                    double weight = getValidWeight(entityId, neighborId);
+                    float weight = getValidWeight(entityId, neighborId);
                     if (0 <= weight) {
                         retainedNeighbors.add(neighborId - datasetLimit);
                         retainedNeighborsWeights.add(discretizeComparisonWeight(weight));
@@ -143,7 +143,7 @@ public class WeightedNodePruning extends WeightedEdgePruning {
             } else {
                 for (TIntIterator tIterator = validEntities.iterator(); tIterator.hasNext();) {
                     int neighborId = tIterator.next();
-                    double weight = getValidWeight(entityId, neighborId);
+                    float weight = getValidWeight(entityId, neighborId);
                     if (0 <= weight) {
                         retainedNeighbors.add(neighborId);
                         retainedNeighborsWeights.add(discretizeComparisonWeight(weight));

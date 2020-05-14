@@ -16,8 +16,8 @@
 package org.scify.jedai.blockprocessing.blockcleaning;
 
 import com.esotericsoftware.minlog.Log;
-import gnu.trove.set.TDoubleSet;
-import gnu.trove.set.hash.TDoubleHashSet;
+import gnu.trove.set.TFloatSet;
+import gnu.trove.set.hash.TFloatHashSet;
 import org.apache.jena.atlas.json.JsonArray;
 import org.apache.jena.atlas.json.JsonObject;
 import org.scify.jedai.configuration.gridsearch.DblGridSearchConfiguration;
@@ -33,21 +33,21 @@ import java.util.List;
  */
 public class ComparisonsBasedBlockPurging extends AbstractBlockPurging {
 
-    private double smoothingFactor;
-    private double maxComparisonsPerBlock;
+    private float smoothingFactor;
+    private float maxComparisonsPerBlock;
 
     protected final DblGridSearchConfiguration gridSFactor;
     protected final DblRandomSearchConfiguration randomSFactor;
 
     public ComparisonsBasedBlockPurging(boolean isCleanCleanER) {
-        this(isCleanCleanER ? 1.00 : 1.025);
+        this(isCleanCleanER ? 1.00f : 1.025f);
     }
 
-    public ComparisonsBasedBlockPurging(double sf) {
+    public ComparisonsBasedBlockPurging(float sf) {
         smoothingFactor = sf;
 
-        gridSFactor = new DblGridSearchConfiguration(2.0, 1.0, 0.02);
-        randomSFactor = new DblRandomSearchConfiguration(2.0, 1.0);
+        gridSFactor = new DblGridSearchConfiguration(2.0f, 1.0f, 0.02f);
+        randomSFactor = new DblRandomSearchConfiguration(2.0f, 1.0f);
     }
 
     @Override
@@ -79,7 +79,7 @@ public class ComparisonsBasedBlockPurging extends AbstractBlockPurging {
     @Override
     public JsonArray getParameterConfiguration() {
         final JsonObject obj = new JsonObject();
-        obj.put("class", "java.lang.Double");
+        obj.put("class", "java.lang.Float");
         obj.put("name", getParameterName(0));
         obj.put("defaultValue", "1.0");
         obj.put("minValue", "1.0");
@@ -121,29 +121,29 @@ public class ComparisonsBasedBlockPurging extends AbstractBlockPurging {
 
     @Override
     public void setNextRandomConfiguration() {
-        smoothingFactor = (Double) randomSFactor.getNextRandomValue();
+        smoothingFactor = (Float) randomSFactor.getNextRandomValue();
     }
 
     @Override
     public void setNumberedGridConfiguration(int iterationNumber) {
-        smoothingFactor = (Double) gridSFactor.getNumberedValue(iterationNumber);
+        smoothingFactor = (Float) gridSFactor.getNumberedValue(iterationNumber);
     }
 
     @Override
     public void setNumberedRandomConfiguration(int iterationNumber) {
-        smoothingFactor = (Double) randomSFactor.getNumberedRandom(iterationNumber);
+        smoothingFactor = (Float) randomSFactor.getNumberedRandom(iterationNumber);
     }
 
     @Override
     protected void setThreshold(List<AbstractBlock> blocks) {
         blocks.sort(new IncBlockCardinalityComparator());
-        final TDoubleSet distinctComparisonsLevel = new TDoubleHashSet();
+        final TFloatSet distinctComparisonsLevel = new TFloatHashSet();
         blocks.forEach((block) -> distinctComparisonsLevel.add(block.getNoOfComparisons()));
 
         int index = -1;
-        double[] blockAssignments = new double[distinctComparisonsLevel.size()];
-        double[] comparisonsLevel = new double[distinctComparisonsLevel.size()];
-        double[] totalComparisonsPerLevel = new double[distinctComparisonsLevel.size()];
+        float[] blockAssignments = new float[distinctComparisonsLevel.size()];
+        float[] comparisonsLevel = new float[distinctComparisonsLevel.size()];
+        float[] totalComparisonsPerLevel = new float[distinctComparisonsLevel.size()];
         for (AbstractBlock block : blocks) {
             if (index == -1) {
                 index++;
@@ -161,12 +161,12 @@ public class ComparisonsBasedBlockPurging extends AbstractBlockPurging {
             totalComparisonsPerLevel[index] += block.getNoOfComparisons();
         }
 
-        double currentBC = 0;
-        double currentCC = 0;
-        double currentSize = 0;
-        double previousBC = 0;
-        double previousCC = 0;
-        double previousSize = 0;
+        float currentBC = 0;
+        float currentCC = 0;
+        float currentSize = 0;
+        float previousBC = 0;
+        float previousCC = 0;
+        float previousSize = 0;
         int arraySize = blockAssignments.length;
         for (int i = arraySize - 1; 0 <= i; i--) {
             previousSize = currentSize;

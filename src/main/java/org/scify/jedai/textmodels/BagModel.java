@@ -30,7 +30,7 @@ import java.util.Set;
  */
 public abstract class BagModel extends AbstractModel {
 
-    protected double noOfTotalTerms;
+    protected float noOfTotalTerms;
     protected final TObjectIntMap<String> itemsFrequency;
 
     public BagModel(int dId, int n, RepresentationModel md, SimilarityMetric sMetric, String iName) {
@@ -57,21 +57,21 @@ public abstract class BagModel extends AbstractModel {
             numerator += Math.min(iterator.value(), itemVector2.get(iterator.key()));
         }
 
-        double denominator = noOfTotalTerms + oModel.getNoOfTotalTerms() - numerator;
+        float denominator = noOfTotalTerms + oModel.getNoOfTotalTerms() - numerator;
         return numerator / (float)denominator;
     }
     
     @Override
-    public double getEntropy(boolean normalized) {
-        double entropy = 0.0;
+    public float getEntropy(boolean normalized) {
+        float entropy = 0.0f;
         for (TObjectIntIterator<String> iterator = itemsFrequency.iterator(); iterator.hasNext();) {
             iterator.advance();
-            double p_i = (iterator.value() / noOfTotalTerms);
+            float p_i = (iterator.value() / noOfTotalTerms);
             entropy -= (p_i * (Math.log10(p_i) / Math.log10(2.0d)));
         }
         
         if (normalized) {
-            double maxEntropy = Math.log10(noOfTotalTerms) / Math.log10(2.0d);
+            float maxEntropy = (float) Math.log10(noOfTotalTerms) / (float) Math.log10(2.0f);
             return entropy / maxEntropy;
         } 
             
@@ -91,7 +91,7 @@ public abstract class BagModel extends AbstractModel {
         return numerator / denominator;
     }
 
-    protected double getNoOfTotalTerms() {
+    protected float getNoOfTotalTerms() {
         return noOfTotalTerms;
     }
 
@@ -119,7 +119,7 @@ public abstract class BagModel extends AbstractModel {
     }
 
     protected float getTfCosineSimilarity(BagModel oModel) {
-        double totalTerms2 = oModel.getNoOfTotalTerms();
+        float totalTerms2 = oModel.getNoOfTotalTerms();
 
         TObjectIntMap<String> itemVector1 = itemsFrequency;
         TObjectIntMap<String> itemVector2 = oModel.getItemsFrequency();
@@ -134,13 +134,13 @@ public abstract class BagModel extends AbstractModel {
             numerator += iterator.value() * itemVector2.get(iterator.key()) / noOfTotalTerms / totalTerms2;
         }
 
-        double denominator = getVectorMagnitude() * oModel.getVectorMagnitude();
+        float denominator = getVectorMagnitude() * oModel.getVectorMagnitude();
         return (float)(numerator / denominator);
     }
 
     protected float getTfGeneralizedJaccardSimilarity(BagModel oModel) {
-        double totalTerms1 = noOfTotalTerms;
-        double totalTerms2 = oModel.getNoOfTotalTerms();
+        float totalTerms1 = noOfTotalTerms;
+        float totalTerms2 = oModel.getNoOfTotalTerms();
         TObjectIntMap<String> itemVector1 = itemsFrequency;
         TObjectIntMap<String> itemVector2 = oModel.getItemsFrequency();
         if (itemVector2.size() < itemVector1.size()) {
@@ -151,7 +151,7 @@ public abstract class BagModel extends AbstractModel {
             totalTerms2 = noOfTotalTerms;
         }
 
-        double numerator = 0.0;
+        float numerator = 0.0f;
         for (TObjectIntIterator<String> iterator = itemVector1.iterator(); iterator.hasNext(); ) {
             iterator.advance();
             numerator += Math.min(iterator.value() / totalTerms1, itemVector2.get(iterator.key()) / totalTerms2);
@@ -159,7 +159,7 @@ public abstract class BagModel extends AbstractModel {
 
         final Set<String> allKeys = new HashSet<>(itemVector1.keySet());
         allKeys.addAll(itemVector2.keySet());
-        double denominator = 0.0;
+        float denominator = 0.0f;
         for (String key : allKeys) {
             denominator += Math.max(itemVector1.get(key) / totalTerms1, itemVector2.get(key) / totalTerms2);
         }
@@ -167,13 +167,13 @@ public abstract class BagModel extends AbstractModel {
         return (float)(numerator / denominator);
     }
 
-    protected double getVectorMagnitude() {
-        double magnitude = 0.0;
+    protected float getVectorMagnitude() {
+        float magnitude = 0.0f;
         for (TObjectIntIterator<String> iterator = itemsFrequency.iterator(); iterator.hasNext();) {
             iterator.advance();
             magnitude += Math.pow(iterator.value() / noOfTotalTerms, 2.0);
         }
 
-        return Math.sqrt(magnitude);
+        return (float) Math.sqrt(magnitude);
     }
 }

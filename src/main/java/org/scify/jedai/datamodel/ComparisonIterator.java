@@ -26,8 +26,8 @@ import java.util.Iterator;
  */
 public class ComparisonIterator implements IConstants, Iterator<Comparison> {
 
-    private double executedComparisons;
-    private final double totalComparisons;
+    private float executedComparisons;
+    private final float totalComparisons;
 
     private int innerLoop;
     private int innerLimit;

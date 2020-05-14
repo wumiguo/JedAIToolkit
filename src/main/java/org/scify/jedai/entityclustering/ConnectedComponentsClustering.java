@@ -27,10 +27,10 @@ import java.util.Iterator;
 public class ConnectedComponentsClustering extends AbstractEntityClustering {
 
     public ConnectedComponentsClustering() {
-        this(0.5);
+        this(0.5f);
     }
     
-    public ConnectedComponentsClustering(double simTh) {
+    public ConnectedComponentsClustering(float simTh) {
         super(simTh);
     }
 

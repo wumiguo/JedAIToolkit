@@ -40,12 +40,12 @@ public class EntityDBReader extends AbstractEntityReader {
 
     public EntityDBReader(String dbURL) {
         super(dbURL);
-        
+
         password = null;
         ssl = true;
         table = null;
         user = null;
-        
+
         attributesToExclude = new HashSet<>();
     }
 
@@ -108,12 +108,12 @@ public class EntityDBReader extends AbstractEntityReader {
 
                     final String value = rs.getString(columns[i]);
                     if (!rs.wasNull()) {
-                      newProfile.addAttribute(attributeName, value);
+                        newProfile.addAttribute(attributeName, value);
                     }
                 }
             }
             rs.close();
-        } catch (Exception ex) {
+        } catch (IOException | SQLException ex) {
             Log.error("Error in entities reading!", ex);
             return null;
         }
@@ -127,7 +127,7 @@ public class EntityDBReader extends AbstractEntityReader {
         sb.append("{");
         attributesToExclude.forEach((attributeName) -> sb.append(attributeName).append(","));
         sb.append("}");
-    
+
         return getParameterName(0) + "=" + inputFilePath + "\t"
                 + getParameterName(1) + "=" + table + "\t"
                 + getParameterName(2) + "=" + user + "\t"
@@ -186,7 +186,7 @@ public class EntityDBReader extends AbstractEntityReader {
         obj2.put("maxValue", "-");
         obj2.put("stepValue", "-");
         obj2.put("description", getParameterDescription(1));
-        
+
         final JsonObject obj3 = new JsonObject();
         obj3.put("class", "java.lang.String");
         obj3.put("name", getParameterName(2));
@@ -195,7 +195,7 @@ public class EntityDBReader extends AbstractEntityReader {
         obj3.put("maxValue", "-");
         obj3.put("stepValue", "-");
         obj3.put("description", getParameterDescription(2));
-        
+
         final JsonObject obj4 = new JsonObject();
         obj4.put("class", "java.lang.String");
         obj4.put("name", getParameterName(3));
@@ -204,7 +204,7 @@ public class EntityDBReader extends AbstractEntityReader {
         obj4.put("maxValue", "-");
         obj4.put("stepValue", "-");
         obj4.put("description", getParameterDescription(3));
-        
+
         final JsonObject obj5 = new JsonObject();
         obj5.put("class", "java.util.Set<String>");
         obj5.put("name", getParameterName(4));
@@ -213,7 +213,7 @@ public class EntityDBReader extends AbstractEntityReader {
         obj5.put("maxValue", "-");
         obj5.put("stepValue", "-");
         obj5.put("description", getParameterDescription(4));
-        
+
         final JsonObject obj6 = new JsonObject();
         obj6.put("class", "java.lang.Boolean");
         obj6.put("name", getParameterName(5));
@@ -286,7 +286,7 @@ public class EntityDBReader extends AbstractEntityReader {
                 props.setProperty("ssl", "true");
             }
             return DriverManager.getConnection("jdbc:" + dbURL, props);
-        } catch (Exception ex) {
+        } catch (SQLException ex) {
             Log.error("Error with database connection!", ex);
             return null;
         }

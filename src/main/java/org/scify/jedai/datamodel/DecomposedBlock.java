@@ -34,7 +34,7 @@ public class DecomposedBlock extends AbstractBlock {
     private final int[] weights;
     
     public DecomposedBlock(boolean ccER, int[] entities1, int[] entities2, int[] weights) {
-        super(1.0);
+        super(1.0f);
         if (entities1.length != entities2.length) {
             System.err.println("\n\nCreating imbalanced decomposed block!!!!");
             System.err.println("Entities 1\t:\t" + entities1.length);
@@ -60,12 +60,12 @@ public class DecomposedBlock extends AbstractBlock {
     }
     
     @Override
-    public double getNoOfComparisons() {
+    public float getNoOfComparisons() {
         return entities1.length;
     }
 
     @Override
-    public double getTotalBlockAssignments() {
+    public float getTotalBlockAssignments() {
         return 2*entities1.length;
     }
     

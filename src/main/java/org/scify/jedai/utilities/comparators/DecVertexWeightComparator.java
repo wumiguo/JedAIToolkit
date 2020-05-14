@@ -32,15 +32,15 @@ public class DecVertexWeightComparator implements Comparator<VertexWeight> {
      */
     @Override
     public int compare(VertexWeight vw1, VertexWeight vw2) {
-        double w1 = 0;
+        float w1 = 0;
         if (0 < vw1.getNoOfAdj()) {
             w1 = vw1.getWeight() / vw1.getNoOfAdj();
         }
-        double w2 = 0;
+        float w2 = 0;
         if (0 < vw2.getNoOfAdj()) {
             w2 = vw2.getWeight() / vw2.getNoOfAdj();
         }
-        double test = w1 - w2;
+        float test = w1 - w2;
         if (test > 0) {
             return -1;
         }

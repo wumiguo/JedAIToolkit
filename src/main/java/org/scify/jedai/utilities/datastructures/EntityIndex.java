@@ -35,9 +35,9 @@ public class EntityIndex implements Serializable {
     private int noOfBlocks;
     private int noOfEntities;
 
-    private double totalAssignments;
-    private double totalComparisons;
-    private double[] entityComparisons;
+    private float totalAssignments;
+    private float totalComparisons;
+    private float[] entityComparisons;
     private int[][] entityBlocks;
 
     private BilateralBlock[] bBlocks;
@@ -128,11 +128,11 @@ public class EntityIndex implements Serializable {
         return entityBlocks[entityId];
     }
 
-    public double[] getEntityComparisons() {
+    public float[] getEntityComparisons() {
         return entityComparisons;
     }
     
-    public double getEntityComparisons(int entityId, int useDLimit) {
+    public float getEntityComparisons(int entityId, int useDLimit) {
         entityId += useDLimit * datasetLimit;
         return entityComparisons[entityId];
     }
@@ -154,11 +154,11 @@ public class EntityIndex implements Serializable {
         return uBlocks;
     }
     
-    public double getTotalAssignments() {
+    public float getTotalAssignments() {
         return totalAssignments;
     }
     
-    public double getTotalComparisons() {
+    public float getTotalComparisons() {
         return totalComparisons;
     }
 
@@ -168,7 +168,7 @@ public class EntityIndex implements Serializable {
 
     private void indexBilateralEntities() {
         final int[] counters = new int[noOfEntities];
-        entityComparisons = new double[noOfEntities];
+        entityComparisons = new float[noOfEntities];
         for (BilateralBlock block : bBlocks) {
             int innerSize1 = block.getIndex1Entities().length;
             int innerSize2 = block.getIndex2Entities().length;
@@ -211,7 +211,7 @@ public class EntityIndex implements Serializable {
     private void indexUnilateralEntities() {
         //count valid entities & blocks per entity
         final int[] counters = new int[noOfEntities];
-        entityComparisons = new double[noOfEntities];
+        entityComparisons = new float[noOfEntities];
         for (UnilateralBlock block : uBlocks) {
             int blockSize = block.getEntities().length;
             for (int id : block.getEntities()) {

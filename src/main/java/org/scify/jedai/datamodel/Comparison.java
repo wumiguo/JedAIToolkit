@@ -51,10 +51,7 @@ public class Comparison implements Serializable {
         if (this.entityId1 != other.getEntityId1()) {
             return false;
         }
-        if (this.entityId2 != other.getEntityId2()) {
-            return false;
-        }
-        return true;
+        return this.entityId2 == other.getEntityId2();
     }
     
     public int getEntityId1() {
@@ -66,8 +63,9 @@ public class Comparison implements Serializable {
     }
     
     /**
-     * Returns the measure of the weight or similarity between two entities. Higher utility measures
-     * correspond to greater weight or stronger similarity.
+     * Returns the measure of the weight or similarity between two entities.
+     * Higher utility measures correspond to greater weight or stronger similarity.
+     * @return 
      */
     public float getUtilityMeasure() {
         return utilityMeasure;
@@ -85,7 +83,8 @@ public class Comparison implements Serializable {
         return cleanCleanER;
     }
     
-    /** @see #getUtilityMeasure() */
+    /**
+     * @param utilityMeasure *  @see #getUtilityMeasure() */
     public void setUtilityMeasure(float utilityMeasure) {
         this.utilityMeasure = utilityMeasure;
     }

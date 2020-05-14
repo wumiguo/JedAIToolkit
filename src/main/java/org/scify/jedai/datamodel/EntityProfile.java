@@ -58,9 +58,9 @@ public class EntityProfile implements Serializable {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        for (Attribute attribute : attributes) {
+        attributes.forEach((attribute) -> {
             sb.append(attribute.getName()).append(":").append(attribute.getValue()).append(",");
-        }
+        });
         sb.setLength(sb.length()-1);
         return sb.toString();
     }

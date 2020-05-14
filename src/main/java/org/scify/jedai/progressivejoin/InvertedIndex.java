@@ -20,7 +20,7 @@ import java.util.HashMap;
 
 public class InvertedIndex {
 
-    private HashMap<Integer, ListHead> invlist = new HashMap<>();
+    private final HashMap<Integer, ListHead> invlist = new HashMap<>();
 
     public void add(int key, int[] value) {
         ListHead ilist = invlist.getOrDefault(key, new ListHead());

@@ -41,10 +41,10 @@ public abstract class AbstractMetablocking extends AbstractComparisonCleaning im
 
     protected int[] flags;
 
-    protected double threshold;
-    protected double blockAssingments;
-    protected double distinctComparisons;
-    protected double[] comparisonsPerEntity;
+    protected float threshold;
+    protected float blockAssingments;
+    protected float distinctComparisons;
+    protected float[] comparisonsPerEntity;
     protected float[] counters;
 
     protected ChiSquareTest chiSquaredTest;
@@ -91,7 +91,7 @@ public abstract class AbstractMetablocking extends AbstractComparisonCleaning im
         return pruneEdges();
     }
 
-    protected int discretizeComparisonWeight(double weight) {
+    protected int discretizeComparisonWeight(float weight) {
         return (int) (weight * DISCRETIZATION_FACTOR);
     }
 
@@ -171,7 +171,7 @@ public abstract class AbstractMetablocking extends AbstractComparisonCleaning im
             case CBS:
                 return counters[neighborId];
             case ECBS:
-                return (float) (counters[neighborId] * Math.log10((double) noOfBlocks / entityIndex.getNoOfEntityBlocks(entityId, 0)) * Math.log10((double) noOfBlocks / entityIndex.getNoOfEntityBlocks(neighborId, 0)));
+                return (float) (counters[neighborId] * Math.log10((float) noOfBlocks / entityIndex.getNoOfEntityBlocks(entityId, 0)) * Math.log10((float) noOfBlocks / entityIndex.getNoOfEntityBlocks(neighborId, 0)));
             case JS:
                 return counters[neighborId] / (entityIndex.getNoOfEntityBlocks(entityId, 0) + entityIndex.getNoOfEntityBlocks(neighborId, 0) - counters[neighborId]);
             case EJS:
@@ -222,7 +222,7 @@ public abstract class AbstractMetablocking extends AbstractComparisonCleaning im
 
     protected void setStatistics() {
         distinctComparisons = 0;
-        comparisonsPerEntity = new double[noOfEntities];
+        comparisonsPerEntity = new float[noOfEntities];
         final TIntSet distinctNeighbors = new TIntHashSet();
         for (int i = 0; i < noOfEntities; i++) {
             final int[] associatedBlocks = entityIndex.getEntityBlocks(i, 0);

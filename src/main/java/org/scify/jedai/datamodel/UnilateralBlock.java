@@ -31,13 +31,13 @@ public class UnilateralBlock extends AbstractBlock implements Serializable {
     protected final int[] entities;
     
     public UnilateralBlock(int[] entities) {
-        this(1.0, entities);
+        this(1.0f, entities);
     }
     
-    public UnilateralBlock(double entropy, int[] entities) {
+    public UnilateralBlock(float entropy, int[] entities) {
         super(entropy);
         this.entities = entities;
-        comparisons = entities.length*(entities.length-1.0)/2.0;
+        comparisons = entities.length*(entities.length-1.0f)/2.0f;
     }
     
     @Override
@@ -49,10 +49,7 @@ public class UnilateralBlock extends AbstractBlock implements Serializable {
             return false;
         }
         final UnilateralBlock other = (UnilateralBlock) obj;
-        if (!Arrays.equals(this.entities, other.entities)) {
-            return false;
-        }
-        return true;
+        return Arrays.equals(this.entities, other.entities);
     }
 
     public int[] getEntities() {
@@ -60,7 +57,7 @@ public class UnilateralBlock extends AbstractBlock implements Serializable {
     }
     
     @Override
-    public double getTotalBlockAssignments() {
+    public float getTotalBlockAssignments() {
         return entities.length;
     }
 
@@ -73,7 +70,7 @@ public class UnilateralBlock extends AbstractBlock implements Serializable {
     
     @Override
     public void setUtilityMeasure() {
-        utilityMeasure = 1.0/entities.length;
+        utilityMeasure = 1.0f/entities.length;
     }
     
     @Override

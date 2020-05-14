@@ -33,8 +33,8 @@ import java.util.Iterator;
  */
 public class MarkovClustering extends AbstractEntityClustering {
 
-    protected double clusterThreshold;//define similarity threshold for including in final graph
-    protected double matrixSimThreshold;//define similarity threshold for matrix comparison
+    protected float clusterThreshold;//define similarity threshold for including in final graph
+    protected float matrixSimThreshold;//define similarity threshold for matrix comparison
     protected int similarityChecksLimit;//define check repetitions limit for the expansion-inflation process
 
     protected final DblGridSearchConfiguration gridCThreshold;
@@ -45,31 +45,31 @@ public class MarkovClustering extends AbstractEntityClustering {
     protected final IntRandomSearchConfiguration randomSCLimit;
 
     public MarkovClustering() {
-        this(0.001, 0.00001, 2, 0.5);
+        this(0.001f, 0.00001f, 2, 0.5f);
     }
 
-    public MarkovClustering(double ct, double mst, int scl, double st) {
+    public MarkovClustering(float ct, float mst, int scl, float st) {
         super(st);
         clusterThreshold = ct;
         matrixSimThreshold = mst;
         similarityChecksLimit = scl;
 
-        gridCThreshold = new DblGridSearchConfiguration(0.100, 0.002, 0.002);
-        gridMSThreshold = new DblGridSearchConfiguration(0.00100, 0.00001, 0.00001);
+        gridCThreshold = new DblGridSearchConfiguration(0.100f, 0.002f, 0.002f);
+        gridMSThreshold = new DblGridSearchConfiguration(0.001f, 0.00001f, 0.00001f);
         gridSCLimit = new IntGridSearchConfiguration(10, 1, 1);
-        randomCThreshold = new DblRandomSearchConfiguration(0.100, 0.001);
-        randomMSThreshold = new DblRandomSearchConfiguration(0.00100, 0.00001);
+        randomCThreshold = new DblRandomSearchConfiguration(0.100f, 0.001f);
+        randomMSThreshold = new DblRandomSearchConfiguration(0.001f, 0.00001f);
         randomSCLimit = new IntRandomSearchConfiguration(10, 1);
     }
 
-    private void addSelfLoop(double[][] a) {
+    private void addSelfLoop(float[][] a) {
         int m1 = a.length;
         for (int i = 0; i < m1; i++) {
-            a[i][i] = 1.0;
+            a[i][i] = 1.0f;
         }
     }
 
-    private boolean areSimilar(double[][] a, double[][] b) {
+    private boolean areSimilar(float[][] a, float[][] b) {
         int m1 = a.length;
         int m2 = b.length;
         if (m1 != m2) {
@@ -93,8 +93,8 @@ public class MarkovClustering extends AbstractEntityClustering {
         return true;
     }
 
-    private void expand2(double[][] inputMatrix) {
-        final double[][] input = multiply(inputMatrix, inputMatrix);
+    private void expand2(float[][] inputMatrix) {
+        final float[][] input = multiply(inputMatrix, inputMatrix);
         for (int i = 0; i < inputMatrix.length; i++) {
             System.arraycopy(input[i], 0, inputMatrix[i], 0, inputMatrix[0].length);
         }
@@ -106,7 +106,7 @@ public class MarkovClustering extends AbstractEntityClustering {
 
         // add an edge for every pair of entities with a weight higher than the threshold
         final Iterator<Comparison> iterator = simPairs.getPairIterator();
-        double[][] simMatrix = new double[noOfEntities][noOfEntities];
+        float[][] simMatrix = new float[noOfEntities][noOfEntities];
         while (iterator.hasNext()) {
             final Comparison comparison = iterator.next();
             if (threshold < comparison.getUtilityMeasure()) {
@@ -116,7 +116,7 @@ public class MarkovClustering extends AbstractEntityClustering {
 
         addSelfLoop(simMatrix);
         normalizeColumns(simMatrix);
-        double[][] atStart = new double[noOfEntities][noOfEntities];
+        float[][] atStart = new float[noOfEntities][noOfEntities];
         int count = 0;
         do {
             for (int i = 0; i < noOfEntities; i++) {
@@ -139,7 +139,7 @@ public class MarkovClustering extends AbstractEntityClustering {
 
         for (int i = 0; i < upLimit; i++) {
             for (int j = lowLimit; j < n1; j++) {
-                double sim = Math.max(simMatrix[i][j], simMatrix[j][i]);
+                float sim = Math.max(simMatrix[i][j], simMatrix[j][i]);
                 if ((sim > clusterThreshold) && (i != j)) {
                     similarityGraph.addEdge(i, j);
                 }
@@ -185,7 +185,7 @@ public class MarkovClustering extends AbstractEntityClustering {
     @Override
     public JsonArray getParameterConfiguration() {
         final JsonObject obj1 = new JsonObject();
-        obj1.put("class", "java.lang.Double");
+        obj1.put("class", "java.lang.Float");
         obj1.put("name", getParameterName(0));
         obj1.put("defaultValue", "0.5");
         obj1.put("minValue", "0.1");
@@ -194,7 +194,7 @@ public class MarkovClustering extends AbstractEntityClustering {
         obj1.put("description", getParameterDescription(0));
 
         final JsonObject obj2 = new JsonObject();
-        obj2.put("class", "java.lang.Double");
+        obj2.put("class", "java.lang.Float");
         obj2.put("name", getParameterName(1));
         obj2.put("defaultValue", "0.001");
         obj2.put("minValue", "0.001");
@@ -203,7 +203,7 @@ public class MarkovClustering extends AbstractEntityClustering {
         obj2.put("description", getParameterDescription(1));
 
         final JsonObject obj3 = new JsonObject();
-        obj3.put("class", "java.lang.Double");
+        obj3.put("class", "java.lang.Float");
         obj3.put("name", getParameterName(2));
         obj3.put("defaultValue", "0.00001");
         obj3.put("minValue", "0.00001");
@@ -260,17 +260,17 @@ public class MarkovClustering extends AbstractEntityClustering {
         }
     }
 
-    private void hadamard(double[][] a, int pow) {
+    private void hadamard(float[][] a, int pow) {
         int m1 = a.length;
         int n1 = a[0].length;
         for (int i = 0; i < m1; i++) {
             for (int j = 0; j < n1; j++) {
-                a[i][j] = Math.pow(a[i][j], pow);
+                a[i][j] = (float) Math.pow(a[i][j], pow);
             }
         }
     }
 
-    private double[][] multiply(double[][] a, double[][] b) {
+    private float[][] multiply(float[][] a, float[][] b) {
         int n1 = a.length;
         if (n1 != a[0].length) {
             throw new RuntimeException("Illegal matrix dimensions.");
@@ -283,7 +283,7 @@ public class MarkovClustering extends AbstractEntityClustering {
             lowLimit = datasetLimit;
         }
 
-        final double[][] c = new double[n1][n1];
+        final float[][] c = new float[n1][n1];
         for (int i = 0; i < upLimit; i++) {
             for (int j = lowLimit; j < n1; j++) {
                 for (int k = 0; k < n1; k++) {
@@ -305,13 +305,13 @@ public class MarkovClustering extends AbstractEntityClustering {
         return c;
     }
 
-    private void normalizeColumns(double[][] a) {
+    private void normalizeColumns(float[][] a) {
         int m1 = a.length;
         int n1 = a[0].length;
         for (int j = 0; j < n1; j++) {
-            double sumCol = 0.0;
-            for (double[] doubles : a) {
-                sumCol += doubles[j];
+            float sumCol = 0.0f;
+            for (float[] floats : a) {
+                sumCol += floats[j];
             }
 
             for (int i = 0; i < m1; i++) {
@@ -320,11 +320,11 @@ public class MarkovClustering extends AbstractEntityClustering {
         }
     }
 
-    public void setClusterThreshold(double clusterThreshold) {
+    public void setClusterThreshold(float clusterThreshold) {
         this.clusterThreshold = clusterThreshold;
     }
 
-    public void setMatrixSimThreshold(double matrixSimThreshold) {
+    public void setMatrixSimThreshold(float matrixSimThreshold) {
         this.matrixSimThreshold = matrixSimThreshold;
     }
 
@@ -332,8 +332,8 @@ public class MarkovClustering extends AbstractEntityClustering {
     public void setNextRandomConfiguration() {
         super.setNextRandomConfiguration();
 
-        clusterThreshold = (Double) randomCThreshold.getNextRandomValue();
-        matrixSimThreshold = (Double) randomMSThreshold.getNextRandomValue();
+        clusterThreshold = (Float) randomCThreshold.getNextRandomValue();
+        matrixSimThreshold = (Float) randomMSThreshold.getNextRandomValue();
         similarityChecksLimit = (Integer) randomSCLimit.getNextRandomValue();
     }
 
@@ -346,11 +346,11 @@ public class MarkovClustering extends AbstractEntityClustering {
         int remainingIterations = iterationNumber % secondStepConfs;
         int thirdStepConfs = gridCThreshold.getNumberOfConfigurations() * gridSCLimit.getNumberOfConfigurations();
         int mstIteration = remainingIterations / thirdStepConfs;
-        matrixSimThreshold = (Double) gridMSThreshold.getNumberedValue(mstIteration);
+        matrixSimThreshold = (Float) gridMSThreshold.getNumberedValue(mstIteration);
 
         remainingIterations = remainingIterations % thirdStepConfs;
         int cthrIteration = remainingIterations / gridSCLimit.getNumberOfConfigurations();
-        clusterThreshold = (Double) gridCThreshold.getNumberedValue(cthrIteration);
+        clusterThreshold = (Float) gridCThreshold.getNumberedValue(cthrIteration);
 
         int scIteration = remainingIterations % gridSCLimit.getNumberOfConfigurations();
         similarityChecksLimit = (Integer) gridSCLimit.getNumberedValue(scIteration);
@@ -360,8 +360,8 @@ public class MarkovClustering extends AbstractEntityClustering {
     public void setNumberedRandomConfiguration(int iterationNumber) {
         super.setNumberedRandomConfiguration(iterationNumber);
 
-        clusterThreshold = (Double) randomCThreshold.getNumberedRandom(iterationNumber);
-        matrixSimThreshold = (Double) randomMSThreshold.getNumberedRandom(iterationNumber);
+        clusterThreshold = (Float) randomCThreshold.getNumberedRandom(iterationNumber);
+        matrixSimThreshold = (Float) randomMSThreshold.getNumberedRandom(iterationNumber);
         similarityChecksLimit = (Integer) randomSCLimit.getNumberedRandom(iterationNumber);
     }
 

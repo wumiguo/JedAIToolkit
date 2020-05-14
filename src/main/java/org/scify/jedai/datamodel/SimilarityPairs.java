@@ -44,7 +44,7 @@ public class SimilarityPairs implements IConstants, Serializable {
     public SimilarityPairs(boolean ccer, List<AbstractBlock> blocks) {
         currentIndex = 0;
         isCleanCleanER = ccer;
-        double totalComparisons = countComparisons(blocks);
+        float totalComparisons = countComparisons(blocks);
         entityIds1 = new int[(int) totalComparisons];
         entityIds2 = new int[(int) totalComparisons];
         similarities = new float[(int) totalComparisons];
@@ -56,11 +56,9 @@ public class SimilarityPairs implements IConstants, Serializable {
         similarities[currentIndex++] = (float) comparison.getUtilityMeasure();
     }
 
-    private double countComparisons(List<AbstractBlock> blocks) {
-        double comparisons = 0;
-        for (AbstractBlock block : blocks) {
-            comparisons += block.getNoOfComparisons();
-        }
+    private float countComparisons(List<AbstractBlock> blocks) {
+        float comparisons = 0;
+        comparisons = blocks.stream().map((block) -> block.getNoOfComparisons()).reduce(comparisons, (accumulator, _item) -> accumulator + _item);
 
         if (MAX_COMPARISONS < comparisons) {
             Log.error("Very high number of comparisons to be executed! "

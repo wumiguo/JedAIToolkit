@@ -165,9 +165,7 @@ public class GroundTruthIndex {
         if (blocks1 == null || blocks2 == null) {
             return indices;
         }
-
-        int noOfBlocks1 = blocks1.length;
-        int noOfBlocks2 = blocks2.length;
+        
         for (int item : blocks1) {
             for (int value : blocks2) {
                 if (value < item) {
@@ -195,8 +193,6 @@ public class GroundTruthIndex {
         }
 
         int commonBlocks = 0;
-        int noOfBlocks1 = blocks1.length;
-        int noOfBlocks2 = blocks2.length;
         for (int item : blocks1) {
             for (int value : blocks2) {
                 if (value < item) {
@@ -219,28 +215,30 @@ public class GroundTruthIndex {
     private void indexBilateralEntities(List<AbstractBlock> blocks) {
         //find matching entities
         final TIntSet matchingEntities = new TIntHashSet();
-        for (IdDuplicates pair : duplicates) {
+        duplicates.stream().map((pair) -> {
             matchingEntities.add(pair.getEntityId1());
+            return pair;
+        }).forEachOrdered((pair) -> {
             matchingEntities.add(pair.getEntityId2() + datasetLimit);
-        }
+        });
 
         //count blocks per matching entity
         final int[] counters = new int[noOfEntities];
-        for (AbstractBlock block : blocks) {
-            BilateralBlock bilBlock = (BilateralBlock) block;
+        blocks.stream().map((block) -> (BilateralBlock) block).map((bilBlock) -> {
             for (int id1 : bilBlock.getIndex1Entities()) {
                 if (matchingEntities.contains(id1)) {
                     counters[id1]++;
                 }
             }
-
+            return bilBlock;
+        }).forEachOrdered((bilBlock) -> {
             for (int id2 : bilBlock.getIndex2Entities()) {
                 int entityId = datasetLimit + id2;
                 if (matchingEntities.contains(entityId)) {
                     counters[entityId]++;
                 }
             }
-        }
+        });
 
         //initialize inverted index
         entityBlocks = new int[noOfEntities][];
@@ -250,7 +248,7 @@ public class GroundTruthIndex {
         }
 
         //build inverted index
-        for (AbstractBlock block : blocks) {
+        blocks.forEach((block) -> {
             BilateralBlock bilBlock = (BilateralBlock) block;
             for (int id1 : bilBlock.getIndex1Entities()) {
                 if (matchingEntities.contains(id1)) {
@@ -266,7 +264,7 @@ public class GroundTruthIndex {
                     counters[entityId]++;
                 }
             }
-        }
+        });
     }
 
     private void indexEntities(List<AbstractBlock> blocks) {
@@ -280,21 +278,22 @@ public class GroundTruthIndex {
     private void indexUnilateralEntities(List<AbstractBlock> blocks) {
         //find matching entities
         final TIntSet matchingEntities = new TIntHashSet();
-        for (IdDuplicates pair : duplicates) {
+        duplicates.stream().map((pair) -> {
             matchingEntities.add(pair.getEntityId1());
+            return pair;
+        }).forEachOrdered((pair) -> {
             matchingEntities.add(pair.getEntityId2());
-        }
+        });
 
         //count blocks per matching entity
         final int[] counters = new int[noOfEntities];
-        for (AbstractBlock block : blocks) {
-            UnilateralBlock uniBlock = (UnilateralBlock) block;
+        blocks.stream().map((block) -> (UnilateralBlock) block).forEachOrdered((uniBlock) -> {
             for (int id : uniBlock.getEntities()) {
                 if (matchingEntities.contains(id)) {
                     counters[id]++;
                 }
             }
-        }
+        });
 
         //initialize inverted index
         entityBlocks = new int[noOfEntities][];
@@ -304,7 +303,7 @@ public class GroundTruthIndex {
         }
 
         //build inverted index
-        for (AbstractBlock block : blocks) {
+        blocks.forEach((block) -> {
             UnilateralBlock uniBlock = (UnilateralBlock) block;
             for (int id : uniBlock.getEntities()) {
                 if (matchingEntities.contains(id)) {
@@ -312,15 +311,13 @@ public class GroundTruthIndex {
                     counters[id]++;
                 }
             }
-        }
+        });
     }
 
     public boolean isRepeated(int blockIndex, Comparison comparison) {
         final int[] blocks1 = entityBlocks[comparison.getEntityId1()];
         final int[] blocks2 = entityBlocks[comparison.getEntityId2() + datasetLimit];
 
-        int noOfBlocks1 = blocks1.length;
-        int noOfBlocks2 = blocks2.length;
         for (int item : blocks1) {
             for (int value : blocks2) {
                 if (value < item) {
@@ -352,20 +349,20 @@ public class GroundTruthIndex {
     private void setNoOfBilateralEntities(List<AbstractBlock> blocks) {
         noOfEntities = Integer.MIN_VALUE;
         datasetLimit = Integer.MIN_VALUE;
-        for (AbstractBlock block : blocks) {
-            BilateralBlock bilBlock = (BilateralBlock) block;
+        blocks.stream().map((block) -> (BilateralBlock) block).map((bilBlock) -> {
             for (int id1 : bilBlock.getIndex1Entities()) {
                 if (noOfEntities < id1 + 1) {
                     noOfEntities = id1 + 1;
                 }
             }
-
+            return bilBlock;
+        }).forEachOrdered((bilBlock) -> {
             for (int id2 : bilBlock.getIndex2Entities()) {
                 if (datasetLimit < id2 + 1) {
                     datasetLimit = id2 + 1;
                 }
             }
-        }
+        });
 
         int temp = noOfEntities;
         noOfEntities += datasetLimit;
@@ -375,13 +372,12 @@ public class GroundTruthIndex {
     private void setNoOfUnilateralEntities(List<AbstractBlock> blocks) {
         noOfEntities = Integer.MIN_VALUE;
         datasetLimit = 0;
-        for (AbstractBlock block : blocks) {
-            UnilateralBlock bilBlock = (UnilateralBlock) block;
+        blocks.stream().map((block) -> (UnilateralBlock) block).forEachOrdered((bilBlock) -> {
             for (int id : bilBlock.getEntities()) {
                 if (noOfEntities < id + 1) {
                     noOfEntities = id + 1;
                 }
             }
-        }
+        });
     }
 }

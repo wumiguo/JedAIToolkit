@@ -40,29 +40,28 @@ import org.scify.jedai.configuration.randomsearch.DblRandomSearchConfiguration;
 public class SizeBasedBlockPurging extends AbstractBlockPurging {
     
     private boolean isCleanCleanER;
-    private double purgingFactor;
-    private double maxEntities;
+    private float purgingFactor;
+    private float maxEntities;
     
     protected final DblGridSearchConfiguration gridPFactor;
     protected final DblRandomSearchConfiguration randomPFactor;
     
     public SizeBasedBlockPurging() {
-        this(0.005);
+        this(0.005f);
     }
 
-    public SizeBasedBlockPurging(double pf) {
+    public SizeBasedBlockPurging(float pf) {
         purgingFactor = pf;
         
-        gridPFactor = new DblGridSearchConfiguration(0.20, 0.001, 0.005);
-        randomPFactor = new DblRandomSearchConfiguration(0.20, 0.001);
+        gridPFactor = new DblGridSearchConfiguration(0.20f, 0.001f, 0.005f);
+        randomPFactor = new DblRandomSearchConfiguration(0.20f, 0.001f);
     }
     
     private int getMaxBlockSize(List<AbstractBlock> blocks) {
         final TIntSet entities = new TIntHashSet();
-        for (AbstractBlock aBlock : blocks) {
-            UnilateralBlock uBlock = (UnilateralBlock) aBlock;
+        blocks.stream().map((aBlock) -> (UnilateralBlock) aBlock).forEachOrdered((uBlock) -> {
             entities.addAll(uBlock.getEntities());
-        }
+        });
         
         return (int) Math.round(entities.size()*purgingFactor);
     }
@@ -70,11 +69,12 @@ public class SizeBasedBlockPurging extends AbstractBlockPurging {
     private int getMaxInnerBlockSize(List<AbstractBlock> blocks) {
         final TIntSet d1Entities = new TIntHashSet();
         final TIntSet d2Entities = new TIntHashSet();
-        for (AbstractBlock aBlock : blocks) {
-            BilateralBlock bBlock = (BilateralBlock) aBlock;
+        blocks.stream().map((aBlock) -> (BilateralBlock) aBlock).map((bBlock) -> {
             d1Entities.addAll(bBlock.getIndex1Entities());
+            return bBlock;
+        }).forEachOrdered((bBlock) -> {
             d2Entities.addAll(bBlock.getIndex2Entities());
-        }
+        });
         
         return (int) Math.round(Math.min(d1Entities.size(), d2Entities.size())*purgingFactor);
     }
@@ -108,7 +108,7 @@ public class SizeBasedBlockPurging extends AbstractBlockPurging {
     @Override
     public JsonArray getParameterConfiguration() {
         final JsonObject obj = new JsonObject();
-        obj.put("class", "java.lang.Double");
+        obj.put("class", "java.lang.Float");
         obj.put("name", getParameterName(0));
         obj.put("defaultValue", "0.005");
         obj.put("minValue", "0.001");
@@ -153,17 +153,17 @@ public class SizeBasedBlockPurging extends AbstractBlockPurging {
 
     @Override
     public void setNextRandomConfiguration() {
-        purgingFactor = (Double) randomPFactor.getNextRandomValue();
+        purgingFactor = (Float) randomPFactor.getNextRandomValue();
     }
 
     @Override
     public void setNumberedGridConfiguration(int iterationNumber) {
-        purgingFactor = (Double) gridPFactor.getNumberedValue(iterationNumber);
+        purgingFactor = (Float) gridPFactor.getNumberedValue(iterationNumber);
     }
     
     @Override
     public void setNumberedRandomConfiguration(int iterationNumber) {
-        purgingFactor = (Double) randomPFactor.getNumberedRandom(iterationNumber);
+        purgingFactor = (Float) randomPFactor.getNumberedRandom(iterationNumber);
     }
     
     @Override

@@ -22,7 +22,6 @@ import java.util.Objects;
  *
  * @author mthanos
  */
-
 public class Verify {
 
     public static int[] verifiy_sim(ArrayList<Integer> record, ArrayList<Integer> indrecord, int minoverlap, int foundoverlap,

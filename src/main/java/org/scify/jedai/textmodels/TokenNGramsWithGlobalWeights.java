@@ -42,11 +42,9 @@ public class TokenNGramsWithGlobalWeights extends TokenNGrams {
             DOC_FREQ[datasetId] = new TObjectIntHashMap<>();
         }
 
-        for (String keyValue : itemsFrequency.keySet()) {
-            if (!DOC_FREQ[datasetId].increment(keyValue)) {
-                DOC_FREQ[datasetId].put(keyValue, 1);
-            }
-        }
+        itemsFrequency.keySet().stream().filter((keyValue) -> (!DOC_FREQ[datasetId].increment(keyValue))).forEachOrdered((keyValue) -> {
+            DOC_FREQ[datasetId].put(keyValue, 1);
+        });
     }
 
     protected float getARCSSimilarity(TokenNGramsWithGlobalWeights oModel) {
@@ -56,12 +54,12 @@ public class TokenNGramsWithGlobalWeights extends TokenNGrams {
         float similarity = 0;
         if (datasetId == DATASET_1 && datasetId == oModel.getDatasetId()) { // Dirty ER
             for (String key : commonKeys) {
-                double frequency = DOC_FREQ[DATASET_1].get(key);
-                similarity += 1.0 / (Math.log1p(frequency * (frequency - 1) / 2.0) / Math.log(2));
+                float frequency = DOC_FREQ[DATASET_1].get(key);
+                similarity += 1.0f / (Math.log1p(frequency * (frequency - 1) / 2.0) / Math.log(2));
             }
         } else if (datasetId != oModel.getDatasetId()) { // Clean-Clean ER
             for (String key : commonKeys) {
-                similarity += 1.0 / (Math.log1p(((double) DOC_FREQ[DATASET_1].get(key)) * DOC_FREQ[DATASET_2].get(key)) / Math.log(2));
+                similarity += 1.0f / (Math.log1p(((float) DOC_FREQ[DATASET_1].get(key)) * DOC_FREQ[DATASET_2].get(key)) / Math.log(2));
             }
         } else {
             Log.error("Both models come from dataset 1!");
@@ -71,7 +69,7 @@ public class TokenNGramsWithGlobalWeights extends TokenNGrams {
         return similarity;
     }
 
-    protected double getIdfWeight(String keyValue) {
+    protected float getIdfWeight(String keyValue) {
         int frequency = DOC_FREQ[datasetId].get(keyValue);
         if (frequency == 0) {
             return 0;
@@ -82,14 +80,14 @@ public class TokenNGramsWithGlobalWeights extends TokenNGrams {
             return 0;
         }
         
-        return Math.log10(NO_OF_DOCUMENTS[datasetId] / (1 + frequency));
+        return (float) Math.log10(NO_OF_DOCUMENTS[datasetId] / (1.0f + frequency));
     }
 
     protected float getSigmaSimilarity(TokenNGramsWithGlobalWeights oModel) {
-        double totalTerms2 = oModel.getNoOfTotalTerms();
+        float totalTerms2 = oModel.getNoOfTotalTerms();
         final TObjectIntMap<String> itemVector2 = oModel.getItemsFrequency();
 
-        double numerator = 0.0;
+        float numerator = 0.0f;
         for (TObjectIntIterator<String> iterator = itemsFrequency.iterator(); iterator.hasNext();) {
             iterator.advance();
             int frequency2 = itemVector2.get(iterator.key());
@@ -101,11 +99,9 @@ public class TokenNGramsWithGlobalWeights extends TokenNGrams {
 
         final Set<String> allKeys = new HashSet<>(itemsFrequency.keySet());
         allKeys.addAll(itemVector2.keySet());
-        double denominator = 0.0;
-        for (String key : allKeys) {
-            denominator += itemsFrequency.get(key) / noOfTotalTerms  * getIdfWeight(key) + 
-                           itemVector2.get(key) / totalTerms2 * oModel.getIdfWeight(key);
-        }
+        float denominator = 0.0f;
+        denominator = allKeys.stream().map((key) -> itemsFrequency.get(key) / noOfTotalTerms  * getIdfWeight(key) + 
+                itemVector2.get(key) / totalTerms2 * oModel.getIdfWeight(key)).reduce(denominator, (accumulator, _item) -> accumulator + _item);
 
         return (float)(numerator / denominator);
     }
@@ -129,10 +125,10 @@ public class TokenNGramsWithGlobalWeights extends TokenNGrams {
     }
 
     protected float getTfIdfCosineSimilarity(TokenNGramsWithGlobalWeights oModel) {
-        double totalTerms2 = oModel.getNoOfTotalTerms();
+        float totalTerms2 = oModel.getNoOfTotalTerms();
         final TObjectIntMap<String> itemVector2 = oModel.getItemsFrequency();
 
-        double numerator = 0.0;
+        float numerator = 0.0f;
         for (TObjectIntIterator<String> iterator = itemsFrequency.iterator(); iterator.hasNext();) {
             iterator.advance();
             int frequency2 = itemVector2.get(iterator.key());
@@ -142,15 +138,15 @@ public class TokenNGramsWithGlobalWeights extends TokenNGrams {
             }
         }
 
-        double denominator = getVectorMagnitude() * oModel.getVectorMagnitude();
+        float denominator = getVectorMagnitude() * oModel.getVectorMagnitude();
         return (float)(numerator / denominator);
     }
 
     protected float getTfIdfGeneralizedJaccardSimilarity(TokenNGramsWithGlobalWeights oModel) {
-        double totalTerms2 = oModel.getNoOfTotalTerms();
+        float totalTerms2 = oModel.getNoOfTotalTerms();
         final TObjectIntMap<String> itemVector2 = oModel.getItemsFrequency();
 
-        double numerator = 0.0;
+        float numerator = 0.0f;
         for (TObjectIntIterator<String> iterator = itemsFrequency.iterator(); iterator.hasNext();) {
             iterator.advance();
             int frequency2 = itemVector2.get(iterator.key());
@@ -162,24 +158,22 @@ public class TokenNGramsWithGlobalWeights extends TokenNGrams {
 
         final Set<String> allKeys = new HashSet<>(itemsFrequency.keySet());
         allKeys.addAll(itemVector2.keySet());
-        double denominator = 0.0;
-        for (String key : allKeys) {
-            denominator += Math.max(itemsFrequency.get(key) / noOfTotalTerms  * getIdfWeight(key),
-                                    itemVector2.get(key) / totalTerms2 * oModel.getIdfWeight(key));
-        }
+        float denominator = 0.0f;
+        denominator = allKeys.stream().map((key) -> Math.max(itemsFrequency.get(key) / noOfTotalTerms  * getIdfWeight(key),
+                itemVector2.get(key) / totalTerms2 * oModel.getIdfWeight(key))).reduce(denominator, (accumulator, _item) -> accumulator + _item);
 
         return (float)(numerator / denominator);
     }
     
     @Override
-    protected double getVectorMagnitude() {
-        double magnitude = 0.0;
+    protected float getVectorMagnitude() {
+        float magnitude = 0.0f;
         for (TObjectIntIterator<String> iterator = itemsFrequency.iterator(); iterator.hasNext();) {
             iterator.advance();
             magnitude += Math.pow(iterator.value() * getIdfWeight(iterator.key()) / noOfTotalTerms, 2.0);
         }
 
-        return Math.sqrt(magnitude);
+        return (float) Math.sqrt(magnitude);
     }
     
     public static void resetGlobalValues(int datasetId) {

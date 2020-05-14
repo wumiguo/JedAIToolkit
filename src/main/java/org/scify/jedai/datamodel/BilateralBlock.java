@@ -32,14 +32,14 @@ public class BilateralBlock extends AbstractBlock implements Serializable {
     private final int[] index2Entities;
 
     public BilateralBlock(int[] entities1, int[] entities2) {
-        this(1.0, entities1, entities2);
+        this(1.0f, entities1, entities2);
     }
     
-    public BilateralBlock(double entropy, int[] entities1, int[] entities2) {
+    public BilateralBlock(float entropy, int[] entities1, int[] entities2) {
         super(entropy);
         index1Entities = entities1;
         index2Entities = entities2;
-        comparisons = ((double) index1Entities.length) * ((double) index2Entities.length);
+        comparisons = ((float) index1Entities.length) * ((float) index2Entities.length);
     }
 
     @Override
@@ -54,10 +54,7 @@ public class BilateralBlock extends AbstractBlock implements Serializable {
         if (!Arrays.equals(this.index1Entities, other.index1Entities)) {
             return false;
         }
-        if (!Arrays.equals(this.index2Entities, other.index2Entities)) {
-            return false;
-        }
-        return true;
+        return Arrays.equals(this.index2Entities, other.index2Entities);
     }
 
     public int[] getIndex1Entities() {
@@ -69,7 +66,7 @@ public class BilateralBlock extends AbstractBlock implements Serializable {
     }
 
     @Override
-    public double getTotalBlockAssignments() {
+    public float getTotalBlockAssignments() {
         return index1Entities.length+index2Entities.length;
     }
         
@@ -83,7 +80,7 @@ public class BilateralBlock extends AbstractBlock implements Serializable {
     
     @Override
     public void setUtilityMeasure() {
-        utilityMeasure = 1.0/Math.max(index1Entities.length, index2Entities.length);
+        utilityMeasure = 1.0f/Math.max(index1Entities.length, index2Entities.length);
     }
     
     @Override

@@ -31,13 +31,13 @@ public abstract class AbstractBlock implements Serializable {
     
     protected int blockIndex;
     
-    protected double comparisons;
-    protected double entropy;
-    protected double utilityMeasure;
+    protected float comparisons;
+    protected float entropy;
+    protected float utilityMeasure;
             
-    public AbstractBlock(double en) {
+    public AbstractBlock(float en) {
         blockIndex = -1;
-        entropy = 1.0;
+        entropy = 1.0f;
         utilityMeasure = -1;
     }
     
@@ -49,15 +49,15 @@ public abstract class AbstractBlock implements Serializable {
         return new ComparisonIterator(this);
     }
     
-    public double getEntropy() {
+    public float getEntropy() {
         return entropy;
     }
 
-    public double getNoOfComparisons() {
+    public float getNoOfComparisons() {
         return comparisons;
     }
     
-    public double getUtilityMeasure() {
+    public float getUtilityMeasure() {
         return utilityMeasure;
     }
     
@@ -77,6 +77,6 @@ public abstract class AbstractBlock implements Serializable {
         return comparisonsList;
     }
     
-    public abstract double getTotalBlockAssignments();
+    public abstract float getTotalBlockAssignments();
     public abstract void setUtilityMeasure();
 }

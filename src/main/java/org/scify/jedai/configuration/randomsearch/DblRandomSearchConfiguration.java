@@ -21,11 +21,11 @@ package org.scify.jedai.configuration.randomsearch;
  */
 public class DblRandomSearchConfiguration extends AbstractRandomSearchConfiguration {
 
-    private final double interval;
-    private final double maximumValue;
-    private final double minimumValue;
+    private final float interval;
+    private final float maximumValue;
+    private final float minimumValue;
 
-    public DblRandomSearchConfiguration(double max, double min) {
+    public DblRandomSearchConfiguration(float max, float min) {
         super();
         maximumValue = max;
         minimumValue = min;
@@ -34,6 +34,6 @@ public class DblRandomSearchConfiguration extends AbstractRandomSearchConfigurat
     
     @Override
     protected Object randomValueGeneration() {
-        return minimumValue + RANDOM_GEN.nextDouble() * interval;
+        return minimumValue + RANDOM_GEN.nextFloat() * interval;
     }
 }

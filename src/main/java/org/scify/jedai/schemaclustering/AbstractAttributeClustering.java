@@ -50,8 +50,8 @@ public abstract class AbstractAttributeClustering implements ISchemaClustering {
     protected int attributesDelimiter;
     protected int noOfAttributes;
 
-    protected double a; // minimum portion of max similarity for connecting two attributes
-    protected double[] globalMaxSimilarities;
+    protected float a; // minimum portion of max similarity for connecting two attributes
+    protected float[] globalMaxSimilarities;
 
     protected final IntGridSearchConfiguration gridCombo;
     protected final IntRandomSearchConfiguration randomCombo;
@@ -62,7 +62,7 @@ public abstract class AbstractAttributeClustering implements ISchemaClustering {
     protected SimilarityMetric simMetric;
     protected TObjectIntMap<String> attrNameIndex;
 
-    public AbstractAttributeClustering(double a, RepresentationModel model, SimilarityMetric metric) {
+    public AbstractAttributeClustering(float a, RepresentationModel model, SimilarityMetric metric) {
         this.a = a;
         repModel = model;
         simMetric = metric;
@@ -75,11 +75,11 @@ public abstract class AbstractAttributeClustering implements ISchemaClustering {
 
     private void buildAttributeModels(int datasetId, List<EntityProfile> profiles) {
         attrNameIndex = new TObjectIntHashMap<>();
-        for (EntityProfile profile : profiles) {
-            for (Attribute attribute : profile.getAttributes()) {
+        profiles.forEach((profile) -> {
+            profile.getAttributes().forEach((attribute) -> {
                 attrNameIndex.putIfAbsent(attribute.getName(), attrNameIndex.size() + 1);
-            }
-        }
+            });
+        });
 
         int currentAttributes = attrNameIndex.size();
         attributeModels[datasetId] = new ITextModel[currentAttributes];
@@ -89,11 +89,11 @@ public abstract class AbstractAttributeClustering implements ISchemaClustering {
             attributeModels[datasetId][it.value() - 1] = RepresentationModel.getModel(datasetId, repModel, simMetric, it.key());
         }
 
-        for (EntityProfile profile : profiles) {
-            for (Attribute attribute : profile.getAttributes()) {
+        profiles.forEach((profile) -> {
+            profile.getAttributes().forEach((attribute) -> {
                 updateModel(datasetId, attribute);
-            }
-        }
+            });
+        });
 
         for (int i = 0; i < currentAttributes; i++) {
             attributeModels[datasetId][i].finalizeModel();
@@ -141,7 +141,7 @@ public abstract class AbstractAttributeClustering implements ISchemaClustering {
             }
         }
 
-        AttributeClusters[] aClusters = null;
+        AttributeClusters[] aClusters;
         final ConnectedComponents cc = new ConnectedComponents(similarityGraph);
         if (attributesDelimiter < 0) { // Dirty ER
             aClusters = new AttributeClusters[1];
@@ -161,7 +161,7 @@ public abstract class AbstractAttributeClustering implements ISchemaClustering {
 
         int glueClusterId = cc.count() + 1;
         int[] clusterFrequency = new int[glueClusterId + 1];
-        double[] clusterEntropy = new double[glueClusterId + 1];
+        float[] clusterEntropy = new float[glueClusterId + 1];
         final TObjectIntMap<String> clusters = new TObjectIntHashMap<>();
         for (int i = firstId; i < lastId; i++) {
             int ccId = cc.id(i);
@@ -182,7 +182,7 @@ public abstract class AbstractAttributeClustering implements ISchemaClustering {
     }
 
     protected void compareAttributes() {
-        globalMaxSimilarities = new double[noOfAttributes];
+        globalMaxSimilarities = new float[noOfAttributes];
         final TIntSet coOccurringAttrs = new TIntHashSet();
         int lastId = 0 < attributesDelimiter ? attributesDelimiter : noOfAttributes;
         for (int i = 0; i < lastId; i++) {
@@ -210,7 +210,7 @@ public abstract class AbstractAttributeClustering implements ISchemaClustering {
             int neighborId = sigIterator.next();
 
             int normalizedNeighborId = neighborId + attributesDelimiter;
-            double similarity = attributeModels[DATASET_1][attributeId].getSimilarity(attributeModels[DATASET_2][neighborId]);
+            float similarity = attributeModels[DATASET_1][attributeId].getSimilarity(attributeModels[DATASET_2][neighborId]);
             if (a * globalMaxSimilarities[attributeId] < similarity
                     || a * globalMaxSimilarities[normalizedNeighborId] < similarity) {
                 similarityGraph.addEdge(attributeId, normalizedNeighborId);
@@ -225,7 +225,7 @@ public abstract class AbstractAttributeClustering implements ISchemaClustering {
                 continue;
             }
 
-            double similarity = attributeModels[DATASET_1][attributeId].getSimilarity(attributeModels[DATASET_1][neighborId]);
+            float similarity = attributeModels[DATASET_1][attributeId].getSimilarity(attributeModels[DATASET_1][neighborId]);
             if (a * globalMaxSimilarities[attributeId] < similarity
                     || a * globalMaxSimilarities[neighborId] < similarity) {
                 similarityGraph.addEdge(attributeId, neighborId);
@@ -238,7 +238,7 @@ public abstract class AbstractAttributeClustering implements ISchemaClustering {
             int neighborId = sigIterator.next();
 
             int normalizedNeighborId = neighborId + attributesDelimiter;
-            double similarity = attributeModels[DATASET_1][attributeId].getSimilarity(attributeModels[DATASET_2][neighborId]);
+            float similarity = attributeModels[DATASET_1][attributeId].getSimilarity(attributeModels[DATASET_2][neighborId]);
             if (globalMaxSimilarities[attributeId] < similarity) {
                 globalMaxSimilarities[attributeId] = similarity;
             }
@@ -256,7 +256,7 @@ public abstract class AbstractAttributeClustering implements ISchemaClustering {
                 continue;
             }
 
-            double similarity = attributeModels[DATASET_1][attributeId].getSimilarity(attributeModels[DATASET_1][neighborId]);
+            float similarity = attributeModels[DATASET_1][attributeId].getSimilarity(attributeModels[DATASET_1][neighborId]);
             if (globalMaxSimilarities[attributeId] < similarity) {
                 globalMaxSimilarities[attributeId] = similarity;
             }

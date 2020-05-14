@@ -7,15 +7,19 @@ import org.scify.jedai.utilities.enumerations.RepresentationModel;
 import org.scify.jedai.utilities.enumerations.SimilarityMetric;
 
 public abstract class VectorSpaceModel extends AbstractModel {
-    Double[] aggregateVector;
+
+    float[] aggregateVector;
     static int dimension;
+
     public VectorSpaceModel(int dId, int n, RepresentationModel md, SimilarityMetric sMetric, String iName) {
         super(dId, n, md, sMetric, iName);
     }
-    Double[] getVector(){
+
+    float[] getVector() {
         return aggregateVector;
     }
-    int getDimension(){
+
+    int getDimension() {
         return dimension;
     }
 
@@ -33,22 +37,23 @@ public abstract class VectorSpaceModel extends AbstractModel {
 
     /**
      * Cosine similarity for two arithmetic vectors
+     *
      * @param oModel the other VS model
      * @return the cosine similarity value
      */
-    public float getCosineSimilarity(VectorSpaceModel oModel){
+    public float getCosineSimilarity(VectorSpaceModel oModel) {
         // get vectors
-        Double[] v1 = getVector();
-        Double[] v2 = oModel.getVector();
-        double norm1 = 0.0d;
-        double norm2 = 0.0d;
-        double dot=0.0d;
-        for (int i=0;i<getDimension();++i){
+        float[] v1 = getVector();
+        float[] v2 = oModel.getVector();
+        float norm1 = 0.0f;
+        float norm2 = 0.0f;
+        float dot = 0.0f;
+        for (int i = 0; i < getDimension(); ++i) {
             dot += v1[i] * v2[i];
             norm1 += Math.pow(v1[i], 2);
             norm2 += Math.pow(v2[i], 2);
         }
-        return (float)(dot / (Math.sqrt(norm1) * Math.sqrt(norm2)));
+        return (float) (dot / (Math.sqrt(norm1) * Math.sqrt(norm2)));
 
     }
 

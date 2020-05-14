@@ -24,9 +24,10 @@ public class InputTransformer {
 
     /**
      * Computes the frequencies of tokens
+     * @param collection
+     * @return 
      */
     public LinkedHashMap<String, Integer> computeTokenFrequencies(Collection<List<Set<String>>> collection) {
-
         LinkedHashMap<String, Integer> tokFreq = new LinkedHashMap<>();
 
         Integer frequency;
@@ -67,6 +68,8 @@ public class InputTransformer {
 
     /**
      * Creates a token dictionary with IDs ordered by frequency
+     * @param sets
+     * @return 
      */
     public TObjectIntMap<String> mapTokensToIntsByFrequency(Collection<List<Set<String>>> sets) {
         LinkedHashMap<String, Integer> tokenFreq = computeTokenFrequencies(sets);
@@ -76,6 +79,9 @@ public class InputTransformer {
 
     /**
      * Replaces string tokens with integer IDs
+     * @param input
+     * @param tokenDictionary
+     * @return 
      */
     public int[][][] transform(Map<String, List<Set<String>>> input, TObjectIntMap<String> tokenDictionary) {
 

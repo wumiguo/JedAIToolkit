@@ -273,14 +273,14 @@ public class Main {
         final TIntList bbMethodIds = getBlockBuildingMethod();
         List<AbstractBlock> blocks = new ArrayList<>();
 
-        double totalTime = 0;
+        float totalTime = 0;
         for (TIntIterator bbIterator = bbMethodIds.iterator(); bbIterator.hasNext();) {
-            double time1 = System.currentTimeMillis();
+            float time1 = System.currentTimeMillis();
             
             final IBlockBuilding blockBuildingMethod = BlockBuildingMethod.getDefaultConfiguration(BlockBuildingMethod.values()[bbIterator.next() - 1]);
             blocks.addAll(blockBuildingMethod.getBlocks(profilesD1, profilesD2));
 
-            double time2 = System.currentTimeMillis();
+            float time2 = System.currentTimeMillis();
 
             totalTime += time2 - time1;
             workflowConf.append(blockBuildingMethod.getMethodConfiguration()).append("\n");
@@ -297,12 +297,12 @@ public class Main {
             bcMethodIds.sort();
             bcMethodIds.reverse();
             for (TIntIterator bcIterator = bcMethodIds.iterator(); bcIterator.hasNext();) {
-                double time3 = System.currentTimeMillis();
+                float time3 = System.currentTimeMillis();
 
                 final IBlockProcessing blockCleaningMethod = BlockCleaningMethod.getDefaultConfiguration(BlockCleaningMethod.values()[bcIterator.next() - 1]);
                 blocks = blockCleaningMethod.refineBlocks(blocks);
 
-                double time4 = System.currentTimeMillis();
+                float time4 = System.currentTimeMillis();
 
                 totalTime += time4- time3;
                 workflowConf.append(blockCleaningMethod.getMethodConfiguration()).append("\n");
@@ -317,12 +317,12 @@ public class Main {
         // Comparison Cleaning
         int ccMethodId = getComparisonCleaningMethod();
         if (0 <= ccMethodId) {
-            double time5 = System.currentTimeMillis();
+            float time5 = System.currentTimeMillis();
 
             IBlockProcessing comparisonCleaningMethod = ComparisonCleaningMethod.getDefaultConfiguration(ComparisonCleaningMethod.values()[ccMethodId - 1]);
             blocks = comparisonCleaningMethod.refineBlocks(blocks);
 
-            double time6 = System.currentTimeMillis();
+            float time6 = System.currentTimeMillis();
 
             totalTime += time6 - time5;
             workflowConf.append(comparisonCleaningMethod.getMethodConfiguration()).append("\n");
@@ -335,12 +335,12 @@ public class Main {
 
         // Entity Matching
         int emMethodId = getEntityMatchingMethod();
-        double time7 = System.currentTimeMillis();
+        float time7 = System.currentTimeMillis();
 
         final IEntityMatching entityMatchingMethod = EntityMatchingMethod.getDefaultConfiguration(profilesD1, profilesD2, EntityMatchingMethod.values()[emMethodId - 1]);
         final SimilarityPairs simPairs = entityMatchingMethod.executeComparisons(blocks);
 
-        double time8 = System.currentTimeMillis();
+        float time8 = System.currentTimeMillis();
 
         totalTime += time8- time7;
         workflowConf.append(entityMatchingMethod.getMethodConfiguration()).append("\n");
