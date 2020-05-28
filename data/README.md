@@ -24,8 +24,7 @@ Note that every file that is available as a *Java Serialized Object* (**JSO**) c
 
 # Dirty ER datasets
 
-| Dataset Name | Entities | Name-Value Pairs | Duplicates | Average NVP per Entity | Brute-force Comparisons |
-File Format | Data Origin | 
+| Dataset Name | Entities | Name-Value Pairs | Duplicates | Average NVP per Entity | Brute-force Comparisons | File Format | Data Origin | 
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | Restaurant | 864 | 4,319 | 112 | 5.0 | 3.73E+05 | JSO ([entity file](dirtyErDatasets/restaurantProfiles), [groundtruth file](dirtyErDatasets/restaurantIdDuplicates)) | Real data |
 | Census | 841 | 3,913 | 344 | 4.7 | 3.53E+05 | JSO ([entity file](dirtyErDatasets/censusProfiles), [groundtruth file](dirtyERfiles/censusIdDuplicates)) | Real data |
@@ -37,6 +36,7 @@ File Format | Data Origin |
 | Amazon-GP	| 4,393	| 14,412 | 1,104 | 3.3 | 9.65E+06 | JSO ([entity file](dirtyErDatasets/amazonGpProfiles), [groundtruth file](dirtyErDatasets/amazonGpIdDuplicates)) | Real data |
 | Movies | 50,797 |	971,445	| 22,863 | 19.1 | 1.29E+09 | JSO ([zipped entity file](dirtyErDatasets/moviesProfiles.rar), [groundtruth file](dirtyErDatasets/moviesIdDuplicates)) | Real data |
 <!---| DBPedia	| 3,354,773	| 5.19E+07| 	892,586	| 15.5	| 5.63E+12| JSO | Real data |-->
+
 
 
 
