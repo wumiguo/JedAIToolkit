@@ -2,11 +2,11 @@
 <img src="https://github.com/scify/JedAIToolkit/blob/master/documentation/JedAI_logo_small.png">
 </p>
 
-Please check our [technical report](https://github.com/scify/JedAIToolkit/blob/master/documentation/JedAI_3D_ER.pdf) for a detailed description of version 3.0. 
+Please check our [paper](https://github.com/scify/JedAIToolkit/blob/master/documentation/JedAI_3D_ER.pdf) for a detailed description of version 3.0. 
 
 The code for running JedAI on **Apache Spark** is available [here](https://github.com/scify/JedAI-Spark). 
 
-The **Web Application** for running JedAI is available [here](https://github.com/GiorgosMandi/JedAI-WebApp).
+The **Web Application** for running JedAI is available [here](https://github.com/GiorgosMandi/JedAI-WebApp). A video explaining how to use it is available [here](https://www.youtube.com/watch?v=OJY1DUrUAe8&t=24s).
 
 JedAI is also available as a **Docker image** [here](https://hub.docker.com/repository/docker/gmandi/jedai-webapp). See below for more details.
 
