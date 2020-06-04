@@ -17,7 +17,6 @@ package org.scify.jedai.similarityjoins;
 
 import org.apache.log4j.BasicConfigurator;
 import org.scify.jedai.datamodel.*;
-import org.scify.jedai.datareader.entityreader.EntityCSVReader;
 import org.scify.jedai.datareader.entityreader.EntitySerializationReader;
 import org.scify.jedai.datareader.entityreader.IEntityReader;
 import org.scify.jedai.datareader.groundtruthreader.GtSerializationReader;
@@ -25,7 +24,6 @@ import org.scify.jedai.datareader.groundtruthreader.IGroundTruthReader;
 import org.scify.jedai.datawriter.ClustersPerformanceWriter;
 import org.scify.jedai.entityclustering.ConnectedComponentsClustering;
 import org.scify.jedai.entityclustering.IEntityClustering;
-import org.scify.jedai.similarityjoins.tokenbased.FuzzySetJoin;
 import org.scify.jedai.utilities.ClustersPerformance;
 import org.scify.jedai.utilities.datastructures.AbstractDuplicatePropagation;
 import org.scify.jedai.utilities.datastructures.UnilateralDuplicatePropagation;
@@ -34,6 +32,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
+import org.scify.jedai.similarityjoins.tokenbased.PPJoin;
 
 /**
  *
@@ -95,30 +94,30 @@ public class TestSimJoinsWithDirtyERdatasets {
         String entitiesFilePath = "data" + File.separator + "dirtyErDatasets" + File.separator + "coraProfiles";
         String groundTruthFilePath = "data" + File.separator + "dirtyErDatasets" + File.separator + "coraIdDuplicates";
 
-        EntityCSVReader testJedaiEntityReader;// = new EntityCSVReader(mainDirectory + "DBLP2.csv");
+//        EntityCSVReader testJedaiEntityReader;// = new EntityCSVReader(mainDirectory + "DBLP2.csv");
 
-        String mainDirectory = "C:\\Users\\Manos\\Documents\\UOA\\SimilarityJoins\\Similarity-Search-and-Join\\Zinp\\";
+//        String mainDirectory = "C:\\Users\\Manos\\Documents\\UOA\\SimilarityJoins\\Similarity-Search-and-Join\\Zinp\\";
 
-        testJedaiEntityReader = new EntityCSVReader(mainDirectory + "testJedaiACMdplp.txt");
-        testJedaiEntityReader.setAttributeNamesInFirstRow(false);
-        //csvEntityReader.setIdIndex(0);
-        testJedaiEntityReader.setSeparator(';');
-        List<EntityProfile> csvACM = testJedaiEntityReader.getEntityProfiles();
+//        testJedaiEntityReader = new EntityCSVReader(mainDirectory + "testJedaiACMdplp.txt");
+//        testJedaiEntityReader.setAttributeNamesInFirstRow(false);
+//        //csvEntityReader.setIdIndex(0);
+//        testJedaiEntityReader.setSeparator(';');
+//        List<EntityProfile> csvACM = testJedaiEntityReader.getEntityProfiles();
 
-        //List<EntityProfile> profiles = getDatasetAggregateValues(entitiesFilePath);
-        List<EntityProfile> profiles = getDatasetAggregateValues(csvACM);
-        System.out.println("Input Entity Profiles\t:\t" + profiles.size());
+//        List<EntityProfile> profiles = getDatasetAggregateValues(entitiesFilePath);
+//        List<EntityProfile> profiles = getDatasetAggregateValues(csvACM);
+//        System.out.println("Input Entity Profiles\t:\t" + profiles.size());
 
         IEntityReader eReader = new EntitySerializationReader(entitiesFilePath);
-        //List<EntityProfile> profiles = eReader.getEntityProfiles();
+        List<EntityProfile> profiles = eReader.getEntityProfiles();
         System.out.println("Input Entity Profiles\t:\t" + profiles.size());
 
         IGroundTruthReader gtReader = new GtSerializationReader(groundTruthFilePath);
         final AbstractDuplicatePropagation duplicatePropagation = new UnilateralDuplicatePropagation(gtReader.getDuplicatePairs(eReader.getEntityProfiles()));
         System.out.println("Existing Duplicates\t:\t" + duplicatePropagation.getDuplicates().size());
 
-        //PPJoin join = new PPJoin(jaccardThreshold);
-        FuzzySetJoin join = new FuzzySetJoin(jaccardThreshold);
+        PPJoin join = new PPJoin(jaccardThreshold);
+//        SilkMoth join = new SilkMoth(jaccardThreshold);
         SimilarityPairs simPairs = join.executeFiltering("all", profiles);
         float time1 = System.currentTimeMillis();
 
