@@ -59,7 +59,7 @@ public class PassJoin extends AbstractCharacterBasedJoin {
     }
 
     @Override
-    public SimilarityPairs applyJoin(String attributeName1, String attributeName2, List<EntityProfile> dataset1, List<EntityProfile> dataset2) {
+    public SimilarityPairs applyJoin() {
         init();
         prepare();
         final List<Comparison> comparisons = performJoin();

@@ -13,11 +13,11 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
  */
-
 package org.scify.jedai.similarityjoins.fuzzysets;
 
 import gnu.trove.iterator.TIntIterator;
 import gnu.trove.list.TIntList;
+import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.map.TIntFloatMap;
 import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.TObjectIntMap;
@@ -37,22 +37,20 @@ import org.jgrapht.graph.SimpleWeightedGraph;
 
 public class FuzzySetSimJoin {
 
-    long startTime, stopTime, transformationTime, indexingTime, joinTime, signatureGenerationTime = 0,
-            checkFilterTime = 0, nnFilterTime = 0, verificationTime = 0;
-    int totalCheckFilterCandidates = 0, totalNNFilterCandidates = 0, totalMatches = 0;
     TObjectIntMap<String> tokenDict;
     float[] elementBounds;
 
     /**
      * Computes the join between two collections
+     *
+     * @param input1
+     * @param input2
+     * @param simThreshold
+     * @return
      */
     public HashMap<String, Float> join(Map<String, List<Set<String>>> input1, Map<String, List<Set<String>>> input2,
             float simThreshold) {
-//		public List<int[]> join(Map<String, List<Set<String>>> input1, Map<String, List<Set<String>>> input2, float simThreshold) {
-
         /* TRANSFORM THE INPUT COLLECTIONS */
-        transformationTime = System.nanoTime();
-        InputTransformer it = new InputTransformer();
 
         // Create an empty token dictionary
         tokenDict = new TObjectIntHashMap<>();
@@ -62,66 +60,35 @@ public class FuzzySetSimJoin {
 
         // Transform input to integer tokens
         // (dictionary is built on input2)
-        int[][][] collection2 = it.transform(input2, tokenDict);
-        int[][][] collection1 = it.transform(input1, tokenDict);
-
-        // --for debugging--
-        // Util.printTokenMap(tokenDict, Math.min(20, tokenDict.size()));
-        // Util.printCollection(collection1, Math.min(10, collection1.length));
-        // Util.printCollection(collection2, Math.min(10, collection2.length));
-        transformationTime = System.nanoTime() - transformationTime;
+        int[][][] collection2 = transform(input2, tokenDict);
+        int[][][] collection1 = transform(input1, tokenDict);
 
         /* JOIN THE TRANSFORMED INPUT COLLECTIONS */
         HashMap<String, Float> matchingPairs = join(collection1, collection2, simThreshold);
-
         return matchingPairs;
     }
 
     /**
      * Computes the join between two already transformed and indexed collections
+     *
+     * @param collection1
+     * @param collection2
+     * @param simThreshold
+     * @return
      */
-    public HashMap<String, Float> join(int[][][] collection1, int[][][] collection2, float simThreshold) {
-//		public List<int[]> join(int[][][] collection1, int[][][] collection2, float simThreshold) {
-
-//		List<int[]> matchingPairs = new ArrayList<int[]>();
-        HashMap<String, Float> matchingPairs = new HashMap<>();
+    HashMap<String, Float> join(int[][][] collection1, int[][][] collection2, float simThreshold) {
+        final HashMap<String, Float> matchingPairs = new HashMap<>();
 
         /* CREATE INDEX */
-        indexingTime = System.nanoTime();
-        IndexConstructor ic = new IndexConstructor();
-        TIntObjectMap<TIntList>[] idx = ic.buildSetInvertedIndex(collection2, tokenDict.size());
-        indexingTime = System.nanoTime() - indexingTime;
-        // Util.printSetInvertedIndex(idx, Math.min(20, idx.length));
+        TIntObjectMap<TIntList>[] idx = buildSetInvertedIndex(collection2, tokenDict.size());
 
         /* EXECUTE THE JOIN ALGORITHM */
-        joinTime = System.nanoTime();
-        int total_steps = 20;
-        int step = collection1.length / total_steps;
-
         for (int i = 0; i < collection1.length; i++) {
-            // progress bar
-            if (step == 0) {
-                step++;
-            }
-            if (i % step == 0) {
-                System.out.print("|");
-                for (int j = 0; j <= (i / step); j++) {
-                    System.out.print("=");
-                }
-                for (int j = (i / step); j < total_steps; j++) {
-                    System.out.print(" ");
-                }
-                System.out.print("|" + (i / step * 100) / total_steps + "% \r");
-//				System.out.print("|"+"=".repeat(i/step)+" ".repeat(total_steps-i/step)+"|"+(i/step*100)/total_steps+"% \r");
-            }
-
             TIntFloatHashMap matches = search(collection1[i], collection2, simThreshold, idx);
             for (int j : matches.keys()) {
-                // matchingPairs.add(new int[] { i, j });
                 matchingPairs.put(i + "_" + j, matches.get(j));
             }
         }
-        joinTime = System.nanoTime() - joinTime;
 
         return matchingPairs;
     }
@@ -133,36 +100,18 @@ public class FuzzySetSimJoin {
             TIntObjectMap<TIntList>[] idx) {
 
         /* SIGNATURE GENERATION */
-        startTime = System.nanoTime();
         TIntSet[] unflattenedSignature = computeUnflattenedSignature(querySet, simThreshold, idx);
-        // Util.printUnflattenedSignature(unflattenedSignature); // debugging
-        signatureGenerationTime += System.nanoTime() - startTime;
 
         /* CANDIDATE SELECTION AND CHECK FILTER */
-        startTime = System.nanoTime();
         TIntObjectMap<TIntFloatMap> checkFilterCandidates = applyCheckFilter(querySet, collection,
                 unflattenedSignature, idx, simThreshold);
-        // Util.printCheckFilterCandidates(checkFilterCandidates); // debugging
-        checkFilterTime += System.nanoTime() - startTime;
-
-//		System.out.println(checkFilterCandidates.toString());
 
         /* NEAREST NEIGHBOR FILTER */
-        startTime = System.nanoTime();
         TIntSet nnFilterCandidates = applyNNFilter(querySet, collection, checkFilterCandidates, simThreshold);
-        nnFilterTime += System.nanoTime() - startTime;
 
         /* VERIFICATION */
-        startTime = System.nanoTime();
         TIntFloatHashMap matches = verifyCandidates(querySet, collection, nnFilterCandidates, simThreshold);
-        verificationTime += System.nanoTime() - startTime;
 
-        totalCheckFilterCandidates += checkFilterCandidates.size();
-        totalNNFilterCandidates += nnFilterCandidates.size();
-        totalMatches += matches.size();
-
-        // return the surviving candidates
-//		return matches.toArray();
         return matches;
     }
 
@@ -369,14 +318,11 @@ public class FuzzySetSimJoin {
             }
 
             float match = 0.0f;
-            //System.out.println(g.edgeSet().size()+"asd"+g.vertexSet().size());
             MaximumWeightBipartiteMatching<String, DefaultWeightedEdge> matching = new MaximumWeightBipartiteMatching<>(
                     g, r_partition, s_partition);
             for (DefaultWeightedEdge ed : matching.getMatching().getEdges()) {
-                //System.out.println(g.getEdgeWeight(ed)+" "+g.getEdgeSource(ed)+" "+g.getEdgeTarget(ed));
                 match += g.getEdgeWeight(ed);
             }
-            //System.out.println();
 
             float sim = match / (querySet.length + collection[id_s].length - match);
             if (sim >= simThreshold) {
@@ -384,14 +330,12 @@ public class FuzzySetSimJoin {
                 matches2.put(id_s, sim);
             }
         }
-//		System.out.println(matches.toString());
-//		System.out.println(matches2.toString());
+
         return matches2;
 
     }
 
     private static float jaccard(int[] r, int[] s) {
-
         TIntSet nr = new TIntHashSet(r);
         TIntSet ns = new TIntHashSet(s);
         TIntSet intersection = new TIntHashSet(nr);
@@ -399,5 +343,69 @@ public class FuzzySetSimJoin {
         TIntSet union = new TIntHashSet(nr);
         union.addAll(ns);
         return ((float) intersection.size()) / ((float) union.size());
+    }
+    
+    TIntObjectMap<TIntList>[] buildSetInvertedIndex(int[][][] collection, int numTokens) {
+        // initialize the index
+        @SuppressWarnings("unchecked")
+        TIntObjectMap<TIntList>[] idx = new TIntObjectHashMap[numTokens];
+        for (int i = 0; i < idx.length; i++) {
+            idx[i] = new TIntObjectHashMap<>();
+        }
+
+        // populate the index
+        TIntList invList;
+        int token;
+        for (int i = 0; i < collection.length; i++) {
+            for (int j = 0; j < collection[i].length; j++) {
+                for (int k = 0; k < collection[i][j].length; k++) {
+                    token = collection[i][j][k];
+                    if (idx[token].containsKey(i)) {
+                        invList = idx[token].get(i);
+                    } else {
+                        invList = new TIntArrayList();
+                    }
+                    invList.add(j);
+                    idx[token].put(i, invList);
+                }
+            }
+        }
+
+        return idx;
+    }
+    
+    int[][][] transform(Map<String, List<Set<String>>> input, TObjectIntMap<String> tokenDictionary) {
+        int[][][] collection = new int[input.size()][][];
+
+        boolean existingDictionary = tokenDictionary.size() > 0;
+        int unknownTokenCounter = 0;
+
+        int i = 0, j, k;
+        List<Set<String>> elements;
+        for (String set : input.keySet()) {
+            elements = input.get(set);
+            collection[i] = new int[elements.size()][];
+            j = 0;
+            for (Set<String> element : elements) {
+                collection[i][j] = new int[element.size()];
+                k = 0;
+                for (String token : element) {
+                    if (!tokenDictionary.containsKey(token)) {
+                        if (existingDictionary) {
+                            unknownTokenCounter--;
+                            tokenDictionary.put(token, unknownTokenCounter);
+                        } else {
+                            tokenDictionary.put(token, tokenDictionary.size());
+                        }
+                    }
+                    collection[i][j][k] = tokenDictionary.get(token);
+                    k++;
+                }
+                j++;
+            }
+            i++;
+        }
+
+        return collection;
     }
 }

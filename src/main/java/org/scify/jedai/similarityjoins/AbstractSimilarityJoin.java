@@ -15,9 +15,6 @@
  */
 package org.scify.jedai.similarityjoins;
 
-import gnu.trove.iterator.TIntIterator;
-import gnu.trove.set.TIntSet;
-import gnu.trove.set.hash.TIntHashSet;
 import java.util.*;
 
 import org.scify.jedai.datamodel.*;
@@ -44,7 +41,7 @@ public abstract class AbstractSimilarityJoin implements ISimilarityJoin {
     public AbstractSimilarityJoin() {
     }
 
-    protected abstract SimilarityPairs applyJoin(String name1, String name2, List<EntityProfile> dataset1, List<EntityProfile> dataset2);
+    protected abstract SimilarityPairs applyJoin();
 
     @Override
     public SimilarityPairs executeFiltering(String attributeName, List<EntityProfile> dataset) {
@@ -61,7 +58,7 @@ public abstract class AbstractSimilarityJoin implements ISimilarityJoin {
         datasetDelimiter = dataset2 != null ? profilesD1.size() : 0;
         noOfEntities = profilesD2 == null ? profilesD1.size() : profilesD1.size() + profilesD2.size();
 
-        return applyJoin(name1, name2, dataset1, dataset2);
+        return applyJoin();
     }
 
     protected String getAttributeValue(String attributeName, EntityProfile profile) {
@@ -101,68 +98,6 @@ public abstract class AbstractSimilarityJoin implements ISimilarityJoin {
                 return new Comparison(isCleanCleanER, neighborId, entityId - datasetDelimiter);
             }
         }
-    }
-
-    public SimilarityPairs executeFilteringInBlocks(String name1, String name2, List<EntityProfile> dataset1, List<EntityProfile> dataset2, List<AbstractBlock> blocks) {
-        attributeNameD1 = name1;
-        attributeNameD2 = name2;
-        isCleanCleanER = profilesD2 != null;
-
-        int noOfCOmparisons = 0;
-        final List<SimilarityPairs> ListOfSimilarityPairsFromJoin = new ArrayList<>();
-        for (AbstractBlock block : blocks) {
-            final TIntSet idsInBlockDataset1 = new TIntHashSet();
-            final TIntSet idsInBlockDataset2 = new TIntHashSet();
-
-            //get involved ids in comparisons
-            if (isCleanCleanER) {
-                for (Comparison comp : block.getComparisons()) {
-                    idsInBlockDataset1.add(comp.getEntityId1());
-                    idsInBlockDataset2.add(comp.getEntityId2());
-                }
-            } else {
-                for (Comparison comp : block.getComparisons()) {
-                    idsInBlockDataset1.add(comp.getEntityId1());
-                    idsInBlockDataset1.add(comp.getEntityId2());
-                }
-            }
-            datasetDelimiter = profilesD2 != null ? profilesD1.size() : 0;
-            noOfEntities = profilesD2 == null ? profilesD1.size() : profilesD1.size() + profilesD2.size();
-
-            
-            //add entity profiles in the respective inBlockProfs
-            originalIdInBlock = new int[noOfEntities];
-
-            int counter = 0;
-            profilesD1 = new ArrayList<>();
-            TIntIterator tIterator = idsInBlockDataset1.iterator();
-            while (tIterator.hasNext()) {
-                int entityId = tIterator.next();
-                profilesD1.add(dataset1.get(entityId));
-                originalIdInBlock[counter++]=entityId;
-            }
-            profilesD2 = new ArrayList<>();
-            tIterator = idsInBlockDataset2.iterator();
-            while (tIterator.hasNext()) {
-                int entityId = tIterator.next();
-                profilesD2.add(dataset1.get(entityId));
-                originalIdInBlock[counter++]=entityId;
-            }
-            
-            SimilarityPairs simPairs = applyJoin(name1, name2, profilesD1, profilesD2);
-            noOfCOmparisons += simPairs.getNoOfComparisons();
-            ListOfSimilarityPairsFromJoin.add(simPairs);
-        }
-
-        final SimilarityPairs totalSimilarityPairs = new SimilarityPairs(isCleanCleanER, noOfCOmparisons);
-        for (SimilarityPairs similarityPairs : ListOfSimilarityPairsFromJoin) {
-            final Iterator<Comparison> iterator = similarityPairs.getPairIterator();
-            while (iterator.hasNext()) {
-                totalSimilarityPairs.addComparison(iterator.next());
-            }
-        }
-
-        return totalSimilarityPairs;
     }
 
     protected SimilarityPairs getSimilarityPairs(List<Comparison> comparisons) {

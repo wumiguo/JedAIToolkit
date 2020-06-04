@@ -47,7 +47,7 @@ public class AllPairs extends AbstractTokenBasedJoin {
     }
 
     @Override
-    protected SimilarityPairs applyJoin(String attributeName1, String attributeName2, List<EntityProfile> dataset1, List<EntityProfile> dataset2) {
+    protected SimilarityPairs applyJoin() {
         init();
         final List<Comparison> comparisons = performJoin();
         return getSimilarityPairs(comparisons);

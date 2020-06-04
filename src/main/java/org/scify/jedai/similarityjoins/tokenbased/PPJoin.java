@@ -50,7 +50,7 @@ public class PPJoin extends AbstractTokenBasedJoin {
     }
 
     @Override
-    public SimilarityPairs applyJoin(String attributeName1, String attributeName2, List<EntityProfile> dataset1, List<EntityProfile> dataset2) {
+    public SimilarityPairs applyJoin() {
         init();
 
         final List<Comparison> comparisons = performJoin();

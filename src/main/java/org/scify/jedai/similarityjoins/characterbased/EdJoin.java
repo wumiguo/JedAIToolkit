@@ -61,7 +61,7 @@ public class EdJoin extends AbstractCharacterBasedJoin {
     }
 
     @Override
-    protected SimilarityPairs applyJoin(String attributeName1, String attributeName2, List<EntityProfile> dataset1, List<EntityProfile> dataset2) {
+    protected SimilarityPairs applyJoin() {
         int rangeBound = init();
 
         getTokens(rangeBound);

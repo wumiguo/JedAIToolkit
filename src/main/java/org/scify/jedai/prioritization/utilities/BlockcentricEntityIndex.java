@@ -20,6 +20,7 @@ import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TIntArrayList;
 import java.io.Serializable;
 import java.util.List;
+import org.apache.commons.math3.stat.inference.ChiSquareTest;
 import org.scify.jedai.datamodel.AbstractBlock;
 import org.scify.jedai.datamodel.BilateralBlock;
 import org.scify.jedai.datamodel.Comparison;
@@ -46,8 +47,9 @@ public class BlockcentricEntityIndex implements Serializable {
     private float[] comparisonsPerBlock;
     private float[] comparisonsPerEntity;
 
+    protected ChiSquareTest chiSquaredTest;
     private WeightingScheme wScheme;
-
+    
     public BlockcentricEntityIndex(List<AbstractBlock> blocks, WeightingScheme wScheme) {
         if (blocks.isEmpty()) {
             System.err.println("Entity index received an empty block collection as input!");
@@ -65,6 +67,10 @@ public class BlockcentricEntityIndex implements Serializable {
         setNoOfEntities(blocks);
         indexEntities(blocks);
         getStatistics(blocks);
+        
+        if (wScheme.equals(WeightingScheme.PEARSON_X2)) {
+            chiSquaredTest = new ChiSquareTest();
+        }
     }
 
     private void enumerateBlocks(List<AbstractBlock> blocks) {
@@ -302,6 +308,20 @@ public class BlockcentricEntityIndex implements Serializable {
 
                 float probability = commonBlocksEJS / (getNoOfEntityBlocks(comparison.getEntityId1(), 0) + getNoOfEntityBlocks(comparison.getEntityId2(), comparison.isCleanCleanER() ? 1 : 0) - commonBlocksEJS);
                 return (float) (probability * Math.log10(validComparisons / comparisonsPerEntity[comparison.getEntityId1()]) * Math.log10(validComparisons / comparisonsPerEntity[comparison.isCleanCleanER() ? comparison.getEntityId2() + datasetLimit : comparison.getEntityId2()]));
+            case PEARSON_X2:
+                int commonBlocksPX = getNoOfCommonBlocks(blockIndex, comparison);
+                if (commonBlocksPX < 0) {
+                    return commonBlocksPX;
+                }
+                long[] v = new long[2];
+                v[0] = (long) commonBlocksPX;
+                v[1] = getNoOfEntityBlocks(comparison.getEntityId1(), 0) - v[0];
+
+                long[] v_ = new long[2];
+                v_[0] = getNoOfEntityBlocks(comparison.getEntityId2(), comparison.isCleanCleanER() ? 1 : 0) - v[0];
+                v_[1] = (int) (totalBlocks - (v[0] + v[1] + v_[0]));
+
+                return (float) chiSquaredTest.chiSquare(new long[][]{v, v_});
         }
 
         return -1;

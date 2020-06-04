@@ -70,6 +70,8 @@ public class GtOAEIbenchmarksReader extends GtRDFReader {
                     final Element eElement2 = (Element) eElement.getElementsByTagName("entity2").item(0);
                     int entityId2 = urlToEntityId2.get(eElement2.getAttribute("rdf:resource"));
                     
+                    if (entityId1==0||entityId2==0) continue;
+                    
                     duplicatesGraph.addEdge(entityId1, entityId2);
                 }
             }
